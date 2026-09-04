@@ -4,6 +4,8 @@
 
 Aplikacja nie jest generycznym trackerem — to narzędzie skrojone pod realny plan treningowy, z naciskiem na szybkość logowania serii podczas treningu (timer przerw, stoper izometryczny) i śledzenie postępów w czasie.
 
+🌐 **Aplikacja produkcyjna**: [fit.birek.online](https://fit.birek.online) — instrukcja wdrożenia na własny VPS: [DEPLOY.md](DEPLOY.md)
+
 ---
 
 ## ✨ Funkcje
