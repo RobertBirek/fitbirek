@@ -57,15 +57,21 @@ class ExercisesListPage extends ConsumerWidget {
                       final ex = exercises[index];
                       return Card(
                         child: ListTile(
-                          contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          title: Text(ex.nazwaPl,
-                              style: const TextStyle(fontWeight: FontWeight.w600)),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          title: Text(
+                            ex.nazwaPl,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
                           subtitle: Text('${ex.partiaGlowna} • ${ex.poziom}'),
                           trailing: IconButton(
                             icon: Icon(
                               ex.ulubione ? Icons.star : Icons.star_border,
-                              color: ex.ulubione ? FitBirekColors.accent : Colors.grey,
+                              color: ex.ulubione
+                                  ? FitBirekColors.accent
+                                  : Colors.grey,
                             ),
                             onPressed: () => ref
                                 .read(exercisesRepositoryProvider)
@@ -95,11 +101,25 @@ class _FilterSheet extends ConsumerWidget {
   const _FilterSheet();
 
   static const partie = [
-    'Klatka', 'Plecy', 'Barki', 'Biceps', 'Triceps',
-    'Nogi', 'Pośladki', 'Brzuch', 'Cardio', 'Mobilność',
+    'Klatka',
+    'Plecy',
+    'Barki',
+    'Biceps',
+    'Triceps',
+    'Nogi',
+    'Pośladki',
+    'Brzuch',
+    'Cardio',
+    'Mobilność',
   ];
   static const sprzet = [
-    'Masa własna', 'Hantle', 'Ławeczka', 'Drążek', 'Gumy oporowe', 'Bieżnia', 'Skakanka',
+    'Masa własna',
+    'Hantle',
+    'Ławeczka',
+    'Drążek',
+    'Gumy oporowe',
+    'Bieżnia',
+    'Skakanka',
   ];
   static const poziomy = ['Początkujący', 'Średni', 'Zaawansowany'];
 
@@ -169,7 +189,8 @@ class _FilterSheet extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               TextButton(
-                onPressed: () => notifier.update((f) => const ExerciseFilters()),
+                onPressed: () =>
+                    notifier.update((f) => const ExerciseFilters()),
                 child: const Text('Wyczyść filtry'),
               ),
             ],

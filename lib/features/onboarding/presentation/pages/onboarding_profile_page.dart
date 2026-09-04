@@ -22,7 +22,7 @@ class OnboardingProfilePage extends StatefulWidget {
   final double initialWaga;
   final CelTreningowy initialCel;
   final void Function(int wiek, double wzrost, double waga, CelTreningowy cel)
-      onDataChanged;
+  onDataChanged;
 
   @override
   State<OnboardingProfilePage> createState() => _OnboardingProfilePageState();
@@ -38,11 +38,15 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   @override
   void initState() {
     super.initState();
-    _wiekController = TextEditingController(text: widget.initialWiek.toString());
-    _wzrostController =
-        TextEditingController(text: widget.initialWzrost.toStringAsFixed(0));
-    _wagaController =
-        TextEditingController(text: widget.initialWaga.toStringAsFixed(0));
+    _wiekController = TextEditingController(
+      text: widget.initialWiek.toString(),
+    );
+    _wzrostController = TextEditingController(
+      text: widget.initialWzrost.toStringAsFixed(0),
+    );
+    _wagaController = TextEditingController(
+      text: widget.initialWaga.toStringAsFixed(0),
+    );
     _cel = widget.initialCel;
   }
 
@@ -84,18 +88,16 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
               children: [
                 Text(
                   'Twoje dane',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Potrzebujemy tych informacji, aby dopasować kalkulacje i progres',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.grey),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                 ),
                 const SizedBox(height: 28),
                 _buildNumberField(
@@ -118,19 +120,17 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
                 const SizedBox(height: 24),
                 Text(
                   'Twój cel',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<CelTreningowy>(
                   initialValue: _cel,
                   items: CelTreningowy.values
-                      .map((c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(c.label),
-                          ))
+                      .map(
+                        (c) => DropdownMenuItem(value: c, child: Text(c.label)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _cel = v ?? _cel),
                   decoration: const InputDecoration(
@@ -155,10 +155,7 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
     return TextFormField(
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-      ),
+      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return 'To pole jest wymagane';

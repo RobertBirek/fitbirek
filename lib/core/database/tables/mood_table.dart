@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela dziennika samopoczucia - szybki wpis codzienny.
+@DataClassName('MoodEntryData')
 class MoodEntries extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get data => dateTime().withDefault(currentDateAndTime)();

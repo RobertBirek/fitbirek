@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela sesji treningowych.
+@DataClassName('WorkoutSessionData')
 class WorkoutSessions extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get dataStart => dateTime()();
@@ -10,6 +11,7 @@ class WorkoutSessions extends Table {
 }
 
 /// Tabela zalogowanych serii ćwiczeń w ramach sesji treningowej.
+@DataClassName('SetLogData')
 class SetsLog extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get sesjaId =>

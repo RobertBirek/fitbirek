@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela profilu użytkownika - single user (zawsze id=1), bez rejestracji.
+@DataClassName('UserProfileData')
 class UserProfiles extends Table {
   IntColumn get id => integer().withDefault(const Constant(1))();
   TextColumn get imie => text().withDefault(const Constant('Robert'))();

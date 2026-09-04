@@ -1,5 +1,4 @@
 import '../../../../core/database/app_database.dart';
-import '../../../../core/database/tables/prs_table.dart';
 import '../../../../core/utils/pr_detector.dart';
 
 /// Repozytorium rekordów osobistych (PR).

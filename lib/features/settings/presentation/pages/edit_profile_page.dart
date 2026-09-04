@@ -57,7 +57,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                 DropdownButtonFormField<CelTreningowy>(
                   initialValue: _cel,
                   items: CelTreningowy.values
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c.label)))
+                      .map(
+                        (c) => DropdownMenuItem(value: c, child: Text(c.label)),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _cel = v ?? _cel),
                   decoration: const InputDecoration(labelText: 'Cel'),
@@ -70,10 +72,12 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                     await repo.saveProfile(
                       imie: p?.imie ?? 'Robert',
                       wiek: int.tryParse(_wiek.text) ?? p?.wiek ?? 47,
-                      wzrostCm: double.tryParse(_wzrost.text) ?? p?.wzrostCm ?? 180,
+                      wzrostCm:
+                          double.tryParse(_wzrost.text) ?? p?.wzrostCm ?? 180,
                       wagaKg: double.tryParse(_waga.text) ?? p?.wagaKg ?? 94,
                       cel: _cel,
-                      dostepnySprzet: p?.dostepnySprzet ?? const ['Masa własna'],
+                      dostepnySprzet:
+                          p?.dostepnySprzet ?? const ['Masa własna'],
                     );
                     if (context.mounted) Navigator.of(context).pop();
                   },

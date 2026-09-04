@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
-import '../../../core/database/tables/exercises_table.dart';
 import '../../../core/models/exercise.dart';
 
 /// Repozytorium bazy ćwiczeń - odpowiada za import startowy z JSON
@@ -21,8 +20,9 @@ class ExercisesRepository {
     final currentCount = await _db.exercisesDao.count();
     if (currentCount > 0) return;
 
-    final jsonString =
-        await rootBundle.loadString('assets/data/exercises.json');
+    final jsonString = await rootBundle.loadString(
+      'assets/data/exercises.json',
+    );
     final List<dynamic> data = jsonDecode(jsonString);
 
     final rows = data.map((raw) {
@@ -74,9 +74,9 @@ class ExercisesRepository {
   }
 
   Stream<List<Exercise>> watchAll() {
-    return _db.exercisesDao
-        .watchAll()
-        .map((rows) => rows.map(_mapRowToModel).toList());
+    return _db.exercisesDao.watchAll().map(
+      (rows) => rows.map(_mapRowToModel).toList(),
+    );
   }
 
   Future<Exercise?> getById(String id) async {

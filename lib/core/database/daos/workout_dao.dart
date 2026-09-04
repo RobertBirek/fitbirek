@@ -5,15 +5,18 @@ import '../tables/workout_tables.dart';
 part 'workout_dao.g.dart';
 
 @DriftAccessor(tables: [WorkoutSessions, SetsLog])
-class WorkoutDao extends DatabaseAccessor<AppDatabase>
-    with _$WorkoutDaoMixin {
+class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
   WorkoutDao(super.db);
 
   Future<int> createSession(WorkoutSessionsCompanion session) {
     return into(workoutSessions).insert(session);
   }
 
-  Future<void> finishSession(int id, DateTime dataKoniec, int czasTrwaniaSekund) {
+  Future<void> finishSession(
+    int id,
+    DateTime dataKoniec,
+    int czasTrwaniaSekund,
+  ) {
     return (update(workoutSessions)..where((t) => t.id.equals(id))).write(
       WorkoutSessionsCompanion(
         dataKoniec: Value(dataKoniec),
@@ -27,15 +30,15 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase>
   }
 
   Stream<List<WorkoutSessionData>> watchAllSessions() {
-    return (select(workoutSessions)
-          ..orderBy([(t) => OrderingTerm.desc(t.dataStart)]))
-        .watch();
+    return (select(
+      workoutSessions,
+    )..orderBy([(t) => OrderingTerm.desc(t.dataStart)])).watch();
   }
 
   Future<List<WorkoutSessionData>> getAllSessionsSorted() async {
-    final rows = await (select(workoutSessions)
-          ..orderBy([(t) => OrderingTerm.desc(t.dataStart)]))
-        .get();
+    final rows = await (select(
+      workoutSessions,
+    )..orderBy([(t) => OrderingTerm.desc(t.dataStart)])).get();
     return rows;
   }
 
@@ -55,8 +58,9 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase>
 
   /// Zwraca wszystkie serie danego ćwiczenia (do wykrywania PR).
   Future<List<SetLogData>> getAllSetsForExercise(String exerciseId) {
-    return (select(setsLog)..where((t) => t.cwiczenieId.equals(exerciseId)))
-        .get();
+    return (select(
+      setsLog,
+    )..where((t) => t.cwiczenieId.equals(exerciseId))).get();
   }
 
   Future<List<SetLogData>> getAllSets() => select(setsLog).get();

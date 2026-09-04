@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/database/app_database.dart';
-import '../../../core/database/tables/user_profile_table.dart';
 import '../../../core/models/user_profile.dart';
 import '../../../core/providers/database_provider.dart';
 
@@ -28,7 +27,9 @@ class UserProfileRepository {
   }
 
   Stream<UserProfile?> watchProfile() {
-    return _db.userProfileDao.watchProfile().map((row) => row == null ? null : _mapRow(row));
+    return _db.userProfileDao.watchProfile().map(
+      (row) => row == null ? null : _mapRow(row),
+    );
   }
 
   Future<UserProfile?> getProfileOnce() async {

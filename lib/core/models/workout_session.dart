@@ -19,8 +19,7 @@ class SetLog with _$SetLog {
     required DateTime timestamp,
   }) = _SetLog;
 
-  factory SetLog.fromJson(Map<String, dynamic> json) =>
-      _$SetLogFromJson(json);
+  factory SetLog.fromJson(Map<String, dynamic> json) => _$SetLogFromJson(json);
 }
 
 /// Sesja treningowa - jeden trening złożony z wielu serii.

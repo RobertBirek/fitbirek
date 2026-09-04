@@ -4,13 +4,7 @@ part 'user_profile.freezed.dart';
 part 'user_profile.g.dart';
 
 /// Cel treningowy użytkownika.
-enum CelTreningowy {
-  redukcja,
-  sila,
-  masa,
-  kondycja,
-  mix,
-}
+enum CelTreningowy { redukcja, sila, masa, kondycja, mix }
 
 extension CelTreningowyLabel on CelTreningowy {
   String get label {

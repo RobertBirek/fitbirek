@@ -60,18 +60,16 @@ class _OnboardingEquipmentPageState extends State<OnboardingEquipmentPage> {
             children: [
               Text(
                 'Twój sprzęt',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Zaznacz czym dysponujesz w domu - baza ćwiczeń dopasuje się do Ciebie',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.grey),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
               const SizedBox(height: 24),
               Expanded(
@@ -94,7 +92,9 @@ class _OnboardingEquipmentPageState extends State<OnboardingEquipmentPage> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 14),
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? FitBirekColors.accent.withValues(alpha: 0.15)

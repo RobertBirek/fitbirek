@@ -32,7 +32,16 @@ class AppConstants {
     'Mobilność',
   ];
 
-  static const List<String> poziomyOpcje = ['Początkujący', 'Średni', 'Zaawansowany'];
+  static const List<String> poziomyOpcje = [
+    'Początkujący',
+    'Średni',
+    'Zaawansowany',
+  ];
 
-  static const List<String> typyOpcje = ['Siłowe', 'Cardio', 'Izometryczne', 'Mobilność'];
+  static const List<String> typyOpcje = [
+    'Siłowe',
+    'Cardio',
+    'Izometryczne',
+    'Mobilność',
+  ];
 }

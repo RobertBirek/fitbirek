@@ -13,20 +13,21 @@ class MoodDao extends DatabaseAccessor<AppDatabase> with _$MoodDaoMixin {
   }
 
   Stream<List<MoodEntryData>> watchAll() {
-    return (select(moodEntries)
-          ..orderBy([(t) => OrderingTerm.desc(t.data)]))
-        .watch();
+    return (select(
+      moodEntries,
+    )..orderBy([(t) => OrderingTerm.desc(t.data)])).watch();
   }
 
   /// Wpis z dzisiejszego dnia (jeśli istnieje) - do sprawdzenia czy user już wypełnił.
   Future<MoodEntryData?> getTodayEntry() async {
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
-    final rows = await (select(moodEntries)
-          ..where((t) => t.data.isBiggerOrEqualValue(startOfDay))
-          ..orderBy([(t) => OrderingTerm.desc(t.data)])
-          ..limit(1))
-        .get();
+    final rows =
+        await (select(moodEntries)
+              ..where((t) => t.data.isBiggerOrEqualValue(startOfDay))
+              ..orderBy([(t) => OrderingTerm.desc(t.data)])
+              ..limit(1))
+            .get();
     return rows.isEmpty ? null : rows.first;
   }
 }

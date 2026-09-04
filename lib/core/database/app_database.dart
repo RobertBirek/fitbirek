@@ -1,9 +1,6 @@
-import 'dart:io';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
+import 'connection/connection.dart';
 import 'tables/user_profile_table.dart';
 import 'tables/exercises_table.dart';
 import 'tables/workout_tables.dart';
@@ -50,19 +47,11 @@ part 'app_database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : super(openConnection());
 
   // Konstruktor testowy - pozwala wstrzyknąć własne połączenie (np. in-memory).
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  AppDatabase.forTesting(super.e);
 
   @override
   int get schemaVersion => 1;
-}
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'fitbirek.sqlite'));
-    return NativeDatabase.createInBackground(file);
-  });
 }

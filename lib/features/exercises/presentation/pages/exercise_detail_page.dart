@@ -19,7 +19,9 @@ class ExerciseDetailPage extends ConsumerWidget {
       data: (list) {
         final ex = list.where((e) => e.id == exerciseId).firstOrNull;
         if (ex == null) {
-          return const Scaffold(body: Center(child: Text('Ćwiczenie nie znalezione')));
+          return const Scaffold(
+            body: Center(child: Text('Ćwiczenie nie znalezione')),
+          );
         }
         return Scaffold(
           appBar: AppBar(
@@ -40,11 +42,14 @@ class ExerciseDetailPage extends ConsumerWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Wrap(spacing: 8, children: [
-                  Chip(label: Text(ex.partiaGlowna)),
-                  Chip(label: Text(ex.poziom)),
-                  Chip(label: Text(ex.typ)),
-                ]),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    Chip(label: Text(ex.partiaGlowna)),
+                    Chip(label: Text(ex.poziom)),
+                    Chip(label: Text(ex.typ)),
+                  ],
+                ),
                 const SizedBox(height: 16),
                 _section('Seria x powtórzenia', ex.seriexPowtorzenia),
                 _section('Tempo', ex.tempo),
@@ -71,7 +76,8 @@ class ExerciseDetailPage extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, st) => Scaffold(body: Center(child: Text('Błąd: $e'))),
     );
   }
@@ -82,7 +88,13 @@ class ExerciseDetailPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, color: FitBirekColors.accent)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: FitBirekColors.accent,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(value),
         ],
@@ -96,18 +108,26 @@ class ExerciseDetailPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, color: FitBirekColors.accent)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              color: FitBirekColors.accent,
+            ),
+          ),
           const SizedBox(height: 6),
-          ...items.map((i) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('•  '),
-                    Expanded(child: Text(i)),
-                  ],
-                ),
-              )),
+          ...items.map(
+            (i) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('•  '),
+                  Expanded(child: Text(i)),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

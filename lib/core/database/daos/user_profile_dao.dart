@@ -11,13 +11,15 @@ class UserProfileDao extends DatabaseAccessor<AppDatabase>
 
   /// Zawsze mamy jednego użytkownika (id=1) - single user app.
   Future<UserProfileData?> watchProfileOnce() {
-    return (select(userProfiles)..where((t) => t.id.equals(1)))
-        .getSingleOrNull();
+    return (select(
+      userProfiles,
+    )..where((t) => t.id.equals(1))).getSingleOrNull();
   }
 
   Stream<UserProfileData?> watchProfile() {
-    return (select(userProfiles)..where((t) => t.id.equals(1)))
-        .watchSingleOrNull();
+    return (select(
+      userProfiles,
+    )..where((t) => t.id.equals(1))).watchSingleOrNull();
   }
 
   Future<void> upsertProfile(UserProfilesCompanion profile) {

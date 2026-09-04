@@ -19,12 +19,15 @@ class ExercisesDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<void> insertAll(List<ExercisesCompanion> rows) {
-    return batch((b) => b.insertAll(exercises, rows, mode: InsertMode.insertOrIgnore));
+    return batch(
+      (b) => b.insertAll(exercises, rows, mode: InsertMode.insertOrIgnore),
+    );
   }
 
   Future<void> toggleFavorite(String id, bool value) {
-    return (update(exercises)..where((t) => t.id.equals(id)))
-        .write(ExercisesCompanion(ulubione: Value(value)));
+    return (update(exercises)..where((t) => t.id.equals(id))).write(
+      ExercisesCompanion(ulubione: Value(value)),
+    );
   }
 
   Future<ExerciseData?> getById(String id) {

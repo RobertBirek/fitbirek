@@ -13,18 +13,19 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
   }
 
   Stream<List<PersonalRecordData>> watchAll() {
-    return (select(personalRecords)
-          ..orderBy([(t) => OrderingTerm.desc(t.data)]))
-        .watch();
+    return (select(
+      personalRecords,
+    )..orderBy([(t) => OrderingTerm.desc(t.data)])).watch();
   }
 
   /// Najlepszy dotychczasowy PR (po szacowanym 1RM) dla danego ćwiczenia.
   Future<PersonalRecordData?> getBestForExercise(String exerciseId) async {
-    final rows = await (select(personalRecords)
-          ..where((t) => t.cwiczenieId.equals(exerciseId))
-          ..orderBy([(t) => OrderingTerm.desc(t.szacowane1Rm)])
-          ..limit(1))
-        .get();
+    final rows =
+        await (select(personalRecords)
+              ..where((t) => t.cwiczenieId.equals(exerciseId))
+              ..orderBy([(t) => OrderingTerm.desc(t.szacowane1Rm)])
+              ..limit(1))
+            .get();
     return rows.isEmpty ? null : rows.first;
   }
 

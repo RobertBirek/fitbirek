@@ -4,11 +4,7 @@ import '../../app/theme.dart';
 /// Suwak RPE (Rate of Perceived Exertion) 1-10 - subiektywna ocena
 /// intensywności wykonanej serii. Kolor zmienia się wraz z wartością.
 class RpeSlider extends StatelessWidget {
-  const RpeSlider({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
+  const RpeSlider({super.key, required this.value, required this.onChanged});
 
   final int value;
   final ValueChanged<int> onChanged;
@@ -40,16 +36,19 @@ class RpeSlider extends StatelessWidget {
               ),
               child: Text(
                 '$value/10',
-                style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 16),
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                ),
               ),
             ),
           ],
         ),
         SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: color,
-            thumbColor: color,
-          ),
+          data: SliderTheme.of(
+            context,
+          ).copyWith(activeTrackColor: color, thumbColor: color),
           child: Slider(
             value: value.toDouble(),
             min: 1,

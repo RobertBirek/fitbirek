@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela bazy ćwiczeń - importowana z assets/data/exercises.json przy pierwszym starcie.
+@DataClassName('ExerciseData')
 class Exercises extends Table {
   TextColumn get id => text()();
   TextColumn get nazwaPl => text()();

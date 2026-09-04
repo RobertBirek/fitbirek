@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela szablonów planów treningowych (generator planu - funkcja premium).
+@DataClassName('WorkoutPlanData')
 class WorkoutPlans extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get nazwa => text()();

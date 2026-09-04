@@ -9,12 +9,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pl_PL');
 
-  runApp(
-    ProviderScope(
-      overrides: const [],
-      child: const _AppBootstrap(),
-    ),
-  );
+  runApp(ProviderScope(overrides: const [], child: const _AppBootstrap()));
 }
 
 /// Wrapper inicjalizujący import bazy ćwiczeń z assets przy pierwszym starcie.

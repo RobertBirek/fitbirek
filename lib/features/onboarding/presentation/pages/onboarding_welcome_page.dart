@@ -34,25 +34,25 @@ class OnboardingWelcomePage extends StatelessWidget {
               const SizedBox(height: 32),
               Text(
                 'FitBirek',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w800),
               ).animate().fadeIn(delay: 200.ms, duration: 400.ms),
               const SizedBox(height: 12),
               Text(
                 'Twój osobisty asystent treningowy',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(color: Colors.grey),
               ).animate().fadeIn(delay: 350.ms, duration: 400.ms),
               const SizedBox(height: 8),
               Text(
                 'Baza ćwiczeń, dziennik treningowy, postępy\ni plany dopasowane do treningu w domu',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ).animate().fadeIn(delay: 500.ms, duration: 400.ms),
               const Spacer(flex: 3),
               PrimaryButton(

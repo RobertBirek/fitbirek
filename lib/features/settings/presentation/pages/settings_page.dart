@@ -47,9 +47,18 @@ class SettingsPage extends ConsumerWidget {
               trailing: DropdownButton<ThemeMode>(
                 value: settings.themeMode,
                 items: const [
-                  DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
-                  DropdownMenuItem(value: ThemeMode.dark, child: Text('Ciemny')),
-                  DropdownMenuItem(value: ThemeMode.light, child: Text('Jasny')),
+                  DropdownMenuItem(
+                    value: ThemeMode.system,
+                    child: Text('System'),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.dark,
+                    child: Text('Ciemny'),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.light,
+                    child: Text('Jasny'),
+                  ),
                 ],
                 onChanged: (m) => m != null ? notifier.setThemeMode(m) : null,
               ),
@@ -80,7 +89,8 @@ class SettingsPage extends ConsumerWidget {
               leading: const Icon(Icons.info_outline),
               title: const Text('O aplikacji'),
               subtitle: Text(
-                  '${AppConstants.appName} v${AppConstants.appVersion}\nAutor: ${AppConstants.author}'),
+                '${AppConstants.appName} v${AppConstants.appVersion}\nAutor: ${AppConstants.author}',
+              ),
             ),
           ],
         ),

@@ -93,8 +93,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
 
   void removeExercise(String exerciseId) {
     state = state.copyWith(
-      selectedExercises:
-          state.selectedExercises.where((e) => e.id != exerciseId).toList(),
+      selectedExercises: state.selectedExercises
+          .where((e) => e.id != exerciseId)
+          .toList(),
     );
   }
 
@@ -109,10 +110,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     if (state.sessionId == null) return false;
     final repo = _ref.read(workoutRepositoryProvider);
 
-    final setNumber = state.loggedSets
-            .where((s) => s.exerciseId == exercise.id)
-            .length +
-        1;
+    final setNumber =
+        state.loggedSets.where((s) => s.exerciseId == exercise.id).length + 1;
 
     await repo.logSet(
       sessionId: state.sessionId!,
@@ -177,8 +176,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
 
 final activeWorkoutProvider =
     StateNotifierProvider<ActiveWorkoutNotifier, ActiveWorkoutState>((ref) {
-  return ActiveWorkoutNotifier(ref);
-});
+      return ActiveWorkoutNotifier(ref);
+    });
 
 final allSessionsProvider = StreamProvider<List<WorkoutSessionData>>((ref) {
   final repo = ref.watch(workoutRepositoryProvider);

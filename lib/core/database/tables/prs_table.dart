@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela rekordów osobistych (PR) - auto-wykrywane podczas sesji treningowej.
+@DataClassName('PersonalRecordData')
 class PersonalRecords extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get cwiczenieId => text()();

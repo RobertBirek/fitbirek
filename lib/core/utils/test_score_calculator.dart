@@ -34,7 +34,11 @@ class TestScoreCalculator {
   }
 
   /// Liniowe skalowanie wyniku do zakresu 0-100 na podstawie progów low/high.
-  static int _scoreFromRange(double value, {required double low, required double high}) {
+  static int _scoreFromRange(
+    double value, {
+    required double low,
+    required double high,
+  }) {
     if (high == low) return 0;
     final ratio = (value - low) / (high - low);
     final clamped = ratio.clamp(0.0, 1.0);

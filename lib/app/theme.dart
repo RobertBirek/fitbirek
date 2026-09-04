@@ -45,7 +45,9 @@ class FitBirekThemeExtension extends ThemeExtension<FitBirekThemeExtension> {
 
   @override
   FitBirekThemeExtension lerp(
-      ThemeExtension<FitBirekThemeExtension>? other, double t) {
+    ThemeExtension<FitBirekThemeExtension>? other,
+    double t,
+  ) {
     if (other is! FitBirekThemeExtension) return this;
     return FitBirekThemeExtension(
       success: Color.lerp(success, other.success, t)!,
@@ -104,7 +106,9 @@ class FitBirekTheme {
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -112,7 +116,9 @@ class FitBirekTheme {
           foregroundColor: FitBirekColors.accent,
           side: const BorderSide(color: FitBirekColors.accent, width: 1.5),
           minimumSize: const Size.fromHeight(56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -125,8 +131,10 @@ class FitBirekTheme {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: FitBirekColors.darkSurfaceVariant,
@@ -189,7 +197,9 @@ class FitBirekTheme {
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
       extensions: const [

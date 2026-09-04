@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/models/user_profile.dart';
 import '../../../../core/utils/bmr_calculator.dart';
 import '../../../onboarding/providers/user_profile_provider.dart';
 
@@ -15,20 +16,34 @@ class CalculatorPage extends ConsumerWidget {
       body: profileAsync.when(
         data: (p) {
           if (p == null) {
-            return const Center(child: Text('Uzupełnij profil, aby zobaczyć wyliczenia'));
+            return const Center(
+              child: Text('Uzupełnij profil, aby zobaczyć wyliczenia'),
+            );
           }
           final result = BmrCalculator.calculateFull(p);
           return SafeArea(
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _row('BMR (spoczynkowe)', '${result.bmr.toStringAsFixed(0)} kcal'),
-                _row('TDEE (całkowite)', '${result.tdee.toStringAsFixed(0)} kcal'),
-                _row('Cel kaloryczny (${p.cel.label})', '${result.celKalorii.toStringAsFixed(0)} kcal'),
+                _row(
+                  'BMR (spoczynkowe)',
+                  '${result.bmr.toStringAsFixed(0)} kcal',
+                ),
+                _row(
+                  'TDEE (całkowite)',
+                  '${result.tdee.toStringAsFixed(0)} kcal',
+                ),
+                _row(
+                  'Cel kaloryczny (${p.cel.label})',
+                  '${result.celKalorii.toStringAsFixed(0)} kcal',
+                ),
                 const Divider(height: 32),
                 _row('Białko', '${result.bialkoG.toStringAsFixed(0)} g'),
                 _row('Tłuszcz', '${result.tluszczG.toStringAsFixed(0)} g'),
-                _row('Węglowodany', '${result.weglowodanyG.toStringAsFixed(0)} g'),
+                _row(
+                  'Węglowodany',
+                  '${result.weglowodanyG.toStringAsFixed(0)} g',
+                ),
               ],
             ),
           );
@@ -40,13 +55,13 @@ class CalculatorPage extends ConsumerWidget {
   }
 
   Widget _row(String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
-          ],
-        ),
-      );
+    padding: const EdgeInsets.symmetric(vertical: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label),
+        Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
+      ],
+    ),
+  );
 }

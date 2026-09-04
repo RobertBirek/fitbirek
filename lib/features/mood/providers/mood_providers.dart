@@ -8,7 +8,9 @@ final moodRepositoryProvider = Provider<MoodRepository>((ref) {
   return MoodRepository(db);
 });
 
-final todayMoodEntryProvider = FutureProvider.autoDispose<MoodEntryData?>((ref) {
+final todayMoodEntryProvider = FutureProvider.autoDispose<MoodEntryData?>((
+  ref,
+) {
   final repo = ref.watch(moodRepositoryProvider);
   return repo.getTodayEntry();
 });

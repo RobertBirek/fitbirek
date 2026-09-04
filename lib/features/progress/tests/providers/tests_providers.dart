@@ -8,7 +8,9 @@ final testsRepositoryProvider = Provider<TestsRepository>((ref) {
   return TestsRepository(db);
 });
 
-final allTestResultsProvider = StreamProvider<List<FitnessTestResultData>>((ref) {
+final allTestResultsProvider = StreamProvider<List<FitnessTestResultData>>((
+  ref,
+) {
   final repo = ref.watch(testsRepositoryProvider);
   return repo.watchAll();
 });

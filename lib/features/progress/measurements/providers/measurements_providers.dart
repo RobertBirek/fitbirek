@@ -13,7 +13,9 @@ final allMeasurementsProvider = StreamProvider<List<MeasurementData>>((ref) {
   return repo.watchAll();
 });
 
-final latestMeasurementProvider = FutureProvider.autoDispose<MeasurementData?>((ref) {
+final latestMeasurementProvider = FutureProvider.autoDispose<MeasurementData?>((
+  ref,
+) {
   final repo = ref.watch(measurementsRepositoryProvider);
   return repo.getLatest();
 });

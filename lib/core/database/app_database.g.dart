@@ -4,7 +4,7 @@ part of 'app_database.dart';
 
 // ignore_for_file: type=lint
 class $UserProfilesTable extends UserProfiles
-    with TableInfo<$UserProfilesTable, UserProfile> {
+    with TableInfo<$UserProfilesTable, UserProfileData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -124,7 +124,7 @@ class $UserProfilesTable extends UserProfiles
   static const String $name = 'user_profiles';
   @override
   VerificationContext validateIntegrity(
-    Insertable<UserProfile> instance, {
+    Insertable<UserProfileData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -205,9 +205,9 @@ class $UserProfilesTable extends UserProfiles
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  UserProfile map(Map<String, dynamic> data, {String? tablePrefix}) {
+  UserProfileData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return UserProfile(
+    return UserProfileData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -253,7 +253,7 @@ class $UserProfilesTable extends UserProfiles
   }
 }
 
-class UserProfile extends DataClass implements Insertable<UserProfile> {
+class UserProfileData extends DataClass implements Insertable<UserProfileData> {
   final int id;
   final String imie;
   final int wiek;
@@ -263,7 +263,7 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
   final String dostepnySprzet;
   final bool onboardingZakonczony;
   final DateTime dataUtworzenia;
-  const UserProfile({
+  const UserProfileData({
     required this.id,
     required this.imie,
     required this.wiek,
@@ -303,12 +303,12 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     );
   }
 
-  factory UserProfile.fromJson(
+  factory UserProfileData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return UserProfile(
+    return UserProfileData(
       id: serializer.fromJson<int>(json['id']),
       imie: serializer.fromJson<String>(json['imie']),
       wiek: serializer.fromJson<int>(json['wiek']),
@@ -338,7 +338,7 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     };
   }
 
-  UserProfile copyWith({
+  UserProfileData copyWith({
     int? id,
     String? imie,
     int? wiek,
@@ -348,7 +348,7 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     String? dostepnySprzet,
     bool? onboardingZakonczony,
     DateTime? dataUtworzenia,
-  }) => UserProfile(
+  }) => UserProfileData(
     id: id ?? this.id,
     imie: imie ?? this.imie,
     wiek: wiek ?? this.wiek,
@@ -359,8 +359,8 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
     onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
     dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
   );
-  UserProfile copyWithCompanion(UserProfilesCompanion data) {
-    return UserProfile(
+  UserProfileData copyWithCompanion(UserProfilesCompanion data) {
+    return UserProfileData(
       id: data.id.present ? data.id.value : this.id,
       imie: data.imie.present ? data.imie.value : this.imie,
       wiek: data.wiek.present ? data.wiek.value : this.wiek,
@@ -381,7 +381,7 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
 
   @override
   String toString() {
-    return (StringBuffer('UserProfile(')
+    return (StringBuffer('UserProfileData(')
           ..write('id: $id, ')
           ..write('imie: $imie, ')
           ..write('wiek: $wiek, ')
@@ -410,7 +410,7 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is UserProfile &&
+      (other is UserProfileData &&
           other.id == this.id &&
           other.imie == this.imie &&
           other.wiek == this.wiek &&
@@ -422,7 +422,7 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           other.dataUtworzenia == this.dataUtworzenia);
 }
 
-class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
+class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
   final Value<int> id;
   final Value<String> imie;
   final Value<int> wiek;
@@ -458,7 +458,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
        wagaKg = Value(wagaKg),
        cel = Value(cel),
        dostepnySprzet = Value(dostepnySprzet);
-  static Insertable<UserProfile> custom({
+  static Insertable<UserProfileData> custom({
     Expression<int>? id,
     Expression<String>? imie,
     Expression<int>? wiek,
@@ -558,7 +558,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
 }
 
 class $ExercisesTable extends Exercises
-    with TableInfo<$ExercisesTable, Exercise> {
+    with TableInfo<$ExercisesTable, ExerciseData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -772,7 +772,7 @@ class $ExercisesTable extends Exercises
   static const String $name = 'exercises';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Exercise> instance, {
+    Insertable<ExerciseData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -932,9 +932,9 @@ class $ExercisesTable extends Exercises
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Exercise map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ExerciseData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Exercise(
+    return ExerciseData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -1012,7 +1012,7 @@ class $ExercisesTable extends Exercises
   }
 }
 
-class Exercise extends DataClass implements Insertable<Exercise> {
+class ExerciseData extends DataClass implements Insertable<ExerciseData> {
   final String id;
   final String nazwaPl;
   final String nazwaEn;
@@ -1030,7 +1030,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   final String regresja;
   final String zrodlo;
   final bool ulubione;
-  const Exercise({
+  const ExerciseData({
     required this.id,
     required this.nazwaPl,
     required this.nazwaEn,
@@ -1094,12 +1094,12 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     );
   }
 
-  factory Exercise.fromJson(
+  factory ExerciseData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Exercise(
+    return ExerciseData(
       id: serializer.fromJson<String>(json['id']),
       nazwaPl: serializer.fromJson<String>(json['nazwaPl']),
       nazwaEn: serializer.fromJson<String>(json['nazwaEn']),
@@ -1143,7 +1143,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     };
   }
 
-  Exercise copyWith({
+  ExerciseData copyWith({
     String? id,
     String? nazwaPl,
     String? nazwaEn,
@@ -1161,7 +1161,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     String? regresja,
     String? zrodlo,
     bool? ulubione,
-  }) => Exercise(
+  }) => ExerciseData(
     id: id ?? this.id,
     nazwaPl: nazwaPl ?? this.nazwaPl,
     nazwaEn: nazwaEn ?? this.nazwaEn,
@@ -1180,8 +1180,8 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     zrodlo: zrodlo ?? this.zrodlo,
     ulubione: ulubione ?? this.ulubione,
   );
-  Exercise copyWithCompanion(ExercisesCompanion data) {
-    return Exercise(
+  ExerciseData copyWithCompanion(ExercisesCompanion data) {
+    return ExerciseData(
       id: data.id.present ? data.id.value : this.id,
       nazwaPl: data.nazwaPl.present ? data.nazwaPl.value : this.nazwaPl,
       nazwaEn: data.nazwaEn.present ? data.nazwaEn.value : this.nazwaEn,
@@ -1216,7 +1216,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
 
   @override
   String toString() {
-    return (StringBuffer('Exercise(')
+    return (StringBuffer('ExerciseData(')
           ..write('id: $id, ')
           ..write('nazwaPl: $nazwaPl, ')
           ..write('nazwaEn: $nazwaEn, ')
@@ -1261,7 +1261,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Exercise &&
+      (other is ExerciseData &&
           other.id == this.id &&
           other.nazwaPl == this.nazwaPl &&
           other.nazwaEn == this.nazwaEn &&
@@ -1281,7 +1281,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           other.ulubione == this.ulubione);
 }
 
-class ExercisesCompanion extends UpdateCompanion<Exercise> {
+class ExercisesCompanion extends UpdateCompanion<ExerciseData> {
   final Value<String> id;
   final Value<String> nazwaPl;
   final Value<String> nazwaEn;
@@ -1355,7 +1355,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
        progresja = Value(progresja),
        regresja = Value(regresja),
        zrodlo = Value(zrodlo);
-  static Insertable<Exercise> custom({
+  static Insertable<ExerciseData> custom({
     Expression<String>? id,
     Expression<String>? nazwaPl,
     Expression<String>? nazwaEn,
@@ -1526,7 +1526,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
 }
 
 class $WorkoutSessionsTable extends WorkoutSessions
-    with TableInfo<$WorkoutSessionsTable, WorkoutSession> {
+    with TableInfo<$WorkoutSessionsTable, WorkoutSessionData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1604,7 +1604,7 @@ class $WorkoutSessionsTable extends WorkoutSessions
   static const String $name = 'workout_sessions';
   @override
   VerificationContext validateIntegrity(
-    Insertable<WorkoutSession> instance, {
+    Insertable<WorkoutSessionData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1647,9 +1647,9 @@ class $WorkoutSessionsTable extends WorkoutSessions
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  WorkoutSession map(Map<String, dynamic> data, {String? tablePrefix}) {
+  WorkoutSessionData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return WorkoutSession(
+    return WorkoutSessionData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -1679,13 +1679,14 @@ class $WorkoutSessionsTable extends WorkoutSessions
   }
 }
 
-class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
+class WorkoutSessionData extends DataClass
+    implements Insertable<WorkoutSessionData> {
   final int id;
   final DateTime dataStart;
   final DateTime? dataKoniec;
   final int czasTrwaniaSekund;
   final String? notatka;
-  const WorkoutSession({
+  const WorkoutSessionData({
     required this.id,
     required this.dataStart,
     this.dataKoniec,
@@ -1721,12 +1722,12 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     );
   }
 
-  factory WorkoutSession.fromJson(
+  factory WorkoutSessionData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return WorkoutSession(
+    return WorkoutSessionData(
       id: serializer.fromJson<int>(json['id']),
       dataStart: serializer.fromJson<DateTime>(json['dataStart']),
       dataKoniec: serializer.fromJson<DateTime?>(json['dataKoniec']),
@@ -1746,21 +1747,21 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
     };
   }
 
-  WorkoutSession copyWith({
+  WorkoutSessionData copyWith({
     int? id,
     DateTime? dataStart,
     Value<DateTime?> dataKoniec = const Value.absent(),
     int? czasTrwaniaSekund,
     Value<String?> notatka = const Value.absent(),
-  }) => WorkoutSession(
+  }) => WorkoutSessionData(
     id: id ?? this.id,
     dataStart: dataStart ?? this.dataStart,
     dataKoniec: dataKoniec.present ? dataKoniec.value : this.dataKoniec,
     czasTrwaniaSekund: czasTrwaniaSekund ?? this.czasTrwaniaSekund,
     notatka: notatka.present ? notatka.value : this.notatka,
   );
-  WorkoutSession copyWithCompanion(WorkoutSessionsCompanion data) {
-    return WorkoutSession(
+  WorkoutSessionData copyWithCompanion(WorkoutSessionsCompanion data) {
+    return WorkoutSessionData(
       id: data.id.present ? data.id.value : this.id,
       dataStart: data.dataStart.present ? data.dataStart.value : this.dataStart,
       dataKoniec: data.dataKoniec.present
@@ -1775,7 +1776,7 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
 
   @override
   String toString() {
-    return (StringBuffer('WorkoutSession(')
+    return (StringBuffer('WorkoutSessionData(')
           ..write('id: $id, ')
           ..write('dataStart: $dataStart, ')
           ..write('dataKoniec: $dataKoniec, ')
@@ -1791,7 +1792,7 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is WorkoutSession &&
+      (other is WorkoutSessionData &&
           other.id == this.id &&
           other.dataStart == this.dataStart &&
           other.dataKoniec == this.dataKoniec &&
@@ -1799,7 +1800,7 @@ class WorkoutSession extends DataClass implements Insertable<WorkoutSession> {
           other.notatka == this.notatka);
 }
 
-class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
+class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSessionData> {
   final Value<int> id;
   final Value<DateTime> dataStart;
   final Value<DateTime?> dataKoniec;
@@ -1819,7 +1820,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
     this.czasTrwaniaSekund = const Value.absent(),
     this.notatka = const Value.absent(),
   }) : dataStart = Value(dataStart);
-  static Insertable<WorkoutSession> custom({
+  static Insertable<WorkoutSessionData> custom({
     Expression<int>? id,
     Expression<DateTime>? dataStart,
     Expression<DateTime>? dataKoniec,
@@ -1885,7 +1886,7 @@ class WorkoutSessionsCompanion extends UpdateCompanion<WorkoutSession> {
   }
 }
 
-class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetsLogData> {
+class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -2024,7 +2025,7 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetsLogData> {
   static const String $name = 'sets_log';
   @override
   VerificationContext validateIntegrity(
-    Insertable<SetsLogData> instance, {
+    Insertable<SetLogData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -2109,9 +2110,9 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetsLogData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  SetsLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SetLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SetsLogData(
+    return SetLogData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -2161,7 +2162,7 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetsLogData> {
   }
 }
 
-class SetsLogData extends DataClass implements Insertable<SetsLogData> {
+class SetLogData extends DataClass implements Insertable<SetLogData> {
   final int id;
   final int sesjaId;
   final String cwiczenieId;
@@ -2172,7 +2173,7 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
   final int? czasSekund;
   final int? rpe;
   final DateTime timestamp;
-  const SetsLogData({
+  const SetLogData({
     required this.id,
     required this.sesjaId,
     required this.cwiczenieId,
@@ -2229,12 +2230,12 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
     );
   }
 
-  factory SetsLogData.fromJson(
+  factory SetLogData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SetsLogData(
+    return SetLogData(
       id: serializer.fromJson<int>(json['id']),
       sesjaId: serializer.fromJson<int>(json['sesjaId']),
       cwiczenieId: serializer.fromJson<String>(json['cwiczenieId']),
@@ -2264,7 +2265,7 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
     };
   }
 
-  SetsLogData copyWith({
+  SetLogData copyWith({
     int? id,
     int? sesjaId,
     String? cwiczenieId,
@@ -2275,7 +2276,7 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
     Value<int?> czasSekund = const Value.absent(),
     Value<int?> rpe = const Value.absent(),
     DateTime? timestamp,
-  }) => SetsLogData(
+  }) => SetLogData(
     id: id ?? this.id,
     sesjaId: sesjaId ?? this.sesjaId,
     cwiczenieId: cwiczenieId ?? this.cwiczenieId,
@@ -2287,8 +2288,8 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
     rpe: rpe.present ? rpe.value : this.rpe,
     timestamp: timestamp ?? this.timestamp,
   );
-  SetsLogData copyWithCompanion(SetsLogCompanion data) {
-    return SetsLogData(
+  SetLogData copyWithCompanion(SetsLogCompanion data) {
+    return SetLogData(
       id: data.id.present ? data.id.value : this.id,
       sesjaId: data.sesjaId.present ? data.sesjaId.value : this.sesjaId,
       cwiczenieId: data.cwiczenieId.present
@@ -2314,7 +2315,7 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
 
   @override
   String toString() {
-    return (StringBuffer('SetsLogData(')
+    return (StringBuffer('SetLogData(')
           ..write('id: $id, ')
           ..write('sesjaId: $sesjaId, ')
           ..write('cwiczenieId: $cwiczenieId, ')
@@ -2345,7 +2346,7 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is SetsLogData &&
+      (other is SetLogData &&
           other.id == this.id &&
           other.sesjaId == this.sesjaId &&
           other.cwiczenieId == this.cwiczenieId &&
@@ -2358,7 +2359,7 @@ class SetsLogData extends DataClass implements Insertable<SetsLogData> {
           other.timestamp == this.timestamp);
 }
 
-class SetsLogCompanion extends UpdateCompanion<SetsLogData> {
+class SetsLogCompanion extends UpdateCompanion<SetLogData> {
   final Value<int> id;
   final Value<int> sesjaId;
   final Value<String> cwiczenieId;
@@ -2396,7 +2397,7 @@ class SetsLogCompanion extends UpdateCompanion<SetsLogData> {
        cwiczenieId = Value(cwiczenieId),
        nazwaCwiczeniaPl = Value(nazwaCwiczeniaPl),
        numerSerii = Value(numerSerii);
-  static Insertable<SetsLogData> custom({
+  static Insertable<SetLogData> custom({
     Expression<int>? id,
     Expression<int>? sesjaId,
     Expression<String>? cwiczenieId,
@@ -2503,7 +2504,7 @@ class SetsLogCompanion extends UpdateCompanion<SetsLogData> {
 }
 
 class $MoodEntriesTable extends MoodEntries
-    with TableInfo<$MoodEntriesTable, MoodEntry> {
+    with TableInfo<$MoodEntriesTable, MoodEntryData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -2618,7 +2619,7 @@ class $MoodEntriesTable extends MoodEntries
   static const String $name = 'mood_entries';
   @override
   VerificationContext validateIntegrity(
-    Insertable<MoodEntry> instance, {
+    Insertable<MoodEntryData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -2685,9 +2686,9 @@ class $MoodEntriesTable extends MoodEntries
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MoodEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MoodEntryData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MoodEntry(
+    return MoodEntryData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -2729,7 +2730,7 @@ class $MoodEntriesTable extends MoodEntries
   }
 }
 
-class MoodEntry extends DataClass implements Insertable<MoodEntry> {
+class MoodEntryData extends DataClass implements Insertable<MoodEntryData> {
   final int id;
   final DateTime data;
   final double snGodziny;
@@ -2738,7 +2739,7 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
   final int apetyt;
   final bool alkohol;
   final int alkoholJednostki;
-  const MoodEntry({
+  const MoodEntryData({
     required this.id,
     required this.data,
     required this.snGodziny,
@@ -2775,12 +2776,12 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
     );
   }
 
-  factory MoodEntry.fromJson(
+  factory MoodEntryData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MoodEntry(
+    return MoodEntryData(
       id: serializer.fromJson<int>(json['id']),
       data: serializer.fromJson<DateTime>(json['data']),
       snGodziny: serializer.fromJson<double>(json['snGodziny']),
@@ -2806,7 +2807,7 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
     };
   }
 
-  MoodEntry copyWith({
+  MoodEntryData copyWith({
     int? id,
     DateTime? data,
     double? snGodziny,
@@ -2815,7 +2816,7 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
     int? apetyt,
     bool? alkohol,
     int? alkoholJednostki,
-  }) => MoodEntry(
+  }) => MoodEntryData(
     id: id ?? this.id,
     data: data ?? this.data,
     snGodziny: snGodziny ?? this.snGodziny,
@@ -2825,8 +2826,8 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
     alkohol: alkohol ?? this.alkohol,
     alkoholJednostki: alkoholJednostki ?? this.alkoholJednostki,
   );
-  MoodEntry copyWithCompanion(MoodEntriesCompanion data) {
-    return MoodEntry(
+  MoodEntryData copyWithCompanion(MoodEntriesCompanion data) {
+    return MoodEntryData(
       id: data.id.present ? data.id.value : this.id,
       data: data.data.present ? data.data.value : this.data,
       snGodziny: data.snGodziny.present ? data.snGodziny.value : this.snGodziny,
@@ -2842,7 +2843,7 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
 
   @override
   String toString() {
-    return (StringBuffer('MoodEntry(')
+    return (StringBuffer('MoodEntryData(')
           ..write('id: $id, ')
           ..write('data: $data, ')
           ..write('snGodziny: $snGodziny, ')
@@ -2869,7 +2870,7 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MoodEntry &&
+      (other is MoodEntryData &&
           other.id == this.id &&
           other.data == this.data &&
           other.snGodziny == this.snGodziny &&
@@ -2880,7 +2881,7 @@ class MoodEntry extends DataClass implements Insertable<MoodEntry> {
           other.alkoholJednostki == this.alkoholJednostki);
 }
 
-class MoodEntriesCompanion extends UpdateCompanion<MoodEntry> {
+class MoodEntriesCompanion extends UpdateCompanion<MoodEntryData> {
   final Value<int> id;
   final Value<DateTime> data;
   final Value<double> snGodziny;
@@ -2912,7 +2913,7 @@ class MoodEntriesCompanion extends UpdateCompanion<MoodEntry> {
        energia = Value(energia),
        nastroj = Value(nastroj),
        apetyt = Value(apetyt);
-  static Insertable<MoodEntry> custom({
+  static Insertable<MoodEntryData> custom({
     Expression<int>? id,
     Expression<DateTime>? data,
     Expression<double>? snGodziny,
@@ -3003,7 +3004,7 @@ class MoodEntriesCompanion extends UpdateCompanion<MoodEntry> {
 }
 
 class $MeasurementsTable extends Measurements
-    with TableInfo<$MeasurementsTable, Measurement> {
+    with TableInfo<$MeasurementsTable, MeasurementData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -3209,7 +3210,7 @@ class $MeasurementsTable extends Measurements
   static const String $name = 'measurements';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Measurement> instance, {
+    Insertable<MeasurementData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -3339,9 +3340,9 @@ class $MeasurementsTable extends Measurements
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Measurement map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MeasurementData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Measurement(
+    return MeasurementData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -3415,7 +3416,7 @@ class $MeasurementsTable extends Measurements
   }
 }
 
-class Measurement extends DataClass implements Insertable<Measurement> {
+class MeasurementData extends DataClass implements Insertable<MeasurementData> {
   final int id;
   final DateTime data;
   final double wagaKg;
@@ -3432,7 +3433,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   final int? tetnoSpoczynkowe;
   final String? cisnienie;
   final String? notatka;
-  const Measurement({
+  const MeasurementData({
     required this.id,
     required this.data,
     required this.wagaKg,
@@ -3545,12 +3546,12 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     );
   }
 
-  factory Measurement.fromJson(
+  factory MeasurementData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Measurement(
+    return MeasurementData(
       id: serializer.fromJson<int>(json['id']),
       data: serializer.fromJson<DateTime>(json['data']),
       wagaKg: serializer.fromJson<double>(json['wagaKg']),
@@ -3592,7 +3593,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     };
   }
 
-  Measurement copyWith({
+  MeasurementData copyWith({
     int? id,
     DateTime? data,
     double? wagaKg,
@@ -3609,7 +3610,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     Value<int?> tetnoSpoczynkowe = const Value.absent(),
     Value<String?> cisnienie = const Value.absent(),
     Value<String?> notatka = const Value.absent(),
-  }) => Measurement(
+  }) => MeasurementData(
     id: id ?? this.id,
     data: data ?? this.data,
     wagaKg: wagaKg ?? this.wagaKg,
@@ -3635,8 +3636,8 @@ class Measurement extends DataClass implements Insertable<Measurement> {
     cisnienie: cisnienie.present ? cisnienie.value : this.cisnienie,
     notatka: notatka.present ? notatka.value : this.notatka,
   );
-  Measurement copyWithCompanion(MeasurementsCompanion data) {
-    return Measurement(
+  MeasurementData copyWithCompanion(MeasurementsCompanion data) {
+    return MeasurementData(
       id: data.id.present ? data.id.value : this.id,
       data: data.data.present ? data.data.value : this.data,
       wagaKg: data.wagaKg.present ? data.wagaKg.value : this.wagaKg,
@@ -3676,7 +3677,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
 
   @override
   String toString() {
-    return (StringBuffer('Measurement(')
+    return (StringBuffer('MeasurementData(')
           ..write('id: $id, ')
           ..write('data: $data, ')
           ..write('wagaKg: $wagaKg, ')
@@ -3719,7 +3720,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Measurement &&
+      (other is MeasurementData &&
           other.id == this.id &&
           other.data == this.data &&
           other.wagaKg == this.wagaKg &&
@@ -3738,7 +3739,7 @@ class Measurement extends DataClass implements Insertable<Measurement> {
           other.notatka == this.notatka);
 }
 
-class MeasurementsCompanion extends UpdateCompanion<Measurement> {
+class MeasurementsCompanion extends UpdateCompanion<MeasurementData> {
   final Value<int> id;
   final Value<DateTime> data;
   final Value<double> wagaKg;
@@ -3791,7 +3792,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
     this.cisnienie = const Value.absent(),
     this.notatka = const Value.absent(),
   }) : wagaKg = Value(wagaKg);
-  static Insertable<Measurement> custom({
+  static Insertable<MeasurementData> custom({
     Expression<int>? id,
     Expression<DateTime>? data,
     Expression<double>? wagaKg,
@@ -3946,7 +3947,7 @@ class MeasurementsCompanion extends UpdateCompanion<Measurement> {
 }
 
 class $FitnessTestResultsTable extends FitnessTestResults
-    with TableInfo<$FitnessTestResultsTable, FitnessTestResult> {
+    with TableInfo<$FitnessTestResultsTable, FitnessTestResultData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -4011,7 +4012,7 @@ class $FitnessTestResultsTable extends FitnessTestResults
   static const String $name = 'fitness_test_results';
   @override
   VerificationContext validateIntegrity(
-    Insertable<FitnessTestResult> instance, {
+    Insertable<FitnessTestResultData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -4053,9 +4054,9 @@ class $FitnessTestResultsTable extends FitnessTestResults
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  FitnessTestResult map(Map<String, dynamic> data, {String? tablePrefix}) {
+  FitnessTestResultData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FitnessTestResult(
+    return FitnessTestResultData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -4085,14 +4086,14 @@ class $FitnessTestResultsTable extends FitnessTestResults
   }
 }
 
-class FitnessTestResult extends DataClass
-    implements Insertable<FitnessTestResult> {
+class FitnessTestResultData extends DataClass
+    implements Insertable<FitnessTestResultData> {
   final int id;
   final String typ;
   final DateTime data;
   final double wynik;
   final int score;
-  const FitnessTestResult({
+  const FitnessTestResultData({
     required this.id,
     required this.typ,
     required this.data,
@@ -4120,12 +4121,12 @@ class FitnessTestResult extends DataClass
     );
   }
 
-  factory FitnessTestResult.fromJson(
+  factory FitnessTestResultData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FitnessTestResult(
+    return FitnessTestResultData(
       id: serializer.fromJson<int>(json['id']),
       typ: serializer.fromJson<String>(json['typ']),
       data: serializer.fromJson<DateTime>(json['data']),
@@ -4145,21 +4146,21 @@ class FitnessTestResult extends DataClass
     };
   }
 
-  FitnessTestResult copyWith({
+  FitnessTestResultData copyWith({
     int? id,
     String? typ,
     DateTime? data,
     double? wynik,
     int? score,
-  }) => FitnessTestResult(
+  }) => FitnessTestResultData(
     id: id ?? this.id,
     typ: typ ?? this.typ,
     data: data ?? this.data,
     wynik: wynik ?? this.wynik,
     score: score ?? this.score,
   );
-  FitnessTestResult copyWithCompanion(FitnessTestResultsCompanion data) {
-    return FitnessTestResult(
+  FitnessTestResultData copyWithCompanion(FitnessTestResultsCompanion data) {
+    return FitnessTestResultData(
       id: data.id.present ? data.id.value : this.id,
       typ: data.typ.present ? data.typ.value : this.typ,
       data: data.data.present ? data.data.value : this.data,
@@ -4170,7 +4171,7 @@ class FitnessTestResult extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('FitnessTestResult(')
+    return (StringBuffer('FitnessTestResultData(')
           ..write('id: $id, ')
           ..write('typ: $typ, ')
           ..write('data: $data, ')
@@ -4185,7 +4186,7 @@ class FitnessTestResult extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is FitnessTestResult &&
+      (other is FitnessTestResultData &&
           other.id == this.id &&
           other.typ == this.typ &&
           other.data == this.data &&
@@ -4193,7 +4194,8 @@ class FitnessTestResult extends DataClass
           other.score == this.score);
 }
 
-class FitnessTestResultsCompanion extends UpdateCompanion<FitnessTestResult> {
+class FitnessTestResultsCompanion
+    extends UpdateCompanion<FitnessTestResultData> {
   final Value<int> id;
   final Value<String> typ;
   final Value<DateTime> data;
@@ -4214,7 +4216,7 @@ class FitnessTestResultsCompanion extends UpdateCompanion<FitnessTestResult> {
     this.score = const Value.absent(),
   }) : typ = Value(typ),
        wynik = Value(wynik);
-  static Insertable<FitnessTestResult> custom({
+  static Insertable<FitnessTestResultData> custom({
     Expression<int>? id,
     Expression<String>? typ,
     Expression<DateTime>? data,
@@ -4281,7 +4283,7 @@ class FitnessTestResultsCompanion extends UpdateCompanion<FitnessTestResult> {
 }
 
 class $PersonalRecordsTable extends PersonalRecords
-    with TableInfo<$PersonalRecordsTable, PersonalRecord> {
+    with TableInfo<$PersonalRecordsTable, PersonalRecordData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -4381,7 +4383,7 @@ class $PersonalRecordsTable extends PersonalRecords
   static const String $name = 'personal_records';
   @override
   VerificationContext validateIntegrity(
-    Insertable<PersonalRecord> instance, {
+    Insertable<PersonalRecordData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -4453,9 +4455,9 @@ class $PersonalRecordsTable extends PersonalRecords
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  PersonalRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
+  PersonalRecordData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PersonalRecord(
+    return PersonalRecordData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -4493,7 +4495,8 @@ class $PersonalRecordsTable extends PersonalRecords
   }
 }
 
-class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
+class PersonalRecordData extends DataClass
+    implements Insertable<PersonalRecordData> {
   final int id;
   final String cwiczenieId;
   final String nazwaCwiczeniaPl;
@@ -4501,7 +4504,7 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
   final int powtorzenia;
   final DateTime data;
   final double szacowane1Rm;
-  const PersonalRecord({
+  const PersonalRecordData({
     required this.id,
     required this.cwiczenieId,
     required this.nazwaCwiczeniaPl,
@@ -4535,12 +4538,12 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
     );
   }
 
-  factory PersonalRecord.fromJson(
+  factory PersonalRecordData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PersonalRecord(
+    return PersonalRecordData(
       id: serializer.fromJson<int>(json['id']),
       cwiczenieId: serializer.fromJson<String>(json['cwiczenieId']),
       nazwaCwiczeniaPl: serializer.fromJson<String>(json['nazwaCwiczeniaPl']),
@@ -4564,7 +4567,7 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
     };
   }
 
-  PersonalRecord copyWith({
+  PersonalRecordData copyWith({
     int? id,
     String? cwiczenieId,
     String? nazwaCwiczeniaPl,
@@ -4572,7 +4575,7 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
     int? powtorzenia,
     DateTime? data,
     double? szacowane1Rm,
-  }) => PersonalRecord(
+  }) => PersonalRecordData(
     id: id ?? this.id,
     cwiczenieId: cwiczenieId ?? this.cwiczenieId,
     nazwaCwiczeniaPl: nazwaCwiczeniaPl ?? this.nazwaCwiczeniaPl,
@@ -4581,8 +4584,8 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
     data: data ?? this.data,
     szacowane1Rm: szacowane1Rm ?? this.szacowane1Rm,
   );
-  PersonalRecord copyWithCompanion(PersonalRecordsCompanion data) {
-    return PersonalRecord(
+  PersonalRecordData copyWithCompanion(PersonalRecordsCompanion data) {
+    return PersonalRecordData(
       id: data.id.present ? data.id.value : this.id,
       cwiczenieId: data.cwiczenieId.present
           ? data.cwiczenieId.value
@@ -4603,7 +4606,7 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
 
   @override
   String toString() {
-    return (StringBuffer('PersonalRecord(')
+    return (StringBuffer('PersonalRecordData(')
           ..write('id: $id, ')
           ..write('cwiczenieId: $cwiczenieId, ')
           ..write('nazwaCwiczeniaPl: $nazwaCwiczeniaPl, ')
@@ -4628,7 +4631,7 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is PersonalRecord &&
+      (other is PersonalRecordData &&
           other.id == this.id &&
           other.cwiczenieId == this.cwiczenieId &&
           other.nazwaCwiczeniaPl == this.nazwaCwiczeniaPl &&
@@ -4638,7 +4641,7 @@ class PersonalRecord extends DataClass implements Insertable<PersonalRecord> {
           other.szacowane1Rm == this.szacowane1Rm);
 }
 
-class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecord> {
+class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
   final Value<int> id;
   final Value<String> cwiczenieId;
   final Value<String> nazwaCwiczeniaPl;
@@ -4668,7 +4671,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecord> {
        ciezarKg = Value(ciezarKg),
        powtorzenia = Value(powtorzenia),
        szacowane1Rm = Value(szacowane1Rm);
-  static Insertable<PersonalRecord> custom({
+  static Insertable<PersonalRecordData> custom({
     Expression<int>? id,
     Expression<String>? cwiczenieId,
     Expression<String>? nazwaCwiczeniaPl,
@@ -4751,7 +4754,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecord> {
 }
 
 class $WorkoutPlansTable extends WorkoutPlans
-    with TableInfo<$WorkoutPlansTable, WorkoutPlan> {
+    with TableInfo<$WorkoutPlansTable, WorkoutPlanData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -4826,7 +4829,7 @@ class $WorkoutPlansTable extends WorkoutPlans
   static const String $name = 'workout_plans';
   @override
   VerificationContext validateIntegrity(
-    Insertable<WorkoutPlan> instance, {
+    Insertable<WorkoutPlanData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -4876,9 +4879,9 @@ class $WorkoutPlansTable extends WorkoutPlans
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  WorkoutPlan map(Map<String, dynamic> data, {String? tablePrefix}) {
+  WorkoutPlanData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return WorkoutPlan(
+    return WorkoutPlanData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -4908,13 +4911,13 @@ class $WorkoutPlansTable extends WorkoutPlans
   }
 }
 
-class WorkoutPlan extends DataClass implements Insertable<WorkoutPlan> {
+class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
   final int id;
   final String nazwa;
   final String cwiczeniaIds;
   final String cel;
   final DateTime dataUtworzenia;
-  const WorkoutPlan({
+  const WorkoutPlanData({
     required this.id,
     required this.nazwa,
     required this.cwiczeniaIds,
@@ -4942,12 +4945,12 @@ class WorkoutPlan extends DataClass implements Insertable<WorkoutPlan> {
     );
   }
 
-  factory WorkoutPlan.fromJson(
+  factory WorkoutPlanData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return WorkoutPlan(
+    return WorkoutPlanData(
       id: serializer.fromJson<int>(json['id']),
       nazwa: serializer.fromJson<String>(json['nazwa']),
       cwiczeniaIds: serializer.fromJson<String>(json['cwiczeniaIds']),
@@ -4967,21 +4970,21 @@ class WorkoutPlan extends DataClass implements Insertable<WorkoutPlan> {
     };
   }
 
-  WorkoutPlan copyWith({
+  WorkoutPlanData copyWith({
     int? id,
     String? nazwa,
     String? cwiczeniaIds,
     String? cel,
     DateTime? dataUtworzenia,
-  }) => WorkoutPlan(
+  }) => WorkoutPlanData(
     id: id ?? this.id,
     nazwa: nazwa ?? this.nazwa,
     cwiczeniaIds: cwiczeniaIds ?? this.cwiczeniaIds,
     cel: cel ?? this.cel,
     dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
   );
-  WorkoutPlan copyWithCompanion(WorkoutPlansCompanion data) {
-    return WorkoutPlan(
+  WorkoutPlanData copyWithCompanion(WorkoutPlansCompanion data) {
+    return WorkoutPlanData(
       id: data.id.present ? data.id.value : this.id,
       nazwa: data.nazwa.present ? data.nazwa.value : this.nazwa,
       cwiczeniaIds: data.cwiczeniaIds.present
@@ -4996,7 +4999,7 @@ class WorkoutPlan extends DataClass implements Insertable<WorkoutPlan> {
 
   @override
   String toString() {
-    return (StringBuffer('WorkoutPlan(')
+    return (StringBuffer('WorkoutPlanData(')
           ..write('id: $id, ')
           ..write('nazwa: $nazwa, ')
           ..write('cwiczeniaIds: $cwiczeniaIds, ')
@@ -5011,7 +5014,7 @@ class WorkoutPlan extends DataClass implements Insertable<WorkoutPlan> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is WorkoutPlan &&
+      (other is WorkoutPlanData &&
           other.id == this.id &&
           other.nazwa == this.nazwa &&
           other.cwiczeniaIds == this.cwiczeniaIds &&
@@ -5019,7 +5022,7 @@ class WorkoutPlan extends DataClass implements Insertable<WorkoutPlan> {
           other.dataUtworzenia == this.dataUtworzenia);
 }
 
-class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlan> {
+class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
   final Value<int> id;
   final Value<String> nazwa;
   final Value<String> cwiczeniaIds;
@@ -5041,7 +5044,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlan> {
   }) : nazwa = Value(nazwa),
        cwiczeniaIds = Value(cwiczeniaIds),
        cel = Value(cel);
-  static Insertable<WorkoutPlan> custom({
+  static Insertable<WorkoutPlanData> custom({
     Expression<int>? id,
     Expression<String>? nazwa,
     Expression<String>? cwiczeniaIds,
@@ -5346,17 +5349,17 @@ class $$UserProfilesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $UserProfilesTable,
-          UserProfile,
+          UserProfileData,
           $$UserProfilesTableFilterComposer,
           $$UserProfilesTableOrderingComposer,
           $$UserProfilesTableAnnotationComposer,
           $$UserProfilesTableCreateCompanionBuilder,
           $$UserProfilesTableUpdateCompanionBuilder,
           (
-            UserProfile,
-            BaseReferences<_$AppDatabase, $UserProfilesTable, UserProfile>,
+            UserProfileData,
+            BaseReferences<_$AppDatabase, $UserProfilesTable, UserProfileData>,
           ),
-          UserProfile,
+          UserProfileData,
           PrefetchHooks Function()
         > {
   $$UserProfilesTableTableManager(_$AppDatabase db, $UserProfilesTable table)
@@ -5426,17 +5429,17 @@ typedef $$UserProfilesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $UserProfilesTable,
-      UserProfile,
+      UserProfileData,
       $$UserProfilesTableFilterComposer,
       $$UserProfilesTableOrderingComposer,
       $$UserProfilesTableAnnotationComposer,
       $$UserProfilesTableCreateCompanionBuilder,
       $$UserProfilesTableUpdateCompanionBuilder,
       (
-        UserProfile,
-        BaseReferences<_$AppDatabase, $UserProfilesTable, UserProfile>,
+        UserProfileData,
+        BaseReferences<_$AppDatabase, $UserProfilesTable, UserProfileData>,
       ),
-      UserProfile,
+      UserProfileData,
       PrefetchHooks Function()
     >;
 typedef $$ExercisesTableCreateCompanionBuilder =
@@ -5750,14 +5753,17 @@ class $$ExercisesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ExercisesTable,
-          Exercise,
+          ExerciseData,
           $$ExercisesTableFilterComposer,
           $$ExercisesTableOrderingComposer,
           $$ExercisesTableAnnotationComposer,
           $$ExercisesTableCreateCompanionBuilder,
           $$ExercisesTableUpdateCompanionBuilder,
-          (Exercise, BaseReferences<_$AppDatabase, $ExercisesTable, Exercise>),
-          Exercise,
+          (
+            ExerciseData,
+            BaseReferences<_$AppDatabase, $ExercisesTable, ExerciseData>,
+          ),
+          ExerciseData,
           PrefetchHooks Function()
         > {
   $$ExercisesTableTableManager(_$AppDatabase db, $ExercisesTable table)
@@ -5863,14 +5869,17 @@ typedef $$ExercisesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ExercisesTable,
-      Exercise,
+      ExerciseData,
       $$ExercisesTableFilterComposer,
       $$ExercisesTableOrderingComposer,
       $$ExercisesTableAnnotationComposer,
       $$ExercisesTableCreateCompanionBuilder,
       $$ExercisesTableUpdateCompanionBuilder,
-      (Exercise, BaseReferences<_$AppDatabase, $ExercisesTable, Exercise>),
-      Exercise,
+      (
+        ExerciseData,
+        BaseReferences<_$AppDatabase, $ExercisesTable, ExerciseData>,
+      ),
+      ExerciseData,
       PrefetchHooks Function()
     >;
 typedef $$WorkoutSessionsTableCreateCompanionBuilder =
@@ -5892,15 +5901,20 @@ typedef $$WorkoutSessionsTableUpdateCompanionBuilder =
 
 final class $$WorkoutSessionsTableReferences
     extends
-        BaseReferences<_$AppDatabase, $WorkoutSessionsTable, WorkoutSession> {
+        BaseReferences<
+          _$AppDatabase,
+          $WorkoutSessionsTable,
+          WorkoutSessionData
+        > {
   $$WorkoutSessionsTableReferences(
     super.$_db,
     super.$_table,
     super.$_typedResult,
   );
 
-  static MultiTypedResultKey<$SetsLogTable, List<SetsLogData>>
-  _setsLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+  static MultiTypedResultKey<$SetsLogTable, List<SetLogData>> _setsLogRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
     db.setsLog,
     aliasName: $_aliasNameGenerator(db.workoutSessions.id, db.setsLog.sesjaId),
   );
@@ -6072,14 +6086,14 @@ class $$WorkoutSessionsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $WorkoutSessionsTable,
-          WorkoutSession,
+          WorkoutSessionData,
           $$WorkoutSessionsTableFilterComposer,
           $$WorkoutSessionsTableOrderingComposer,
           $$WorkoutSessionsTableAnnotationComposer,
           $$WorkoutSessionsTableCreateCompanionBuilder,
           $$WorkoutSessionsTableUpdateCompanionBuilder,
-          (WorkoutSession, $$WorkoutSessionsTableReferences),
-          WorkoutSession,
+          (WorkoutSessionData, $$WorkoutSessionsTableReferences),
+          WorkoutSessionData,
           PrefetchHooks Function({bool setsLogRefs})
         > {
   $$WorkoutSessionsTableTableManager(
@@ -6140,9 +6154,9 @@ class $$WorkoutSessionsTableTableManager
                 return [
                   if (setsLogRefs)
                     await $_getPrefetchedData<
-                      WorkoutSession,
+                      WorkoutSessionData,
                       $WorkoutSessionsTable,
-                      SetsLogData
+                      SetLogData
                     >(
                       currentTable: table,
                       referencedTable: $$WorkoutSessionsTableReferences
@@ -6169,14 +6183,14 @@ typedef $$WorkoutSessionsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $WorkoutSessionsTable,
-      WorkoutSession,
+      WorkoutSessionData,
       $$WorkoutSessionsTableFilterComposer,
       $$WorkoutSessionsTableOrderingComposer,
       $$WorkoutSessionsTableAnnotationComposer,
       $$WorkoutSessionsTableCreateCompanionBuilder,
       $$WorkoutSessionsTableUpdateCompanionBuilder,
-      (WorkoutSession, $$WorkoutSessionsTableReferences),
-      WorkoutSession,
+      (WorkoutSessionData, $$WorkoutSessionsTableReferences),
+      WorkoutSessionData,
       PrefetchHooks Function({bool setsLogRefs})
     >;
 typedef $$SetsLogTableCreateCompanionBuilder =
@@ -6207,7 +6221,7 @@ typedef $$SetsLogTableUpdateCompanionBuilder =
     });
 
 final class $$SetsLogTableReferences
-    extends BaseReferences<_$AppDatabase, $SetsLogTable, SetsLogData> {
+    extends BaseReferences<_$AppDatabase, $SetsLogTable, SetLogData> {
   $$SetsLogTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $WorkoutSessionsTable _sesjaIdTable(_$AppDatabase db) =>
@@ -6461,14 +6475,14 @@ class $$SetsLogTableTableManager
         RootTableManager<
           _$AppDatabase,
           $SetsLogTable,
-          SetsLogData,
+          SetLogData,
           $$SetsLogTableFilterComposer,
           $$SetsLogTableOrderingComposer,
           $$SetsLogTableAnnotationComposer,
           $$SetsLogTableCreateCompanionBuilder,
           $$SetsLogTableUpdateCompanionBuilder,
-          (SetsLogData, $$SetsLogTableReferences),
-          SetsLogData,
+          (SetLogData, $$SetsLogTableReferences),
+          SetLogData,
           PrefetchHooks Function({bool sesjaId})
         > {
   $$SetsLogTableTableManager(_$AppDatabase db, $SetsLogTable table)
@@ -6587,14 +6601,14 @@ typedef $$SetsLogTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $SetsLogTable,
-      SetsLogData,
+      SetLogData,
       $$SetsLogTableFilterComposer,
       $$SetsLogTableOrderingComposer,
       $$SetsLogTableAnnotationComposer,
       $$SetsLogTableCreateCompanionBuilder,
       $$SetsLogTableUpdateCompanionBuilder,
-      (SetsLogData, $$SetsLogTableReferences),
-      SetsLogData,
+      (SetLogData, $$SetsLogTableReferences),
+      SetLogData,
       PrefetchHooks Function({bool sesjaId})
     >;
 typedef $$MoodEntriesTableCreateCompanionBuilder =
@@ -6761,17 +6775,17 @@ class $$MoodEntriesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $MoodEntriesTable,
-          MoodEntry,
+          MoodEntryData,
           $$MoodEntriesTableFilterComposer,
           $$MoodEntriesTableOrderingComposer,
           $$MoodEntriesTableAnnotationComposer,
           $$MoodEntriesTableCreateCompanionBuilder,
           $$MoodEntriesTableUpdateCompanionBuilder,
           (
-            MoodEntry,
-            BaseReferences<_$AppDatabase, $MoodEntriesTable, MoodEntry>,
+            MoodEntryData,
+            BaseReferences<_$AppDatabase, $MoodEntriesTable, MoodEntryData>,
           ),
-          MoodEntry,
+          MoodEntryData,
           PrefetchHooks Function()
         > {
   $$MoodEntriesTableTableManager(_$AppDatabase db, $MoodEntriesTable table)
@@ -6837,14 +6851,17 @@ typedef $$MoodEntriesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $MoodEntriesTable,
-      MoodEntry,
+      MoodEntryData,
       $$MoodEntriesTableFilterComposer,
       $$MoodEntriesTableOrderingComposer,
       $$MoodEntriesTableAnnotationComposer,
       $$MoodEntriesTableCreateCompanionBuilder,
       $$MoodEntriesTableUpdateCompanionBuilder,
-      (MoodEntry, BaseReferences<_$AppDatabase, $MoodEntriesTable, MoodEntry>),
-      MoodEntry,
+      (
+        MoodEntryData,
+        BaseReferences<_$AppDatabase, $MoodEntriesTable, MoodEntryData>,
+      ),
+      MoodEntryData,
       PrefetchHooks Function()
     >;
 typedef $$MeasurementsTableCreateCompanionBuilder =
@@ -7147,17 +7164,17 @@ class $$MeasurementsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $MeasurementsTable,
-          Measurement,
+          MeasurementData,
           $$MeasurementsTableFilterComposer,
           $$MeasurementsTableOrderingComposer,
           $$MeasurementsTableAnnotationComposer,
           $$MeasurementsTableCreateCompanionBuilder,
           $$MeasurementsTableUpdateCompanionBuilder,
           (
-            Measurement,
-            BaseReferences<_$AppDatabase, $MeasurementsTable, Measurement>,
+            MeasurementData,
+            BaseReferences<_$AppDatabase, $MeasurementsTable, MeasurementData>,
           ),
-          Measurement,
+          MeasurementData,
           PrefetchHooks Function()
         > {
   $$MeasurementsTableTableManager(_$AppDatabase db, $MeasurementsTable table)
@@ -7255,17 +7272,17 @@ typedef $$MeasurementsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $MeasurementsTable,
-      Measurement,
+      MeasurementData,
       $$MeasurementsTableFilterComposer,
       $$MeasurementsTableOrderingComposer,
       $$MeasurementsTableAnnotationComposer,
       $$MeasurementsTableCreateCompanionBuilder,
       $$MeasurementsTableUpdateCompanionBuilder,
       (
-        Measurement,
-        BaseReferences<_$AppDatabase, $MeasurementsTable, Measurement>,
+        MeasurementData,
+        BaseReferences<_$AppDatabase, $MeasurementsTable, MeasurementData>,
       ),
-      Measurement,
+      MeasurementData,
       PrefetchHooks Function()
     >;
 typedef $$FitnessTestResultsTableCreateCompanionBuilder =
@@ -7385,21 +7402,21 @@ class $$FitnessTestResultsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $FitnessTestResultsTable,
-          FitnessTestResult,
+          FitnessTestResultData,
           $$FitnessTestResultsTableFilterComposer,
           $$FitnessTestResultsTableOrderingComposer,
           $$FitnessTestResultsTableAnnotationComposer,
           $$FitnessTestResultsTableCreateCompanionBuilder,
           $$FitnessTestResultsTableUpdateCompanionBuilder,
           (
-            FitnessTestResult,
+            FitnessTestResultData,
             BaseReferences<
               _$AppDatabase,
               $FitnessTestResultsTable,
-              FitnessTestResult
+              FitnessTestResultData
             >,
           ),
-          FitnessTestResult,
+          FitnessTestResultData,
           PrefetchHooks Function()
         > {
   $$FitnessTestResultsTableTableManager(
@@ -7458,21 +7475,21 @@ typedef $$FitnessTestResultsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $FitnessTestResultsTable,
-      FitnessTestResult,
+      FitnessTestResultData,
       $$FitnessTestResultsTableFilterComposer,
       $$FitnessTestResultsTableOrderingComposer,
       $$FitnessTestResultsTableAnnotationComposer,
       $$FitnessTestResultsTableCreateCompanionBuilder,
       $$FitnessTestResultsTableUpdateCompanionBuilder,
       (
-        FitnessTestResult,
+        FitnessTestResultData,
         BaseReferences<
           _$AppDatabase,
           $FitnessTestResultsTable,
-          FitnessTestResult
+          FitnessTestResultData
         >,
       ),
-      FitnessTestResult,
+      FitnessTestResultData,
       PrefetchHooks Function()
     >;
 typedef $$PersonalRecordsTableCreateCompanionBuilder =
@@ -7630,21 +7647,21 @@ class $$PersonalRecordsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $PersonalRecordsTable,
-          PersonalRecord,
+          PersonalRecordData,
           $$PersonalRecordsTableFilterComposer,
           $$PersonalRecordsTableOrderingComposer,
           $$PersonalRecordsTableAnnotationComposer,
           $$PersonalRecordsTableCreateCompanionBuilder,
           $$PersonalRecordsTableUpdateCompanionBuilder,
           (
-            PersonalRecord,
+            PersonalRecordData,
             BaseReferences<
               _$AppDatabase,
               $PersonalRecordsTable,
-              PersonalRecord
+              PersonalRecordData
             >,
           ),
-          PersonalRecord,
+          PersonalRecordData,
           PrefetchHooks Function()
         > {
   $$PersonalRecordsTableTableManager(
@@ -7708,17 +7725,21 @@ typedef $$PersonalRecordsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $PersonalRecordsTable,
-      PersonalRecord,
+      PersonalRecordData,
       $$PersonalRecordsTableFilterComposer,
       $$PersonalRecordsTableOrderingComposer,
       $$PersonalRecordsTableAnnotationComposer,
       $$PersonalRecordsTableCreateCompanionBuilder,
       $$PersonalRecordsTableUpdateCompanionBuilder,
       (
-        PersonalRecord,
-        BaseReferences<_$AppDatabase, $PersonalRecordsTable, PersonalRecord>,
+        PersonalRecordData,
+        BaseReferences<
+          _$AppDatabase,
+          $PersonalRecordsTable,
+          PersonalRecordData
+        >,
       ),
-      PersonalRecord,
+      PersonalRecordData,
       PrefetchHooks Function()
     >;
 typedef $$WorkoutPlansTableCreateCompanionBuilder =
@@ -7842,17 +7863,17 @@ class $$WorkoutPlansTableTableManager
         RootTableManager<
           _$AppDatabase,
           $WorkoutPlansTable,
-          WorkoutPlan,
+          WorkoutPlanData,
           $$WorkoutPlansTableFilterComposer,
           $$WorkoutPlansTableOrderingComposer,
           $$WorkoutPlansTableAnnotationComposer,
           $$WorkoutPlansTableCreateCompanionBuilder,
           $$WorkoutPlansTableUpdateCompanionBuilder,
           (
-            WorkoutPlan,
-            BaseReferences<_$AppDatabase, $WorkoutPlansTable, WorkoutPlan>,
+            WorkoutPlanData,
+            BaseReferences<_$AppDatabase, $WorkoutPlansTable, WorkoutPlanData>,
           ),
-          WorkoutPlan,
+          WorkoutPlanData,
           PrefetchHooks Function()
         > {
   $$WorkoutPlansTableTableManager(_$AppDatabase db, $WorkoutPlansTable table)
@@ -7906,17 +7927,17 @@ typedef $$WorkoutPlansTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $WorkoutPlansTable,
-      WorkoutPlan,
+      WorkoutPlanData,
       $$WorkoutPlansTableFilterComposer,
       $$WorkoutPlansTableOrderingComposer,
       $$WorkoutPlansTableAnnotationComposer,
       $$WorkoutPlansTableCreateCompanionBuilder,
       $$WorkoutPlansTableUpdateCompanionBuilder,
       (
-        WorkoutPlan,
-        BaseReferences<_$AppDatabase, $WorkoutPlansTable, WorkoutPlan>,
+        WorkoutPlanData,
+        BaseReferences<_$AppDatabase, $WorkoutPlansTable, WorkoutPlanData>,
       ),
-      WorkoutPlan,
+      WorkoutPlanData,
       PrefetchHooks Function()
     >;
 

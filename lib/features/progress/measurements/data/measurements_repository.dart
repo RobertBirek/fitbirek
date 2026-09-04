@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import '../../../../core/database/app_database.dart';
-import '../../../../core/database/tables/measurements_table.dart';
 
 /// Repozytorium pomiarów ciała.
 class MeasurementsRepository {

@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
-import '../../../core/database/tables/workout_tables.dart';
 import '../../../core/models/workout_session.dart';
 
 /// Repozytorium sesji treningowych - zapis, historia, pobieranie ostatniej serii.
@@ -74,18 +73,20 @@ class WorkoutRepository {
       czasTrwaniaSekund: session.czasTrwaniaSekund,
       notatka: session.notatka,
       serie: sets
-          .map((s) => SetLog(
-                id: s.id,
-                sesjaId: s.sesjaId,
-                cwiczenieId: s.cwiczenieId,
-                nazwaCwiczeniaPl: s.nazwaCwiczeniaPl,
-                numerSerii: s.numerSerii,
-                ciezarKg: s.ciezarKg,
-                powtorzenia: s.powtorzenia,
-                czasSekund: s.czasSekund,
-                rpe: s.rpe,
-                timestamp: s.timestamp,
-              ))
+          .map(
+            (s) => SetLog(
+              id: s.id,
+              sesjaId: s.sesjaId,
+              cwiczenieId: s.cwiczenieId,
+              nazwaCwiczeniaPl: s.nazwaCwiczeniaPl,
+              numerSerii: s.numerSerii,
+              ciezarKg: s.ciezarKg,
+              powtorzenia: s.powtorzenia,
+              czasSekund: s.czasSekund,
+              rpe: s.rpe,
+              timestamp: s.timestamp,
+            ),
+          )
           .toList(),
     );
   }

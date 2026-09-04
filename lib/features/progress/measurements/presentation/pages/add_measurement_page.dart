@@ -32,13 +32,17 @@ class _AddMeasurementPageState extends ConsumerState<AddMeasurementPage> {
             TextField(
               controller: _klatka,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Obwód klatki (cm, opcjonalnie)'),
+              decoration: const InputDecoration(
+                labelText: 'Obwód klatki (cm, opcjonalnie)',
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _talia,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Obwód talii (cm, opcjonalnie)'),
+              decoration: const InputDecoration(
+                labelText: 'Obwód talii (cm, opcjonalnie)',
+              ),
             ),
             const SizedBox(height: 24),
             PrimaryButton(
@@ -46,7 +50,9 @@ class _AddMeasurementPageState extends ConsumerState<AddMeasurementPage> {
               onPressed: () async {
                 final waga = double.tryParse(_waga.text);
                 if (waga == null) return;
-                await ref.read(measurementsRepositoryProvider).addMeasurement(
+                await ref
+                    .read(measurementsRepositoryProvider)
+                    .addMeasurement(
                       wagaKg: waga,
                       obwodKlatki: double.tryParse(_klatka.text),
                       obwodTalii: double.tryParse(_talia.text),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'router.dart';
 import 'theme.dart';
 import '../features/settings/providers/settings_provider.dart';
@@ -22,7 +22,11 @@ class FitBirekApp extends ConsumerWidget {
       routerConfig: router,
       locale: const Locale('pl', 'PL'),
       supportedLocales: const [Locale('pl', 'PL')],
-      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

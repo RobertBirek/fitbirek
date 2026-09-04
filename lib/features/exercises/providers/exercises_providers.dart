@@ -43,7 +43,11 @@ class ExerciseFilters {
       !tylkoUlubione;
 
   int get activeCount =>
-      partie.length + sprzet.length + poziomy.length + typy.length + (tylkoUlubione ? 1 : 0);
+      partie.length +
+      sprzet.length +
+      poziomy.length +
+      typy.length +
+      (tylkoUlubione ? 1 : 0);
 
   ExerciseFilters copyWith({
     Set<String>? partie,
@@ -68,8 +72,9 @@ class ExerciseFilters {
 
 enum ExerciseSortBy { alfabetycznie, partia, poziom }
 
-final exerciseFiltersProvider =
-    StateProvider<ExerciseFilters>((ref) => const ExerciseFilters());
+final exerciseFiltersProvider = StateProvider<ExerciseFilters>(
+  (ref) => const ExerciseFilters(),
+);
 
 /// Lista ćwiczeń po zastosowaniu filtrów, wyszukiwania i sortowania.
 final filteredExercisesProvider = Provider<List<Exercise>>((ref) {
@@ -79,7 +84,8 @@ final filteredExercisesProvider = Provider<List<Exercise>>((ref) {
   final all = exercisesAsync.value ?? [];
 
   var result = all.where((ex) {
-    if (filters.partie.isNotEmpty && !filters.partie.contains(ex.partiaGlowna)) {
+    if (filters.partie.isNotEmpty &&
+        !filters.partie.contains(ex.partiaGlowna)) {
       return false;
     }
     if (filters.sprzet.isNotEmpty &&

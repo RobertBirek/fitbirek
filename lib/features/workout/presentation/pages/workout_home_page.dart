@@ -6,7 +6,6 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../providers/workout_providers.dart';
 
-
 /// Ekran "Trening" - start nowej sesji + historia treningów.
 class WorkoutHomePage extends ConsumerWidget {
   const WorkoutHomePage({super.key});
@@ -24,11 +23,15 @@ class WorkoutHomePage extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(16),
               child: PrimaryButton(
-                label: active.isActive ? 'Wróć do aktywnej sesji' : 'Nowy trening',
+                label: active.isActive
+                    ? 'Wróć do aktywnej sesji'
+                    : 'Nowy trening',
                 icon: active.isActive ? Icons.play_circle_fill : Icons.add,
                 onPressed: () async {
                   if (!active.isActive) {
-                    await ref.read(activeWorkoutProvider.notifier).startSession();
+                    await ref
+                        .read(activeWorkoutProvider.notifier)
+                        .startSession();
                   }
                   if (context.mounted) context.go('/workout/session');
                 },
@@ -37,7 +40,9 @@ class WorkoutHomePage extends ConsumerWidget {
             Expanded(
               child: sessionsAsync.when(
                 data: (sessions) {
-                  final finished = sessions.where((s) => s.dataKoniec != null).toList();
+                  final finished = sessions
+                      .where((s) => s.dataKoniec != null)
+                      .toList();
                   if (finished.isEmpty) {
                     return EmptyState(
                       icon: Icons.history,
@@ -57,7 +62,9 @@ class WorkoutHomePage extends ConsumerWidget {
                         child: ListTile(
                           leading: const Icon(Icons.fitness_center),
                           title: Text(Formatters.dateTime(s.dataStart)),
-                          subtitle: Text('Czas: ${Formatters.duration(s.czasTrwaniaSekund)}'),
+                          subtitle: Text(
+                            'Czas: ${Formatters.duration(s.czasTrwaniaSekund)}',
+                          ),
                           onTap: () => context.push('/workout/summary/${s.id}'),
                         ),
                       );
@@ -74,6 +81,3 @@ class WorkoutHomePage extends ConsumerWidget {
     );
   }
 }
-
-// Reeksport dla wygody importu w innych plikach (zapobiega unused import warning).
-typedef _Unused = ExercisesListPage;

@@ -16,7 +16,8 @@ class TodayPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileStreamProvider);
     final now = DateTime.now();
-    final isKarateDay = now.weekday == DateTime.tuesday || now.weekday == DateTime.thursday;
+    final isKarateDay =
+        now.weekday == DateTime.tuesday || now.weekday == DateTime.thursday;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Dziś')),
@@ -32,10 +33,9 @@ class TodayPage extends ConsumerWidget {
             profileAsync.when(
               data: (p) => Text(
                 'Cześć, ${p?.imie ?? 'Sportowcu'}! 💪',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w800),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               loading: () => const SizedBox.shrink(),
               error: (e, st) => const SizedBox.shrink(),
@@ -48,10 +48,15 @@ class TodayPage extends ConsumerWidget {
                   padding: EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Icon(Icons.sports_martial_arts, color: FitBirekColors.accent),
+                      Icon(
+                        Icons.sports_martial_arts,
+                        color: FitBirekColors.accent,
+                      ),
                       SizedBox(width: 12),
                       Expanded(
-                        child: Text('Dziś karate 20:00 - pamiętaj o rozgrzewce!'),
+                        child: Text(
+                          'Dziś karate 20:00 - pamiętaj o rozgrzewce!',
+                        ),
                       ),
                     ],
                   ),
@@ -66,17 +71,18 @@ class TodayPage extends ConsumerWidget {
                   children: [
                     Text(
                       'Gotowy na trening?',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     PrimaryButton(
                       label: 'Rozpocznij trening',
                       icon: Icons.play_arrow,
                       onPressed: () async {
-                        final notifier = ref.read(activeWorkoutProvider.notifier);
+                        final notifier = ref.read(
+                          activeWorkoutProvider.notifier,
+                        );
                         await notifier.startSession();
                         if (context.mounted) context.go('/workout/session');
                       },

@@ -67,17 +67,40 @@ class _MoodQuickEntryCardState extends ConsumerState<MoodQuickEntryCard> {
               children: [
                 Text(
                   'Jak się czujesz dziś?',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: 12),
-                _buildSlider('Sen (h)', _sen, 0, 12, (v) => setState(() => _sen = v),
-                    warning: ostrzezenieSen),
-                _buildSlider('Energia', _energia, 1, 10, (v) => setState(() => _energia = v)),
-                _buildSlider('Nastrój', _nastroj, 1, 10, (v) => setState(() => _nastroj = v)),
-                _buildSlider('Apetyt', _apetyt, 1, 10, (v) => setState(() => _apetyt = v)),
+                _buildSlider(
+                  'Sen (h)',
+                  _sen,
+                  0,
+                  12,
+                  (v) => setState(() => _sen = v),
+                  warning: ostrzezenieSen,
+                ),
+                _buildSlider(
+                  'Energia',
+                  _energia,
+                  1,
+                  10,
+                  (v) => setState(() => _energia = v),
+                ),
+                _buildSlider(
+                  'Nastrój',
+                  _nastroj,
+                  1,
+                  10,
+                  (v) => setState(() => _nastroj = v),
+                ),
+                _buildSlider(
+                  'Apetyt',
+                  _apetyt,
+                  1,
+                  10,
+                  (v) => setState(() => _apetyt = v),
+                ),
                 Row(
                   children: [
                     Checkbox(
@@ -105,7 +128,10 @@ class _MoodQuickEntryCardState extends ConsumerState<MoodQuickEntryCard> {
                     padding: EdgeInsets.only(bottom: 8),
                     child: Text(
                       '⚠️ Duża ilość alkoholu może wpłynąć na regenerację',
-                      style: TextStyle(color: FitBirekColors.warning, fontSize: 13),
+                      style: TextStyle(
+                        color: FitBirekColors.warning,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 const SizedBox(height: 8),

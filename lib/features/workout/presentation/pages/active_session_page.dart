@@ -5,9 +5,14 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/rpe_slider.dart';
+import '../../../../core/widgets/rest_timer_screen.dart';
+import '../../../../core/widgets/isometric_stopwatch.dart';
 import '../../../../core/models/exercise.dart';
 import '../../providers/workout_providers.dart';
-import '../../../exercises/providers/exercises_providers.dart';
+
+/// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
+/// ciężar/powtórzenia - plank, wall-sit, dead-hang itp.
+const _typyIzometryczne = {'Izometryczne'};
 
 /// Aktywna sesja treningowa: wybór ćwiczeń, logowanie serii, timer przerw.
 class ActiveSessionPage extends ConsumerStatefulWidget {
@@ -62,7 +67,9 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
             Expanded(
               child: active.selectedExercises.isEmpty
                   ? const Center(
-                      child: Text('Wybierz ćwiczenia, aby zacząć logować serie'),
+                      child: Text(
+                        'Wybierz ćwiczenia, aby zacząć logować serie',
+                      ),
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -93,11 +100,58 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   final _repsController = TextEditingController();
   int _rpe = 7;
 
+  bool get _isIsometric => _typyIzometryczne.contains(widget.exercise.typ);
+
   @override
   void dispose() {
     _weightController.dispose();
     _repsController.dispose();
     super.dispose();
+  }
+
+  /// Wspólna logika po zalogowaniu serii: powiadomienie o PR + auto-timer przerwy.
+  Future<void> _afterLogSet(bool isPr) async {
+    if (!mounted) return;
+    if (isPr) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎉 Nowy rekord w ${widget.exercise.nazwaPl}!'),
+          backgroundColor: FitBirekColors.accent,
+        ),
+      );
+    }
+    setState(() {});
+    // Automatyczny timer przerwy po zalogowanej serii - domyślnie 90s,
+    // użytkownik może zmienić na 60/120/180s lub własny czas na ekranie timera.
+    if (mounted) {
+      await showRestTimer(context, initialSeconds: 90);
+    }
+  }
+
+  Future<void> _startIsometricStopwatch() async {
+    final seconds = await showIsometricStopwatch(
+      context,
+      label: widget.exercise.nazwaPl,
+    );
+    if (seconds == null || seconds <= 0) return;
+    final isPr = await ref
+        .read(activeWorkoutProvider.notifier)
+        .logSet(exercise: widget.exercise, seconds: seconds, rpe: _rpe);
+    await _afterLogSet(isPr);
+  }
+
+  Future<void> _logStrengthSet() async {
+    final weight = double.tryParse(_weightController.text);
+    final reps = int.tryParse(_repsController.text);
+    final isPr = await ref
+        .read(activeWorkoutProvider.notifier)
+        .logSet(
+          exercise: widget.exercise,
+          weightKg: weight,
+          reps: reps,
+          rpe: _rpe,
+        );
+    await _afterLogSet(isPr);
   }
 
   @override
@@ -121,12 +175,22 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             ),
             const SizedBox(height: 4),
             FutureBuilder(
-              future: ref.read(workoutRepositoryProvider).getLastSet(widget.exercise.id),
+              future: ref
+                  .read(workoutRepositoryProvider)
+                  .getLastSet(widget.exercise.id),
               builder: (context, snapshot) {
                 final last = snapshot.data;
                 if (last == null) {
-                  return const Text('Pierwszy raz - bez porównania',
-                      style: TextStyle(color: Colors.grey));
+                  return const Text(
+                    'Pierwszy raz - bez porównania',
+                    style: TextStyle(color: Colors.grey),
+                  );
+                }
+                if (_isIsometric) {
+                  return Text(
+                    'Ostatnio: ${last.czasSekund ?? '-'} s (RPE ${last.rpe ?? '-'})',
+                    style: const TextStyle(color: FitBirekColors.accent),
+                  );
                 }
                 return Text(
                   'Ostatnio: ${last.ciezarKg ?? '-'} kg × ${last.powtorzenia ?? '-'} (RPE ${last.rpe ?? '-'})',
@@ -135,51 +199,53 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               },
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _weightController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Ciężar (kg)'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: _repsController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Powtórzenia'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            RpeSlider(value: _rpe, onChanged: (v) => setState(() => _rpe = v)),
-            const SizedBox(height: 8),
-            PrimaryButton(
-              label: 'Seria wykonana (${loggedForThis.length})',
-              icon: Icons.check,
-              onPressed: () async {
-                final weight = double.tryParse(_weightController.text);
-                final reps = int.tryParse(_repsController.text);
-                final isPr = await ref.read(activeWorkoutProvider.notifier).logSet(
-                      exercise: widget.exercise,
-                      weightKg: weight,
-                      reps: reps,
-                      rpe: _rpe,
-                    );
-                if (isPr && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('🎉 Nowy rekord w ${widget.exercise.nazwaPl}!'),
-                      backgroundColor: FitBirekColors.accent,
+            if (_isIsometric) ...[
+              RpeSlider(
+                value: _rpe,
+                onChanged: (v) => setState(() => _rpe = v),
+              ),
+              const SizedBox(height: 8),
+              PrimaryButton(
+                label: 'Start stopera (${loggedForThis.length})',
+                icon: Icons.timer_outlined,
+                onPressed: _startIsometricStopwatch,
+              ),
+            ] else ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _weightController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Ciężar (kg)',
+                      ),
                     ),
-                  );
-                }
-                setState(() {});
-              },
-            ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _repsController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Powtórzenia',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              RpeSlider(
+                value: _rpe,
+                onChanged: (v) => setState(() => _rpe = v),
+              ),
+              const SizedBox(height: 8),
+              PrimaryButton(
+                label: 'Seria wykonana (${loggedForThis.length})',
+                icon: Icons.check,
+                onPressed: _logStrengthSet,
+              ),
+            ],
           ],
         ),
       ),

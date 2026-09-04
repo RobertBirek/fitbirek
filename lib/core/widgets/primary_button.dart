@@ -23,7 +23,10 @@ class PrimaryButton extends StatelessWidget {
         ? const SizedBox(
             height: 24,
             width: 24,
-            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: Colors.white,
+            ),
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -37,8 +40,14 @@ class PrimaryButton extends StatelessWidget {
           );
 
     if (outlined) {
-      return OutlinedButton(onPressed: isLoading ? null : onPressed, child: child);
+      return OutlinedButton(
+        onPressed: isLoading ? null : onPressed,
+        child: child,
+      );
     }
-    return ElevatedButton(onPressed: isLoading ? null : onPressed, child: child);
+    return ElevatedButton(
+      onPressed: isLoading ? null : onPressed,
+      child: child,
+    );
   }
 }

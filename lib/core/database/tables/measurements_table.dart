@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 /// Tabela pomiarów ciała - waga, obwody, tętno, ciśnienie.
+@DataClassName('MeasurementData')
 class Measurements extends Table {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get data => dateTime().withDefault(currentDateAndTime)();

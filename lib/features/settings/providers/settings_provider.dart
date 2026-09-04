@@ -41,12 +41,14 @@ class AppSettings {
 
 class SettingsNotifier extends StateNotifier<AppSettings> {
   SettingsNotifier()
-      : super(const AppSettings(
+    : super(
+        const AppSettings(
           themeMode: ThemeMode.dark,
           soundEnabled: true,
           vibrationEnabled: true,
           gongSound: 'gong1',
-        )) {
+        ),
+      ) {
     _load();
   }
 
@@ -112,7 +114,8 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   }
 }
 
-final settingsProvider =
-    StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
+final settingsProvider = StateNotifierProvider<SettingsNotifier, AppSettings>((
+  ref,
+) {
   return SettingsNotifier();
 });
