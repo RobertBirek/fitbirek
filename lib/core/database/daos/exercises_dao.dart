@@ -18,6 +18,16 @@ class ExercisesDao extends DatabaseAccessor<AppDatabase>
     return rows.length;
   }
 
+  /// Zwraca zbiór ID wszystkich ćwiczeń już obecnych w bazie.
+  /// Używane przez import przyrostowy, żeby wstawiać tylko nowe pozycje
+  /// bez dotykania (i bez nadpisywania `ulubione`) już istniejących wierszy.
+  Future<Set<String>> getAllIds() async {
+    final rows = await (selectOnly(
+      exercises,
+    )..addColumns([exercises.id])).get();
+    return rows.map((r) => r.read(exercises.id)!).toSet();
+  }
+
   Future<void> insertAll(List<ExercisesCompanion> rows) {
     return batch(
       (b) => b.insertAll(exercises, rows, mode: InsertMode.insertOrIgnore),

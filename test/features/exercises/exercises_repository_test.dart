@@ -1,0 +1,158 @@
+// Testy ExercisesRepository - import przyrostowy (syncFromAssets) z
+// assets/data/exercises.json do bazy Drift w pamięci, oraz podstawowa
+// walidacja rozmiaru/struktury samego pliku danych.
+
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:drift/drift.dart' hide isNotNull;
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:fitbirek_training/core/database/app_database.dart';
+import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  late AppDatabase db;
+  late ExercisesRepository repo;
+
+  setUp(() {
+    db = AppDatabase.forTesting(NativeDatabase.memory());
+    repo = ExercisesRepository(db);
+  });
+
+  tearDown(() async => await db.close());
+
+  group('syncFromAssets - import przyrostowy', () {
+    test('wgrywa całą bazę (316 ćwiczeń) przy pustej tabeli', () async {
+      await repo.syncFromAssets();
+
+      final count = await db.exercisesDao.count();
+      expect(count, 316);
+    });
+
+    test(
+      'drugie uruchomienie na niepustej, już zsynchronizowanej bazie nie duplikuje wierszy',
+      () async {
+        await repo.syncFromAssets();
+        await repo.syncFromAssets();
+
+        final count = await db.exercisesDao.count();
+        expect(count, 316);
+      },
+    );
+
+    test(
+      'wstawia tylko brakujące ID, gdy baza już zawiera część ćwiczeń (symulacja aktualizacji z 38 do 316)',
+      () async {
+        // Symulacja starej instalacji: tylko jedno ćwiczenie już w bazie,
+        // ręcznie oznaczone jako ulubione.
+        await db.exercisesDao.insertAll([
+          ExercisesCompanion.insert(
+            id: 'cw001',
+            nazwaPl: 'Pompki klasyczne',
+            nazwaEn: 'Push-up',
+            partiaGlowna: 'Klatka',
+            partieWspierajace: jsonEncode(['Triceps', 'Barki']),
+            sprzet: jsonEncode(['Masa własna']),
+            typ: 'Siłowe',
+            poziom: 'Średni',
+            wzorzecRuchu: 'Poziome wypychanie',
+            seriexPowtorzenia: '4 x 12-15',
+            tempo: '2-0-1-0',
+            kluczoweWskazowki: jsonEncode(['test']),
+            czesteBledy: jsonEncode(['test']),
+            progresja: 'test',
+            regresja: 'test',
+            zrodlo: 'test',
+            ulubione: const Value(true),
+          ),
+        ]);
+
+        expect(await db.exercisesDao.count(), 1);
+
+        await repo.syncFromAssets();
+
+        // Wszystkie 316 obecne po synchronizacji.
+        expect(await db.exercisesDao.count(), 316);
+
+        // Wcześniej istniejący wiersz NIE został nadpisany - `ulubione`
+        // ustawione ręcznie na true musi pozostać true.
+        final cw001 = await db.exercisesDao.getById('cw001');
+        expect(cw001, isNotNull);
+        expect(cw001!.ulubione, isTrue);
+      },
+    );
+
+    test(
+      'watchAll po synchronizacji zwraca 316 ćwiczeń z poprawnym mapowaniem list',
+      () async {
+        await repo.syncFromAssets();
+
+        final all = await repo.watchAll().first;
+        expect(all, hasLength(316));
+
+        final pompki = all.firstWhere((e) => e.id == 'cw001');
+        expect(pompki.sprzet, contains('Masa własna'));
+        expect(pompki.kluczoweWskazowki, isNotEmpty);
+      },
+    );
+  });
+
+  group('assets/data/exercises.json - walidacja statyczna pliku danych', () {
+    late List<dynamic> data;
+
+    setUpAll(() {
+      final file = File('assets/data/exercises.json');
+      data = jsonDecode(file.readAsStringSync()) as List<dynamic>;
+    });
+
+    test('zawiera dokładnie 316 pozycji', () {
+      expect(data, hasLength(316));
+    });
+
+    test('wszystkie id są unikalne i mają format cwNNN', () {
+      final ids = data.map((e) => e['id'] as String).toList();
+      expect(ids.toSet(), hasLength(ids.length));
+      for (final id in ids) {
+        expect(RegExp(r'^cw\d{3}$').hasMatch(id), isTrue, reason: id);
+      }
+    });
+
+    test('wszystkie nazwaPl i nazwaEn są unikalne', () {
+      final pl = data.map((e) => e['nazwaPl'] as String).toList();
+      final en = data.map((e) => e['nazwaEn'] as String).toList();
+      expect(pl.toSet(), hasLength(pl.length));
+      expect(en.toSet(), hasLength(en.length));
+    });
+
+    test('poziom i typ zgodne z dozwolonymi wartościami enum', () {
+      const validPoziom = {'Początkujący', 'Średni', 'Zaawansowany'};
+      const validTyp = {'Siłowe', 'Cardio', 'Izometryczne', 'Mobilność'};
+      for (final e in data) {
+        expect(validPoziom, contains(e['poziom']), reason: e['id']);
+        expect(validTyp, contains(e['typ']), reason: e['id']);
+      }
+    });
+
+    test('sprzęt jest zawsze podzbiorem znanych opcji sprzętu', () {
+      const validSprzet = {
+        'Masa własna',
+        'Hantle',
+        'Ławeczka',
+        'Drążek',
+        'Gumy oporowe',
+        'Bieżnia',
+        'Skakanka',
+      };
+      for (final e in data) {
+        final sprzet = List<String>.from(e['sprzet'] as List);
+        for (final s in sprzet) {
+          expect(validSprzet, contains(s), reason: '${e['id']}: $s');
+        }
+      }
+    });
+  });
+}

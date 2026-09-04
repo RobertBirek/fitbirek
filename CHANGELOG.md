@@ -9,8 +9,23 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 ## [Unreleased]
 
 ### Planowane
-- Rozszerzenie bazy ćwiczeń z 38 do 316 pozycji docelowych
 - VPS deployment (fit.birek.online)
+
+---
+
+## [0.7.0] — Rozszerzenie bazy ćwiczeń 38 → 316 + import przyrostowy
+
+### Added
+- `assets/data/exercises.json` rozszerzony z 38 do 316 ćwiczeń (`cw001`-`cw316`), zgodnych ze schematem Freezed (`Exercise`, 16 pól) i pełną walidacją: unikalne id/nazwyPl/nazwyEn, zgodne enumy (`poziom`, `typ`), sprzęt zawsze podzbiór `AppConstants.dostepnySprzetOpcje`. Rozkład per `partiaGlowna`: Nogi 55, Brzuch 45, Cardio 35, Klatka 32, Pośladki 30, Plecy 27, Barki 25, Mobilność 25, Biceps 21, Triceps 21.
+- `scripts/generate_exercises.py` — generator Python używany do wytworzenia i scalenia nowych 278 pozycji (funkcja `add_family()` grupująca warianty ćwiczeń o wspólnym wzorcu ruchu/wskazówkach/błędach, funkcja `merge_and_write()` do przypisania sekwencyjnych ID i zapisu finalnego JSON). Pozostaje w repo jako wzorzec do kolejnych rozszerzeń bazy.
+- Sprzęt "Bieżnia" (zdefiniowany w `AppConstants.dostepnySprzetOpcje`, ale dotąd nieużywany przez żadne ćwiczenie) doczekał się realnych pozycji: marsz z inklinacją, interwały HIIT na bieżni.
+
+### Fixed
+- **Krytyczne**: `ExercisesRepository.importFromAssetsIfEmpty()` (blokował import na urządzeniach z niepustą tabelą — nowe ćwiczenia nigdy nie trafiłyby do istniejących instalacji) zastąpiony przez `syncFromAssets()` — import przyrostowy, wstawiający tylko ćwiczenia o `id` jeszcze nieobecnym w bazie lokalnej. Nie nadpisuje/nie usuwa istniejących wierszy, więc `ulubione` ustawione przez użytkownika jest zachowane. Dodano `ExercisesDao.getAllIds()` do wsparcia tej logiki. Zaktualizowano call site w `lib/main.dart`.
+
+### Docs
+- `CONTRIBUTING.md` — poprawiono niezgodność nazwy pola (`sprzetWymagany` → `sprzet`, zgodnie z rzeczywistym modelem), usunięto nieaktualną wzmiankę o `applicationId` (naprawione w 0.6.1), dodano wskazówki o imporcie przyrostowym i generatorze `scripts/generate_exercises.py`.
+- `README.md` — zaktualizowano opis bazy ćwiczeń (316 zamiast "38, docelowo 316"), usunięto zrealizowaną pozycję z tabeli "Znane ograniczenia".
 
 ---
 

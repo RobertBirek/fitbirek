@@ -13,7 +13,7 @@ Aplikacja nie jest generycznym trackerem — to narzędzie skrojone pod realny p
 ### MVP (zrealizowane)
 - **Onboarding** (3 ekrany) — profil użytkownika, cel, dostępny sprzęt
 - **5-tab bottom navigation**: Dziś / Baza / Trening / Postępy / Ustawienia
-- **Baza ćwiczeń** — 38 ćwiczeń startowych (docelowo 316), filtrowanie po partii ciała, sprzęcie, poziomie
+- **Baza ćwiczeń** — 316 ćwiczeń, filtrowanie po partii ciała, sprzęcie, poziomie
 - **Aktywna sesja treningowa**:
   - Logowanie serii (waga × powtórzenia) z automatycznym wykrywaniem rekordów osobistych (formuła Epley 1RM)
   - **Timer przerw** — presety 60/90/120/180s + custom, pulsowanie wizualne przy <5s, gong + wibracja, pełnoekranowy overlay
@@ -110,7 +110,8 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 | Zadanie | Szacowany czas | Priorytet |
 |---|---|---|
 | VPS deployment (fit.birek.online) | 2-3h | Średni |
-| Rozszerzenie bazy ćwiczeń z 38 do 316 docelowych | 8-10h (dane + weryfikacja) | Niski (zależy od tempa dodawania) |
+
+**Uwaga o bazie ćwiczeń**: rozszerzona z 38 do docelowych 316 pozycji (`assets/data/exercises.json`, wygenerowane skryptem `scripts/generate_exercises.py`). Import do bazy Drift jest przyrostowy (`ExercisesRepository.syncFromAssets()`) — na urządzeniach z wcześniejszą wersją apki (tylko 38 ćwiczeń) nowe pozycje dopiszą się automatycznie przy starcie, bez utraty oznaczeń „ulubione”.
 
 **Uwaga o gongu**: prawdziwy plik `assets/sounds/gong.mp3` jest już dostarczony (wygenerowany, pojedyncze uderzenie ~2s). `GongService` zachowuje mechanizm fallbacku na `SystemSoundType.alert` na wypadek problemu z odtwarzaniem audio na konkretnym urządzeniu — to defensywny wzorzec, nie oznacza braku pliku.
 

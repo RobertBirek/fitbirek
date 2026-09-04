@@ -35,7 +35,7 @@ class _AppBootstrapState extends ConsumerState<_AppBootstrap> {
     // Wymuszamy inicjalizację bazy (touch), następnie import startowy.
     // ignore: unused_local_variable
     final _ = db;
-    await repo.importFromAssetsIfEmpty();
+    await repo.syncFromAssets();
     if (mounted) setState(() => _ready = true);
   }
 

@@ -4,50 +4,57 @@ import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/models/exercise.dart';
 
-/// Repozytorium bazy ćwiczeń - odpowiada za import startowy z JSON
+/// Repozytorium bazy ćwiczeń - odpowiada za import (przyrostowy) z JSON
 /// oraz konwersję między wierszami Drift a modelem domenowym Exercise.
-///
-/// TODO: import pełnej bazy 316 ćwiczeń z Excel poprzez skrypt build_exercises.dart
-/// (zobacz sekcję "Jak dodać nowe ćwiczenia" w README.md)
 class ExercisesRepository {
   ExercisesRepository(this._db);
 
   final AppDatabase _db;
 
-  /// Importuje ćwiczenia z assets/data/exercises.json do bazy Drift,
-  /// ale tylko jeśli baza jest pusta (pierwsze uruchomienie aplikacji).
-  Future<void> importFromAssetsIfEmpty() async {
-    final currentCount = await _db.exercisesDao.count();
-    if (currentCount > 0) return;
+  /// Synchronizuje ćwiczenia z assets/data/exercises.json do bazy Drift.
+  ///
+  /// Import jest PRZYROSTOWY: wstawia tylko ćwiczenia, których `id` nie
+  /// istnieje jeszcze w bazie. Dzięki temu:
+  /// - na pierwszym uruchomieniu wgrywa cały starter pack,
+  /// - po aktualizacji aplikacji z rozszerzoną bazą (np. 38 -> 316) dopisuje
+  ///   tylko nowe pozycje na urządzeniach, które już mają starsze dane,
+  /// - nigdy nie nadpisuje/nie usuwa istniejących wierszy, więc pole
+  ///   `ulubione` ustawione wcześniej przez użytkownika jest zachowane.
+  Future<void> syncFromAssets() async {
+    final existingIds = await _db.exercisesDao.getAllIds();
 
     final jsonString = await rootBundle.loadString(
       'assets/data/exercises.json',
     );
     final List<dynamic> data = jsonDecode(jsonString);
 
-    final rows = data.map((raw) {
-      final map = raw as Map<String, dynamic>;
-      return ExercisesCompanion.insert(
-        id: map['id'] as String,
-        nazwaPl: map['nazwaPl'] as String,
-        nazwaEn: map['nazwaEn'] as String,
-        partiaGlowna: map['partiaGlowna'] as String,
-        partieWspierajace: jsonEncode(map['partieWspierajace']),
-        sprzet: jsonEncode(map['sprzet']),
-        typ: map['typ'] as String,
-        poziom: map['poziom'] as String,
-        wzorzecRuchu: map['wzorzecRuchu'] as String,
-        seriexPowtorzenia: map['seriexPowtorzenia'] as String,
-        tempo: map['tempo'] as String,
-        kluczoweWskazowki: jsonEncode(map['kluczoweWskazowki']),
-        czesteBledy: jsonEncode(map['czesteBledy']),
-        progresja: map['progresja'] as String,
-        regresja: map['regresja'] as String,
-        zrodlo: map['zrodlo'] as String,
-        ulubione: Value(map['ulubione'] as bool? ?? false),
-      );
-    }).toList();
+    final rows = data
+        .cast<Map<String, dynamic>>()
+        .where((map) => !existingIds.contains(map['id'] as String))
+        .map((map) {
+          return ExercisesCompanion.insert(
+            id: map['id'] as String,
+            nazwaPl: map['nazwaPl'] as String,
+            nazwaEn: map['nazwaEn'] as String,
+            partiaGlowna: map['partiaGlowna'] as String,
+            partieWspierajace: jsonEncode(map['partieWspierajace']),
+            sprzet: jsonEncode(map['sprzet']),
+            typ: map['typ'] as String,
+            poziom: map['poziom'] as String,
+            wzorzecRuchu: map['wzorzecRuchu'] as String,
+            seriexPowtorzenia: map['seriexPowtorzenia'] as String,
+            tempo: map['tempo'] as String,
+            kluczoweWskazowki: jsonEncode(map['kluczoweWskazowki']),
+            czesteBledy: jsonEncode(map['czesteBledy']),
+            progresja: map['progresja'] as String,
+            regresja: map['regresja'] as String,
+            zrodlo: map['zrodlo'] as String,
+            ulubione: Value(map['ulubione'] as bool? ?? false),
+          );
+        })
+        .toList();
 
+    if (rows.isEmpty) return;
     await _db.exercisesDao.insertAll(rows);
   }
 

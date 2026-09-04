@@ -14,18 +14,20 @@ Ten dokument opisuje, jak bezpiecznie i zgodnie z architekturą projektu dodawa�
 
 ## ➕ Jak dodać nowe ćwiczenie do bazy
 
-Ćwiczenia startowe (38 z 316 docelowych) są w `assets/data/exercises.json`, wczytywane przy pierwszym uruchomieniu do tabeli Drift `Exercises`.
+Baza ćwiczeń (316 pozycji, `cw001`-`cw316`) jest w `assets/data/exercises.json`, synchronizowana przy każdym starcie aplikacji do tabeli Drift `Exercises` (patrz `ExercisesRepository.syncFromAssets()`).
 
 1. Otwórz `assets/data/exercises.json`
-2. Dodaj nowy obiekt zgodny ze strukturą istniejących wpisów — sprawdź `lib/core/models/exercise.dart` (Freezed) dla pełnej listy pól i ich typów
+2. Dodaj nowy obiekt zgodny ze strukturą istniejących wpisów — sprawdź `lib/core/models/exercise.dart` (Freezed) dla pełnej listy pól i ich typów. Nadaj mu kolejny wolny `id` (`cw317`, `cw318`, ...) — **nigdy nie zmieniaj istniejących ID**, bo to psuje referencje w zapisanych planach/sesjach użytkownika.
 3. Pamiętaj o polach kluczowych dla logiki:
    - `typ` — jeśli ćwiczenie jest izometryczne (plank, wall-sit, dead-hang), musi mieć `typ: 'Izometryczne'` — inaczej UI sesji treningowej nie pokaże stopera, a pola waga/powtórzenia
    - `partiaGlowna` — używane przez `PlanGenerator` do doboru ćwiczeń w generatorze planu
-   - `sprzetWymagany` — lista sprzętu; generator planu filtruje po dostępnym sprzęcie użytkownika
+   - `sprzet` — lista sprzętu (nazwa pola w modelu/JSON to `sprzet`, NIE `sprzetWymagany`); generator planu filtruje po dostępnym sprzęcie użytkownika (`dostepnySprzet` w `UserProfile`), wymagając że KAŻDY element tej listy musi być dostępny
    - `poziom` — 'Początkujący' / 'Średni' / 'Zaawansowany'
-4. Odśwież aplikację — seed danych wczytuje się przy starcie jeśli tabela jest pusta (sprawdź logikę w `exercises_repository.dart` / miejscu seedowania, żeby nie duplikować danych przy każdym starcie)
+4. Odśwież aplikację — `syncFromAssets()` wstawia tylko ćwiczenia z ID, które jeszcze nie istnieją w bazie lokalnej (import przyrostowy), więc nowe pozycje trafią też na urządzenia z już zainstalowaną aplikacją, bez duplikowania istniejących wierszy i bez resetowania `ulubione`.
 
-**Nie edytuj ręcznie tabeli SQLite** — zawsze przez plik JSON + mechanizm seedowania, żeby zmiany były wersjonowane w git.
+**Nie edytuj ręcznie tabeli SQLite** — zawsze przez plik JSON + mechanizm synchronizacji, żeby zmiany były wersjonowane w git.
+
+**Generator masowy**: `scripts/generate_exercises.py` — skrypt użyty do rozszerzenia bazy z 38 do 316 pozycji (funkcja `add_family()` grupująca warianty ćwiczeń o wspólnym wzorcu ruchu). Można go użyć jako wzorca do kolejnych rozszerzeń, uruchamiając `python3 scripts/generate_exercises.py` po dopisaniu nowych `add_family(...)`.
 
 ---
 
@@ -120,4 +122,4 @@ Jeśli zmieniasz `applicationId`/`namespace` lub dodajesz zależności wymagają
 4. Jeśli używasz Firebase: `google-services.json` `package_name` musi zgadzać się z powyższym
 5. Wyczyść tylko cache Androida (nie `build/web`): `rm -rf android/build android/app/build android/.gradle`
 
-**Znany dług techniczny**: obecny `applicationId` to `com.fitbirek.fitbirek_training`, podczas gdy docelowa nazwa pakietu z metadanych to `com.fitbirek.training`. Nie naprawione — jeśli naprawiasz, pamiętaj o pełnej synchronizacji wg checklisty powyżej.
+`applicationId`/`namespace` jest już ujednolicony na `com.fitbirek.training` (zweryfikowane realnym buildem APK + `aapt dump badging`) — jeśli w przyszłości zmieniasz pakiet ponownie, pamiętaj o pełnej synchronizacji wg checklisty powyżej.
