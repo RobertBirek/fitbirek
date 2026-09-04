@@ -1,0 +1,1067 @@
+[
+  {
+    "id": "cw001",
+    "nazwaPl": "Pompki klasyczne",
+    "nazwaEn": "Push-up",
+    "partiaGlowna": "Klatka",
+    "partieWspierajace": ["Triceps", "Barki", "Brzuch"],
+    "sprzet": ["Masa własna"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Poziome wypychanie",
+    "seriexPowtorzenia": "4 x 12-15",
+    "tempo": "2-0-1-0",
+    "kluczoweWskazowki": [
+      "Ciało w jednej linii od głowy do stóp",
+      "Łokcie pod kątem ok. 45 stopni od tułowia",
+      "Pełny zakres ruchu - klatka blisko podłoża",
+      "Napięty brzuch i pośladki przez cały ruch"
+    ],
+    "czesteBledy": [
+      "Opadanie bioder (brak napięcia core)",
+      "Zbyt szerokie rozstawienie łokci (obciąża barki)",
+      "Niepełny zakres ruchu"
+    ],
+    "progresja": "Diamond push-up, pompki z podniesionymi nogami, pompki plyometryczne",
+    "regresja": "Pompki na kolanach, pompki z rękami na podwyższeniu",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw002",
+    "nazwaPl": "Wyciskanie hantli leżąc",
+    "nazwaEn": "Dumbbell Bench Press",
+    "partiaGlowna": "Klatka",
+    "partieWspierajace": ["Triceps", "Barki"],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Poziome wypychanie",
+    "seriexPowtorzenia": "4 x 8-10",
+    "tempo": "3-0-1-0",
+    "kluczoweWskazowki": [
+      "Łopatki ściągnięte i zablokowane na ławce",
+      "Stopy stabilnie na podłodze",
+      "Hantle schodzą do wysokości klatki, nie do brody",
+      "Kontrolowane opuszczanie, mocne wypchnięcie"
+    ],
+    "czesteBledy": [
+      "Odbijanie hantli od klatki",
+      "Unoszenie bioder z ławki",
+      "Zbyt szybkie tempo fazy negatywnej"
+    ],
+    "progresja": "Wyciskanie jednorącz (unilateral), większe obciążenie",
+    "regresja": "Wyciskanie na podłodze (floor press)",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw003",
+    "nazwaPl": "Rozpiętki hantlami skos dodatni",
+    "nazwaEn": "Incline Dumbbell Fly",
+    "partiaGlowna": "Klatka",
+    "partieWspierajace": ["Barki"],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izolacja - przywodzenie ramion",
+    "seriexPowtorzenia": "3 x 12-15",
+    "tempo": "3-1-1-0",
+    "kluczoweWskazowki": [
+      "Ławka ustawiona na skos 30-45 stopni",
+      "Lekkie zgięcie w łokciach przez cały ruch (stałe)",
+      "Ruch prowadzony z barków, nie z łokci",
+      "Poczuj rozciągnięcie klatki na dole ruchu"
+    ],
+    "czesteBledy": [
+      "Prostowanie łokci do końca (przeciążenie stawu)",
+      "Zbyt duże obciążenie prowadzące do skrócenia zakresu",
+      "Zbyt wysoki kąt ławki (przenosi na barki)"
+    ],
+    "progresja": "Rozpiętki na skosie z pauzą na dole",
+    "regresja": "Rozpiętki z mniejszym obciążeniem, płaska ławka",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw004",
+    "nazwaPl": "Pompki diamond",
+    "nazwaEn": "Diamond Push-up",
+    "partiaGlowna": "Klatka",
+    "partieWspierajace": ["Triceps", "Barki"],
+    "sprzet": ["Masa własna"],
+    "typ": "Siłowe",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Poziome wypychanie",
+    "seriexPowtorzenia": "3 x 8-12",
+    "tempo": "2-0-1-0",
+    "kluczoweWskazowki": [
+      "Dłonie złączone pod klatką tworząc romb (diament)",
+      "Łokcie blisko tułowia",
+      "Ciało napięte w jednej linii",
+      "Kontrolowane tempo - to trudniejszy wariant"
+    ],
+    "czesteBledy": [
+      "Rozjeżdżanie łokci na boki",
+      "Opadanie bioder",
+      "Zbyt szybkie tempo bez kontroli"
+    ],
+    "progresja": "Diamond push-up z podniesionymi nogami",
+    "regresja": "Diamond push-up na kolanach, klasyczne pompki",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw005",
+    "nazwaPl": "Podciąganie nachwytem",
+    "nazwaEn": "Pull-up",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": ["Biceps", "Barki", "Brzuch"],
+    "sprzet": ["Drążek"],
+    "typ": "Siłowe",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Wertykalne przyciąganie",
+    "seriexPowtorzenia": "4 x 6-10",
+    "tempo": "2-0-1-1",
+    "kluczoweWskazowki": [
+      "Chwyt nieco szerszy niż barki, nachwyt",
+      "Start z pełnego wyprostu ramion (dead hang)",
+      "Prowadź ruch łopatkami - 'łokcie do kieszeni'",
+      "Broda ponad drążkiem, kontrolowany powrót"
+    ],
+    "czesteBledy": [
+      "Kipping - bujanie się dla ułatwienia",
+      "Niepełny zakres ruchu (brak dead hang na dole)",
+      "Ciągnięcie samymi rękami bez pracy łopatek"
+    ],
+    "progresja": "Podciąganie z obciążeniem, jednorącz negative",
+    "regresja": "Podciąganie z gumą asekuracyjną, negatywy (tylko opuszczanie)",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw006",
+    "nazwaPl": "Wiosłowanie hantlem",
+    "nazwaEn": "Single-Arm Dumbbell Row",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": ["Biceps", "Barki"],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Horyzontalne przyciąganie",
+    "seriexPowtorzenia": "4 x 10-12 na stronę",
+    "tempo": "2-0-1-1",
+    "kluczoweWskazowki": [
+      "Kolano i ręka podparte na ławce, plecy równoległe do podłogi",
+      "Ciągnij łokciem blisko tułowia do biodra",
+      "Ściągnij łopatkę na szczycie ruchu",
+      "Kontroluj fazę opuszczania"
+    ],
+    "czesteBledy": [
+      "Rotacja tułowia dla ułatwienia ciągnięcia",
+      "Ciągnięcie w stronę klatki zamiast bioder",
+      "Zbyt szybkie, urywane ruchy"
+    ],
+    "progresja": "Większe obciążenie, wiosłowanie z pauzą na szczycie",
+    "regresja": "Wiosłowanie oburącz w podłopieniu",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw007",
+    "nazwaPl": "Superman",
+    "nazwaEn": "Superman Hold",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": ["Pośladki", "Brzuch"],
+    "sprzet": ["Masa własna"],
+    "typ": "Izometryczne",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Wyprost tułowia",
+    "seriexPowtorzenia": "3 x 12-15 (lub 30-45s hold)",
+    "tempo": "2-1-2-0",
+    "kluczoweWskazowki": [
+      "Leżenie na brzuchu, ręce wyciągnięte przed siebie",
+      "Unieś jednocześnie ręce, klatkę i nogi",
+      "Wzrok skierowany w podłogę, neutralna szyja",
+      "Ściśnij pośladki i dolne plecy w górnej fazie"
+    ],
+    "czesteBledy": [
+      "Przeprost szyi (patrzenie przed siebie)",
+      "Zbyt szybkie, machowe ruchy",
+      "Brak napięcia pośladków"
+    ],
+    "progresja": "Superman z dłuższym utrzymaniem, z obciążeniem w rękach",
+    "regresja": "Alternatywne unoszenie ręka-noga",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw008",
+    "nazwaPl": "Face pull gumą",
+    "nazwaEn": "Band Face Pull",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": ["Barki"],
+    "sprzet": ["Gumy oporowe"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Horyzontalne przyciąganie",
+    "seriexPowtorzenia": "3 x 15-20",
+    "tempo": "2-1-2-0",
+    "kluczoweWskazowki": [
+      "Guma zamocowana na wysokości oczu/klatki",
+      "Ciągnij w kierunku twarzy, łokcie wysoko",
+      "Rotacja zewnętrzna ramion na końcu ruchu",
+      "Napięcie w łopatkach, nie w ramionach"
+    ],
+    "czesteBledy": [
+      "Ciągnięcie tylko rękami bez pracy łopatek",
+      "Zbyt niskie łokcie",
+      "Zbyt duże obciążenie gumy skracające zakres"
+    ],
+    "progresja": "Mocniejsza guma, wolniejsze tempo ekscentryczne",
+    "regresja": "Słabsza guma, mniejszy zakres",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw009",
+    "nazwaPl": "Wyciskanie hantli nad głowę",
+    "nazwaEn": "Dumbbell Shoulder Press",
+    "partiaGlowna": "Barki",
+    "partieWspierajace": ["Triceps", "Brzuch"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Wertykalne wypychanie",
+    "seriexPowtorzenia": "4 x 8-10",
+    "tempo": "2-0-1-0",
+    "kluczoweWskazowki": [
+      "Stabilna postawa, stopy na szerokość barków lub siad na ławce",
+      "Hantle startują na wysokości barków",
+      "Wypychaj po lekkim łuku, nie idealnie prosto",
+      "Nie blokuj łokci agresywnie na górze"
+    ],
+    "czesteBledy": [
+      "Nadmierne wyginanie odcinka lędźwiowego",
+      "Zbyt szybkie tempo bez kontroli",
+      "Niepełny zakres na dole ruchu"
+    ],
+    "progresja": "Wyciskanie jednorącz, wyciskanie w staniu bez podparcia",
+    "regresja": "Wyciskanie siedząc z podparciem pleców",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw010",
+    "nazwaPl": "Wznosy bokiem",
+    "nazwaEn": "Lateral Raise",
+    "partiaGlowna": "Barki",
+    "partieWspierajace": [],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izolacja - odwodzenie ramion",
+    "seriexPowtorzenia": "3 x 12-15",
+    "tempo": "2-1-2-0",
+    "kluczoweWskazowki": [
+      "Lekkie zgięcie w łokciach, stałe podczas ruchu",
+      "Unoś ramiona do wysokości barków, nie wyżej",
+      "Prowadź ruch łokciami, nie nadgarstkami",
+      "Kontrolowane opuszczanie - to najważniejsza faza"
+    ],
+    "czesteBledy": [
+      "Machanie ciężarem z użyciem impetu tułowia",
+      "Unoszenie ponad linię barków (przeciążenie stawu)",
+      "Zbyt duże obciążenie psujące technikę"
+    ],
+    "progresja": "Wznosy z pauzą na szczycie, wolniejsze tempo",
+    "regresja": "Mniejsze obciążenie, wznosy siedząc",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw011",
+    "nazwaPl": "Pike push-up",
+    "nazwaEn": "Pike Push-up",
+    "partiaGlowna": "Barki",
+    "partieWspierajace": ["Triceps", "Klatka"],
+    "sprzet": ["Masa własna"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Wertykalne wypychanie",
+    "seriexPowtorzenia": "3 x 10-12",
+    "tempo": "2-0-1-0",
+    "kluczoweWskazowki": [
+      "Pozycja odwróconego V - biodra wysoko w górze",
+      "Ręce i stopy szeroko rozstawione dla stabilności",
+      "Głowa opuszczana między dłonie, wzrok w kierunku stóp",
+      "Ruch przypomina wyciskanie nad głowę"
+    ],
+    "czesteBledy": [
+      "Zbyt małe ugięcie w biodrach (zamienia w pompkę klasyczną)",
+      "Opadanie na czubek głowy zamiast czoła",
+      "Niepełny zakres ruchu"
+    ],
+    "progresja": "Pike push-up ze stopami na podwyższeniu (elevated), handstand push-up",
+    "regresja": "Pike push-up z kolanami ugiętymi, mniejszy zakres",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw012",
+    "nazwaPl": "Reverse fly",
+    "nazwaEn": "Reverse Fly",
+    "partiaGlowna": "Barki",
+    "partieWspierajace": ["Plecy"],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izolacja - odwodzenie ramion w opadzie",
+    "seriexPowtorzenia": "3 x 12-15",
+    "tempo": "2-1-2-0",
+    "kluczoweWskazowki": [
+      "Opad tułowia w przód, plecy neutralne (nie zaokrąglone)",
+      "Lekkie zgięcie łokci, stałe podczas ruchu",
+      "Unoś ramiona na boki aż do wysokości tułowia",
+      "Ściągnij łopatki na szczycie ruchu"
+    ],
+    "czesteBledy": [
+      "Zaokrąglanie odcinka lędźwiowego i piersiowego",
+      "Machanie ciężarem",
+      "Prostowanie ramion w łokciach (zamiast stałego kąta)"
+    ],
+    "progresja": "Reverse fly na skosie ujemnym, wolniejsze tempo",
+    "regresja": "Mniejsze obciążenie, reverse fly gumą",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw013",
+    "nazwaPl": "Uginanie hantli",
+    "nazwaEn": "Dumbbell Bicep Curl",
+    "partiaGlowna": "Biceps",
+    "partieWspierajace": ["Przedramiona"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izolacja - zgięcie łokcia",
+    "seriexPowtorzenia": "3 x 10-12",
+    "tempo": "2-0-2-0",
+    "kluczoweWskazowki": [
+      "Łokcie przyklejone do tułowia przez cały ruch",
+      "Pełny zakres - od wyprostu do pełnego zgięcia",
+      "Nie odchylaj się do tyłu dla ułatwienia",
+      "Kontroluj fazę opuszczania"
+    ],
+    "czesteBledy": [
+      "Machanie łokciami do przodu/tyłu",
+      "Używanie impetu całego ciała",
+      "Niepełny zakres ruchu"
+    ],
+    "progresja": "Curl 21s, wolniejsze tempo ekscentryczne, większe obciążenie",
+    "regresja": "Mniejsze obciążenie, curl oparty o ścianę"
+    ,
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw014",
+    "nazwaPl": "Hammer curl",
+    "nazwaEn": "Hammer Curl",
+    "partiaGlowna": "Biceps",
+    "partieWspierajace": ["Przedramiona"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izolacja - zgięcie łokcia (chwyt neutralny)",
+    "seriexPowtorzenia": "3 x 10-12",
+    "tempo": "2-0-2-0",
+    "kluczoweWskazowki": [
+      "Chwyt neutralny (młotkowy), kciuki do góry",
+      "Łokcie stabilne, blisko tułowia",
+      "Angażuje też mięsień ramienny (brachialis)",
+      "Pełny zakres ruchu"
+    ],
+    "czesteBledy": [
+      "Rotacja nadgarstka podczas ruchu",
+      "Machanie tułowiem",
+      "Zbyt szybkie tempo"
+    ],
+    "progresja": "Cross-body hammer curl, większe obciążenie",
+    "regresja": "Mniejsze obciążenie, ruch jednorącz z kontrolą",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw015",
+    "nazwaPl": "Chin-up",
+    "nazwaEn": "Chin-up",
+    "partiaGlowna": "Biceps",
+    "partieWspierajace": ["Plecy", "Brzuch"],
+    "sprzet": ["Drążek"],
+    "typ": "Siłowe",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Wertykalne przyciąganie (podchwyt)",
+    "seriexPowtorzenia": "4 x 6-10",
+    "tempo": "2-0-1-1",
+    "kluczoweWskazowki": [
+      "Podchwyt na szerokość barków",
+      "Start z pełnego wyprostu (dead hang)",
+      "Większe zaangażowanie bicepsa niż przy nachwycie",
+      "Broda ponad drążkiem, kontrolowany powrót"
+    ],
+    "czesteBledy": [
+      "Kipping - bujanie się",
+      "Niepełny zakres ruchu",
+      "Szybkie, niekontrolowane opuszczanie"
+    ],
+    "progresja": "Chin-up z obciążeniem, negatywy jednorącz",
+    "regresja": "Chin-up z gumą asekuracyjną, negatywy",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw016",
+    "nazwaPl": "Zottman curl",
+    "nazwaEn": "Zottman Curl",
+    "partiaGlowna": "Biceps",
+    "partieWspierajace": ["Przedramiona"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izolacja - zgięcie łokcia z rotacją",
+    "seriexPowtorzenia": "3 x 10-12",
+    "tempo": "2-0-2-0",
+    "kluczoweWskazowki": [
+      "Uginaj w chwycie podchwytem (jak klasyczny curl)",
+      "Na szczycie obróć nadgarstki do nachwytu",
+      "Opuszczaj w nachwycie - to angażuje przedramiona",
+      "Na dole wróć do podchwytu"
+    ],
+    "czesteBledy": [
+      "Zbyt szybka rotacja nadgarstków",
+      "Machanie łokciami",
+      "Pominięcie fazy nachwytowej opuszczania"
+    ],
+    "progresja": "Większe obciążenie, wolniejsze tempo rotacji",
+    "regresja": "Mniejsze obciążenie, wykonywanie jednorącz z kontrolą",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw017",
+    "nazwaPl": "Skull crusher",
+    "nazwaEn": "Skull Crusher",
+    "partiaGlowna": "Triceps",
+    "partieWspierajace": [],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izolacja - wyprost łokcia",
+    "seriexPowtorzenia": "3 x 10-12",
+    "tempo": "2-1-2-0",
+    "kluczoweWskazowki": [
+      "Leżenie na ławce, hantle nad czołem",
+      "Ramiona nieruchome, pracują tylko przedramiona",
+      "Opuszczaj hantle w kierunku czoła/skroni",
+      "Wyprostuj łokcie na górze bez blokowania stawu"
+    ],
+    "czesteBledy": [
+      "Ruszanie ramionami (zmienia to w wyciskanie francuskie)",
+      "Zbyt duże obciążenie ryzykowne dla łokci",
+      "Niekontrolowane opuszczanie"
+    ],
+    "progresja": "Większe obciążenie, wersja na skosie ujemnym",
+    "regresja": "Mniejsze obciążenie, wolniejsze tempo",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw018",
+    "nazwaPl": "Pompki diamentowe - wariant triceps",
+    "nazwaEn": "Close-Grip Push-up",
+    "partiaGlowna": "Triceps",
+    "partieWspierajace": ["Klatka", "Barki"],
+    "sprzet": ["Masa własna"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Poziome wypychanie (chwyt wąski)",
+    "seriexPowtorzenia": "3 x 10-12",
+    "tempo": "2-0-1-0",
+    "kluczoweWskazowki": [
+      "Dłonie blisko siebie pod klatką",
+      "Łokcie ślizgają się blisko tułowia",
+      "Ciało napięte w jednej linii",
+      "Skoncentruj się na pracy tricepsa"
+    ],
+    "czesteBledy": [
+      "Rozjeżdżanie łokci na boki",
+      "Opadanie bioder",
+      "Niepełny zakres ruchu"
+    ],
+    "progresja": "Wersja z podniesionymi nogami, jednorącz",
+    "regresja": "Na kolanach, z rękami na podwyższeniu",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw019",
+    "nazwaPl": "Bench dips",
+    "nazwaEn": "Bench Dips",
+    "partiaGlowna": "Triceps",
+    "partieWspierajace": ["Barki", "Klatka"],
+    "sprzet": ["Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Wertykalne wypychanie",
+    "seriexPowtorzenia": "3 x 12-15",
+    "tempo": "2-1-1-0",
+    "kluczoweWskazowki": [
+      "Ręce na krawędzi ławki, nogi wyprostowane przed sobą",
+      "Opuszczaj biodra blisko ławki, nie na boki",
+      "Łokcie kierują się do tyłu, nie na boki",
+      "Nie schodź niżej niż 90 stopni w łokciu (ochrona barków)"
+    ],
+    "czesteBledy": [
+      "Zbyt głęboki zakres przeciążający stawy barkowe",
+      "Odsuwanie bioder od ławki",
+      "Rozjeżdżanie łokci na boki"
+    ],
+    "progresja": "Nogi na podwyższeniu, dodatkowe obciążenie na kolanach",
+    "regresja": "Nogi ugięte bliżej ciała (mniejsze obciążenie)",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw020",
+    "nazwaPl": "Kickback",
+    "nazwaEn": "Triceps Kickback",
+    "partiaGlowna": "Triceps",
+    "partieWspierajace": [],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izolacja - wyprost łokcia w opadzie",
+    "seriexPowtorzenia": "3 x 12-15",
+    "tempo": "2-1-2-0",
+    "kluczoweWskazowki": [
+      "Tułów w opadzie, ramię równoległe do podłogi",
+      "Ramię nieruchome, pracuje tylko przedramię",
+      "Wyprostuj łokieć do końca (kontrolowanie)",
+      "Wróć powoli do pozycji startowej"
+    ],
+    "czesteBledy": [
+      "Ruszanie ramieniem (zmiana kąta w barku)",
+      "Zbyt duże obciążenie skracające zakres",
+      "Machanie przedramieniem"
+    ],
+    "progresja": "Wolniejsze tempo, pauza na szczycie",
+    "regresja": "Mniejsze obciążenie",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw021",
+    "nazwaPl": "Goblet squat",
+    "nazwaEn": "Goblet Squat",
+    "partiaGlowna": "Nogi",
+    "partieWspierajace": ["Pośladki", "Brzuch"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Zgięcie kolan i bioder (przysiad)",
+    "seriexPowtorzenia": "4 x 12-15",
+    "tempo": "2-1-1-0",
+    "kluczoweWskazowki": [
+      "Hantel trzymany blisko klatki obiema rękami",
+      "Stopy nieco szerzej niż barki, palce lekko na zewnątrz",
+      "Schodź głęboko - biodra poniżej kolan jeśli mobilność pozwala",
+      "Kolana w linii ze stopami, nie zapadają się do środka"
+    ],
+    "czesteBledy": [
+      "Zapadanie kolan do środka (valgus)",
+      "Odrywanie pięt od podłoża",
+      "Zaokrąglanie dolnego odcinka pleców na dole"
+    ],
+    "progresja": "Większe obciążenie, przysiad z pauzą na dole",
+    "regresja": "Przysiad do skrzynki/krzesła, bez obciążenia",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw022",
+    "nazwaPl": "Bulgarian split squat",
+    "nazwaEn": "Bulgarian Split Squat",
+    "partiaGlowna": "Nogi",
+    "partieWspierajace": ["Pośladki"],
+    "sprzet": ["Hantle", "Ławeczka"],
+    "typ": "Siłowe",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Jednonóż zgięcie kolana i biodra",
+    "seriexPowtorzenia": "3 x 10-12 na nogę",
+    "tempo": "2-1-1-0",
+    "kluczoweWskazowki": [
+      "Tylna stopa oparta na ławce, przednia noga robi pracę",
+      "Tułów lekko w przód, pionowe piszczele przedniej nogi",
+      "Schodź kontrolowanie do kąta ~90 stopni w kolanie",
+      "Wypychaj się przez piętę przedniej stopy"
+    ],
+    "czesteBledy": [
+      "Zbyt duży krok do przodu lub do tyłu (zaburza balans)",
+      "Kolano wychodzące daleko za linię palców",
+      "Utrata równowagi przez brak stabilizacji core"
+    ],
+    "progresja": "Z hantlami w rękach, deficit (przednia stopa na podwyższeniu)",
+    "regresja": "Bez obciążenia, z podparciem ręki o ścianę",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw023",
+    "nazwaPl": "RDL (rumuński martwy ciąg)",
+    "nazwaEn": "Romanian Deadlift",
+    "partiaGlowna": "Nogi",
+    "partieWspierajace": ["Pośladki", "Plecy"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Zawias biodrowy (hip hinge)",
+    "seriexPowtorzenia": "4 x 10-12",
+    "tempo": "3-1-1-0",
+    "kluczoweWskazowki": [
+      "Hantle blisko ud, delikatne zgięcie kolan (stałe)",
+      "Ruch inicjowany z bioder, nie z pleców",
+      "Plecy neutralne przez cały ruch",
+      "Poczuj rozciągnięcie w dwugłowych (hamstring) na dole"
+    ],
+    "czesteBledy": [
+      "Zaokrąglanie odcinka lędźwiowego",
+      "Zgięcie kolan zamiast pracy z bioder (zmiana w przysiad)",
+      "Odsuwanie hantli od ciała"
+    ],
+    "progresja": "Większe obciążenie, RDL jednonóż",
+    "regresja": "Mniejsze obciążenie, mniejszy zakres ruchu",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw024",
+    "nazwaPl": "Wall sit",
+    "nazwaEn": "Wall Sit",
+    "partiaGlowna": "Nogi",
+    "partieWspierajace": ["Pośladki", "Brzuch"],
+    "sprzet": ["Masa własna"],
+    "typ": "Izometryczne",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izometria - przysiad statyczny",
+    "seriexPowtorzenia": "3 x 30-60s (stoper)",
+    "tempo": "izometria",
+    "kluczoweWskazowki": [
+      "Plecy płasko przy ścianie, kolana pod kątem 90 stopni",
+      "Kolana w linii z kostkami",
+      "Napięty brzuch, spokojny oddech",
+      "Utrzymaj pozycję jak najdłużej z dobrą techniką"
+    ],
+    "czesteBledy": [
+      "Kolana wychodzące za linię palców",
+      "Odrywanie dolnego odcinka pleców od ściany",
+      "Wstrzymywanie oddechu"
+    ],
+    "progresja": "Dłuższy czas utrzymania, z obciążeniem na kolanach",
+    "regresja": "Wyższa pozycja (kąt kolan >90 stopni)",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw025",
+    "nazwaPl": "Hip thrust",
+    "nazwaEn": "Hip Thrust",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": ["Nogi", "Brzuch"],
+    "sprzet": ["Ławeczka", "Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Zgięcie i wyprost bioder",
+    "seriexPowtorzenia": "4 x 12-15",
+    "tempo": "2-1-1-1",
+    "kluczoweWskazowki": [
+      "Górna część łopatek podparta na ławce",
+      "Hantel/obciążenie na biodrach (opcjonalnie)",
+      "Wypychaj biodra maksymalnie w górę, ściśnij pośladki",
+      "Podbródek lekko schowany, nie przeprostowuj szyi"
+    ],
+    "czesteBledy": [
+      "Przeprost odcinka lędźwiowego na szczycie",
+      "Zbyt niski zakres ruchu",
+      "Praca głównie nogami zamiast pośladkami"
+    ],
+    "progresja": "Większe obciążenie, wersja jednonóż",
+    "regresja": "Bez obciążenia, wolniejsze tempo",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw026",
+    "nazwaPl": "Glute bridge",
+    "nazwaEn": "Glute Bridge",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": ["Nogi", "Brzuch"],
+    "sprzet": ["Masa własna"],
+    "typ": "Siłowe",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Zgięcie i wyprost bioder",
+    "seriexPowtorzenia": "3 x 15-20",
+    "tempo": "2-1-1-1",
+    "kluczoweWskazowki": [
+      "Leżenie na plecach, stopy blisko pośladków",
+      "Wypychaj biodra w górę, ściśnij pośladki na szczycie",
+      "Ciało tworzy linię od kolan do klatki na górze",
+      "Kontrolowane opuszczanie"
+    ],
+    "czesteBledy": [
+      "Przeprost odcinka lędźwiowego",
+      "Zbyt szybkie, machowe tempo",
+      "Stopy zbyt daleko od pośladków"
+    ],
+    "progresja": "Wersja jednonóż, z obciążeniem na biodrach",
+    "regresja": "Mniejszy zakres ruchu",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw027",
+    "nazwaPl": "Single-leg RDL",
+    "nazwaEn": "Single-Leg Romanian Deadlift",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": ["Nogi", "Brzuch"],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Jednonóż zawias biodrowy",
+    "seriexPowtorzenia": "3 x 8-10 na nogę",
+    "tempo": "3-1-1-0",
+    "kluczoweWskazowki": [
+      "Stój na jednej nodze, druga lekko ugięta swobodnie za tobą",
+      "Nachylaj tułów w przód, prowadząc noszoną nogę do tyłu i w górę",
+      "Hantel opuszcza się w kierunku podłogi po stronie stojącej nogi",
+      "Utrzymuj neutralne plecy i stabilne biodra"
+    ],
+    "czesteBledy": [
+      "Rotacja bioder (brak stabilizacji)",
+      "Zaokrąglanie pleców",
+      "Utrata równowagi przez zbyt szybkie tempo"
+    ],
+    "progresja": "Większe obciążenie, dłuższy zakres ruchu",
+    "regresja": "Bez obciążenia, z lekkim podparciem ręki",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw028",
+    "nazwaPl": "Plank",
+    "nazwaEn": "Plank",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": ["Barki", "Plecy"],
+    "sprzet": ["Masa własna"],
+    "typ": "Izometryczne",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izometria - stabilizacja tułowia",
+    "seriexPowtorzenia": "3 x 30-60s (stoper)",
+    "tempo": "izometria",
+    "kluczoweWskazowki": [
+      "Przedramiona i palce stóp podparte, ciało w jednej linii",
+      "Napięte brzuch i pośladki, biodra nie opadają ani nie wystają",
+      "Neutralna szyja, wzrok w podłogę",
+      "Spokojny, kontrolowany oddech"
+    ],
+    "czesteBledy": [
+      "Opadanie bioder (brak napięcia core)",
+      "Wystawianie bioder wysoko do góry",
+      "Wstrzymywanie oddechu"
+    ],
+    "progresja": "Dłuższy czas, plank z podniesioną ręką/nogą, plank na piłce",
+    "regresja": "Plank na kolanach, krótszy czas",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw029",
+    "nazwaPl": "Hollow hold",
+    "nazwaEn": "Hollow Hold",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [],
+    "sprzet": ["Masa własna"],
+    "typ": "Izometryczne",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Izometria - zgięcie tułowia",
+    "seriexPowtorzenia": "3 x 20-40s (stoper)",
+    "tempo": "izometria",
+    "kluczoweWskazowki": [
+      "Leżenie na plecach, dolny odcinek pleców przyklejony do maty",
+      "Unieś ramiona i nogi, tworząc kształt 'łódki/banana'",
+      "Napięty brzuch przez cały czas utrzymania",
+      "Im dalej od ciała ręce/nogi, tym trudniej - reguluj zakres"
+    ],
+    "czesteBledy": [
+      "Odklejanie dolnego odcinka pleców od maty",
+      "Zbyt niski zakres trudności na start (przeciążenie)",
+      "Wstrzymywanie oddechu"
+    ],
+    "progresja": "Dłuższy czas, hollow rock (kołysanie)",
+    "regresja": "Ugięte kolana, krótszy zasięg rąk",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw030",
+    "nazwaPl": "Hanging leg raise",
+    "nazwaEn": "Hanging Leg Raise",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": ["Przedramiona", "Plecy"],
+    "sprzet": ["Drążek"],
+    "typ": "Siłowe",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Zgięcie bioder w zwisie",
+    "seriexPowtorzenia": "3 x 10-15",
+    "tempo": "2-0-2-0",
+    "kluczoweWskazowki": [
+      "Pełny zwis na drążku, nachwyt szeroki",
+      "Unoś nogi kontrolowanie, unikaj machania (kipping)",
+      "Staraj się unieść nogi do poziomu bioder lub wyżej",
+      "Kontrolowane opuszczanie do pełnego wyprostu"
+    ],
+    "czesteBledy": [
+      "Machanie/kołysanie ciałem dla ułatwienia",
+      "Zbyt szybkie tempo bez kontroli fazy negatywnej",
+      "Zginanie tylko w kolanach bez pracy bioder"
+    ],
+    "progresja": "Toes-to-bar, dodatkowe obciążenie na nogach",
+    "regresja": "Uginanie kolan (knee raise), krótszy zakres",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw031",
+    "nazwaPl": "Russian twist",
+    "nazwaEn": "Russian Twist",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [],
+    "sprzet": ["Hantle"],
+    "typ": "Siłowe",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Rotacja tułowia",
+    "seriexPowtorzenia": "3 x 20-30 (na obie strony)",
+    "tempo": "2-0-2-0",
+    "kluczoweWskazowki": [
+      "Siad z lekko ugiętymi kolanami, tułów odchylony do tyłu ~45°",
+      "Trzymaj hantel obiema rękami przed sobą",
+      "Rotuj tułów na boki, dotykając hantlem podłoża po każdej stronie",
+      "Napięty brzuch przez cały ruch, kontrolowane tempo"
+    ],
+    "czesteBledy": [
+      "Zbyt szybkie, machowe ruchy",
+      "Ruch wykonywany rękami, nie tułowiem",
+      "Zaokrąglanie odcinka lędźwiowego"
+    ],
+    "progresja": "Nogi podniesione nad podłogę, większe obciążenie",
+    "regresja": "Stopy oparte na podłodze, bez obciążenia",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw032",
+    "nazwaPl": "Burpee",
+    "nazwaEn": "Burpee",
+    "partiaGlowna": "Cardio",
+    "partieWspierajace": ["Klatka", "Nogi", "Brzuch"],
+    "sprzet": ["Masa własna"],
+    "typ": "Cardio",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Złożony - całe ciało",
+    "seriexPowtorzenia": "4 x 10-15 lub na czas",
+    "tempo": "dynamiczne",
+    "kluczoweWskazowki": [
+      "Przysiad → podpór → pompka → wyskok do przysiadu → wyskok w górę",
+      "Zachowaj napięty core podczas przejścia do podporu",
+      "Ląduj mięko na ugiętych kolanach",
+      "Utrzymuj rytm, ale nie za cenę techniki"
+    ],
+    "czesteBledy": [
+      "Opadanie bioder w fazie podporu",
+      "Twarde, niekontrolowane lądowanie",
+      "Pomijanie pełnej pompki"
+    ],
+    "progresja": "Burpee z podciągnięciem, burpee z pompką typu clap",
+    "regresja": "Burpee bez wyskoku (step-back), bez pompki",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw033",
+    "nazwaPl": "Skakanka basic",
+    "nazwaEn": "Basic Jump Rope",
+    "partiaGlowna": "Cardio",
+    "partieWspierajace": ["Łydki", "Brzuch"],
+    "sprzet": ["Skakanka"],
+    "typ": "Cardio",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Cykliczny - skoki",
+    "seriexPowtorzenia": "5 x 60-90s (stoper)",
+    "tempo": "cykliczne",
+    "kluczoweWskazowki": [
+      "Skakanka obracana głównie z nadgarstków, nie ramion",
+      "Skoki niskie, tuż nad podłogą",
+      "Lądowanie na śródstopiu, ugięte kolana",
+      "Wyprostowana postawa, wzrok przed siebie"
+    ],
+    "czesteBledy": [
+      "Skoki zbyt wysokie i męczące",
+      "Obrót skakanki z ramion zamiast nadgarstków",
+      "Sztywne, pełne lądowanie na całej stopie"
+    ],
+    "progresja": "Double unders, skakanka z krokami (boxer skip), dłuższy czas",
+    "regresja": "Symulacja skakania bez sprzętu, krótszy interwał",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw034",
+    "nazwaPl": "Mountain climbers",
+    "nazwaEn": "Mountain Climbers",
+    "partiaGlowna": "Cardio",
+    "partieWspierajace": ["Brzuch", "Barki"],
+    "sprzet": ["Masa własna"],
+    "typ": "Cardio",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Cykliczny - bieg w podporze",
+    "seriexPowtorzenia": "4 x 30-40s (stoper)",
+    "tempo": "dynamiczne",
+    "kluczoweWskazowki": [
+      "Pozycja podporu jak w pompce, ręce pod barkami",
+      "Alternuj kolana szybko w kierunku klatki",
+      "Utrzymuj napięty core, biodra nie podskakują",
+      "Utrzymuj stały, kontrolowany rytm"
+    ],
+    "czesteBledy": [
+      "Podskakiwanie bioder do góry",
+      "Zbyt szeroko rozstawione ręce",
+      "Utrata napięcia core po kilku sekundach"
+    ],
+    "progresja": "Szybsze tempo, cross-body mountain climbers",
+    "regresja": "Wolniejsze tempo, ręce na podwyższeniu",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw035",
+    "nazwaPl": "Jumping jacks",
+    "nazwaEn": "Jumping Jacks",
+    "partiaGlowna": "Cardio",
+    "partieWspierajace": ["Barki", "Nogi"],
+    "sprzet": ["Masa własna"],
+    "typ": "Cardio",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Cykliczny - skoki z odwodzeniem",
+    "seriexPowtorzenia": "4 x 30-45s (stoper)",
+    "tempo": "cykliczne",
+    "kluczoweWskazowki": [
+      "Start ze stopami razem, ręce przy tułowiu",
+      "Skok z jednoczesnym rozstawieniem nóg i podniesieniem rąk nad głowę",
+      "Miękkie lądowanie na ugiętych kolanach",
+      "Utrzymuj równy, stabilny rytm"
+    ],
+    "czesteBledy": [
+      "Twarde lądowanie na wyprostowanych nogach",
+      "Brak pełnego zakresu ruchu rąk",
+      "Zbyt szybkie tempo prowadzące do utraty formy"
+    ],
+    "progresja": "Szybsze tempo, dłuższy czas trwania",
+    "regresja": "Wersja bez skoku (step jack), wolniejsze tempo",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw036",
+    "nazwaPl": "Cat-cow",
+    "nazwaEn": "Cat-Cow Stretch",
+    "partiaGlowna": "Mobilność",
+    "partieWspierajace": ["Plecy", "Brzuch"],
+    "sprzet": ["Masa własna"],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Segmentowa mobilizacja kręgosłupa",
+    "seriexPowtorzenia": "2 x 10-12 powtórzeń (płynnie)",
+    "tempo": "wolne, płynne",
+    "kluczoweWskazowki": [
+      "Pozycja czworonoga, dłonie pod barkami, kolana pod biodrami",
+      "Wdech - zaokrąglaj plecy w górę (cat), głowa opuszczona",
+      "Wydech - wyginaj plecy w dół (cow), głowa i miednica w górę",
+      "Ruch płynny, zsynchronizowany z oddechem"
+    ],
+    "czesteBledy": [
+      "Zbyt szybkie tempo bez połączenia z oddechem",
+      "Ruch tylko szyją bez zaangażowania całego kręgosłupa",
+      "Nadmierne przeprostowanie w odcinku lędźwiowym"
+    ],
+    "progresja": "Dłuższe utrzymanie w skrajnych pozycjach, większy zakres",
+    "regresja": "Mniejszy zakres ruchu, wolniejsze tempo",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw037",
+    "nazwaPl": "Pigeon pose",
+    "nazwaEn": "Pigeon Pose",
+    "partiaGlowna": "Mobilność",
+    "partieWspierajace": ["Pośladki", "Nogi"],
+    "sprzet": ["Masa własna"],
+    "typ": "Mobilność",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Rozciąganie statyczne - rotatory bioder",
+    "seriexPowtorzenia": "2 x 30-45s na stronę (stoper)",
+    "tempo": "statyczne rozciąganie",
+    "kluczoweWskazowki": [
+      "Przednia noga ugięta pod tułowiem, tylna wyprostowana za sobą",
+      "Biodra ustawione możliwie kwadratowo (nie skręcone)",
+      "Opcjonalnie pochyl tułów do przodu dla głębszego rozciągnięcia",
+      "Oddychaj spokojnie, nie forsuj zakresu przez ból"
+    ],
+    "czesteBledy": [
+      "Skręcanie bioder dla większego zakresu (ryzyko dla kolana)",
+      "Wstrzymywanie oddechu w napięciu",
+      "Forsowanie pozycji ponad aktualną mobilność"
+    ],
+    "progresja": "Głębsze pochylenie tułowia, dłuższy czas",
+    "regresja": "Wersja leżąca (figure-4 stretch) na plecach",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  },
+  {
+    "id": "cw038",
+    "nazwaPl": "90/90 hip stretch",
+    "nazwaEn": "90/90 Hip Stretch",
+    "partiaGlowna": "Mobilność",
+    "partieWspierajace": ["Pośladki"],
+    "sprzet": ["Masa własna"],
+    "typ": "Mobilność",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Mobilizacja rotacji bioder",
+    "seriexPowtorzenia": "2 x 45-60s na stronę (stoper)",
+    "tempo": "statyczne / kontrolowane przejścia",
+    "kluczoweWskazowki": [
+      "Siad z obiema nogami ugiętymi pod kątem 90 stopni (przód/tył)",
+      "Tułów wyprostowany, klatka otwarta",
+      "Możesz pochylać się do przodu nad przednią nogą",
+      "Kontrolowane przejścia między stronami bez opierania się na rękach"
+    ],
+    "czesteBledy": [
+      "Zaokrąglanie pleców podczas pochylania",
+      "Zbyt szybkie, niekontrolowane przejścia",
+      "Ból w kolanie - zmniejsz zakres kąta"
+    ],
+    "progresja": "Przejścia dynamiczne między stronami, głębszy pochył",
+    "regresja": "Mniejszy kąt zgięcia, wsparcie rękami",
+    "zrodlo": "Starter pack FitBirek",
+    "ulubione": false
+  }
+]
