@@ -3,13 +3,11 @@ import 'package:flutter/services.dart';
 
 /// Serwis odtwarzający sygnał końca przerwy (gong).
 ///
-/// Jeśli plik `assets/sounds/gong.mp3` nie jest jeszcze dostarczony
-/// (starter pack aplikacji na razie go nie zawiera), automatycznie
-/// używamy systemowego dźwięku alertu jako funkcjonalnego fallbacku -
-/// użytkownik i tak usłyszy sygnał końca przerwy.
-///
-/// TODO: wygenerować/dodać prawdziwy plik gong.mp3 do assets/sounds/
-/// (patrz README.md - sekcja "Dźwięki").
+/// Odtwarza plik `assets/sounds/gong.mp3`. Jeśli z jakiegoś powodu
+/// odtworzenie się nie powiedzie (np. problem z audio na danym
+/// urządzeniu), automatycznie używamy systemowego dźwięku alertu
+/// jako funkcjonalnego fallbacku - użytkownik i tak usłyszy sygnał
+/// końca przerwy.
 class GongService {
   GongService._();
 

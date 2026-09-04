@@ -109,12 +109,10 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 
 | Zadanie | Szacowany czas | Priorytet |
 |---|---|---|
-| Plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`) | 15 min | Niski |
 | VPS deployment (fit.birek.online) | 2-3h | Średni |
-| Ujednolicenie `applicationId` (`com.fitbirek.fitbirek_training` → docelowa nazwa pakietu) | 15 min | Niski |
 | Rozszerzenie bazy ćwiczeń z 38 do 316 docelowych | 8-10h (dane + weryfikacja) | Niski (zależy od tempa dodawania) |
 
-**Dlaczego gong ma fallback**: plik `assets/sounds/gong.mp3` nie został jeszcze dostarczony/wygenerowany. `GongService` w takim przypadku łapie wyjątek i odtwarza `SystemSoundType.alert` — użytkownik i tak słyszy sygnał końca przerwy, tylko nie jest to dedykowany gong.
+**Uwaga o gongu**: prawdziwy plik `assets/sounds/gong.mp3` jest już dostarczony (wygenerowany, pojedyncze uderzenie ~2s). `GongService` zachowuje mechanizm fallbacku na `SystemSoundType.alert` na wypadek problemu z odtwarzaniem audio na konkretnym urządzeniu — to defensywny wzorzec, nie oznacza braku pliku.
 
 ---
 

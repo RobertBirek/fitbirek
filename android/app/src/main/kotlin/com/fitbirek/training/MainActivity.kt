@@ -1,4 +1,4 @@
-package com.fitbirek.fitbirek_training
+package com.fitbirek.training
 
 import io.flutter.embedding.android.FlutterActivity
 

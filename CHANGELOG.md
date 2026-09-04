@@ -10,8 +10,20 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ### Planowane
 - Rozszerzenie bazy ćwiczeń z 38 do 316 pozycji docelowych
-- Dedykowany plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`)
 - VPS deployment (fit.birek.online)
+
+---
+
+## [0.6.1] — Drobiazgi: ujednolicenie applicationId + prawdziwy gong
+
+### Fixed
+- Ujednolicono Android `applicationId`/`namespace`: `com.fitbirek.fitbirek_training` → `com.fitbirek.training` (zgodnie z docelową nazwą pakietu projektu). Zaktualizowano `android/app/build.gradle.kts`, `android/app/src/main/AndroidManifest.xml` (`android:label` → "FitBirek Training"), przeniesiono `MainActivity.kt` do nowej struktury katalogów `android/app/src/main/kotlin/com/fitbirek/training/`, usunięto starą strukturę. Zweryfikowano `flutter build apk --debug` (SUCCESS) + `aapt dump badging` potwierdzający poprawny package name w gotowym APK.
+
+### Added
+- Dodano rzeczywisty plik `assets/sounds/gong.mp3` (wygenerowany efekt dźwiękowy — pojedyncze uderzenie gongu, ~2s). `GongService` nadal zachowuje fallback na `SystemSoundType.alert` na wypadek problemów z odtwarzaniem audio na urządzeniu, ale nie jest już to jedyna dostępna ścieżka dźwiękowa.
+
+### Docs
+- Zaktualizowano README.md — usunięto z tabeli "Znane ograniczenia" pozycje `gong.mp3` i `applicationId` (zrealizowane), pozostawiono VPS deployment i rozszerzenie bazy ćwiczeń jako wciąż otwarte.
 
 ---
 
