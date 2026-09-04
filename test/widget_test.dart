@@ -84,8 +84,10 @@ void main() {
       dataUtworzenia: DateTime(2024, 1, 1),
     );
     final result = BmrCalculator.calculateFull(profile);
-    // BMR Mifflin-St Jeor (mężczyzna): 10*94 + 6.25*180 - 5*47 + 5 = 1707.5
-    expect(result.bmr, closeTo(1707.5, 0.5));
+    // BMR Mifflin-St Jeor (mężczyzna): 10*94 + 6.25*180 - 5*47 + 5 = 1835.0
+    // (poprzednia oczekiwana wartość 1707.5 w tym teście była błędna -
+    // sam wzór w BmrCalculator jest poprawny, to literówka w asercji).
+    expect(result.bmr, closeTo(1835.0, 0.5));
     expect(result.tdee, greaterThan(result.bmr));
     // Cel redukcja => kalorie docelowe niższe niż TDEE
     expect(result.celKalorii, lessThan(result.tdee));

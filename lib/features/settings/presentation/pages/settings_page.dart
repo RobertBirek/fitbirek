@@ -217,6 +217,38 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   onChanged: notifier.setVibrationEnabled,
                 ),
                 const Divider(),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Text(
+                    'Powiadomienia',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                SwitchListTile(
+                  secondary: const Icon(Icons.sports_martial_arts_outlined),
+                  title: const Text('Przypomnienie o karate'),
+                  subtitle: const Text('Wtorek i czwartek, 19:30'),
+                  value: settings.notifKarate,
+                  onChanged: notifier.setNotifKarate,
+                ),
+                SwitchListTile(
+                  secondary: const Icon(Icons.fitness_center_outlined),
+                  title: const Text('Przypomnienie o treningu'),
+                  subtitle: const Text('Codziennie, 18:00'),
+                  value: settings.notifWorkout,
+                  onChanged: notifier.setNotifWorkout,
+                ),
+                SwitchListTile(
+                  secondary: const Icon(Icons.mood_outlined),
+                  title: const Text('Dziennik samopoczucia'),
+                  subtitle: const Text('Codziennie, 20:30'),
+                  value: settings.notifMood,
+                  onChanged: notifier.setNotifMood,
+                ),
+                const Divider(),
                 ListTile(
                   leading: const Icon(Icons.upload_file_outlined),
                   title: const Text('Eksport danych (JSON)'),

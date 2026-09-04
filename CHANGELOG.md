@@ -9,11 +9,41 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 ## [Unreleased]
 
 ### Planowane
-- Notyfikacje lokalne (harmonogram karate wt/czw 19:30, przypomnienia treningowe, codzienny mood-check prompt)
 - Wizualizacje fl_chart dla pomiarów ciała i testów sprawnościowych
 - Rozszerzenie testów jednostkowych/widgetowych per-feature (docelowo 3-5 na feature)
 - Rozszerzenie bazy ćwiczeń z 38 do 316 pozycji docelowych
 - Dedykowany plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`)
+
+---
+
+## [0.5.0] — Notyfikacje lokalne
+
+### Added
+- `lib/core/services/notification_scheduler.dart` — czysta logika obliczania terminów (`nextWeekdayTime()`, `nextDailyTime()`), bez zależności od pluginu/platform channels — testowalna w izolacji na `DateTime`
+- `lib/core/services/notification_service.dart` — `NotificationService` na `flutter_local_notifications` + `timezone` (strefa zahardkodowana na `Europe/Warsaw` — aplikacja jednoosobowa, PL):
+  - `setKarateReminder()` — cotygodniowe przypomnienie wt+czw 19:30 (30 min przed treningiem 20:00), powtarzane automatycznie (`DateTimeComponents.dayOfWeekAndTime`)
+  - `setWorkoutReminder()` — codzienne przypomnienie o treningu domowym (domyślnie 18:00)
+  - `setMoodCheckReminder()` — codzienny prompt dziennika samopoczucia (domyślnie 20:30)
+  - `requestPermission()` — żądanie zgody na notyfikacje (Android 13+)
+  - Guard `kIsWeb` przy inicjalizacji strefy czasowej — plugin sam jest no-op na Web, ale `timezone.initializeTimeZones()` nie jest potrzebne na tej platformie
+- `notificationServiceProvider` w `core/providers/notification_provider.dart`
+- Rozszerzenie `AppSettings`/`SettingsNotifier` o `notifKarate`/`notifWorkout`/`notifMood` (persystencja w `SharedPreferences`, re-aplikowanie harmonogramu przy starcie aplikacji)
+- UI w `settings_page.dart` — 3 nowe `SwitchListTile` w sekcji "Powiadomienia", żądanie uprawnienia przy włączeniu
+- `AndroidManifest.xml` — `RECEIVE_BOOT_COMPLETED` + `SCHEDULE_EXACT_ALARM` permissions, `ScheduledNotificationReceiver` + `ScheduledNotificationBootReceiver` (przetrwanie zaplanowanych notyfikacji po restarcie urządzenia)
+- `timezone: ^0.10.1` jako bezpośrednia zależność w `pubspec.yaml` (była tranzytywna przez `flutter_local_notifications`, `flutter analyze` wymagał jawnej deklaracji)
+
+### Tests
+- `test/features/settings/notification_scheduler_test.dart` — 8 testów jednostkowych na czystej logice `NotificationScheduler` (bez platform channels): wybór najbliższego dnia tygodnia/godziny, przeskok o tydzień/dzień gdy godzina minęła, równość traktowana jako "minęło", granica miesiąca
+
+### Fixed
+- `test/widget_test.dart` — poprawiono błędną oczekiwaną wartość w teście `BmrCalculator` (1707.5 → 1835.0; sam wzór Mifflin-St Jeor w `BmrCalculator` był poprawny, błąd był wyłącznie w asercji testu — wykryty przy pełnym przebiegu `flutter test` w tej sesji, niezwiązany z notyfikacjami)
+
+### Verified
+- `flutter analyze` → **No issues found!**
+- `dart format .` → sformatowane
+- `flutter test` (pełny projekt) → **20/20 passed**
+- `flutter build apk --debug` → **SUCCESS** (181MB)
+- `flutter build web --release` → **SUCCESS** (potwierdzone, że guard `kIsWeb` nie łamie platformy web mimo że `flutter_local_notifications`/`timezone` nie deklarują wsparcia Web w swoich `pubspec.yaml`)
 
 ---
 

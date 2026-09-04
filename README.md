@@ -29,7 +29,7 @@ Aplikacja nie jest generycznym trackerem — to narzędzie skrojone pod realny p
 - **Generator planu treningowego** — dobiera ćwiczenia pod cel, poziom i dostępny sprzęt (algorytm priorytetyzujący partie ciała), zapisywanie i historia wygenerowanych planów
 - **Kalkulator BMR/TDEE** — formuła Mifflin-St Jeor, cel kaloryczny pod redukcję/utrzymanie/masę
 - **Backup/restore JSON** — eksport całej bazy do pliku JSON (udostępnianie przez `share_plus`) i import z walidacją wersji formatu oraz transakcyjnym rollbackiem przy błędzie
-- Notyfikacje — *przygotowane pod implementację, patrz sekcja "Znane ograniczenia"*
+- **Notyfikacje lokalne** — przypomnienie karate (wt+czw 19:30, cotygodniowe), przypomnienie o treningu domowym (codzienne, 18:00) i prompt dziennika samopoczucia (codzienne, 20:30); przełączniki w Ustawieniach, `flutter_local_notifications` + `timezone` (strefa `Europe/Warsaw`)
 
 ---
 
@@ -96,9 +96,9 @@ flutter test      # testy jednostkowe/widgetowe
 | Pełny flow: onboarding → baza ćwiczeń → sesja → zapis do DB | ✅ |
 | README / ARCHITECTURE / CHANGELOG / CONTRIBUTING | ✅ (ten zestaw plików) |
 | Ikona aplikacji | ✅ |
-| Testy per-feature (3-5 na feature) | ⚠️ Częściowe — 5 testów ogólnych + 6 testów `backup_service`, patrz "Znane ograniczenia" |
+| Testy per-feature (3-5 na feature) | ⚠️ Częściowe — 5 testów ogólnych + 6 testów `backup_service` + 8 testów `notification_scheduler`, patrz "Znane ograniczenia" |
 | Backup/restore JSON | ✅ Zaimplementowane (export/import, 6 testów jednostkowych) |
-| Notyfikacje lokalne | ⚠️ Niezaimplementowane |
+| Notyfikacje lokalne | ✅ Zaimplementowane (karate, trening, mood-check; 8 testów jednostkowych) |
 | Wizualizacje fl_chart (pomiary/testy) | ⚠️ Niezaimplementowane (obecnie plain listy) |
 
 ---
@@ -109,7 +109,6 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 
 | Zadanie | Szacowany czas | Priorytet |
 |---|---|---|
-| Notyfikacje lokalne (karate wt/czw 19:30, przypomnienia, mood-check prompt) | 3-4h | Wysoki |
 | Wizualizacje fl_chart dla pomiarów i testów sprawnościowych | 4-5h | Średni |
 | Testy per-feature (3-5 testów × 8 features = ~30 testów) | 6-8h | Średni |
 | Plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`) | 15 min | Niski |
