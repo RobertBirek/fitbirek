@@ -41,6 +41,8 @@ class _OnboardingEquipmentPageState extends State<OnboardingEquipmentPage> {
     'Gumy oporowe': Icons.linear_scale,
     'Bieżnia': Icons.directions_run,
     'Skakanka': Icons.all_inclusive,
+    'Krzesło': Icons.chair,
+    'Ręcznik': Icons.dry_cleaning,
   };
 
   @override

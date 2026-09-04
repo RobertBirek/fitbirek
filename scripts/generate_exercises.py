@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
 """
+!!! DEPRECATED (od 2026-08-08, wersja 0.8.0) !!!
+
+Ten generator wytworzył SYNTETYCZNĄ bazę 316 ćwiczeń (Ask#10) i został
+ZASTĄPIONY realną, ręcznie kuratorowaną bazą 316 ćwiczeń autorstwa
+Roberta Birka (źródła: Athlean-X, Muscle & Strength, Healthline, Harvard
+Health, GMB Fitness, Calisthenics Family, ChairTaiChi.org, Peloton,
+Cleveland Clinic, AAOS OrthoInfo, Barbend).
+
+Aktualne źródło `assets/data/exercises.json` to konwerter
+`tools/xlsx_to_json.py`, czytający zakładkę `BAZA_GLOWNA` z pliku Excel
+(`tools/source_data/baza_cwiczen_316.xlsx`). NIE uruchamiaj tego skryptu
+— nadpisałby realne dane danymi syntetycznymi.
+
+Plik zachowany wyłącznie jako historyczny wzorzec generowania "rodzin"
+ćwiczeń (funkcja `add_family()`) — na wypadek potrzeby wygenerowania
+dodatkowych, syntetycznych wariantów w przyszłości (np. do testów).
+
+--- Oryginalny opis (Ask#10, dane już nieaktualne) ---
 Generator rozszerzenia bazy ćwiczeń FitBirek: 38 -> 316.
 
 Ćwiczenia grupowane są w "rodziny" (np. warianty pompek, warianty
@@ -7,7 +25,7 @@ podciągania) - każda rodzina ma współdzielone kluczowe wskazówki i częste
 błędy (bo dotyczą tego samego wzorca ruchu), plus każdy wariant ma własną,
 dodatkową wskazówkę/błąd specyficzny dla tego wariantu.
 
-Uruchomienie:
+Uruchomienie (NIEAKTUALNE, NIE UŻYWAĆ):
     python3 scripts/generate_exercises.py
 
 Efekt: assets/data/exercises.json zawiera 316 ćwiczeń (38 oryginalnych +

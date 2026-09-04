@@ -10,6 +10,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitbirek_training/core/database/app_database.dart';
+import 'package:fitbirek_training/core/utils/partia_kategoria.dart';
 import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
 
 void main() {
@@ -121,16 +122,39 @@ void main() {
       }
     });
 
-    test('wszystkie nazwaPl i nazwaEn są unikalne', () {
-      final pl = data.map((e) => e['nazwaPl'] as String).toList();
-      final en = data.map((e) => e['nazwaEn'] as String).toList();
-      expect(pl.toSet(), hasLength(pl.length));
-      expect(en.toSet(), hasLength(en.length));
-    });
+    test(
+      'nazwaPl+partiaGlowna+typ oraz nazwaEn+partiaGlowna+typ są unikalne '
+      '(prawdziwa baza Roberta ma kilka nazw powtórzonych w różnych '
+      'sekcjach tematycznych Excela dla innej partii/kontekstu użycia, np. '
+      '"Band pull-apart" dla tylnych barków i osobno dla romboidów, albo '
+      '"Seated cat-cow" jako rozgrzewka vs jako regeneracja - to zamierzone, '
+      'różne warianty tego samego ruchu, nie błąd danych)',
+      () {
+        final plTriples = data
+            .map((e) => '${e['nazwaPl']}|${e['partiaGlowna']}|${e['typ']}')
+            .toList();
+        final enTriples = data
+            .map((e) => '${e['nazwaEn']}|${e['partiaGlowna']}|${e['typ']}')
+            .toList();
+        expect(plTriples.toSet(), hasLength(plTriples.length));
+        expect(enTriples.toSet(), hasLength(enTriples.length));
+      },
+    );
 
     test('poziom i typ zgodne z dozwolonymi wartościami enum', () {
       const validPoziom = {'Początkujący', 'Średni', 'Zaawansowany'};
-      const validTyp = {'Siłowe', 'Cardio', 'Izometryczne', 'Mobilność'};
+      const validTyp = {
+        'Hipertrofia',
+        'Siła',
+        'Wytrzymałość',
+        'Cardio',
+        'Rozgrzewka',
+        'Regeneracja',
+        'Explosive',
+        'Rozciąganie',
+        'Izometria',
+        'Mobilność',
+      };
       for (final e in data) {
         expect(validPoziom, contains(e['poziom']), reason: e['id']);
         expect(validTyp, contains(e['typ']), reason: e['id']);
@@ -146,12 +170,41 @@ void main() {
         'Gumy oporowe',
         'Bieżnia',
         'Skakanka',
+        'Krzesło',
+        'Ręcznik',
       };
       for (final e in data) {
         final sprzet = List<String>.from(e['sprzet'] as List);
         for (final s in sprzet) {
           expect(validSprzet, contains(s), reason: '${e['id']}: $s');
         }
+      }
+    });
+
+    test('każda partiaGlowna mapuje się na jedną z 10 kategorii UI '
+        '(mapToKategoria nie zwraca nieznanej wartości)', () {
+      const validKategorie = {
+        'Klatka',
+        'Plecy',
+        'Barki',
+        'Biceps',
+        'Triceps',
+        'Nogi',
+        'Pośladki',
+        'Brzuch',
+        'Cardio',
+        'Mobilność',
+      };
+      for (final e in data) {
+        final kategoria = mapToKategoria(
+          e['partiaGlowna'] as String,
+          wzorzecRuchu: e['wzorzecRuchu'] as String,
+        );
+        expect(
+          validKategorie,
+          contains(kategoria),
+          reason: '${e['id']}: ${e['partiaGlowna']}',
+        );
       }
     });
   });

@@ -1,5 +1,6 @@
 import '../../../core/models/exercise.dart';
 import '../../../core/models/user_profile.dart';
+import '../../../core/utils/partia_kategoria.dart';
 
 /// Generator planu treningowego (funkcja Premium).
 ///
@@ -104,10 +105,16 @@ class PlanGenerator {
 
     if (kandydaci.isEmpty) return [];
 
-    // Krok 2: grupuj po partii głównej.
+    // Krok 2: grupuj po uproszczonej kategorii partii ciała (nie po
+    // surowym, granularnym `partiaGlowna` z bazy - tam jest ~163 unikalne
+    // wartości, a priorytety celu operują na 10 szerokich kategoriach).
     final wgPartii = <String, List<Exercise>>{};
     for (final ex in kandydaci) {
-      wgPartii.putIfAbsent(ex.partiaGlowna, () => []).add(ex);
+      final kategoria = mapToKategoria(
+        ex.partiaGlowna,
+        wzorzecRuchu: ex.wzorzecRuchu,
+      );
+      wgPartii.putIfAbsent(kategoria, () => []).add(ex);
     }
 
     final priorytety =

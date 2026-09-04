@@ -12,7 +12,10 @@ import '../../providers/workout_providers.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
 /// ciężar/powtórzenia - plank, wall-sit, dead-hang itp.
-const _typyIzometryczne = {'Izometryczne'};
+///
+/// Wartość 'Izometria' (nie 'Izometryczne') zgodna z realną bazą 316
+/// ćwiczeń (Excel BAZA_GLOWNA, kolumna Typ) od [0.8.0].
+const _typyIzometryczne = {'Izometria'};
 
 /// Aktywna sesja treningowa: wybór ćwiczeń, logowanie serii, timer przerw.
 class ActiveSessionPage extends ConsumerStatefulWidget {

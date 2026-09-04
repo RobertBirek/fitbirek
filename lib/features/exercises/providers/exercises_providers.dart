@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/exercise.dart';
 import '../../../core/providers/database_provider.dart';
+import '../../../core/utils/partia_kategoria.dart';
 import '../data/exercises_repository.dart';
 
 final exercisesRepositoryProvider = Provider<ExercisesRepository>((ref) {
@@ -85,7 +86,9 @@ final filteredExercisesProvider = Provider<List<Exercise>>((ref) {
 
   var result = all.where((ex) {
     if (filters.partie.isNotEmpty &&
-        !filters.partie.contains(ex.partiaGlowna)) {
+        !filters.partie.contains(
+          mapToKategoria(ex.partiaGlowna, wzorzecRuchu: ex.wzorzecRuchu),
+        )) {
       return false;
     }
     if (filters.sprzet.isNotEmpty &&

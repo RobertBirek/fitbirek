@@ -19,15 +19,17 @@ Baza ćwiczeń (316 pozycji, `cw001`-`cw316`) jest w `assets/data/exercises.json
 1. Otwórz `assets/data/exercises.json`
 2. Dodaj nowy obiekt zgodny ze strukturą istniejących wpisów — sprawdź `lib/core/models/exercise.dart` (Freezed) dla pełnej listy pól i ich typów. Nadaj mu kolejny wolny `id` (`cw317`, `cw318`, ...) — **nigdy nie zmieniaj istniejących ID**, bo to psuje referencje w zapisanych planach/sesjach użytkownika.
 3. Pamiętaj o polach kluczowych dla logiki:
-   - `typ` — jeśli ćwiczenie jest izometryczne (plank, wall-sit, dead-hang), musi mieć `typ: 'Izometryczne'` — inaczej UI sesji treningowej nie pokaże stopera, a pola waga/powtórzenia
-   - `partiaGlowna` — używane przez `PlanGenerator` do doboru ćwiczeń w generatorze planu
+   - `typ` — jeśli ćwiczenie jest izometryczne (plank, wall-sit, dead-hang), musi mieć `typ: 'Izometria'` — inaczej UI sesji treningowej nie pokaże stopera, a pola waga/powtórzenia. Pełna lista dozwolonych wartości: `AppConstants.typyOpcje` (10 wartości: Hipertrofia, Siła, Wytrzymałość, Cardio, Rozgrzewka, Regeneracja, Explosive, Rozciąganie, Izometria, Mobilność).
+   - `partiaGlowna` — surowa, granularna wartość z realnej bazy (~163 unikalnych wartości); UI i `PlanGenerator` NIE używają jej bezpośrednio do filtrowania/grupowania — zamiast tego wywołują czystą funkcję `mapToKategoria(partiaGlowna, wzorzecRuchu: ...)` (`lib/core/utils/partia_kategoria.dart`), która redukuje ją do jednej z 10 kategorii UI (Klatka, Plecy, Barki, Biceps, Triceps, Pośladki, Nogi, Brzuch, Cardio, Mobilność). Jeśli dodajesz ćwiczenie z nową, nietypową wartością `partiaGlowna`, sprawdź czy `mapToKategoria()` poprawnie ją kategoryzuje (test `test/unit/partia_kategoria_test.dart`) — w ostateczności funkcja ma fallback na `'Mobilność'`.
    - `sprzet` — lista sprzętu (nazwa pola w modelu/JSON to `sprzet`, NIE `sprzetWymagany`); generator planu filtruje po dostępnym sprzęcie użytkownika (`dostepnySprzet` w `UserProfile`), wymagając że KAŻDY element tej listy musi być dostępny
    - `poziom` — 'Początkujący' / 'Średni' / 'Zaawansowany'
 4. Odśwież aplikację — `syncFromAssets()` wstawia tylko ćwiczenia z ID, które jeszcze nie istnieją w bazie lokalnej (import przyrostowy), więc nowe pozycje trafią też na urządzenia z już zainstalowaną aplikacją, bez duplikowania istniejących wierszy i bez resetowania `ulubione`.
 
 **Nie edytuj ręcznie tabeli SQLite** — zawsze przez plik JSON + mechanizm synchronizacji, żeby zmiany były wersjonowane w git.
 
-**Generator masowy**: `scripts/generate_exercises.py` — skrypt użyty do rozszerzenia bazy z 38 do 316 pozycji (funkcja `add_family()` grupująca warianty ćwiczeń o wspólnym wzorcu ruchu). Można go użyć jako wzorca do kolejnych rozszerzeń, uruchamiając `python3 scripts/generate_exercises.py` po dopisaniu nowych `add_family(...)`.
+**Źródło rzeczywistych danych**: `tools/xlsx_to_json.py` — konwerter Excel → JSON, czytający zakładkę `BAZA_GLOWNA` z `tools/source_data/baza_cwiczen_316.xlsx` (realna, ręcznie kuratorowana baza autorstwa Roberta Birka). Waliduje fail-fast (nagłówek, enumy, unikalność/format ID, dokładna liczba 316 pozycji), normalizuje `Sprzet` i rozdziela pola z separatorami. Uruchomienie: `python3 tools/xlsx_to_json.py` (wymaga openpyxl).
+
+**[DEPRECATED] Generator syntetyczny**: `scripts/generate_exercises.py` — historyczny skrypt użyty w 0.7.0 do wygenerowania SYNTETYCZNEJ bazy 38→316 pozycji. Zastąpiony przez `tools/xlsx_to_json.py`. Zachowany tylko jako wzorzec kodu (funkcja `add_family()`) — **nie uruchamiaj**, nadpisałby realne dane.
 
 ---
 

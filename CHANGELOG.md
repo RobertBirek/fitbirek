@@ -13,6 +13,34 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [0.8.0] — Realna baza ćwiczeń (316 pozycji, autor: Robert Birek) zastępuje bazę syntetyczną
+
+### Added
+- `tools/xlsx_to_json.py` — konwerter Excel → JSON. Czyta zakładkę `BAZA_GLOWNA` (openpyxl, `data_only=True`) z `tools/source_data/baza_cwiczen_316.xlsx`, waliduje fail-fast (nagłówek, enumy `Typ`/`Poziom`, unikalność i format id `cwNNN`, dokładnie 316 pozycji), normalizuje pole `Sprzet` (aliasy, rozbijanie "X lub Y" / "X/Y" / "X opcjonalnie", fallback `["Masa własna"]`), rozdziela pola z separatorami (przecinek dla `Partie_wspierajace`, średnik dla `Kluczowe_wskazowki`/`Czeste_bledy`), zapisuje `assets/data/exercises.json`.
+- `assets/data/exercises.json` — całkowicie zastąpiony: 316 PRAWDZIWYCH, ręcznie kuratorowanych ćwiczeń autorstwa Roberta Birka (2026-08-08), z realnymi źródłami wiedzy (Athlean-X, Muscle & Strength, Healthline, Harvard Health, GMB Fitness, Calisthenics Family, ChairTaiChi.org, Peloton, Cleveland Clinic, AAOS OrthoInfo, Barbend) — zastępuje syntetyczną bazę z 0.7.0.
+- `lib/core/utils/partia_kategoria.dart` — funkcja czysta `mapToKategoria(partiaGlowna, {wzorzecRuchu})`, redukująca ~163 granularne wartości `Partia_glowna` z realnej bazy do 10 prostych kategorii UI (Klatka, Plecy, Barki, Biceps, Triceps, Pośladki, Nogi, Brzuch, Cardio, Mobilność), bez zmiany schematu Drift/Freezed. 100% pokrycie zweryfikowane wobec wszystkich rzeczywistych wartości z bazy.
+- `test/unit/partia_kategoria_test.dart` — ~14 testów jednostkowych dla `mapToKategoria()` (kategorie podstawowe, precedencja przy wieloznacznych wartościach, branch `Full body` warunkowany `wzorzecRuchu`, fallback dla wartości resztkowych, case-insensitivity).
+- Sprzęt: dodano `Krzesło` i `Ręcznik` do `AppConstants.dostepnySprzetOpcje` (realna baza wykorzystuje ćwiczenia z krzesłem — np. Chair Tai Chi — i ręcznikiem, nieobecne w bazie syntetycznej).
+- `Typ` ćwiczenia: `AppConstants.typyOpcje` rozszerzone z 4 do 10 wartości (`Hipertrofia`, `Siła`, `Wytrzymałość`, `Cardio`, `Rozgrzewka`, `Regeneracja`, `Explosive`, `Rozciąganie`, `Izometria`, `Mobilność`), zgodnie z rzeczywistą taksonomią użytą w Excelu.
+
+### Fixed
+- **Krytyczne**: `active_session_page.dart` — stała `_typyIzometryczne` używała nieaktualnej wartości `'Izometryczne'`, niezgodnej z realną wartością `'Izometria'` z Excela. Bez tej naprawy stoper czasu dla 14 ćwiczeń izometrycznych (plank, wall sit itd.) w ogóle by się nie uruchamiał.
+- `lib/features/exercises/providers/exercises_providers.dart` (`filteredExercisesProvider`) i `lib/features/planner/domain/plan_generator.dart` (grupowanie kandydatów) — filtrowanie/grupowanie po partii ciała przełączone z surowego `partiaGlowna` na `mapToKategoria(ex.partiaGlowna, wzorzecRuchu: ex.wzorzecRuchu)`, żeby UI (10 kategorii) poprawnie dopasowywało 163 granularne wartości z realnej bazy.
+- `lib/features/onboarding/presentation/pages/onboarding_equipment_page.dart` — dodano ikony dla nowego sprzętu (`Krzesło` → `Icons.chair`, `Ręcznik` → `Icons.dry_cleaning`).
+- `test/features/exercises/exercises_repository_test.dart` — enumy walidacyjne (`validTyp`, `validSprzet`) rozszerzone zgodnie z realną taksonomią; dodano test pokrycia `mapToKategoria()`; test unikalności nazw ćwiczeń zmieniony z prostego `nazwaPl` na klucz złożony `nazwaPl+partiaGlowna+typ` — realna baza zawiera zamierzone, legalne duplikaty nazw różniące się partią/typem (np. `Band pull-apart`, `Seated cat-cow` jako osobne warianty).
+
+### Deprecated
+- `scripts/generate_exercises.py` — generator bazy SYNTETYCZNEJ z 0.7.0, oznaczony jako deprecated. Zachowany wyłącznie jako historyczny wzorzec kodu (funkcja `add_family()`); NIE uruchamiać — nadpisałby realne dane. Aktualne źródło danych to `tools/xlsx_to_json.py`.
+
+### Verified
+- `flutter analyze` — brak problemów.
+- `dart format .` — bez zmian formatowania poza konwersją.
+- `flutter test` — **122 testy, wszystkie przechodzą** (`+122: All tests passed!`).
+- `flutter build apk --debug` — sukces; `aapt dump badging` potwierdza `package: com.fitbirek.training`, `application-label: 'FitBirek Training'`.
+- `flutter build web --release` — sukces (ostrzeżenia WASM dotyczące `flutter_secure_storage_web`/`dart:js` są nieszkodliwe dla standardowego JS builda).
+
+---
+
 ## [0.7.0] — Rozszerzenie bazy ćwiczeń 38 → 316 + import przyrostowy
 
 ### Added
