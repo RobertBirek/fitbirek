@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/weight_line_chart.dart';
+import '../../../../core/widgets/test_score_chart.dart';
 import '../../prs/providers/prs_providers.dart';
 import '../../measurements/providers/measurements_providers.dart';
+import '../../tests/providers/tests_providers.dart';
 
 /// Ekran "Postępy" - pomiary, testy, PR (lista + linki do dodawania danych).
 class ProgressPage extends ConsumerWidget {
@@ -13,6 +16,7 @@ class ProgressPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final prsAsync = ref.watch(allPrsProvider);
     final measurementsAsync = ref.watch(allMeasurementsProvider);
+    final testResultsAsync = ref.watch(allTestResultsProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Postępy')),
@@ -39,7 +43,49 @@ class ProgressPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
+            Text(
+              'Waga w czasie',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            measurementsAsync.when(
+              data: (list) => Card(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
+                  child: WeightLineChart(measurements: list),
+                ),
+              ),
+              loading: () => const SizedBox(
+                height: 220,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, st) => Text('Błąd: $e'),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Progres testów sprawnościowych',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            testResultsAsync.when(
+              data: (list) => Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: TestScoreChart(allResults: list),
+                ),
+              ),
+              loading: () => const SizedBox(
+                height: 100,
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, st) => Text('Błąd: $e'),
+            ),
+            const SizedBox(height: 24),
             Text(
               'Rekordy osobiste (PR)',
               style: Theme.of(

@@ -13,15 +13,20 @@ class TestsDao extends DatabaseAccessor<AppDatabase> with _$TestsDaoMixin {
   }
 
   Stream<List<FitnessTestResultData>> watchAll() {
-    return (select(
-      fitnessTestResults,
-    )..orderBy([(t) => OrderingTerm.desc(t.data)])).watch();
+    return (select(fitnessTestResults)..orderBy([
+          (t) => OrderingTerm.desc(t.data),
+          (t) => OrderingTerm.desc(t.id),
+        ]))
+        .watch();
   }
 
   Future<List<FitnessTestResultData>> getHistoryForType(String typ) {
     return (select(fitnessTestResults)
           ..where((t) => t.typ.equals(typ))
-          ..orderBy([(t) => OrderingTerm.desc(t.data)]))
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.data),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
         .get();
   }
 }

@@ -45,7 +45,7 @@ Aplikacja nie jest generycznym trackerem — to narzędzie skrojone pod realny p
 | Baza danych | Drift (SQLite) — NativeDatabase (Android/iOS/desktop) / WasmDatabase (Web) |
 | UI | Material 3, dark theme (#1A1D23 tło, #FF6B35 akcent) |
 | Animacje | flutter_animate |
-| Wykresy | fl_chart *(przygotowane, wizualizacje w toku)* |
+| Wykresy | fl_chart 0.69.2 — wykres wagi w czasie + progres testów sprawnościowych |
 
 Szczegóły decyzji architektonicznych: [ARCHITECTURE.md](ARCHITECTURE.md)
 
@@ -96,10 +96,10 @@ flutter test      # testy jednostkowe/widgetowe
 | Pełny flow: onboarding → baza ćwiczeń → sesja → zapis do DB | ✅ |
 | README / ARCHITECTURE / CHANGELOG / CONTRIBUTING | ✅ (ten zestaw plików) |
 | Ikona aplikacji | ✅ |
-| Testy per-feature (3-5 na feature) | ⚠️ Częściowe — 5 testów ogólnych + 6 testów `backup_service` + 8 testów `notification_scheduler`, patrz "Znane ograniczenia" |
+| Testy per-feature (3-5 na feature) | ✅ 168 testów łącznie (progress: 62, planner: 11, settings: 14, smoke: 5+) |
 | Backup/restore JSON | ✅ Zaimplementowane (export/import, 6 testów jednostkowych) |
 | Notyfikacje lokalne | ✅ Zaimplementowane (karate, trening, mood-check; 8 testów jednostkowych) |
-| Wizualizacje fl_chart (pomiary/testy) | ⚠️ Niezaimplementowane (obecnie plain listy) |
+| Wizualizacje fl_chart (pomiary/testy) | ✅ Zaimplementowane (`WeightLineChart`, `TestScoreChart`, zintegrowane w `progress_page.dart`) |
 
 ---
 
@@ -109,9 +109,8 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 
 | Zadanie | Szacowany czas | Priorytet |
 |---|---|---|
-| Wizualizacje fl_chart dla pomiarów i testów sprawnościowych | 4-5h | Średni |
-| Testy per-feature (3-5 testów × 8 features = ~30 testów) | 6-8h | Średni |
 | Plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`) | 15 min | Niski |
+| VPS deployment (fit.birek.online) | 2-3h | Średni |
 | Ujednolicenie `applicationId` (`com.fitbirek.fitbirek_training` → docelowa nazwa pakietu) | 15 min | Niski |
 | Rozszerzenie bazy ćwiczeń z 38 do 316 docelowych | 8-10h (dane + weryfikacja) | Niski (zależy od tempa dodawania) |
 

@@ -13,9 +13,11 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
   }
 
   Stream<List<PersonalRecordData>> watchAll() {
-    return (select(
-      personalRecords,
-    )..orderBy([(t) => OrderingTerm.desc(t.data)])).watch();
+    return (select(personalRecords)..orderBy([
+          (t) => OrderingTerm.desc(t.data),
+          (t) => OrderingTerm.desc(t.id),
+        ]))
+        .watch();
   }
 
   /// Najlepszy dotychczasowy PR (po szacowanym 1RM) dla danego ćwiczenia.
@@ -32,7 +34,10 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
   Future<List<PersonalRecordData>> getHistoryForExercise(String exerciseId) {
     return (select(personalRecords)
           ..where((t) => t.cwiczenieId.equals(exerciseId))
-          ..orderBy([(t) => OrderingTerm.desc(t.data)]))
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.data),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
         .get();
   }
 }

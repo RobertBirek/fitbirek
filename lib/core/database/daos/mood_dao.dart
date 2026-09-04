@@ -13,9 +13,11 @@ class MoodDao extends DatabaseAccessor<AppDatabase> with _$MoodDaoMixin {
   }
 
   Stream<List<MoodEntryData>> watchAll() {
-    return (select(
-      moodEntries,
-    )..orderBy([(t) => OrderingTerm.desc(t.data)])).watch();
+    return (select(moodEntries)..orderBy([
+          (t) => OrderingTerm.desc(t.data),
+          (t) => OrderingTerm.desc(t.id),
+        ]))
+        .watch();
   }
 
   /// Wpis z dzisiejszego dnia (jeśli istnieje) - do sprawdzenia czy user już wypełnił.

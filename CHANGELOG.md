@@ -9,10 +9,30 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 ## [Unreleased]
 
 ### Planowane
-- Wizualizacje fl_chart dla pomiarów ciała i testów sprawnościowych
-- Rozszerzenie testów jednostkowych/widgetowych per-feature (docelowo 3-5 na feature)
 - Rozszerzenie bazy ćwiczeń z 38 do 316 pozycji docelowych
 - Dedykowany plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`)
+- VPS deployment (fit.birek.online)
+
+---
+
+## [0.6.0] — Wykresy postępów (fl_chart) + testy per-feature
+
+### Added
+- `lib/core/widgets/weight_line_chart.dart` — wykres liniowy wagi w czasie (fl_chart), sortowanie chronologiczne wewnątrz widgetu, tooltip z datą i wagą, gradient pod linią, placeholder gdy < 2 pomiary
+- `lib/core/widgets/test_score_chart.dart` — wykres liniowy score (0-100) testów sprawnościowych w czasie, z `ChoiceChip` do przełączania typu testu; buduje listę dostępnych typów dynamicznie na podstawie zapisanych wyników (nie zakłada z góry, które testy user wykonywał)
+- Integracja obu wykresów w `progress_page.dart` — sekcje "Waga w czasie" i "Progres testów sprawnościowych" wstawione przed listami PR/pomiarów; podłączenie dotychczas nieużywanego `allTestResultsProvider`
+
+### Tests (73 nowe testy, +73 → 168 łącznie w projekcie)
+- `test/features/progress/test_score_calculator_test.dart` — 18 testów: wszystkie 11 typów testów sprawnościowych, progi low/high, clamping, zaokrąglanie
+- `test/features/progress/formatters_test.dart` — 17 testów: date/dateTime/time/dayMonth/weekday/duration/weight/deltaPercent
+- `test/features/progress/pr_detector_test.dart` — 10 testów dedykowanych (rozszerzenie poza 2 testy smoke w `widget_test.dart`): epley1Rm, isNewRecord, przypadki brzegowe (0/ujemne wartości)
+- `test/features/planner/plan_generator_test.dart` — 11 testów: filtrowanie sprzętu/poziomu, skalowanie liczby ćwiczeń czasem, priorytety wg celu, przypadki brzegowe
+- `test/features/progress/measurements_repository_test.dart` — 7 testów na `AppDatabase.forTesting(NativeDatabase.memory())`
+- `test/features/progress/tests_repository_test.dart` — 6 testów (w tym auto-przeliczanie score przy zapisie)
+- `test/features/progress/prs_repository_test.dart` — 6 testów (w tym auto-przeliczanie 1RM wg Epley przy zapisie)
+
+### Fixed
+- `MeasurementsDao`/`TestsDao`/`PrsDao`/`MoodDao.watchAll()` (i pochodne `getLatest`/`getHistoryFor*`) — sortowanie było oparte wyłącznie na `data` (kolumna `DateTimeColumn` w SQLite ma rozdzielczość sekundową), co dawało niezdeterminowaną kolejność przy kilku insertach w tej samej sekundzie. Dodano `id` jako drugorzędne kryterium sortowania (`OrderingTerm.desc(t.id)`) — wykryte przez nowe testy repozytoriów, naprawione w kodzie produkcyjnym (nie tylko w teście)
 
 ---
 

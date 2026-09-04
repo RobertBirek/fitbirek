@@ -14,15 +14,20 @@ class MeasurementsDao extends DatabaseAccessor<AppDatabase>
   }
 
   Stream<List<MeasurementData>> watchAll() {
-    return (select(
-      measurements,
-    )..orderBy([(t) => OrderingTerm.desc(t.data)])).watch();
+    return (select(measurements)..orderBy([
+          (t) => OrderingTerm.desc(t.data),
+          (t) => OrderingTerm.desc(t.id),
+        ]))
+        .watch();
   }
 
   Future<MeasurementData?> getLatest() async {
     final rows =
         await (select(measurements)
-              ..orderBy([(t) => OrderingTerm.desc(t.data)])
+              ..orderBy([
+                (t) => OrderingTerm.desc(t.data),
+                (t) => OrderingTerm.desc(t.id),
+              ])
               ..limit(1))
             .get();
     return rows.isEmpty ? null : rows.first;
