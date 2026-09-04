@@ -9,12 +9,42 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 ## [Unreleased]
 
 ### Planowane
-- Backup/restore JSON (export/import całej bazy danych)
 - Notyfikacje lokalne (harmonogram karate wt/czw 19:30, przypomnienia treningowe, codzienny mood-check prompt)
 - Wizualizacje fl_chart dla pomiarów ciała i testów sprawnościowych
 - Rozszerzenie testów jednostkowych/widgetowych per-feature (docelowo 3-5 na feature)
 - Rozszerzenie bazy ćwiczeń z 38 do 316 pozycji docelowych
 - Dedykowany plik audio `gong.mp3` (obecnie fallback na `SystemSound.play`)
+
+---
+
+## [0.4.0] — Backup/restore JSON (Premium)
+
+### Added
+- `lib/core/services/backup_service.dart` — `BackupService.exportToBytes()` / `importFromBytes()` / `suggestedFileName()`:
+  - Format JSON z `schemaVersion` (obecnie `1`), `appVersion`, `exportedAt`, 9 sekcji danych (wszystkie tabele Drift)
+  - Eksport wykorzystuje generowane przez Drift `toJson()` na klasach danych — brak ręcznego mapowania kolumn
+  - Import w `db.transaction()`: czyszczenie 9 tabel w kolejności odwrotnej do FK, re-insert z zachowaniem oryginalnych ID (`insertOnConflictUpdate`) — zachowuje relacje (np. `SetsLog.sesjaId → WorkoutSessions.id`)
+  - Walidacja `schemaVersion` — odrzuca import z nieznanej/przyszłej wersji formatu, bez modyfikacji bazy
+  - Błąd w trakcie importu → rollback transakcji, baza pozostaje niezmieniona
+- `backupServiceProvider` w `core/providers/database_provider.dart`
+- UI w `settings_page.dart` (przepisane na `ConsumerStatefulWidget`):
+  - Eksport → `share_plus` (`XFile.fromData`), działa identycznie na Web i Android (bez `dart:io`)
+  - Import → `file_picker` (`withData: true`, operuje na `Uint8List` w pamięci), dialog ostrzegawczy przed nieodwracalnym zastąpieniem danych, loading overlay podczas operacji
+
+### Tests
+- `test/features/settings/backup_service_test.dart` — 6 testów jednostkowych na `AppDatabase.forTesting(NativeDatabase.memory())`:
+  - Eksport pustej bazy generuje poprawną strukturę JSON
+  - Round-trip profilu użytkownika
+  - Round-trip sesji + serii z zachowaniem relacji FK
+  - Odrzucenie nieznanego `schemaVersion`
+  - Odrzucenie nieprawidłowego JSON bez crasha
+  - Rollback transakcji przy błędzie w trakcie importu (baza niezmieniona)
+
+### Verified
+- `flutter analyze` → **No issues found!**
+- `dart format .` → bez zmian po formatowaniu (clean)
+- `flutter build apk --debug` → **SUCCESS** (181MB, wzrost z 156MB — natywne zależności `file_picker`/`share_plus`)
+- `flutter test test/features/settings/backup_service_test.dart` → **6/6 passed**
 
 ---
 

@@ -28,8 +28,8 @@ Aplikacja nie jest generycznym trackerem — to narzędzie skrojone pod realny p
 ### Premium
 - **Generator planu treningowego** — dobiera ćwiczenia pod cel, poziom i dostępny sprzęt (algorytm priorytetyzujący partie ciała), zapisywanie i historia wygenerowanych planów
 - **Kalkulator BMR/TDEE** — formuła Mifflin-St Jeor, cel kaloryczny pod redukcję/utrzymanie/masę
+- **Backup/restore JSON** — eksport całej bazy do pliku JSON (udostępnianie przez `share_plus`) i import z walidacją wersji formatu oraz transakcyjnym rollbackiem przy błędzie
 - Notyfikacje — *przygotowane pod implementację, patrz sekcja "Znane ograniczenia"*
-- Backup/restore JSON — *przygotowane pod implementację, patrz sekcja "Znane ograniczenia"*
 
 ---
 
@@ -96,8 +96,8 @@ flutter test      # testy jednostkowe/widgetowe
 | Pełny flow: onboarding → baza ćwiczeń → sesja → zapis do DB | ✅ |
 | README / ARCHITECTURE / CHANGELOG / CONTRIBUTING | ✅ (ten zestaw plików) |
 | Ikona aplikacji | ✅ |
-| Testy per-feature (3-5 na feature) | ⚠️ Częściowe — 5 testów ogólnych, patrz "Znane ograniczenia" |
-| Backup/restore JSON | ⚠️ UI placeholder, logika niezaimplementowana |
+| Testy per-feature (3-5 na feature) | ⚠️ Częściowe — 5 testów ogólnych + 6 testów `backup_service`, patrz "Znane ograniczenia" |
+| Backup/restore JSON | ✅ Zaimplementowane (export/import, 6 testów jednostkowych) |
 | Notyfikacje lokalne | ⚠️ Niezaimplementowane |
 | Wizualizacje fl_chart (pomiary/testy) | ⚠️ Niezaimplementowane (obecnie plain listy) |
 
@@ -109,7 +109,6 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 
 | Zadanie | Szacowany czas | Priorytet |
 |---|---|---|
-| Backup/restore JSON (export/import całej bazy) | 2-3h | Wysoki (funkcja Premium z briefu) |
 | Notyfikacje lokalne (karate wt/czw 19:30, przypomnienia, mood-check prompt) | 3-4h | Wysoki |
 | Wizualizacje fl_chart dla pomiarów i testów sprawnościowych | 4-5h | Średni |
 | Testy per-feature (3-5 testów × 8 features = ~30 testów) | 6-8h | Średni |
