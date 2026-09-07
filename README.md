@@ -115,6 +115,8 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 
 **Uwaga o gongu**: prawdziwy plik `assets/sounds/gong.mp3` jest już dostarczony (wygenerowany, pojedyncze uderzenie ~2s). `GongService` zachowuje mechanizm fallbacku na `SystemSoundType.alert` na wypadek problemu z odtwarzaniem audio na konkretnym urządzeniu — to defensywny wzorzec, nie oznacza braku pliku.
 
+**Uwaga o podpisywaniu release**: `android/app/build.gradle.kts` używa prawdziwego release keystore (`android/release-key.jks` + `android/key.properties`, poza kontrolą wersji — oba plik ignorowane przez `android/.gitignore`) — release APK/AAB nie jest już podpisywane debug-keyem. Jeśli te pliki nie istnieją (np. świeży checkout repo), build automatycznie spada na debug-signing (fallback w kodzie), żeby `flutter build apk --release` nie wywalał się na braku konfiguracji. Do dystrybucji na innej maszynie/CI trzeba wygenerować własny keystore i skopiować oba pliki do `android/`.
+
 ---
 
 ## 📁 Struktura projektu

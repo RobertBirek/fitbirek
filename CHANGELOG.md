@@ -13,6 +13,23 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [0.8.1] — Prawdziwy release keystore + drobne porządki
+
+### Added
+- `android/release-key.jks` + `android/key.properties` — wygenerowany prawdziwy keystore do podpisywania release buildów (alias `release`, ważny do 2054). Oba pliki poza kontrolą wersji (`android/.gitignore` już zawierał odpowiednie wzorce `key.properties` / `**/*.jks` — zweryfikowane, sekrety nigdy nie trafiły do repo).
+- `android/app/build.gradle.kts` — dodano blok `signingConfigs { create("release") {...} }` wczytujący dane z `key.properties`; `buildTypes.release.signingConfig` przełączony z `debug` na `release` (z automatycznym fallbackiem na `debug`, gdy `key.properties` nie istnieje — np. świeży checkout repo bez wygenerowanego keystore).
+
+### Fixed
+- `lib/core/models/exercise.dart` — usunięto nieaktualny komentarz/TODO z ery "starter pack 38 ćwiczeń" i odniesienie do nieistniejącego skryptu `build_exercises.dart`; zaktualizowano na opis zgodny ze stanem faktycznym (realna baza 316, `tools/xlsx_to_json.py`).
+
+### Verified
+- `flutter build apk --release` — sukces (143.7s), APK 62.8MB (debug: ~191MB — R8/minifikacja działa poprawnie).
+- `apksigner verify --print-certs` — potwierdzony podpis prawdziwym certyfikatem release (SHA-256 `72:12:8A:...:88:CF:49`), nie debug-keyem.
+- `aapt dump badging` na release APK — `package: com.fitbirek.training`, `application-label: 'FitBirek Training'` — konsystencja zachowana.
+- `flutter analyze` — brak problemów.
+
+---
+
 ## [0.8.0] — Realna baza ćwiczeń (316 pozycji, autor: Robert Birek) zastępuje bazę syntetyczną
 
 ### Added

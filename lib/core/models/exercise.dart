@@ -3,8 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'exercise.freezed.dart';
 part 'exercise.g.dart';
 
-/// Model ćwiczenia z bazy 316 ćwiczeń (starter pack: 38 reprezentatywnych).
-/// TODO: import pełnej bazy 316 ćwiczeń z Excel poprzez skrypt build_exercises.dart (patrz README.md)
+/// Model ćwiczenia z realnej bazy 316 ćwiczeń (autor: Robert Birek).
+/// Dane pochodzą z `assets/data/exercises.json`, wygenerowanego skryptem
+/// `tools/xlsx_to_json.py` z Excela (zakładka `BAZA_GLOWNA`) — patrz README.md.
 @freezed
 class Exercise with _$Exercise {
   const factory Exercise({
