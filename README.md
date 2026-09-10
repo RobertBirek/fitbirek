@@ -10,6 +10,13 @@ Aplikacja nie jest generycznym trackerem — to narzędzie skrojone pod realny p
 
 ## ✨ Funkcje
 
+### Produkcja (2026-09-10)
+
+Prywatne konto i synchronizacja offline działają przez FastAPI/PostgreSQL.
+Kod: `/opt/fit`, runtime: `/docker/fit`, szablony: `deploy/`. Caddy obsługuje
+HTTPS. Codzienne dumpy są objęte Restic i miesięcznym testem odtworzenia.
+Procedury aktualizacji, konta i backupu: [DEPLOY.md](DEPLOY.md).
+
 ### MVP (zrealizowane)
 - **Onboarding** (3 ekrany) — profil użytkownika, cel, dostępny sprzęt
 - **5-tab bottom navigation**: Dziś / Baza / Trening / Postępy / Ustawienia
@@ -109,7 +116,7 @@ Poniżej szczera lista tego, co **nie** zostało zrobione, z szacowanym czasem d
 
 | Zadanie | Szacowany czas | Priorytet |
 |---|---|---|
-| VPS deployment (fit.birek.online) | 2-3h | Średni |
+| VPS deployment (fit.birek.online) | Wdrożono 2026-09-10 | Gotowe |
 
 **Uwaga o bazie ćwiczeń**: `assets/data/exercises.json` zawiera 316 REALNYCH, ręcznie kuratorowanych ćwiczeń autorstwa Roberta Birka (2026-08-08), oparte na uznanych źródłach wiedzy (Athlean-X, Muscle & Strength, Healthline, Harvard Health, GMB Fitness, Calisthenics Family, ChairTaiChi.org, Peloton, Cleveland Clinic, AAOS OrthoInfo, Barbend). Dane pochodzą z pliku Excel (zakładka `BAZA_GLOWNA`), konwertowanego skryptem `tools/xlsx_to_json.py` (zastąpił wcześniejszy generator syntetyczny `scripts/generate_exercises.py`, oznaczony jako deprecated). Import do bazy Drift jest przyrostowy (`ExercisesRepository.syncFromAssets()`) — na urządzeniach z wcześniejszą wersją apki nowe pozycje dopiszą się automatycznie przy starcie, bez utraty oznaczeń „ulubione”. Filtrowanie i generator planu dopasowują ~163 granularne wartości `partiaGlowna` z realnej bazy do 10 kategorii UI za pomocą czystej funkcji `mapToKategoria()` (`lib/core/utils/partia_kategoria.dart`), bez zmiany schematu bazy.
 

@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 
+import 'sync_metadata.dart';
+
 /// Tabela rekordów osobistych (PR) - auto-wykrywane podczas sesji treningowej.
 @DataClassName('PersonalRecordData')
-class PersonalRecords extends Table {
+class PersonalRecords extends Table with SyncMetadata {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get cwiczenieId => text()();
   TextColumn get nazwaCwiczeniaPl => text()();

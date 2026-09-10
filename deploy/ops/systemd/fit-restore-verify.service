@@ -1,0 +1,16 @@
+[Unit]
+Description=FitBirek isolated database restore drill
+After=docker.service
+Requires=docker.service
+OnFailure=fit-operation-failure@%n.service
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/bin/bash /opt/fit/deploy/ops/restore-verify.sh
+TimeoutStartSec=1h
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/docker/fit/data/backups /run/lock

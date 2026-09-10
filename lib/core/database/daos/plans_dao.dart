@@ -12,9 +12,24 @@ class PlansDao extends DatabaseAccessor<AppDatabase> with _$PlansDaoMixin {
     return into(workoutPlans).insert(plan);
   }
 
-  Stream<List<WorkoutPlanData>> watchAll() => select(workoutPlans).watch();
+  Stream<List<WorkoutPlanData>> watchAll() {
+    return (select(
+      workoutPlans,
+    )..where((t) => t.deletedAtUtc.isNull())).watch();
+  }
 
-  Future<void> deletePlan(int id) {
-    return (delete(workoutPlans)..where((t) => t.id.equals(id))).go();
+  Future<WorkoutPlanData?> getPlan(int id) {
+    return (select(
+      workoutPlans,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  Future<void> deletePlan(int id, DateTime deletedAtUtc) {
+    return (update(workoutPlans)..where((t) => t.id.equals(id))).write(
+      WorkoutPlansCompanion(
+        updatedAtUtc: Value(deletedAtUtc),
+        deletedAtUtc: Value(deletedAtUtc),
+      ),
+    );
   }
 }

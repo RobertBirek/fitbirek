@@ -1,0 +1,10 @@
+fit.birek.online {
+	import security_headers
+	@api path /api /api/*
+	handle @api {
+		reverse_proxy fit-api:8000
+	}
+	handle {
+		reverse_proxy fit-web:80
+	}
+}

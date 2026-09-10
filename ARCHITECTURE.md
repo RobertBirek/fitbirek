@@ -4,6 +4,19 @@ Ten dokument wyjaśnia **decyzje architektoniczne** i ich uzasadnienie — nie t
 
 ---
 
+## Produkcja: konta i synchronizacja (2026-09-10)
+
+Drift jest lokalnym magazynem offline, a FastAPI/PostgreSQL przechowuje konto,
+sesje i zsynchronizowane dane. Outbox z UUID operacji obsługuje ponowienia,
+wersje i tombstones. Jedno konto powstaje administracyjnie; brak publicznej
+rejestracji. Sesje używają Secure/HttpOnly cookies i ochrony CSRF.
+
+Źródła: `/opt/fit`; konfiguracja i trwałe dane: `/docker/fit`. Caddy jest
+jedynym właścicielem 80/443. Sieć `fit_ingress` łączy go z API i web;
+PostgreSQL jest wyłącznie w prywatnej `fit_internal`. Dedykowany obraz migracji
+uruchamia Alembic przed API. Dumpy poprzedzają Restic; comiesięczny test odtwarza
+izolowaną bazę. Procedury: [DEPLOY.md](DEPLOY.md).
+
 ## 1. Clean Architecture, feature-first
 
 Kod jest podzielony wg **funkcji** (`features/workout`, `features/planner`...), nie wg warstwy technicznej. Każdy feature ma wewnętrznie strukturę zbliżoną do Clean Architecture:

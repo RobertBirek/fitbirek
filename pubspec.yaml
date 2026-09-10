@@ -27,6 +27,7 @@ dependencies:
 
   # Networking (przygotowane na przyszlosc)
   dio: ^5.7.0
+  dio_web_adapter: ^2.2.2
 
   # Local database
   drift: ^2.20.3
@@ -86,4 +87,3 @@ flutter:
   assets:
     - assets/data/
     - assets/sounds/
-    - assets/icons/

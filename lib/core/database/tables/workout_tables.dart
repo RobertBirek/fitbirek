@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 
+import 'sync_metadata.dart';
+
 /// Tabela sesji treningowych.
 @DataClassName('WorkoutSessionData')
-class WorkoutSessions extends Table {
+class WorkoutSessions extends Table with SyncMetadata {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get dataStart => dateTime()();
   DateTimeColumn get dataKoniec => dateTime().nullable()();
@@ -12,7 +14,7 @@ class WorkoutSessions extends Table {
 
 /// Tabela zalogowanych serii ćwiczeń w ramach sesji treningowej.
 @DataClassName('SetLogData')
-class SetsLog extends Table {
+class SetsLog extends Table with SyncMetadata {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get sesjaId =>
       integer().references(WorkoutSessions, #id, onDelete: KeyAction.cascade)();

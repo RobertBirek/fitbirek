@@ -1,4 +1,7 @@
 #!/bin/bash
+printf '%s\n' 'RETIRED: use /opt/fit/DEPLOY.md and the Docker/Caddy deployment.' >&2
+exit 2
+# Historical implementation below is unreachable; retained for reference only.
 # =====================================================================
 # Skrypt wdrożenia FitBirek (Flutter Web) na własny VPS
 # Uruchom NA VPS (nie w sandboxie!), jako root lub z sudo.

@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 
+import 'sync_metadata.dart';
+
 /// Tabela pomiarów ciała - waga, obwody, tętno, ciśnienie.
 @DataClassName('MeasurementData')
-class Measurements extends Table {
+class Measurements extends Table with SyncMetadata {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get data => dateTime().withDefault(currentDateAndTime)();
   RealColumn get wagaKg => real()();

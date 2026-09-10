@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 
+import 'sync_metadata.dart';
+
 /// Tabela dziennika samopoczucia - szybki wpis codzienny.
 @DataClassName('MoodEntryData')
-class MoodEntries extends Table {
+class MoodEntries extends Table with SyncMetadata {
   IntColumn get id => integer().autoIncrement()();
   DateTimeColumn get data => dateTime().withDefault(currentDateAndTime)();
   RealColumn get snGodziny => real()();

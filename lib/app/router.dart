@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/auth/presentation/pages/login_page.dart';
+import '../features/auth/providers/auth_providers.dart';
 import '../features/onboarding/presentation/pages/onboarding_flow_page.dart';
 import '../features/onboarding/providers/user_profile_provider.dart';
 import '../features/home/presentation/pages/main_shell.dart';
@@ -18,23 +21,46 @@ import '../features/settings/presentation/pages/edit_profile_page.dart';
 import '../features/calculator/presentation/pages/calculator_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
 
-/// Konfiguracja GoRouter - deep links + guard onboardingu.
-/// Onboarding jest wymagany raz - redirect sprawdza flag onboardingZakonczony
-/// z UserProfileRepository (single-user, lokalna baza).
 final routerProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    initialLocation: '/onboarding',
-    redirect: (context, state) async {
-      final repo = ref.read(userProfileRepositoryProvider);
-      final profile = await repo.getProfileOnce();
-      final completed = profile?.onboardingZakonczony ?? false;
-      final isOnboardingRoute = state.matchedLocation == '/onboarding';
-
-      if (!completed && !isOnboardingRoute) return '/onboarding';
-      if (completed && isOnboardingRoute) return '/home';
-      return null;
+  final refresh = _RouterRefresh(ref);
+  ref.onDispose(refresh.dispose);
+  return createRouter(
+    readAuthState: () => ref.read(authStateProvider),
+    readOnboardingComplete: () {
+      final profile = ref.read(userProfileStreamProvider);
+      return profile.when(
+        data: (value) => value?.onboardingZakonczony ?? false,
+        loading: () => null,
+        error: (_, _) => false,
+      );
     },
+    refreshListenable: refresh,
+  );
+});
+
+GoRouter createRouter({
+  required AuthState Function() readAuthState,
+  required bool? Function() readOnboardingComplete,
+  Listenable? refreshListenable,
+  String initialLocation = '/bootstrap',
+}) {
+  final pendingLocation = _PendingProtectedLocation();
+  return GoRouter(
+    initialLocation: initialLocation,
+    refreshListenable: refreshListenable,
+    redirect: (context, state) => _authRedirect(
+      authState: readAuthState(),
+      onboardingComplete: readOnboardingComplete(),
+      location: state.uri.path,
+      requestedLocation: state.uri.toString(),
+      pendingLocation: pendingLocation,
+    ),
     routes: [
+      GoRoute(
+        path: '/bootstrap',
+        builder: (context, state) => const _BootstrapPage(),
+      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingFlowPage(),
@@ -54,7 +80,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/home',
+                path: '/today',
                 builder: (context, state) => const TodayPage(),
               ),
             ],
@@ -139,4 +165,81 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-});
+}
+
+class _RouterRefresh extends ChangeNotifier {
+  _RouterRefresh(Ref ref) {
+    ref.listen<AuthState>(authStateProvider, (_, _) => notifyListeners());
+    ref.listen(userProfileStreamProvider, (_, _) => notifyListeners());
+  }
+}
+
+String? authRedirect({
+  required AuthState authState,
+  required bool? onboardingComplete,
+  required String location,
+}) {
+  return _authRedirect(
+    authState: authState,
+    onboardingComplete: onboardingComplete,
+    location: location,
+    requestedLocation: location,
+    pendingLocation: _PendingProtectedLocation(),
+  );
+}
+
+String? _authRedirect({
+  required AuthState authState,
+  required bool? onboardingComplete,
+  required String location,
+  required String requestedLocation,
+  required _PendingProtectedLocation pendingLocation,
+}) {
+  if (authState.isLoading) {
+    pendingLocation.capture(location, requestedLocation);
+    return location == '/bootstrap' ? null : '/bootstrap';
+  }
+  if (authState.isSignedOut) {
+    return location == '/login' ? null : '/login';
+  }
+  if (onboardingComplete == null) {
+    return location == '/bootstrap' ? null : '/bootstrap';
+  }
+  if (!onboardingComplete) {
+    return location == '/onboarding' ? null : '/onboarding';
+  }
+  if (location == '/bootstrap' ||
+      location == '/login' ||
+      location == '/onboarding') {
+    return pendingLocation.take() ?? '/today';
+  }
+  return null;
+}
+
+class _PendingProtectedLocation {
+  String? _location;
+
+  void capture(String location, String requestedLocation) {
+    if (location == '/bootstrap' ||
+        location == '/login' ||
+        location == '/onboarding') {
+      return;
+    }
+    _location = requestedLocation;
+  }
+
+  String? take() {
+    final location = _location;
+    _location = null;
+    return location;
+  }
+}
+
+class _BootstrapPage extends StatelessWidget {
+  const _BootstrapPage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}

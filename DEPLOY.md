@@ -1,223 +1,216 @@
-# Wdrożenie FitBirek na VPS — `fit.birek.online`
+# FitBirek production operations
 
-Ten dokument opisuje **kompletną procedurę** wdrożenia aplikacji web FitBirek (Flutter Web) na własnym VPS, pod domeną `fit.birek.online`. Zawiera zarówno instrukcje krok-po-kroku dla człowieka, jak i gotowy prompt dla agenta AI, który może wykonać to wdrożenie automatycznie.
+Production: **https://fit.birek.online**, deployed 2026-09-10.
+Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
+The authenticated Flutter PWA synchronizes through FastAPI/PostgreSQL and uses
+Drift SQLite as its per-device offline store.
 
-**Status DNS**: rekord DNS dla `fit.birek.online` jest już skonfigurowany i propagowany (zweryfikowano: wskazuje na IP VPS). Można przejść od razu do wdrożenia + SSL.
+## Images, services and routing
 
----
+- `deploy/docker/web.Dockerfile`: digest-pinned Flutter **3.35.4 / Dart 3.9.2**
+  multistage build and Nginx runtime. CanvasKit is bundled locally. The
+  `verification` target runs analysis and all Flutter tests; the release target
+  depends on it, so failing checks prevent building a production image.
+- `backend/Dockerfile`: serving `runtime` target and dedicated `migration`
+  target with locked Alembic tooling, migrations and `backend/migrate.py`.
+  Migration credentials are read internally, never passed in command arguments.
+- `deploy/compose.yaml` is installed as `/docker/fit/compose.yaml`, mode `0600`.
+  Three long-running services (`api`, `postgres`, `web`) and one successful
+  one-shot `migrate` service. Migration completion gates API startup.
+- PostgreSQL data: `/docker/fit/data/postgres`. PostgreSQL joins private
+  `fit_internal` only. API joins both networks, web joins external `fit_ingress`.
+  Caddy reaches aliases `fit-api` and `fit-web`. No Fit host ports are published.
+- Existing `/docker/caddy` owns TCP/UDP 80 and 443 and renews TLS automatically.
+  `deploy/caddy-fit.caddy` documents its installed Fit host block. `/api` prefix
+  is preserved. Nginx's container config `deploy/docker/web-nginx.conf` provides
+  SPA fallback, `application/wasm`, and `no-cache` for workers/bootstrap/assets.
 
-## 📋 Wymagania wstępne
+The old `deploy/fitbirek-deploy-vps.sh` is retired: it exits 2 before any old
+implementation. The old host Nginx config is reference-only. Do not install
+host Nginx or Certbot for this stack.
 
-- VPS z dostępem root/sudo (Ubuntu/Debian — instrukcje poniżej zakładają `apt`; dla innych dystrybucji dostosuj komendy instalacji `nginx`/`certbot`)
-- Domena `fit.birek.online` z rekordem **A** wskazującym na IP VPS (✅ już zrobione)
-- Porty 80 i 443 otwarte w firewallu VPS
-- Dostęp SSH do VPS
+## First installation (already executed)
 
----
-
-## 📦 Co jest wdrażane
-
-Statyczna aplikacja **Flutter Web** (skompilowana do JS/Wasm), z bazą danych **Drift SQLite działającą w przeglądarce przez WebAssembly** (`sqlite3.wasm` + `drift_worker.dart.js`). To nie wymaga żadnego backendu/serwera aplikacyjnego — nginx serwuje same pliki statyczne, cała logika i baza danych działają lokalnie w przeglądarce użytkownika (IndexedDB/OPFS).
-
-**Krytyczny szczegół techniczny**: nginx musi serwować plik `.wasm` z poprawnym MIME typem `application/wasm`. Bez tego przeglądarka odmawia załadować moduł WebAssembly i baza danych aplikacji nie wystartuje (biały ekran lub błąd w konsoli). Konfiguracja w tym repo (`deploy/fitbirek-nginx.conf`) już to obsługuje.
-
----
-
-## 🗂️ Pliki w tym repo potrzebne do wdrożenia
-
-| Plik | Cel |
-|---|---|
-| `deploy/fitbirek-nginx.conf` | Konfiguracja nginx (server block, MIME types, gzip, cache) |
-| `deploy/fitbirek-deploy-vps.sh` | Skrypt automatyzujący całe wdrożenie (instalacja nginx/certbot, rozpakowanie, SSL) |
-| *(build/web/ nie jest w repo — patrz "Budowanie aplikacji" poniżej)* | Skompilowana aplikacja |
-
-> **Uwaga**: katalog `build/` jest w `.gitignore` (standard dla projektów Flutter — artefakty budowania nie trafiają do repo). Aplikację trzeba **zbudować** przed wdrożeniem — patrz kroki poniżej.
-
----
-
-## 🚀 Procedura wdrożenia — krok po kroku
-
-### Krok 1: Sklonuj repo (na maszynie z Flutter SDK — sandbox deweloperski lub lokalnie)
+Run as root. Initialization refuses to replace existing secrets.
 
 ```bash
-git clone https://github.com/RobertBirek/fitbirek.git
-cd fitbirek
+python3 /opt/fit/deploy/ops/initialize-runtime.py
+docker network create --subnet 172.26.0.0/16 --gateway 172.26.0.1 fit_ingress
+docker compose -f /docker/fit/compose.yaml config --quiet
+docker compose -f /docker/fit/compose.yaml build
+docker compose -f /docker/fit/compose.yaml up -d --wait
+python3 /opt/fit/deploy/ops/create-account.py
 ```
 
-### Krok 2: Zainstaluj zależności i zbuduj wersję web
+Initial account: **robert@birek.online**. Password file:
+`/docker/fit/secrets/initial-account.txt`, root `0600`, directory `0700`.
+The file contains only the generated password. The wrapper feeds the existing
+account CLI via stdin and suppresses terminal fallback output. There is no
+public signup. Never print the password into logs or pass it in argv.
+
+Database credentials are in root-readable `/docker/fit/.env` and
+`/docker/fit/secrets/postgres-password.txt`, both `0600`. The account password
+is never mounted in containers; PostgreSQL stores its Argon2 hash.
+
+Install the Fit Caddy host block and persist external `fit_ingress` in Caddy's
+Compose file. Attach the running container and reload without recreation:
 
 ```bash
-flutter pub get
-dart run build_runner build --delete-conflicting-outputs
-flutter build web --release
+python3 /opt/fit/deploy/ops/check-shared-sites.py before
+docker network connect --ip 172.26.0.4 fit_ingress caddy  # first time only; already attached
+docker compose -f /docker/caddy/compose.yaml config --quiet
+docker exec caddy caddy validate --config /etc/caddy/Caddyfile
+docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+python3 /opt/fit/deploy/ops/check-shared-sites.py after
 ```
 
-Wynik: katalog `build/web/` zawierający kompletną, gotową do wdrożenia aplikację (m.in. `index.html`, `main.dart.js`, `sqlite3.wasm`, `drift_worker.dart.js`).
+Existing maintenance/denied hosts have baseline 503/403 responses; compare
+against `/docker/fit/shared-sites-before.json` rather than assuming all return 200.
 
-**Weryfikacja przed wdrożeniem** (zalecane):
-```bash
-flutter analyze   # powinno zwrócić "No issues found!"
-ls -la build/web/sqlite3.wasm build/web/drift_worker.dart.js   # muszą istnieć
+### Forwarded client IP trust
+
+The inspected external `fit_ingress` network uses subnet **172.26.0.0/16**,
+gateway **172.26.0.1**. Caddy's existing address **172.26.0.4** is pinned in
+`/docker/caddy/compose.yaml` (keep its other network memberships):
+
+```yaml
+services:
+  caddy:
+    networks:
+      proxy:
+      finanse_ingress:
+      fit_ingress:
+        ipv4_address: 172.26.0.4
+networks:
+  fit_ingress:
+    external: true
 ```
 
-### Krok 3: Spakuj i wgraj na VPS
+The API-only `environment` in both Fit Compose files sets
+`FORWARDED_ALLOW_IPS: "172.26.0.4"`. Uvicorn already enables proxy headers;
+its loopback-only default otherwise collapses login buckets onto Caddy's IP.
+Trust only this exact peer, never `*` or the whole bridge subnet. Caddy's
+default handling discards client-supplied forwarding headers at public ingress.
 
-```bash
-cd build && tar -czf fitbirek-web-release.tar.gz web/ && cd ..
-
-scp build/fitbirek-web-release.tar.gz deploy/fitbirek-nginx.conf deploy/fitbirek-deploy-vps.sh \
-    TWOJ_USER@84.46.252.130:~/
-```
-
-> Zamień `TWOJ_USER` na swoją nazwę użytkownika SSH na VPS. IP `84.46.252.130` to potwierdzony adres, na który wskazuje już `fit.birek.online`.
-
-### Krok 4: Zaloguj się na VPS i odpal skrypt wdrożeniowy
-
-```bash
-ssh TWOJ_USER@84.46.252.130
-chmod +x fitbirek-deploy-vps.sh
-./fitbirek-deploy-vps.sh fitbirek-web-release.tar.gz
-```
-
-Skrypt automatycznie:
-1. Instaluje `nginx` i `certbot` (jeśli nie są zainstalowane)
-2. Rozpakowuje aplikację do `/var/www/fitbirek/web`
-3. Wgrywa konfigurację nginx (`fitbirek-nginx.conf`) do `/etc/nginx/sites-available/fit.birek.online` + aktywuje symlinkiem
-4. Testuje konfigurację (`nginx -t`) i restartuje nginx
-5. Pyta, czy DNS jest już propagowany — **odpowiedz `t`** (DNS jest już potwierdzony jako działający) — skrypt uruchomi `certbot --nginx -d fit.birek.online` i skonfiguruje darmowy SSL (Let's Encrypt) z auto-odnawianiem
-
-**Podczas działania certbota** zostaniesz zapytany o adres e-mail (do powiadomień o odnowieniu certyfikatu) — podaj swój prawdziwy e-mail, nie przykładowy z domyślnego skryptu.
-
-### Krok 5: Weryfikacja
-
-```bash
-curl -I https://fit.birek.online
-```
-
-Powinno zwrócić `HTTP/2 200`. Otwórz `https://fit.birek.online` w przeglądarce i sprawdź konsolę dewelopera (F12 → Console) — nie powinno być błędów związanych z `sqlite3.wasm` czy `drift_worker`. Jeśli aplikacja się ładuje i przechodzi przez onboarding, wdrożenie jest w 100% udane.
-
-**Na iPhone**: otwórz `https://fit.birek.online` w Safari → Udostępnij → "Dodaj do ekranu głównego" — aplikacja instaluje się jak natywna (ikona, pełny ekran, offline).
-
----
-
-## 🔄 Aktualizacja aplikacji po zmianach w kodzie
-
-Gdy w repo pojawią się nowe commity (nowe funkcje, poprawki):
+Do not recreate an existing network to apply this fix. On disaster recovery,
+check for subnet conflicts and attach Caddy at `.4` before starting Fit services.
+If addressing changes, update the Caddy pin and both API templates together.
+The Compose pin records the already-running address and needs no Caddy restart
+or reload. Apply only the API environment change:
 
 ```bash
-# Na maszynie deweloperskiej
-git pull
-flutter build web --release
-cd build && tar -czf fitbirek-web-release.tar.gz web/ && cd ..
-scp build/fitbirek-web-release.tar.gz TWOJ_USER@84.46.252.130:~/
-
-# Na VPS
-ssh TWOJ_USER@84.46.252.130
-sudo rm -rf /var/www/fitbirek/web
-sudo tar -xzf fitbirek-web-release.tar.gz -C /var/www/fitbirek
-sudo chown -R www-data:www-data /var/www/fitbirek
-sudo systemctl reload nginx
+docker compose -f /docker/caddy/compose.yaml config --quiet
+docker compose -f /docker/fit/compose.yaml config --quiet
+docker compose -f /docker/fit/compose.yaml up -d --no-deps --no-build --force-recreate --wait --wait-timeout 180 api
+# From /opt/fit: use the deployed Uvicorn version and actual container env.
+docker exec -i fit-api-1 python - < deploy/ops/check-proxy-trust.py
+python3 deploy/ops/check-proxy-public.py
+python3 deploy/ops/check-shared-sites.py after
 ```
 
-Nie trzeba ponownie uruchamiać certbota — certyfikat SSL jest niezależny od zawartości plików.
+The public check logs in, reads protected session/sync endpoints, checks cookie,
+Origin and CSRF protections, and logs out. It also exhausts a unique nonexistent
+email bucket while varying spoofed XFF, then verifies one non-proxy, non-spoofed
+database bucket. That bucket expires through normal limiter cleanup; it does
+not exhaust the owner account or write domain records. Secrets remain in memory.
 
----
+## Updates
 
-## 🐛 Troubleshooting
+Production was built from an approved working tree containing uncommitted
+account/sync implementation. Do not reset or overwrite it; Git SHA alone does
+not identify this release. Review the tree and retain previous images first.
 
-| Problem | Diagnoza | Rozwiązanie |
-|---|---|---|
-| Biały ekran, konsola: błąd `WebAssembly` | Nginx serwuje `.wasm` z błędnym MIME typem | Sprawdź czy `fitbirek-nginx.conf` ma sekcję `types { application/wasm wasm; }` i czy jest aktywna (`nginx -t`, `systemctl status nginx`) |
-| `certbot` fail: "DNS problem" | DNS jeszcze nie propagowany globalnie | Sprawdź: `python3 -c "import socket; print(socket.gethostbyname('fit.birek.online'))"` — musi zwrócić IP VPS. Jeśli nie, poczekaj i spróbuj `certbot` ręcznie później |
-| Strona 404 po odświeżeniu na podstronie (np. `/workout`) | Brak SPA fallback w nginx | Sprawdź czy `location /` w konfiguracji ma `try_files $uri $uri/ /index.html;` |
-| Stare dane/UI po aktualizacji | Cache przeglądarki/service workera | Sprawdź czy `flutter_service_worker.js` ma nagłówek `no-cache` (jest w konfiguracji), wymuś hard refresh (Ctrl+Shift+R) |
-| `nginx -t` fail | Błąd składni w konfiguracji | Sprawdź `sudo nginx -t` — pokaże dokładną linię błędu w configu |
-
----
-
-## 🤖 Prompt dla agenta AI wdrażającego tę aplikację
-
-Jeśli chcesz zlecić wdrożenie innemu agentowi AI (np. mającemu dostęp SSH do VPS), skopiuj poniższy prompt **w całości**:
-
-```
-Twoje zadanie: wdroż aplikację webową FitBirek (Flutter Web) na VPS pod domeną
-fit.birek.online. Masz dostęp SSH do VPS (Ubuntu/Debian) z uprawnieniami sudo.
-
-KONTEKST:
-- Repo źródłowe: https://github.com/RobertBirek/fitbirek
-- Domena fit.birek.online już ma skonfigurowany rekord DNS A wskazujący na ten VPS
-  (zweryfikowane, propagacja zakończona)
-- Aplikacja to statyczny build Flutter Web z bazą danych SQLite działającą w
-  przeglądarce przez WebAssembly (Drift + sqlite3.wasm) — nie wymaga backendu,
-  tylko serwera plików statycznych (nginx)
-- W repo, w katalogu deploy/, znajdują się dwa gotowe pliki:
-  - deploy/fitbirek-nginx.conf — konfiguracja nginx (KRYTYCZNE: zawiera poprawny
-    MIME type dla .wasm, bez którego baza danych aplikacji nie wystartuje w
-    przeglądarce)
-  - deploy/fitbirek-deploy-vps.sh — skrypt automatyzujący wdrożenie
-
-KROKI DO WYKONANIA:
-
-1. Na maszynie z Flutter SDK (3.35.4 / Dart 3.9.2 — NIE aktualizuj wersji):
-   git clone https://github.com/RobertBirek/fitbirek.git
-   cd fitbirek
-   flutter pub get
-   dart run build_runner build --delete-conflicting-outputs
-   flutter build web --release
-
-   Zweryfikuj przed kontynuacją:
-   - `flutter analyze` powinno zwrócić "No issues found!"
-   - build/web/sqlite3.wasm i build/web/drift_worker.dart.js MUSZĄ istnieć —
-     jeśli ich nie ma, build się nie powiódł poprawnie, zatrzymaj się i
-     zdiagnozuj błąd zamiast kontynuować wdrożenie na produkcję
-
-2. Spakuj build:
-   cd build && tar -czf fitbirek-web-release.tar.gz web/ && cd ..
-
-3. Wgraj na VPS (tarball + konfigurację nginx + skrypt deploy):
-   scp build/fitbirek-web-release.tar.gz deploy/fitbirek-nginx.conf \
-       deploy/fitbirek-deploy-vps.sh USER@VPS_IP:~/
-   (zapytaj użytkownika o USER i VPS_IP jeśli nie zostały podane)
-
-4. Na VPS, wykonaj skrypt wdrożeniowy:
-   ssh USER@VPS_IP
-   chmod +x fitbirek-deploy-vps.sh
-   ./fitbirek-deploy-vps.sh fitbirek-web-release.tar.gz
-
-   Skrypt zainstaluje nginx+certbot jeśli brak, rozpakuje aplikację do
-   /var/www/fitbirek/web, skonfiguruje nginx i zapyta czy DNS jest propagowany
-   — odpowiedz "t" (TAK, jest już potwierdzone), żeby skrypt automatycznie
-   skonfigurował SSL przez Let's Encrypt (certbot --nginx -d fit.birek.online).
-   Certbot zapyta o adres e-mail do powiadomień o odnowieniu certyfikatu —
-   użyj prawdziwego adresu e-mail podanego przez użytkownika, NIGDY placeholder
-   typu "twoj-email@example.com".
-
-5. Zweryfikuj wdrożenie:
-   curl -I https://fit.birek.online
-   Powinno zwrócić HTTP/2 200. Jeśli nie — sprawdź logi nginx:
-   sudo journalctl -u nginx -n 50
-   sudo tail -50 /var/log/nginx/error.log
-
-6. Potwierdź użytkownikowi końcowy status z konkretnym dowodem (kod HTTP,
-   ewentualne błędy z logów), nie tylko "wdrożenie zakończone" bez weryfikacji.
-
-ZASADY BEZPIECZEŃSTWA:
-- Nie modyfikuj deploy/fitbirek-nginx.conf bez wyraźnej potrzeby — MIME type
-  dla .wasm jest krytyczny dla działania bazy danych, nie usuwaj tej sekcji
-- Jeśli na VPS działa już inna strona/aplikacja na porcie 80/443, NIE nadpisuj
-  jej konfiguracji — dodaj nowy server block obok istniejących (sprawdź
-  /etc/nginx/sites-enabled/ przed działaniem) i zapytaj użytkownika o
-  potwierdzenie przed restartem nginx
-- Nie commituj żadnych sekretów/kluczy SSH/tokenów do repo
-- Jeśli certbot zawiedzie z powodu DNS, NIE próbuj wielokrotnie w krótkim
-  czasie (Let's Edge Encrypt ma rate limity) — zgłoś błąd użytkownikowi i
-  poczekaj na jego decyzję
+```bash
+# In /opt/fit:
+docker build --target verification -f deploy/docker/web.Dockerfile -t fit-web:verified .
+# In /opt/fit/backend:
+.venv/bin/pytest -q
+# Runtime commands work from either directory:
+docker compose -f /docker/fit/compose.yaml build
+systemctl start fit-backup.service
+flock -w 900 /run/lock/fit-backup-restore.lock \
+  docker compose -f /docker/fit/compose.yaml run --rm --no-deps migrate
+docker compose -f /docker/fit/compose.yaml up -d --wait --wait-timeout 180
 ```
 
----
+For template changes:
+`install -m 0600 /opt/fit/deploy/compose.yaml /docker/fit/compose.yaml`.
+Use `config --quiet`; resolved Compose output contains database credentials.
+For rollback retain compatible previous API/web images and the pre-update dump.
+Do not blindly downgrade Alembic or delete the persistent data directory.
 
-## 📝 Znane szczegóły techniczne dla przyszłej konserwacji
+## Backups and restoration
 
-- **Wersje Drift/sqlite3 są zablokowane**: `drift: 2.28.2`, `sqlite3: 2.9.4` (patrz `pubspec.lock`). Pliki `web/sqlite3.wasm` i `web/drift_worker.dart.js` w repo źródłowym MUSZĄ odpowiadać tym wersjom — zostały pobrane z oficjalnych GitHub Releases tych pakietów. Jeśli kiedyś zaktualizujesz `drift`/`sqlite3` w `pubspec.yaml`, musisz też pobrać nowe wersje tych dwóch plików binarnych, inaczej worker↔wasm protocol mismatch spowoduje trudne do zdiagnozowania błędy runtime.
-- **Certyfikat SSL** (Let's Encrypt via certbot) odnawia się automatycznie przez systemowy timer/cron zainstalowany przez certbot — nie wymaga ręcznej interwencji, ale warto od czasu do czasu sprawdzić: `sudo certbot certificates`.
-- **Brak backendu** — cała logika i dane działają po stronie klienta (przeglądarka). To oznacza, że dane użytkownika (treningi, pomiary) są przechowywane lokalnie w przeglądarce (IndexedDB) i **nie synchronizują się** między urządzeniami. To jest świadome ograniczenie obecnej wersji — jeśli w przyszłości potrzebna będzie synchronizacja wielourządzeniowa, wymaga to dodania prawdziwego backendu (np. Firebase, patrz sekcja Firebase w głównej dokumentacji projektu).
+```bash
+install -m 0644 /opt/fit/deploy/ops/systemd/fit-* /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now fit-backup.timer fit-restore-verify.timer
+systemctl start fit-backup.service
+systemctl start fit-restore-verify.service
+systemctl list-timers 'fit-*'
+journalctl -u fit-backup.service -u fit-restore-verify.service
+```
+
+- Daily dump: **01:30 Europe/Warsaw**, before existing Restic 02:00 plus jitter.
+- Monthly drill: **first Sunday at 04:30 Europe/Warsaw**.
+- Both serialize with `/run/lock/fit-backup-restore.lock` (900-second wait).
+- Atomic timestamped bundles in `/docker/fit/data/backups` contain a custom,
+  serializable-deferrable `database.dump` and `manifest.json` with SHA-256,
+  Alembic revision, Git SHA, dirty-tree flag and API/migration image IDs.
+  Latest 35 local bundles are retained.
+- Existing `/opt/backup/restic-backup.sh` includes `/docker` and `/etc`, hence
+  dumps, runtime secrets and units are covered. No shared Restic changes were
+  needed. Logical dumps are the database recovery source; copies of live
+  PostgreSQL files are not consistent backups.
+- Restore checks checksum and revision, creates **fit_restore only**, restores,
+  applies migrations, verifies one account and non-null sync IDs/positive
+  versions, then drops the isolated database on success or failure. It refuses
+  to replace an already-existing `fit_restore` database.
+- Hardened systemd services report failures through systemd/journal and
+  `fit-operations` error logs. No external email notification is configured.
+
+Verify a selected recovered bundle:
+
+```bash
+bash /opt/fit/deploy/ops/restore-verify.sh /docker/fit/data/backups/TIMESTAMP
+```
+
+For disaster recovery, recover the runtime secrets, source/images and dump from
+Restic, start PostgreSQL, and verify the recovered bundle in isolation before
+cutover. Stop API and preserve the current production database before a manual
+production restoration. The automated drill cannot overwrite production.
+
+## Verification
+
+```bash
+docker compose -f /docker/fit/compose.yaml ps -a
+curl -fsS https://fit.birek.online/api/health
+curl -fsSI https://fit.birek.online/
+curl -fsSI https://fit.birek.online/sqlite3.wasm
+curl -fsSI https://fit.birek.online/drift_worker.dart.js
+curl -fsSI https://fit.birek.online/flutter_service_worker.js
+curl -fsSI https://fit.birek.online/today
+python3 /opt/fit/deploy/ops/check-shared-sites.py after
+```
+
+Expected: three healthy services and migration exit 0; health `{"status":"ok"}`;
+static/SPA paths 200; Wasm `application/wasm`; workers `Cache-Control: no-cache`;
+valid public TLS chain. Browser verification includes login, offline mood
+creation, reconnect, second-profile synchronization, logout and protected-route
+redirection. The web Dio base is empty because paths begin with `/api/`;
+using `/` produces a wrong protocol-relative `//api/...` URL.
+
+Run `python3 /opt/fit/deploy/ops/browser-smoke.py` as root with Python Playwright
+and Chromium installed. It checks login in two independent browser contexts,
+creates one offline mood, verifies sync/reload/logout, and tombstones its test
+records. It requires no existing mood entry today. On a new account it temporarily
+uses onboarding defaults and removes that test profile afterward. Failed smoke
+runs require checking and cleaning their specific test records before retrying.
+
+Remote snapshot writes use typed Drift companions with explicit nulls so that
+replaying a deletion followed by revival clears the old deletion marker. The
+regression test is in `test/core/sync_service_test.dart`.
+
+The release uses JavaScript plus CanvasKit/SQLite Wasm. Flutter's optional
+full-Dart-Wasm dry run reports flutter_secure_storage_web incompatibilities;
+these do not prevent the selected JavaScript production build.

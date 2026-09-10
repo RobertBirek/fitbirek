@@ -17,9 +17,9 @@ class UserProfileDao extends DatabaseAccessor<AppDatabase>
   }
 
   Stream<UserProfileData?> watchProfile() {
-    return (select(
-      userProfiles,
-    )..where((t) => t.id.equals(1))).watchSingleOrNull();
+    return (select(userProfiles)
+          ..where((t) => t.id.equals(1) & t.deletedAtUtc.isNull()))
+        .watchSingleOrNull();
   }
 
   Future<void> upsertProfile(UserProfilesCompanion profile) {

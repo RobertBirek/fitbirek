@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/models/exercise.dart';
+import '../../../core/sync/sync_models.dart';
 
 /// Repozytorium bazy ćwiczeń - odpowiada za import (przyrostowy) z JSON
 /// oraz konwersję między wierszami Drift a modelem domenowym Exercise.
@@ -18,8 +19,8 @@ class ExercisesRepository {
   /// - na pierwszym uruchomieniu wgrywa cały starter pack,
   /// - po aktualizacji aplikacji z rozszerzoną bazą (np. 38 -> 316) dopisuje
   ///   tylko nowe pozycje na urządzeniach, które już mają starsze dane,
-  /// - nigdy nie nadpisuje/nie usuwa istniejących wierszy, więc pole
-  ///   `ulubione` ustawione wcześniej przez użytkownika jest zachowane.
+  /// - nigdy nie nadpisuje/nie usuwa istniejących wierszy; favorite flags
+  ///   live separately in `ExerciseFavorites` and therefore survive refreshes.
   Future<void> syncFromAssets() async {
     final existingIds = await _db.exercisesDao.getAllIds();
 
@@ -49,7 +50,6 @@ class ExercisesRepository {
             progresja: map['progresja'] as String,
             regresja: map['regresja'] as String,
             zrodlo: map['zrodlo'] as String,
-            ulubione: Value(map['ulubione'] as bool? ?? false),
           );
         })
         .toList();
@@ -58,7 +58,7 @@ class ExercisesRepository {
     await _db.exercisesDao.insertAll(rows);
   }
 
-  Exercise _mapRowToModel(ExerciseData row) {
+  Exercise _mapRowToModel(ExerciseData row, bool ulubione) {
     return Exercise(
       id: row.id,
       nazwaPl: row.nazwaPl,
@@ -76,22 +76,54 @@ class ExercisesRepository {
       progresja: row.progresja,
       regresja: row.regresja,
       zrodlo: row.zrodlo,
-      ulubione: row.ulubione,
+      ulubione: ulubione,
     );
   }
 
   Stream<List<Exercise>> watchAll() {
-    return _db.exercisesDao.watchAll().map(
-      (rows) => rows.map(_mapRowToModel).toList(),
+    return _db.exercisesDao.watchAllWithFavorites().map(
+      (rows) => rows.map((row) => _mapRowToModel(row.$1, row.$2)).toList(),
     );
   }
 
   Future<Exercise?> getById(String id) async {
-    final row = await _db.exercisesDao.getById(id);
-    return row == null ? null : _mapRowToModel(row);
+    final row = await _db.exercisesDao.getByIdWithFavorite(id);
+    return row == null ? null : _mapRowToModel(row.$1, row.$2);
   }
 
-  Future<void> toggleFavorite(String id, bool value) {
-    return _db.exercisesDao.toggleFavorite(id, value);
+  Future<void> toggleFavorite(String id, bool value) async {
+    final now = DateTime.now().toUtc();
+    await _db.transaction(() async {
+      final existing = await _db.exercisesDao.getFavorite(id);
+      if (!value && existing == null) return;
+      final syncId =
+          existing?.syncId ?? await _db.syncDao.singletonId('favorite:$id');
+      final syncVersion = existing?.syncVersion ?? 0;
+      await _db.exercisesDao.upsertFavorite(
+        ExerciseFavoritesCompanion(
+          exerciseId: Value(id),
+          syncId: Value(syncId),
+          syncVersion: Value(syncVersion),
+          updatedAtUtc: Value(now),
+          deletedAtUtc: value ? const Value(null) : Value(now),
+        ),
+      );
+      final payload = <String, Object?>{'exerciseId': id};
+      if (value) {
+        await _db.syncDao.enqueueUpsert(
+          entityType: SyncEntityType.exerciseFavorite,
+          entityId: syncId,
+          baseVersion: syncVersion,
+          payload: payload,
+        );
+      } else {
+        await _db.syncDao.enqueueDelete(
+          entityType: SyncEntityType.exerciseFavorite,
+          entityId: syncId,
+          baseVersion: syncVersion,
+          payload: payload,
+        );
+      }
+    });
   }
 }

@@ -1,0 +1,9 @@
+**
+!pubspec.yaml
+!pubspec.lock
+!analysis_options.yaml
+!lib/**
+!assets/**
+!web/**
+!test/**
+!deploy/docker/**

@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 
+import 'sync_metadata.dart';
+
 /// Tabela profilu użytkownika - single user (zawsze id=1), bez rejestracji.
 @DataClassName('UserProfileData')
-class UserProfiles extends Table {
+class UserProfiles extends Table with SyncMetadata {
   IntColumn get id => integer().withDefault(const Constant(1))();
   TextColumn get imie => text().withDefault(const Constant('Robert'))();
   IntColumn get wiek => integer()();

@@ -13,10 +13,12 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
   }
 
   Stream<List<PersonalRecordData>> watchAll() {
-    return (select(personalRecords)..orderBy([
-          (t) => OrderingTerm.desc(t.data),
-          (t) => OrderingTerm.desc(t.id),
-        ]))
+    return (select(personalRecords)
+          ..where((t) => t.deletedAtUtc.isNull())
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.data),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
         .watch();
   }
 
@@ -24,7 +26,10 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
   Future<PersonalRecordData?> getBestForExercise(String exerciseId) async {
     final rows =
         await (select(personalRecords)
-              ..where((t) => t.cwiczenieId.equals(exerciseId))
+              ..where(
+                (t) =>
+                    t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull(),
+              )
               ..orderBy([(t) => OrderingTerm.desc(t.szacowane1Rm)])
               ..limit(1))
             .get();
@@ -33,7 +38,9 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
 
   Future<List<PersonalRecordData>> getHistoryForExercise(String exerciseId) {
     return (select(personalRecords)
-          ..where((t) => t.cwiczenieId.equals(exerciseId))
+          ..where(
+            (t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull(),
+          )
           ..orderBy([
             (t) => OrderingTerm.desc(t.data),
             (t) => OrderingTerm.desc(t.id),

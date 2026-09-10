@@ -13,10 +13,12 @@ class MoodDao extends DatabaseAccessor<AppDatabase> with _$MoodDaoMixin {
   }
 
   Stream<List<MoodEntryData>> watchAll() {
-    return (select(moodEntries)..orderBy([
-          (t) => OrderingTerm.desc(t.data),
-          (t) => OrderingTerm.desc(t.id),
-        ]))
+    return (select(moodEntries)
+          ..where((t) => t.deletedAtUtc.isNull())
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.data),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
         .watch();
   }
 
@@ -26,7 +28,11 @@ class MoodDao extends DatabaseAccessor<AppDatabase> with _$MoodDaoMixin {
     final startOfDay = DateTime(now.year, now.month, now.day);
     final rows =
         await (select(moodEntries)
-              ..where((t) => t.data.isBiggerOrEqualValue(startOfDay))
+              ..where(
+                (t) =>
+                    t.data.isBiggerOrEqualValue(startOfDay) &
+                    t.deletedAtUtc.isNull(),
+              )
               ..orderBy([(t) => OrderingTerm.desc(t.data)])
               ..limit(1))
             .get();

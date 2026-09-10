@@ -1,0 +1,9 @@
+[Unit]
+Description=Monthly FitBirek restoration verification
+
+[Timer]
+OnCalendar=Sun *-*-01..07 04:30:00 Europe/Warsaw
+Persistent=true
+
+[Install]
+WantedBy=timers.target

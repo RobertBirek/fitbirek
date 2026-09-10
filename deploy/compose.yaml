@@ -1,0 +1,90 @@
+name: fit
+
+x-api: &api
+  env_file: .env
+  read_only: true
+  tmpfs: [/tmp]
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  logging:
+    driver: json-file
+    options: {max-size: 10m, max-file: "3"}
+
+services:
+  postgres:
+    image: postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fit
+      POSTGRES_DB: fit
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets: [postgres_password]
+    volumes: [./data/postgres:/var/lib/postgresql/data]
+    networks: [fit_internal]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U fit -d fit"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+
+  migrate:
+    <<: *api
+    image: fit-migration:production
+    build:
+      context: /opt/fit/backend
+      target: migration
+    restart: "no"
+    networks: [fit_internal]
+    depends_on:
+      postgres: {condition: service_healthy}
+
+  api:
+    <<: *api
+    # Exact Caddy address pinned in /docker/caddy/compose.yaml on fit_ingress.
+    environment:
+      FORWARDED_ALLOW_IPS: "172.26.0.4"
+    image: fit-api:production
+    build:
+      context: /opt/fit/backend
+      target: runtime
+    restart: unless-stopped
+    networks:
+      fit_internal:
+      fit_ingress:
+        aliases: [fit-api]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    expose: ["8000"]
+
+  web:
+    image: fit-web:production
+    build:
+      context: /opt/fit
+      dockerfile: deploy/docker/web.Dockerfile
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run, /tmp]
+    security_opt: [no-new-privileges:true]
+    networks:
+      fit_ingress:
+        aliases: [fit-web]
+    expose: ["80"]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres-password.txt
+
+networks:
+  fit_internal:
+    name: fit_internal
+    internal: true
+  fit_ingress:
+    external: true

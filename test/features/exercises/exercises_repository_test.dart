@@ -5,7 +5,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:drift/drift.dart' hide isNotNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -46,44 +45,18 @@ void main() {
     );
 
     test(
-      'wstawia tylko brakujące ID, gdy baza już zawiera część ćwiczeń (symulacja aktualizacji z 38 do 316)',
+      'odświeżenie seed data zachowuje favorite w ExerciseFavorites',
       () async {
-        // Symulacja starej instalacji: tylko jedno ćwiczenie już w bazie,
-        // ręcznie oznaczone jako ulubione.
-        await db.exercisesDao.insertAll([
-          ExercisesCompanion.insert(
-            id: 'cw001',
-            nazwaPl: 'Pompki klasyczne',
-            nazwaEn: 'Push-up',
-            partiaGlowna: 'Klatka',
-            partieWspierajace: jsonEncode(['Triceps', 'Barki']),
-            sprzet: jsonEncode(['Masa własna']),
-            typ: 'Siłowe',
-            poziom: 'Średni',
-            wzorzecRuchu: 'Poziome wypychanie',
-            seriexPowtorzenia: '4 x 12-15',
-            tempo: '2-0-1-0',
-            kluczoweWskazowki: jsonEncode(['test']),
-            czesteBledy: jsonEncode(['test']),
-            progresja: 'test',
-            regresja: 'test',
-            zrodlo: 'test',
-            ulubione: const Value(true),
-          ),
-        ]);
-
-        expect(await db.exercisesDao.count(), 1);
-
+        await repo.syncFromAssets();
+        await repo.toggleFavorite('cw001', true);
         await repo.syncFromAssets();
 
-        // Wszystkie 316 obecne po synchronizacji.
         expect(await db.exercisesDao.count(), 316);
+        expect((await repo.getById('cw001'))!.ulubione, isTrue);
 
-        // Wcześniej istniejący wiersz NIE został nadpisany - `ulubione`
-        // ustawione ręcznie na true musi pozostać true.
-        final cw001 = await db.exercisesDao.getById('cw001');
-        expect(cw001, isNotNull);
-        expect(cw001!.ulubione, isTrue);
+        final favorite = (await db.select(db.exerciseFavorites).get()).single;
+        expect(favorite.exerciseId, 'cw001');
+        expect(favorite.syncId, matches(RegExp(r'^[0-9a-f-]{36}$')));
       },
     );
 
@@ -100,6 +73,22 @@ void main() {
         expect(pompki.kluczoweWskazowki, isNotEmpty);
       },
     );
+  });
+
+  test('unfavoriting tombstones the favorite and queues a delete', () async {
+    await repo.syncFromAssets();
+    await repo.toggleFavorite('cw001', true);
+    final activeFavorite = (await db.select(db.exerciseFavorites).get()).single;
+
+    await repo.toggleFavorite('cw001', false);
+
+    final tombstone = (await db.select(db.exerciseFavorites).get()).single;
+    final operation = (await db.syncDao.pendingOperations()).single;
+    expect(tombstone.syncId, activeFavorite.syncId);
+    expect(tombstone.deletedAtUtc, isNotNull);
+    expect(operation.entityId, tombstone.syncId);
+    expect(operation.deleted, isTrue);
+    expect(operation.payload, {'exerciseId': 'cw001'});
   });
 
   group('assets/data/exercises.json - walidacja statyczna pliku danych', () {
@@ -122,24 +111,21 @@ void main() {
       }
     });
 
-    test(
-      'nazwaPl+partiaGlowna+typ oraz nazwaEn+partiaGlowna+typ są unikalne '
-      '(prawdziwa baza Roberta ma kilka nazw powtórzonych w różnych '
-      'sekcjach tematycznych Excela dla innej partii/kontekstu użycia, np. '
-      '"Band pull-apart" dla tylnych barków i osobno dla romboidów, albo '
-      '"Seated cat-cow" jako rozgrzewka vs jako regeneracja - to zamierzone, '
-      'różne warianty tego samego ruchu, nie błąd danych)',
-      () {
-        final plTriples = data
-            .map((e) => '${e['nazwaPl']}|${e['partiaGlowna']}|${e['typ']}')
-            .toList();
-        final enTriples = data
-            .map((e) => '${e['nazwaEn']}|${e['partiaGlowna']}|${e['typ']}')
-            .toList();
-        expect(plTriples.toSet(), hasLength(plTriples.length));
-        expect(enTriples.toSet(), hasLength(enTriples.length));
-      },
-    );
+    test('nazwaPl+partiaGlowna+typ oraz nazwaEn+partiaGlowna+typ są unikalne '
+        '(prawdziwa baza Roberta ma kilka nazw powtórzonych w różnych '
+        'sekcjach tematycznych Excela dla innej partii/kontekstu użycia, np. '
+        '"Band pull-apart" dla tylnych barków i osobno dla romboidów, albo '
+        '"Seated cat-cow" jako rozgrzewka vs jako regeneracja - to zamierzone, '
+        'różne warianty tego samego ruchu, nie błąd danych)', () {
+      final plTriples = data
+          .map((e) => '${e['nazwaPl']}|${e['partiaGlowna']}|${e['typ']}')
+          .toList();
+      final enTriples = data
+          .map((e) => '${e['nazwaEn']}|${e['partiaGlowna']}|${e['typ']}')
+          .toList();
+      expect(plTriples.toSet(), hasLength(plTriples.length));
+      expect(enTriples.toSet(), hasLength(enTriples.length));
+    });
 
     test('poziom i typ zgodne z dozwolonymi wartościami enum', () {
       const validPoziom = {'Początkujący', 'Średni', 'Zaawansowany'};

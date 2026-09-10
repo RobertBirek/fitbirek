@@ -8,6 +8,8 @@ import '../../../../app/constants.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../providers/settings_provider.dart';
+import '../../../auth/providers/auth_providers.dart';
+import '../../../../core/sync/sync_status_tile.dart';
 
 /// Ekran Ustawienia: profil, motyw, dźwięk, wibracje, backup, o aplikacji.
 class SettingsPage extends ConsumerStatefulWidget {
@@ -160,6 +162,22 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           children: [
             ListView(
               children: [
+                StreamBuilder(
+                  stream: ref
+                      .read(appDatabaseProvider)
+                      .select(ref.read(appDatabaseProvider).syncOutbox)
+                      .watch(),
+                  builder: (context, snapshot) {
+                    final sync = ref.watch(syncServiceProvider);
+                    return SyncStatusTile(
+                      status: sync.status,
+                      pending: snapshot.data?.length ?? 0,
+                      onRetry: sync.synchronize,
+                      onLogout: () =>
+                          ref.read(authStateProvider.notifier).logout(),
+                    );
+                  },
+                ),
                 ListTile(
                   leading: const Icon(Icons.person_outline),
                   title: const Text('Edytuj profil'),

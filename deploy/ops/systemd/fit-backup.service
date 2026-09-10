@@ -1,0 +1,17 @@
+[Unit]
+Description=FitBirek consistent PostgreSQL dump
+After=docker.service
+Requires=docker.service
+Before=restic-backup.service
+OnFailure=fit-operation-failure@%n.service
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/bin/bash /opt/fit/deploy/ops/backup.sh
+TimeoutStartSec=30min
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/docker/fit/data/backups /run/lock

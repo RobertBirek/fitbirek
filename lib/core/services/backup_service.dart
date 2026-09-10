@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
 
 import '../database/app_database.dart';
+import 'package:drift/drift.dart';
+import '../sync/sync_store.dart';
 
 /// Wynik operacji importu - do wyświetlenia użytkownikowi.
 class ImportResult {
@@ -43,7 +44,7 @@ class ImportResult {
 /// nie na dart:io File, więc nie ma rozjazdu platformowego (patrz
 /// ARCHITECTURE.md sekcja o Drift multi-platform dla analogicznego problemu).
 class BackupService {
-  static const int currentSchemaVersion = 1;
+  static const int currentSchemaVersion = 2;
 
   final AppDatabase db;
 
@@ -65,21 +66,56 @@ class BackupService {
     final tests = await db.select(db.fitnessTestResults).get();
     final prs = await db.select(db.personalRecords).get();
     final plans = await db.select(db.workoutPlans).get();
+    final favorites = await db.select(db.exerciseFavorites).get();
 
     final payload = {
       'schemaVersion': currentSchemaVersion,
       'appVersion': '1.0.0',
       'exportedAt': DateTime.now().toUtc().toIso8601String(),
       'data': {
-        'userProfiles': userProfiles.map((e) => e.toJson()).toList(),
+        'userProfiles': userProfiles
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
         'exercises': exercises.map((e) => e.toJson()).toList(),
-        'workoutSessions': sessions.map((e) => e.toJson()).toList(),
-        'setsLog': sets.map((e) => e.toJson()).toList(),
-        'moodEntries': moods.map((e) => e.toJson()).toList(),
-        'measurements': measurements.map((e) => e.toJson()).toList(),
-        'fitnessTestResults': tests.map((e) => e.toJson()).toList(),
-        'personalRecords': prs.map((e) => e.toJson()).toList(),
-        'workoutPlans': plans.map((e) => e.toJson()).toList(),
+        'workoutSessions': sessions
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'setsLog': sets
+            .where(
+              (r) =>
+                  r.deletedAtUtc == null &&
+                  sessions.any(
+                    (s) => s.id == r.sesjaId && s.deletedAtUtc == null,
+                  ),
+            )
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'moodEntries': moods
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'measurements': measurements
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'fitnessTestResults': tests
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'personalRecords': prs
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'workoutPlans': plans
+            .where((r) => r.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
+            .toList(),
+        'exerciseFavorites': favorites
+            .where((favorite) => favorite.deletedAtUtc == null)
+            .map((favorite) => {'exerciseId': favorite.exerciseId})
+            .toList(),
       },
     };
 
@@ -100,7 +136,8 @@ class BackupService {
   // ---------------------------------------------------------------------
 
   /// Importuje bazę danych z bajtów JSON. Strategia: "zastąp wszystko" -
-  /// czyści wszystkie tabele i wgrywa dane z pliku, w jednej transakcji
+  /// zastępuje widoczne dane, zachowując tombstone'y sesji potrzebne do sync,
+  /// i wgrywa dane z pliku w jednej transakcji
   /// (jeśli coś pójdzie źle w połowie, baza wraca do stanu przed importem -
   /// nigdy nie zostaje w połowie zaimportowanym, uszkodzonym stanie).
   Future<ImportResult> importFromBytes(Uint8List bytes) async {
@@ -145,13 +182,30 @@ class BackupService {
     }
 
     final counts = <String, int>{};
+    final favoritesToRestore = schemaVersion == 1
+        ? _legacyFavorites(data['exercises'])
+        : data['exerciseFavorites'];
 
     try {
       await db.transaction(() async {
+        final profileBefore = await db.userProfileDao.watchProfileOnce();
+        final favoritesBefore = await db.select(db.exerciseFavorites).get();
+        await SyncStore(db).enqueueAll(deleted: true);
         // Czyścimy w kolejności odwrotnej do FK (setsLog referencjonuje
         // workoutSessions, więc setsLog najpierw).
         await db.delete(db.setsLog).go();
-        await db.delete(db.workoutSessions).go();
+        // A remote device may have published children not yet pulled. Keep
+        // their UUID -> integer parent mappings even after the delete is acked.
+        final now = DateTime.now().toUtc();
+        await (db.update(
+          db.workoutSessions,
+        )..where((s) => s.deletedAtUtc.isNull())).write(
+          WorkoutSessionsCompanion(
+            deletedAtUtc: Value(now),
+            updatedAtUtc: Value(now),
+          ),
+        );
+        await db.delete(db.exerciseFavorites).go();
         await db.delete(db.workoutPlans).go();
         await db.delete(db.personalRecords).go();
         await db.delete(db.fitnessTestResults).go();
@@ -162,10 +216,14 @@ class BackupService {
 
         counts['profil'] = await _restoreUserProfiles(data['userProfiles']);
         counts['ćwiczenia'] = await _restoreExercises(data['exercises']);
-        counts['sesje treningowe'] = await _restoreSessions(
+        final restoredSessionIds = await _restoreSessions(
           data['workoutSessions'],
         );
-        counts['serie'] = await _restoreSets(data['setsLog']);
+        counts['sesje treningowe'] = restoredSessionIds.length;
+        counts['serie'] = await _restoreSets(
+          data['setsLog'],
+          restoredSessionIds,
+        );
         counts['wpisy samopoczucia'] = await _restoreMoods(data['moodEntries']);
         counts['pomiary'] = await _restoreMeasurements(data['measurements']);
         counts['testy sprawnościowe'] = await _restoreTests(
@@ -173,6 +231,48 @@ class BackupService {
         );
         counts['rekordy osobiste'] = await _restorePrs(data['personalRecords']);
         counts['plany treningowe'] = await _restorePlans(data['workoutPlans']);
+        counts['ulubione ćwiczenia'] = await _restoreFavorites(
+          favoritesToRestore,
+        );
+        // Singleton records keep their server identity/version. Other restored
+        // rows receive fresh UUIDs, with deletes queued for the replaced rows.
+        if (profileBefore != null) {
+          await db
+              .update(db.userProfiles)
+              .write(
+                UserProfilesCompanion(
+                  syncId: Value(profileBefore.syncId),
+                  syncVersion: Value(profileBefore.syncVersion),
+                ),
+              );
+        } else {
+          await db
+              .update(db.userProfiles)
+              .write(
+                UserProfilesCompanion(
+                  syncId: Value(await db.syncDao.singletonId('profile')),
+                ),
+              );
+        }
+        for (final favorite in await db.select(db.exerciseFavorites).get()) {
+          final before = favoritesBefore
+              .where((f) => f.exerciseId == favorite.exerciseId)
+              .firstOrNull;
+          await (db.update(
+            db.exerciseFavorites,
+          )..where((f) => f.exerciseId.equals(favorite.exerciseId))).write(
+            ExerciseFavoritesCompanion(
+              syncId: Value(
+                before?.syncId ??
+                    await db.syncDao.singletonId(
+                      'favorite:${favorite.exerciseId}',
+                    ),
+              ),
+              syncVersion: Value(before?.syncVersion ?? 0),
+            ),
+          );
+        }
+        await SyncStore(db).enqueueAll();
       });
     } catch (e) {
       return ImportResult(
@@ -195,12 +295,40 @@ class BackupService {
 
   // --- Helpery restore per-tabela (bezpieczne na null/brak sekcji) -------
 
+  Map<String, dynamic> _withoutSyncMetadata(dynamic row) {
+    final json = Map<String, dynamic>.from(row.toJson() as Map);
+    json.remove('syncId');
+    json.remove('syncVersion');
+    json.remove('updatedAtUtc');
+    json.remove('deletedAtUtc');
+    return json;
+  }
+
+  Map<String, dynamic> _withFreshSyncMetadata(dynamic raw) {
+    final row = Map<String, dynamic>.from(raw as Map);
+    final now = DateTime.now().toUtc().toIso8601String();
+    row['syncId'] = Uuid().v4();
+    row['syncVersion'] = 0;
+    row['updatedAtUtc'] = now;
+    row['deletedAtUtc'] = null;
+    return row;
+  }
+
+  List<Map<String, String>> _legacyFavorites(dynamic raw) {
+    if (raw == null) return const [];
+    return (raw as List)
+        .cast<Map>()
+        .where((exercise) => exercise['ulubione'] == true)
+        .map((exercise) => {'exerciseId': exercise['id'] as String})
+        .toList();
+  }
+
   Future<int> _restoreUserProfiles(dynamic raw) async {
     if (raw == null) return 0;
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = UserProfileData.fromJson(item as Map<String, dynamic>);
+      final row = UserProfileData.fromJson(_withFreshSyncMetadata(item));
       await db.into(db.userProfiles).insert(row.toCompanion(true));
       n++;
     }
@@ -219,29 +347,37 @@ class BackupService {
     return n;
   }
 
-  Future<int> _restoreSessions(dynamic raw) async {
-    if (raw == null) return 0;
+  Future<Map<int, int>> _restoreSessions(dynamic raw) async {
+    if (raw == null) return {};
     final list = raw as List;
-    var n = 0;
+    final ids = <int, int>{};
     for (final item in list) {
-      final row = WorkoutSessionData.fromJson(item as Map<String, dynamic>);
-      // Wstawiamy z zachowaniem oryginalnego ID (żeby setsLog.sesjaId się
-      // nie rozjechało) - insertOnConflictUpdate pozwala nadpisać po ID.
-      await db
+      final row = WorkoutSessionData.fromJson(_withFreshSyncMetadata(item));
+      if (ids.containsKey(row.id)) {
+        throw const FormatException('Duplicate backup session ID');
+      }
+      ids[row.id] = await db
           .into(db.workoutSessions)
-          .insertOnConflictUpdate(row.toCompanion(true));
-      n++;
+          .insert(row.toCompanion(true).copyWith(id: const Value.absent()));
     }
-    return n;
+    return ids;
   }
 
-  Future<int> _restoreSets(dynamic raw) async {
+  Future<int> _restoreSets(dynamic raw, Map<int, int> sessionIds) async {
     if (raw == null) return 0;
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = SetLogData.fromJson(item as Map<String, dynamic>);
-      await db.into(db.setsLog).insertOnConflictUpdate(row.toCompanion(true));
+      final row = SetLogData.fromJson(_withFreshSyncMetadata(item));
+      final parent = sessionIds[row.sesjaId];
+      if (parent == null) {
+        throw const FormatException('Missing backup session ID');
+      }
+      await db
+          .into(db.setsLog)
+          .insertOnConflictUpdate(
+            row.toCompanion(true).copyWith(sesjaId: Value(parent)),
+          );
       n++;
     }
     return n;
@@ -252,7 +388,7 @@ class BackupService {
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = MoodEntryData.fromJson(item as Map<String, dynamic>);
+      final row = MoodEntryData.fromJson(_withFreshSyncMetadata(item));
       await db
           .into(db.moodEntries)
           .insertOnConflictUpdate(row.toCompanion(true));
@@ -266,7 +402,7 @@ class BackupService {
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = MeasurementData.fromJson(item as Map<String, dynamic>);
+      final row = MeasurementData.fromJson(_withFreshSyncMetadata(item));
       await db
           .into(db.measurements)
           .insertOnConflictUpdate(row.toCompanion(true));
@@ -280,7 +416,7 @@ class BackupService {
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = FitnessTestResultData.fromJson(item as Map<String, dynamic>);
+      final row = FitnessTestResultData.fromJson(_withFreshSyncMetadata(item));
       await db
           .into(db.fitnessTestResults)
           .insertOnConflictUpdate(row.toCompanion(true));
@@ -294,7 +430,7 @@ class BackupService {
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = PersonalRecordData.fromJson(item as Map<String, dynamic>);
+      final row = PersonalRecordData.fromJson(_withFreshSyncMetadata(item));
       await db
           .into(db.personalRecords)
           .insertOnConflictUpdate(row.toCompanion(true));
@@ -308,10 +444,31 @@ class BackupService {
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = WorkoutPlanData.fromJson(item as Map<String, dynamic>);
+      final row = WorkoutPlanData.fromJson(_withFreshSyncMetadata(item));
       await db
           .into(db.workoutPlans)
           .insertOnConflictUpdate(row.toCompanion(true));
+      n++;
+    }
+    return n;
+  }
+
+  Future<int> _restoreFavorites(dynamic raw) async {
+    if (raw == null) return 0;
+    final list = raw as List;
+    var n = 0;
+    for (final item in list) {
+      final exerciseId = (item as Map<String, dynamic>)['exerciseId'] as String;
+      final now = DateTime.now().toUtc();
+      await db
+          .into(db.exerciseFavorites)
+          .insert(
+            ExerciseFavoritesCompanion.insert(
+              exerciseId: exerciseId,
+              syncId: Value(Uuid().v4()),
+              updatedAtUtc: Value(now),
+            ),
+          );
       n++;
     }
     return n;

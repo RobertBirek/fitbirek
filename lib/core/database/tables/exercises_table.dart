@@ -20,8 +20,6 @@ class Exercises extends Table {
   TextColumn get progresja => text()();
   TextColumn get regresja => text()();
   TextColumn get zrodlo => text()();
-  BoolColumn get ulubione => boolean().withDefault(const Constant(false))();
-
   @override
   Set<Column> get primaryKey => {id};
 }

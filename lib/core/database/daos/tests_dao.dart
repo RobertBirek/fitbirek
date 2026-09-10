@@ -13,16 +13,18 @@ class TestsDao extends DatabaseAccessor<AppDatabase> with _$TestsDaoMixin {
   }
 
   Stream<List<FitnessTestResultData>> watchAll() {
-    return (select(fitnessTestResults)..orderBy([
-          (t) => OrderingTerm.desc(t.data),
-          (t) => OrderingTerm.desc(t.id),
-        ]))
+    return (select(fitnessTestResults)
+          ..where((t) => t.deletedAtUtc.isNull())
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.data),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
         .watch();
   }
 
   Future<List<FitnessTestResultData>> getHistoryForType(String typ) {
     return (select(fitnessTestResults)
-          ..where((t) => t.typ.equals(typ))
+          ..where((t) => t.typ.equals(typ) & t.deletedAtUtc.isNull())
           ..orderBy([
             (t) => OrderingTerm.desc(t.data),
             (t) => OrderingTerm.desc(t.id),
