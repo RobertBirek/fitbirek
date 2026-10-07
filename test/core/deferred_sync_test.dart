@@ -208,7 +208,7 @@ void main() {
         };
         await sync.synchronize();
         expect(sync.status, SyncStatus.conflict);
-        expect((await db.syncDao.readState())!.cursor, 20);
+        expect((await db.syncDao.readState())!.fullCursor, 20);
         // A later page must replace, rather than lose, the deferred snapshot.
         api.page = {
           'cursor': 21,
@@ -229,7 +229,7 @@ void main() {
         expect(row.notatka, 'Server version 7');
         expect(row.syncVersion, 7);
         expect(row.deletedAtUtc != null, deleted);
-        expect((await db.syncDao.readState())!.cursor, 21);
+        expect((await db.syncDao.readState())!.fullCursor, 21);
         expect(api.requests.last.single.toJson(), op.toJson());
       },
     );
@@ -299,7 +299,7 @@ void main() {
       };
       await sync.synchronize();
       expect(sync.status, SyncStatus.error);
-      expect((await db.syncDao.readState())!.cursor, 0);
+      expect((await db.syncDao.readState())!.fullCursor, 0);
       expect((await db.workoutDao.getSession(id))!.syncVersion, 0);
       api.onPush = (_) async => accepted(op, 1);
       api.page = {'cursor': 0, 'changes': []};
@@ -332,13 +332,22 @@ void main() {
       await db.customStatement('UPDATE workout_sessions SET sync_version = 5');
       await db.customStatement('UPDATE sync_state SET cursor = 20');
       await db.customStatement('DROP TABLE IF EXISTS sync_deferred_records');
+      // Reconstruct the actual pre-health v3 precondition, not a v6 marker.
+      await db.customStatement('DROP TABLE health_samples');
+      await db.customStatement(
+        'ALTER TABLE sync_state DROP COLUMN full_cursor',
+      );
+      await db.customStatement(
+        'ALTER TABLE sync_state DROP COLUMN health_replay_enabled',
+      );
       await db.customStatement('PRAGMA user_version = 3');
       sync.dispose();
       await db.close();
       db = AppDatabase.forTesting(NativeDatabase(file));
       sync = SyncService(db, api);
       await sync.bindAccount('account');
-      expect((await db.syncDao.readState())!.cursor, 0);
+      expect((await db.syncDao.readState())!.fullCursor, 0);
+      expect((await db.syncDao.readState())!.cursor, 20);
       api.page = {
         'cursor': 20,
         'changes': [remote(op, 5)],

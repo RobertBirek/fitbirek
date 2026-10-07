@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     csrf_cookie_name: str = "fit_csrf"
     trusted_origin: str = "https://fit.birek.online"
     session_lifetime_hours: int = Field(default=24, gt=0)
+    push_enabled: bool = False
+    push_vapid_public_key: str = ""
+    push_vapid_private_key_file: str = ""
+    push_vapid_subject: str = ""
+    mentor_master_key_file: str = ""
 
     @field_validator("database_url")
     @classmethod

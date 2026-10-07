@@ -12,8 +12,10 @@ import '../../core/sync_service_test.dart' show FakeSyncApi;
 class SessionApi implements AuthApi {
   bool offline = false;
   bool expired = false;
+  int sessionReads = 0;
   @override
   Future<AuthSession?> getSession() async {
+    sessionReads++;
     if (offline) {
       throw DioException(
         requestOptions: RequestOptions(),
@@ -35,6 +37,35 @@ class SessionApi implements AuthApi {
 }
 
 void main() {
+  test(
+    'locked offline bootstrap repairs push without contacting the API',
+    () async {
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      final sync = SyncService(db, FakeSyncApi());
+      final api = SessionApi();
+      final first = AuthController(api, db: db, sync: sync);
+      await first.login('email', 'password');
+      await first.logout();
+      first.dispose();
+      api.offline = true;
+      final readsBefore = api.sessionReads;
+      var repaired = false;
+      final restarted = AuthController(
+        api,
+        db: db,
+        disablePush: () async {
+          repaired = true;
+        },
+      );
+      await restarted.bootstrap();
+      expect(restarted.state.isSignedOut, isTrue);
+      expect(repaired, isTrue);
+      expect(api.sessionReads, readsBefore);
+      restarted.dispose();
+      sync.dispose();
+      await db.close();
+    },
+  );
   test(
     'logout persists its lock before waiting for an in-flight sync',
     () async {

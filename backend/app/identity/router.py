@@ -37,8 +37,17 @@ async def login(
         await database.commit()
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
 
+    issued_session = await issue_session(
+        database,
+        account,
+        verified_password_hash=account.password_hash,
+        commit=False,
+    )
+    if issued_session is None:
+        await database.commit()
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
     await login_rate_limiter.reset_failures(database, client_ip, normalized_email)
-    issued_session = await issue_session(database, account)
+    await database.commit()
     response.set_cookie(
         settings.session_cookie_name,
         issued_session.session_token,

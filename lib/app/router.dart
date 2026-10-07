@@ -7,7 +7,7 @@ import '../features/auth/providers/auth_providers.dart';
 import '../features/onboarding/presentation/pages/onboarding_flow_page.dart';
 import '../features/onboarding/providers/user_profile_provider.dart';
 import '../features/home/presentation/pages/main_shell.dart';
-import '../features/home/presentation/pages/today_page.dart';
+import '../features/home/presentation/pages/classic_today_page.dart';
 import '../features/exercises/presentation/pages/exercises_list_page.dart';
 import '../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../features/workout/presentation/pages/workout_home_page.dart';
@@ -20,6 +20,8 @@ import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/settings/presentation/pages/edit_profile_page.dart';
 import '../features/calculator/presentation/pages/calculator_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
+import '../features/mentor/presentation/pages/mentor_page.dart';
+import '../features/mentor/presentation/pages/mentor_settings_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = _RouterRefresh(ref);
@@ -81,7 +83,13 @@ GoRouter createRouter({
             routes: [
               GoRoute(
                 path: '/today',
-                builder: (context, state) => const TodayPage(),
+                builder: (context, state) => const MentorPage(),
+                routes: [
+                  GoRoute(
+                    path: 'classic',
+                    builder: (context, state) => const ClassicTodayPage(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -156,6 +164,10 @@ GoRouter createRouter({
                   GoRoute(
                     path: 'planner',
                     builder: (context, state) => const PlannerPage(),
+                  ),
+                  GoRoute(
+                    path: 'mentor',
+                    builder: (context, state) => const MentorSettingsPage(),
                   ),
                 ],
               ),

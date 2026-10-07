@@ -1,0 +1,15 @@
+[Unit]
+Description=FitBirek push health observations
+After=docker.service
+ConditionPathExists=/docker/fit/push.env
+ConditionPathExists=/docker/fit/compose.push.yaml
+ConditionPathExists=/docker/fit/compose.mentor.yaml
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/fit/deploy/ops/push-monitor.py
+TimeoutStartSec=90
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true

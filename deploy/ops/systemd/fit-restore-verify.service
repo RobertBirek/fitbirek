@@ -3,6 +3,7 @@ Description=FitBirek isolated database restore drill
 After=docker.service
 Requires=docker.service
 OnFailure=fit-operation-failure@%n.service
+OnFailure=fit-push-failure@%n.service
 
 [Service]
 Type=oneshot

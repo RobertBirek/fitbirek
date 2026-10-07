@@ -19,6 +19,7 @@ class SyncStore {
     SyncEntityType.personalRecord => db.personalRecords,
     SyncEntityType.workoutPlan => db.workoutPlans,
     SyncEntityType.exerciseFavorite => db.exerciseFavorites,
+    SyncEntityType.healthSample => db.healthSamples,
   };
 
   Future<Map<String, dynamic>?> row(SyncEntityType type, String id) async {
@@ -116,6 +117,7 @@ class SyncStore {
       SyncEntityType.personalRecord => PersonalRecordData.fromJson(json),
       SyncEntityType.workoutPlan => WorkoutPlanData.fromJson(json),
       SyncEntityType.exerciseFavorite => ExerciseFavoriteData.fromJson(json),
+      SyncEntityType.healthSample => HealthSampleData.fromJson(json),
     };
     // Validate complete payloads even while dirty: a bad page must not advance
     // either the observed version or cursor and become unreconcilable later.
@@ -172,6 +174,7 @@ class SyncStore {
       PersonalRecordData value => value.toCompanion(false),
       WorkoutPlanData value => value.toCompanion(false),
       ExerciseFavoriteData value => value.toCompanion(false),
+      HealthSampleData value => value.toCompanion(false),
       _ => throw StateError('Unknown synchronized data type'),
     };
     await db.into(table(type)).insertOnConflictUpdate(snapshot);
@@ -252,6 +255,9 @@ class SyncStore {
 
   Future<void> enqueueAll({bool deleted = false}) async {
     for (final type in SyncEntityType.values) {
+      // Restore cannot create/revive server-owned imports or mass-delete them.
+      // Explicit sample deletions have their own durable outbox operations.
+      if (type == SyncEntityType.healthSample) continue;
       final rows = await db.select(table(type)).get();
       for (final dynamic row in rows) {
         final json = Map<String, dynamic>.from(row.toJson() as Map);

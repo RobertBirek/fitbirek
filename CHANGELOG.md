@@ -6,10 +6,64 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
-## [Unreleased]
+## [1.3.0+5] — 2026-10-05
 
-### Planowane
-- VPS deployment (fit.birek.online)
+### Added
+- Health: import Apple Zdrowie przez świadomie uruchamiany Skrót iOS, odwoływalny
+  token importu oraz synchronizowane offline próbki masy i kroków.
+- Push: uwierzytelniony rejestr instalacji, niezależny sender i monitoring
+  Web Push z opt-in w ustawieniach oraz workerem `/push/`.
+- Mentor: rozmowy i zatwierdzane propozycje treningów, szyfrowane lokalnie
+  poświadczenia dostawców oraz niezależny overlay klucza głównego dla API.
+- Administracyjne resetowanie hasła z interaktywnym potwierdzeniem oraz procedury
+  odzyskiwania konta i danych po awarii.
+- Ustanowiono zweryfikowaną bazę recovery obrazów dla przyszłych operacji;
+  nie została jeszcze użyta w produkcyjnej operacji.
+
+---
+
+## [1.2.0+4] — 2026-09-14 (wdrożone 2026-09-15)
+
+### Added
+- Rozmowa z mentorem jako główny ekran Dziś: krótkie podpowiedzi czasu i energii,
+  historia rozmów, usuwanie i edytowalna pamięć zatwierdzana przez użytkownika.
+- OpenAI Responses ze ścisłym schematem propozycji oraz ElevenLabs STT/TTS:
+  krótkie nagranie, edycja transkrypcji przed wysłaniem i osobny gest odtwarzania.
+- Jednorazowe formularze kluczy w Ustawieniach, szyfrowanie Fernet po stronie
+  serwera, odrębne zgody, jawne testy połączenia i lokalne limity użycia.
+- Potwierdzane, edytowalne propozycje treningu/serii z trwałą deduplikacją
+  istniejącego repozytorium i outbox; klasyczny trening dostępny offline.
+- Opcjonalny, wyłącznie dla API overlay mentora z niezależnym kluczem głównym;
+  dokumentacja bram prywatności/dostawców/sprzętu, retencji i rotacji.
+- Chronione pełne DR PostgreSQL zachowuje szyfrogramy `mentor_credentials`
+  (zamiast wcześniejszego wykluczenia). Odtworzenie wymaga oryginalnego klucza
+  głównego z osobnego escrow i powiązania konta/dostawcy. Szyfrowany Restic bez
+  zmian; lokalne bundle root `0700`, pliki `0600`. Eksport Flutter nadal nie
+  zawiera kluczy ani szyfrogramów mentora i nie jest pełnym DR serwera.
+
+---
+
+## [1.1.0+3] — 2026-09-11
+
+### Added
+- Integracja Apple Zdrowie przez ręcznie uruchamiany Skrót iOS: wybrane próbki masy w kg oraz dzienny wynik kroków ręcznie potwierdzony z aplikacji Zdrowie (bez sumowania źródeł iPhone/Apple Watch).
+- Odwoływalny, przeznaczony wyłącznie do importu token, jednorazowe ujawnienie po zgodzie na przesyłanie danych zdrowotnych na VPS, rotacja i status w Ustawieniach.
+- Osobne próbki zdrowotne synchronizowane do pamięci offline, masa w Postępach i podsumowanie na Dziś; import nie zastępuje pomiarów ręcznych.
+- Instrukcja ręcznego utworzenia Skrótu i kontrakt JSON. Test rzeczywistego iPhone pozostaje bramką akceptacji; brak bezpośredniego HealthKit w PWA.
+- Pełna instrukcja „Jak połączyć Apple Zdrowie” w Ustawieniach: osobna przewijalna strona dostępna offline, konfiguracja Skrótu krok po kroku, kopiowanie JSON z placeholderami bez tokenu, rozwiązywanie błędów i zasady prywatności (w tym samym niewdrożonym wydaniu 1.1.0+3).
+
+### Fixed
+- Zgodność synchronizacji ze starszymi PWA: próbki zdrowotne są zwracane wyłącznie klientom deklarującym ich obsługę; nowy klient jednorazowo odtwarza pominiętą historię bez naruszania outbox.
+- Niezależny pełny kursor synchronizacji w Drift v7 zapobiega pomijaniu próbek przez równolegle działającą starszą kartę PWA współdzielącą lokalną bazę.
+- Blokada importu, rotacji i odwołania tokenu jest zgodna z blokadami kontroli kluczy obcych PostgreSQL podczas równoległego zapisu synchronizacji.
+
+---
+
+## [1.0.1+2] — 2026-09-11
+
+### Fixed
+- Wersja aplikacji i numer buildu pochodzą wyłącznie z `pubspec.yaml`; ustawienia i eksport backupu pokazują ten sam pełny numer. Wersja schematu backupu pozostaje bez zmian.
+- Generator stałych Dart i kontrola `--check` wykrywają nieaktualne metadane przed budowaniem obrazu web; dodano testy zgodności wersji.
 
 ---
 

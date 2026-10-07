@@ -8,7 +8,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY requirements.lock ./requirements.lock
-RUN python -m pip install --no-deps --require-hashes --requirement requirements.lock \
+COPY requirements-push.lock ./requirements-push.lock
+COPY requirements-build.lock ./requirements-build.lock
+RUN python -m pip install --no-deps --require-hashes -r requirements-build.lock \
+    && python -m pip install --no-build-isolation --no-deps --require-hashes --requirement requirements.lock \
     && addgroup --system app \
     && adduser --system --ingroup app app
 
@@ -27,7 +30,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 FROM runtime AS migration
 USER root
 COPY requirements-dev.lock ./requirements-dev.lock
-RUN python -m pip install --no-deps --require-hashes -r requirements-dev.lock
+RUN python -m pip install --no-build-isolation --no-deps --require-hashes -r requirements-dev.lock
 COPY alembic.ini migrate.py ./
 COPY migrations ./migrations
 USER app

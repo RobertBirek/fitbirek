@@ -11,6 +11,11 @@ from datetime import datetime, timezone
 
 ROOT = Path("/docker/fit/data/backups")
 COMPOSE = ["docker", "compose", "-f", "/docker/fit/compose.yaml"]
+# Preserve installed optional overlays for every backup/restore invocation.
+if Path("/docker/fit/compose.push.yaml").is_file():
+    COMPOSE += ["-f", "/docker/fit/compose.push.yaml"]
+if Path("/docker/fit/compose.mentor.yaml").is_file():
+    COMPOSE += ["-f", "/docker/fit/compose.mentor.yaml"]
 
 
 def run(arguments, **kwargs):

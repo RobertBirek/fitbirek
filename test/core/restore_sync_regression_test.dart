@@ -26,7 +26,7 @@ void main() {
       final parent = (await db.workoutDao.getSession(id))!;
       // The parent was pulled earlier; another device added a set we have not
       // pulled yet. Restore deletes the parent, but the backend has no cascade.
-      await db.customStatement('UPDATE sync_state SET cursor = 1');
+      await db.customStatement('UPDATE sync_state SET full_cursor = 1');
       final empty = Uint8List.fromList(
         utf8.encode(jsonEncode({'schemaVersion': 2, 'data': {}})),
       );
@@ -64,7 +64,7 @@ void main() {
       };
       await sync.synchronize();
       expect(sync.status, SyncStatus.idle);
-      expect((await db.syncDao.readState())!.cursor, 3);
+      expect((await db.syncDao.readState())!.fullCursor, 3);
       expect((await db.workoutDao.getSession(id))!.syncId, parent.syncId);
       expect((await db.workoutDao.getSession(id))!.deletedAtUtc, isNotNull);
       expect(await db.workoutDao.getAllSessionsSorted(), isEmpty);
@@ -91,7 +91,7 @@ void main() {
       };
       await sync.synchronize();
       expect(sync.status, SyncStatus.error);
-      expect((await db.syncDao.readState())!.cursor, 3);
+      expect((await db.syncDao.readState())!.fullCursor, 3);
       expect(
         (await db.select(db.setsLog).get()).any(
           (s) => s.syncId == 'another-child',
@@ -107,7 +107,7 @@ void main() {
       };
       await sync.synchronize();
       expect(sync.status, SyncStatus.idle);
-      expect((await db.syncDao.readState())!.cursor, 4);
+      expect((await db.syncDao.readState())!.fullCursor, 4);
     },
   );
 

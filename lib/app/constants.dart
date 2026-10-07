@@ -1,7 +1,9 @@
+import 'app_version.g.dart';
+
 /// Globalne stałe aplikacji FitBirek.
 class AppConstants {
   static const String appName = 'FitBirek';
-  static const String appVersion = '1.0.0';
+  static const String appVersion = AppVersion.full;
   static const String author = 'Robert Birek';
 
   /// Lista dostępnego sprzętu do wyboru w onboardingu i ustawieniach.

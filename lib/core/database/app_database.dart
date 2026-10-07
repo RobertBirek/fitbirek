@@ -11,6 +11,7 @@ import 'tables/tests_table.dart';
 import 'tables/prs_table.dart';
 import 'tables/plans_table.dart';
 import 'tables/sync_tables.dart';
+import 'tables/health_samples_table.dart';
 
 import 'daos/user_profile_dao.dart';
 import 'daos/exercises_dao.dart';
@@ -41,6 +42,7 @@ part 'app_database.g.dart';
     SyncOutbox,
     SyncDeferredRecords,
     ExerciseFavorites,
+    HealthSamples,
   ],
   daos: [
     UserProfileDao,
@@ -61,11 +63,14 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
+      if (from < 5) await m.createTable(healthSamples);
+      if (from < 6) await m.addColumn(syncState, syncState.healthReplayEnabled);
+      if (from < 7) await m.addColumn(syncState, syncState.fullCursor);
       if (from == 2) {
         await m.addColumn(syncOutbox, syncOutbox.attempted);
         await m.addColumn(syncOutbox, syncOutbox.preserveLocal);
@@ -73,11 +78,8 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 4) {
         await m.createTable(syncDeferredRecords);
-        // v3 could advance an observed version/cursor without retaining the
-        // payload. Re-read history; equal-version clean records may reconcile.
-        await update(
-          syncState,
-        ).write(const SyncStateCompanion(cursor: Value(0)));
+        // The new full_cursor default 0 replays discarded v3 payloads too.
+        // Never reset the legacy cursor: old tabs still own that watermark.
       }
     },
   );

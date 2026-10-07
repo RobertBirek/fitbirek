@@ -1,15 +1,19 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/constants.dart';
+import '../../../../app/app_version.g.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../../auth/providers/auth_providers.dart';
 import '../../../../core/sync/sync_status_tile.dart';
+import '../../../../core/push/push_settings_tile.dart';
+import '../../../health/presentation/widgets/health_integration_tile.dart';
 
 /// Ekran Ustawienia: profil, motyw, dźwięk, wibracje, backup, o aplikacji.
 class SettingsPage extends ConsumerStatefulWidget {
@@ -74,6 +78,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           'Import wczyta dane z pliku backupu i CAŁKOWICIE ZASTĄPI '
           'wszystkie obecne dane w aplikacji (profil, historia treningów, '
           'pomiary, rekordy, plany). Ta operacja jest nieodwracalna.\n\n'
+          'Apple Zdrowie pozostaje bez zmian: próbki z kopii nie są '
+          'odtwarzane, importów ani oczekujących usunięć nie kasujemy. '
+          'Na nowym urządzeniu importy pobierze synchronizacja bieżącego konta.\n\n'
           'Kontynuować?',
         ),
         actions: [
@@ -196,6 +203,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/settings/planner'),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.forum_outlined),
+                  title: const Text('Mentor treningowy'),
+                  subtitle: const Text('Prywatność, głos i połączenia AI'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/settings/mentor'),
+                ),
                 const Divider(),
                 ListTile(
                   title: const Text('Motyw'),
@@ -245,27 +259,31 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                   ),
                 ),
-                SwitchListTile(
-                  secondary: const Icon(Icons.sports_martial_arts_outlined),
-                  title: const Text('Przypomnienie o karate'),
-                  subtitle: const Text('Wtorek i czwartek, 19:30'),
-                  value: settings.notifKarate,
-                  onChanged: notifier.setNotifKarate,
-                ),
-                SwitchListTile(
-                  secondary: const Icon(Icons.fitness_center_outlined),
-                  title: const Text('Przypomnienie o treningu'),
-                  subtitle: const Text('Codziennie, 18:00'),
-                  value: settings.notifWorkout,
-                  onChanged: notifier.setNotifWorkout,
-                ),
-                SwitchListTile(
-                  secondary: const Icon(Icons.mood_outlined),
-                  title: const Text('Dziennik samopoczucia'),
-                  subtitle: const Text('Codziennie, 20:30'),
-                  value: settings.notifMood,
-                  onChanged: notifier.setNotifMood,
-                ),
+                if (kIsWeb) const PushSettingsTile(),
+                if (!kIsWeb)
+                  SwitchListTile(
+                    secondary: const Icon(Icons.sports_martial_arts_outlined),
+                    title: const Text('Przypomnienie o karate'),
+                    subtitle: const Text('Wtorek i czwartek, 19:30'),
+                    value: settings.notifKarate,
+                    onChanged: notifier.setNotifKarate,
+                  ),
+                if (!kIsWeb)
+                  SwitchListTile(
+                    secondary: const Icon(Icons.fitness_center_outlined),
+                    title: const Text('Przypomnienie o treningu'),
+                    subtitle: const Text('Codziennie, 18:00'),
+                    value: settings.notifWorkout,
+                    onChanged: notifier.setNotifWorkout,
+                  ),
+                if (!kIsWeb)
+                  SwitchListTile(
+                    secondary: const Icon(Icons.mood_outlined),
+                    title: const Text('Dziennik samopoczucia'),
+                    subtitle: const Text('Codziennie, 20:30'),
+                    value: settings.notifMood,
+                    onChanged: notifier.setNotifMood,
+                  ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.upload_file_outlined),
@@ -286,13 +304,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   onTap: _isProcessing ? null : _handleImport,
                 ),
                 const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.info_outline),
-                  title: const Text('O aplikacji'),
-                  subtitle: Text(
-                    '${AppConstants.appName} v${AppConstants.appVersion}\nAutor: ${AppConstants.author}',
-                  ),
-                ),
+                const AppInfoTile(),
+                const Divider(),
+                const HealthIntegrationTile(),
               ],
             ),
             if (_isProcessing)
@@ -305,4 +319,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       ),
     );
   }
+}
+
+/// Shared version presentation, independent of settings and sync state.
+class AppInfoTile extends StatelessWidget {
+  const AppInfoTile({super.key});
+
+  @override
+  Widget build(BuildContext context) => const ListTile(
+    leading: Icon(Icons.info_outline),
+    title: Text('O aplikacji'),
+    subtitle: Text(
+      '${AppConstants.appName}\nWersja ${AppVersion.name} · build ${AppVersion.buildNumber}\nAutor: ${AppConstants.author}',
+    ),
+  );
 }

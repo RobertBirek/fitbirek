@@ -1,0 +1,16 @@
+# Optional API-only overlay. Disabled configuration deployment is permitted with
+# no provider keys and false consents; actual use requires docs/mentor.md gates.
+# docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml -f /docker/fit/compose.mentor.yaml ...
+services:
+  api:
+    environment:
+      MENTOR_MASTER_KEY_FILE: /run/secrets/mentor_master_key
+    secrets: [mentor_master_key]
+
+secrets:
+# This host path is intentionally outside /docker and /etc, which existing
+# Restic coverage includes. Host file ownership/mode must allow the API UID
+# only; Compose file-source secret uid/gid/mode fields do not remap bind mounts.
+# It must be independently escrowed by an operator.
+  mentor_master_key:
+    file: /var/lib/fit-mentor-secrets/master.key

@@ -6,4 +6,5 @@
 !assets/**
 !web/**
 !test/**
+!tools/generate_app_version.dart
 !deploy/docker/**

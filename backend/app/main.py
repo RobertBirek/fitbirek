@@ -10,9 +10,14 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .database import get_session, session_factory
+from .health.router import router as health_router
 from .identity.router import router as identity_router
+from .push.router import router as push_router
 from .security.rate_limit import login_rate_limiter
 from .sync.router import router as sync_router
+from .mentor.router import router as mentor_router
+from .mentor.middleware import MentorBoundary
+from .mentor.service import MentorOperationError
 
 
 logger = logging.getLogger(__name__)
@@ -48,12 +53,40 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(identity_router)
 app.include_router(sync_router)
+app.include_router(push_router)
+app.include_router(health_router)
+app.include_router(mentor_router)
+app.add_middleware(MentorBoundary)
+
+
+@app.middleware("http")
+async def health_privacy_boundary(request: Request, call_next):
+    if not (request.url.path.startswith("/api/integrations/apple-health") or request.url.path.startswith("/api/mentor")):
+        return await call_next(request)
+    if request.url.scheme != "https":
+        return JSONResponse(status_code=403, content={"detail": "HTTPS required"}, headers={"Cache-Control": "no-store"})
+    try:
+        response = await call_next(request)
+    except Exception:
+        # Do not let SQL errors or validation internals expose health data to
+        # application logs. No exception chaining or payload diagnostics here.
+        response = JSONResponse(status_code=500, content={"detail": "Import unavailable"})
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_error_response(_request: Request, error: RequestValidationError) -> JSONResponse:
+    if _request.url.path.startswith(("/api/integrations/apple-health", "/api/mentor")):
+        return JSONResponse(status_code=422, content={"detail": "Invalid request"})
     details = [{key: value for key, value in detail.items() if key != "input"} for detail in error.errors()]
     return JSONResponse(status_code=422, content=jsonable_encoder({"detail": details}))
+
+
+@app.exception_handler(MentorOperationError)
+async def mentor_operation_error(_request: Request, error: MentorOperationError):
+    return JSONResponse(status_code=409, content={"detail": error.detail, "code": error.code},
+                        headers={"Cache-Control": "no-store"})
 
 
 @app.get("/api/health")

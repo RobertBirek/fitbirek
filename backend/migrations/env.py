@@ -6,6 +6,9 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.identity import models as identity_models
 from app.models import Base
+from app.health import models as health_models
+from app.push import models as push_models
+from app.mentor import models as mentor_models
 from app.sync import models as sync_models
 
 config = context.config

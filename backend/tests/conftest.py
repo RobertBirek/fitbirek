@@ -13,7 +13,7 @@ from testcontainers.community.postgres import PostgresContainer
 @pytest.fixture(scope="session")
 def database_url():
     with PostgresContainer(
-        "postgres:16-alpine",
+        "postgres:16-alpine@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777",
         username="fit_test",
         password="fit_test",
         dbname="fit_test",
@@ -33,7 +33,7 @@ async def reset_database(database_url):
         async with engine.begin() as connection:
             await connection.execute(
                 text(
-                    "TRUNCATE TABLE login_attempts, sync_changes, sync_operations, sync_records, sessions, users RESTART IDENTITY CASCADE"
+                    "TRUNCATE TABLE push_sender_state, push_incidents, login_attempts, sync_changes, sync_operations, sync_records, sessions, users RESTART IDENTITY CASCADE"
                 )
             )
         yield

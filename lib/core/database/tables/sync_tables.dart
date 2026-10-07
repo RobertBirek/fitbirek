@@ -11,7 +11,11 @@ class SyncState extends Table {
   TextColumn get accountId => text()();
   TextColumn get deviceId => text()();
   IntColumn get cursor => integer().withDefault(const Constant(0))();
+  // Separate watermark: legacy tabs can continue writing cursor safely.
+  IntColumn get fullCursor => integer().withDefault(const Constant(0))();
   BoolColumn get offlineAccess => boolean().withDefault(const Constant(true))();
+  BoolColumn get healthReplayEnabled =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
@@ -7,6 +9,7 @@ import '../../../core/sync/sync_service.dart';
 import '../../exercises/providers/exercises_providers.dart';
 
 import '../../../core/api/api_client.dart';
+import '../../../core/push/push_provider.dart';
 import '../data/auth_repository.dart';
 
 enum AuthStatus { loading, signedOut, signedIn }
@@ -38,13 +41,22 @@ class AuthState {
 }
 
 class AuthController extends StateNotifier<AuthState> {
-  AuthController(this._api, {this.db, this.sync, this.prepare})
-    : super(const AuthState.loading());
+  AuthController(
+    this._api, {
+    this.db,
+    this.sync,
+    this.prepare,
+    this.preparePush,
+    this.disablePush,
+  }) : super(const AuthState.loading());
 
   final AuthApi _api;
   final AppDatabase? db;
   final SyncService? sync;
   final Future<void> Function()? prepare;
+  final Future<void> Function(String)? preparePush;
+  final Future<void> Function()? disablePush;
+  bool _loggingOut = false;
 
   Future<void> _accept(String accountId) async {
     await sync?.bindAccount(accountId);
@@ -57,21 +69,40 @@ class AuthController extends StateNotifier<AuthState> {
     await prepare?.call();
     state = AuthState.signedIn(accountId);
     sync?.start();
+    final push = preparePush;
+    if (push != null) unawaited(push(accountId).catchError((Object _) {}));
   }
 
-  Future<void> unauthorized() async {
+  Future<void> _lockOfflineAccess() async {
     final database = db;
     if (database != null) {
       await database
           .update(database.syncState)
           .write(const SyncStateCompanion(offlineAccess: Value(false)));
     }
-    state = const AuthState.signedOut();
+  }
+
+  Future<void> unauthorized() async {
+    final disabling = _revokePush();
+    await _lockOfflineAccess();
+    if (!_loggingOut) state = const AuthState.signedOut();
+    await disabling;
+  }
+
+  Future<void> _revokePush() async {
+    try {
+      await disablePush?.call().timeout(const Duration(seconds: 3));
+    } catch (_) {
+      // Push failure must not prevent the durable local account lock.
+    }
   }
 
   Future<void> bootstrap() async {
     final cached = await db?.syncDao.readState();
     if (cached != null && !cached.offlineAccess) {
+      // Repair a shutdown between the Drift lock and the separate consent DB
+      // commit. This path must not depend on session restoration or connectivity.
+      await _revokePush();
       state = const AuthState.signedOut();
       return;
     }
@@ -105,7 +136,13 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    await unauthorized();
+    if (_loggingOut) return;
+    _loggingOut = true;
+    // Wait for cookie revocation and the bounded local consent commit, not
+    // PushManager cleanup. A slow bridge must not delay revoking the session.
+    state = const AuthState.loading();
+    final disabling = _revokePush();
+    await _lockOfflineAccess();
     final stopping = sync?.stop();
     try {
       await _api.logout();
@@ -113,6 +150,8 @@ class AuthController extends StateNotifier<AuthState> {
       // Local lock is durable even if the server cannot be reached.
     } finally {
       await stopping;
+      await disabling;
+      _loggingOut = false;
       state = const AuthState.signedOut();
     }
   }
@@ -131,6 +170,10 @@ final StateNotifierProvider<AuthController, AuthState> authStateProvider =
         db: ref.watch(appDatabaseProvider),
         sync: ref.watch(syncServiceProvider.notifier),
         prepare: () => ref.read(exercisesRepositoryProvider).syncFromAssets(),
+        preparePush: (account) async {
+          await ref.read(pushClientProvider).status(account);
+        },
+        disablePush: () => ref.read(pushClientProvider).logout(),
       );
       Future<void>.microtask(controller.bootstrap);
       return controller;

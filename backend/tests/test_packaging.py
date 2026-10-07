@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -6,11 +7,12 @@ RUNTIME_PACKAGES = {
     "argon2-cffi",
     "asyncpg",
     "fastapi",
+    "httpx",  # Fixed-endpoint OpenAI/ElevenLabs transport is now runtime code.
     "pydantic-settings",
     "sqlalchemy",
     "uvicorn",
 }
-DEVELOPMENT_PACKAGES = {"alembic", "httpx", "pytest", "pytest-asyncio", "testcontainers"}
+DEVELOPMENT_PACKAGES = {"alembic", "pytest", "pytest-asyncio", "testcontainers"}
 PYTHON_IMAGE = "python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea"
 
 
@@ -48,3 +50,16 @@ def test_dockerfile_uses_the_pinned_python_3_12_slim_runtime_lock():
     assert f"FROM {PYTHON_IMAGE}" in dockerfile
     assert "COPY requirements.lock ./requirements.lock" in dockerfile
     assert "--require-hashes --requirement requirements.lock" in dockerfile
+
+
+def test_testcontainer_uses_the_postgres_image_pinned_in_compose():
+    compose = (BACKEND_DIR.parent / "deploy/compose.yaml").read_text()
+    expected_image = re.search(
+        r"image: (postgres:16-alpine@sha256:[0-9a-f]+)", compose
+    ).group(1)
+    conftest = (BACKEND_DIR / "tests/conftest.py").read_text()
+    configured_image = re.search(
+        r'PostgresContainer\(\s*"([^"]+)"', conftest
+    ).group(1)
+
+    assert configured_image == expected_image

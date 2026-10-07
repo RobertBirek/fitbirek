@@ -670,3 +670,59 @@ async def test_invalid_operation_rolls_back_the_entire_push_batch(client, accoun
 
     assert response.status_code == 422
     assert (await client.get("/api/sync/pull?cursor=0")).json() == {"cursor": 0, "changes": []}
+
+
+async def seed_pull_changes(session, user_id, types):
+    changes = [SyncChange(user_id=user_id, entity_type=kind, entity_id=uuid4(), version=1, payload={}, updated_at=datetime.now(timezone.utc)) for kind in types]
+    session.add_all(changes)
+    await session.commit()
+    return changes
+
+
+async def test_pull_legacy_filters_before_limit_and_optin_replays(client, account, session):
+    await authenticate(client, account)
+    changes = await seed_pull_changes(session, account.id, ["healthSample"] * 501 + ["mood"] * 501 + ["healthSample"])
+    first = (await client.get("/api/sync/pull")).json()
+    assert len(first["changes"]) == 500
+    assert all(change["entityType"] == "mood" for change in first["changes"])
+    assert first["cursor"] == changes[1000].cursor
+    second = (await client.get(f"/api/sync/pull?cursor={first['cursor']}")).json()
+    assert len(second["changes"]) == 1
+    assert second["cursor"] == changes[-1].cursor
+    all_changes = []
+    cursor = 0
+    while True:
+        page = (await client.get(f"/api/sync/pull?include_health=true&cursor={cursor}")).json()
+        all_changes.extend(page["changes"])
+        cursor = page["cursor"]
+        if len(page["changes"]) < 500:
+            break
+    assert len(all_changes) == len(changes)
+    assert cursor == changes[-1].cursor
+
+
+async def test_pull_empty_health_page_advances_without_moving_backwards(client, account, session):
+    await authenticate(client, account)
+    changes = await seed_pull_changes(session, account.id, ["healthSample"] * 501)
+    page = (await client.get("/api/sync/pull")).json()
+    assert page == {"cursor": changes[-1].cursor, "changes": []}
+    beyond = changes[-1].cursor + 100
+    assert (await client.get(f"/api/sync/pull?cursor={beyond}")).json() == {"cursor": beyond, "changes": []}
+
+
+@pytest.mark.parametrize("include_health", [False, True])
+async def test_pull_watermark_ceiling_never_skips_interleaved_commit(account, session, transaction_session_factory, monkeypatch, include_health):
+    first = (await seed_pull_changes(session, account.id, ["healthSample"]))[0]
+    original_scalars = session.scalars
+    inserted = []
+    async def insert_between_queries(*args, **kwargs):
+        async with transaction_session_factory() as writer:
+            inserted.extend(await seed_pull_changes(writer, account.id, ["mood"]))
+        return await original_scalars(*args, **kwargs)
+    monkeypatch.setattr(session, "scalars", insert_between_queries)
+    response = await sync_service.pull_changes(session, account.id, 0, include_health=include_health)
+    assert response.cursor == first.cursor
+    assert [change.cursor for change in response.changes] == ([first.cursor] if include_health else [])
+    monkeypatch.setattr(session, "scalars", original_scalars)
+    next_page = await sync_service.pull_changes(session, account.id, response.cursor, include_health=include_health)
+    assert [change.cursor for change in next_page.changes] == [inserted[0].cursor]

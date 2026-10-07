@@ -3,13 +3,17 @@ WORKDIR /app
 COPY pubspec.yaml pubspec.lock ./
 RUN flutter config --no-analytics && flutter pub get --enforce-lockfile
 COPY . .
+RUN dart tools/generate_app_version.dart --check \
+    && dart tools/generate_app_version.dart
 RUN dart run build_runner build --delete-conflicting-outputs
 
 FROM builder AS verification
-RUN flutter analyze && flutter test --reporter expanded
+RUN dart tools/generate_app_version.dart --check \
+    && flutter analyze && flutter test --reporter expanded
 
 FROM verification AS release
-RUN flutter build web --release --no-web-resources-cdn \
+RUN dart tools/generate_app_version.dart --check \
+    && flutter build web --release --no-web-resources-cdn \
     && test -s build/web/sqlite3.wasm \
     && test -s build/web/drift_worker.dart.js
 

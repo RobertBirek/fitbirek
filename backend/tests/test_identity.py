@@ -9,6 +9,7 @@ import pytest_asyncio
 import pytest
 from argon2 import PasswordHasher
 from sqlalchemy import select, text
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.identity.models import LoginAttempt, Session, User
 
@@ -369,3 +370,247 @@ async def test_final_permitted_success_holds_lock_until_reset(client, account, s
         responses = await asyncio.wait_for(asyncio.gather(success, *failures), timeout=20)
     assert responses[0].status_code == 204
     assert sorted(response.status_code for response in responses[1:]) == [401] * 5 + [429]
+
+
+async def test_reset_password_rehashes_password_revokes_only_account_sessions_and_removes_push_subscription(
+    client, session, account
+):
+    from app.identity.service import authenticated_session, hash_token, reset_password
+    from app.push.models import PushSubscription
+
+    other_account = User(
+        email=f"other-{uuid4()}@example.com",
+        password_hash=PasswordHasher().hash(PASSWORD),
+    )
+    first_token = "first-session-token"
+    second_token = "second-session-token"
+    other_token = "other-session-token"
+    first_session = Session(
+        user_id=account.id,
+        token_hash=hash_token(first_token),
+        csrf_hash="a" * 64,
+        expires_at=datetime.now(timezone.utc) + timedelta(days=1),
+    )
+    second_session = Session(
+        user_id=account.id,
+        token_hash=hash_token(second_token),
+        csrf_hash="b" * 64,
+        expires_at=datetime.now(timezone.utc) + timedelta(days=1),
+    )
+    session.add(other_account)
+    await session.flush()
+    other_session = Session(
+        user_id=other_account.id,
+        token_hash=hash_token(other_token),
+        csrf_hash="c" * 64,
+        expires_at=datetime.now(timezone.utc) + timedelta(days=1),
+    )
+    session.add_all([first_session, second_session, other_session])
+    await session.flush()
+    session.add_all(
+        [
+            PushSubscription(
+                installation_id=uuid4(),
+                user_id=account.id,
+                session_id=first_session.id,
+                endpoint="https://push.example/account-subscription",
+                endpoint_hash="d" * 64,
+                p256dh="e" * 87,
+                auth="f" * 22,
+                categories={},
+            ),
+            PushSubscription(
+                installation_id=uuid4(),
+                user_id=account.id,
+                session_id=second_session.id,
+                endpoint="https://push.example/second-account-subscription",
+                endpoint_hash="g" * 64,
+                p256dh="h" * 87,
+                auth="i" * 22,
+                categories={},
+            ),
+            PushSubscription(
+                installation_id=uuid4(),
+                user_id=other_account.id,
+                session_id=other_session.id,
+                endpoint="https://push.example/other-subscription",
+                endpoint_hash="j" * 64,
+                p256dh="k" * 87,
+                auth="l" * 22,
+                categories={},
+            ),
+        ]
+    )
+    await session.commit()
+
+    reset_account = await reset_password(session, account.email.upper(), "new password")
+
+    await session.refresh(account)
+    assert reset_account.id == account.id
+    assert PasswordHasher().verify(account.password_hash, "new password")
+    assert await authenticated_session(session, first_token) is None
+    assert await authenticated_session(session, second_token) is None
+    assert await authenticated_session(session, other_token) is not None
+    assert await session.scalar(select(PushSubscription).where(PushSubscription.session_id == first_session.id)) is None
+    assert await session.scalar(select(PushSubscription).where(PushSubscription.session_id == second_session.id)) is None
+    assert await session.scalar(select(PushSubscription).where(PushSubscription.session_id == other_session.id)) is not None
+
+
+async def test_reset_password_rejects_a_missing_account(client, session):
+    from app.identity.service import AccountNotFoundError, reset_password
+
+    with pytest.raises(AccountNotFoundError):
+        await reset_password(session, "missing@example.com", "new password")
+
+
+async def test_reset_revokes_a_session_issued_by_a_concurrent_old_password_login(
+    client, database_url, account, monkeypatch
+):
+    from app.identity import service
+    from app.identity.service import authenticate, authenticated_session, issue_session, reset_password
+
+    engine = create_async_engine(database_url)
+    database_sessions = async_sessionmaker(engine, expire_on_commit=False)
+    verified = asyncio.Event()
+    reset_database_created = asyncio.Event()
+    reset_user_lock_attempted = asyncio.Event()
+    issue_allowed = asyncio.Event()
+    reset_database = None
+    original_scalar = service.AsyncSession.scalar
+
+    async def observe_reset_user_lock(database, statement, *args, **kwargs):
+        if (
+            database is reset_database
+            and statement._for_update_arg is not None
+            and statement.column_descriptions[0]["entity"] is User
+        ):
+            reset_user_lock_attempted.set()
+        return await original_scalar(database, statement, *args, **kwargs)
+
+    monkeypatch.setattr(service.AsyncSession, "scalar", observe_reset_user_lock)
+
+    async def login():
+        async with database_sessions() as database:
+            authenticated_account = await authenticate(database, account.email, PASSWORD)
+            assert authenticated_account is not None
+            verified.set()
+            await issue_allowed.wait()
+            issued_session = await issue_session(
+                database,
+                authenticated_account,
+                verified_password_hash=authenticated_account.password_hash,
+                commit=False,
+            )
+            assert issued_session is not None
+            await database.commit()
+            return issued_session
+
+    async def reset():
+        nonlocal reset_database
+
+        await verified.wait()
+        async with database_sessions() as database:
+            reset_database = database
+            reset_database_created.set()
+            await reset_password(database, account.email, "new password")
+
+    login_task = None
+    reset_task = None
+    try:
+        login_task = asyncio.create_task(login())
+        reset_task = asyncio.create_task(reset())
+        await asyncio.wait_for(verified.wait(), timeout=5)
+        await asyncio.wait_for(reset_database_created.wait(), timeout=5)
+        await asyncio.wait_for(reset_user_lock_attempted.wait(), timeout=5)
+        issue_allowed.set()
+        issued_session = await asyncio.wait_for(login_task, timeout=5)
+        await asyncio.wait_for(reset_task, timeout=5)
+        async with database_sessions() as database:
+            assert await authenticated_session(database, issued_session.session_token) is None
+    finally:
+        for task in (login_task, reset_task):
+            if task is not None and not task.done():
+                task.cancel()
+        await asyncio.gather(*(task for task in (login_task, reset_task) if task is not None), return_exceptions=True)
+        await engine.dispose()
+
+
+async def test_reset_and_push_subscription_write_follow_the_same_lock_order(client, database_url, account, session):
+    from app.identity.service import AuthenticatedSession, authenticated_session, issue_session, reset_password
+    from app.push.models import PushSubscription
+    from app.push.router import save_subscription
+    from app.push.schemas import SubscriptionRequest
+
+    issued_session = await issue_session(session, account)
+    active_session = await session.scalar(select(Session).where(Session.user_id == account.id))
+    assert active_session is not None
+    engine = create_async_engine(database_url)
+    database_sessions = async_sessionmaker(engine, expire_on_commit=False)
+    session_locked = asyncio.Event()
+    reset_started = asyncio.Event()
+    reset_can_continue = asyncio.Event()
+    subscription = SubscriptionRequest.model_validate(
+        {
+            "endpoint": "https://fcm.googleapis.com/reset-interleaving",
+            "keys": {
+                "p256dh": (
+                    "BGsX0fLhLEJH-Lzm5WOkQPJ3A32BLeszoPShOUXYmMKWT-NC4v4af5uO5-t"
+                    "KfA-eFivOM1drMV7Oy7ZAaDe_UfU"
+                ),
+                "auth": "AAAAAAAAAAAAAAAAAAAAAA",
+            },
+            "categories": {"karate": True},
+        }
+    )
+
+    async def write_subscription():
+        async with database_sessions() as database:
+            stored_account = await database.get(User, account.id)
+            stored_session = await database.get(Session, active_session.id)
+            assert stored_account is not None and stored_session is not None
+            await database.scalar(select(Session).where(Session.id == stored_session.id).with_for_update())
+            session_locked.set()
+            await reset_can_continue.wait()
+            await save_subscription(
+                uuid4(),
+                subscription,
+                database,
+                AuthenticatedSession(account=stored_account, session=stored_session),
+            )
+
+    async def reset():
+        await session_locked.wait()
+        reset_started.set()
+        async with database_sessions() as database:
+            await reset_password(database, account.email, "new password")
+
+    async def wait_for_reset_to_wait_on_sessions():
+        while True:
+            async with database_sessions() as database:
+                waiting = await database.scalar(
+                    text(
+                        "SELECT count(*) FROM pg_stat_activity WHERE datname = current_database() "
+                        "AND wait_event_type = 'Lock' AND query LIKE '%sessions%'"
+                    )
+                )
+            if waiting:
+                return
+            await asyncio.sleep(0.01)
+
+    write_task = asyncio.create_task(write_subscription())
+    reset_task = asyncio.create_task(reset())
+    try:
+        await session_locked.wait()
+        await reset_started.wait()
+        await asyncio.wait_for(wait_for_reset_to_wait_on_sessions(), timeout=5)
+        reset_can_continue.set()
+        await asyncio.wait_for(asyncio.gather(write_task, reset_task), timeout=10)
+        async with database_sessions() as database:
+            assert await authenticated_session(database, issued_session.session_token) is None
+            assert await database.scalar(select(PushSubscription).where(PushSubscription.user_id == account.id)) is None
+    finally:
+        for task in (write_task, reset_task):
+            if not task.done():
+                task.cancel()
+        await asyncio.gather(write_task, reset_task, return_exceptions=True)
+        await engine.dispose()

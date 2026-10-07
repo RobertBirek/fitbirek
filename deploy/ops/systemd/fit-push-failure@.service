@@ -1,0 +1,15 @@
+[Unit]
+Description=Queue FitBirek failed operation %i
+After=docker.service
+ConditionPathExists=/docker/fit/push.env
+ConditionPathExists=/docker/fit/compose.push.yaml
+ConditionPathExists=/docker/fit/compose.mentor.yaml
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/fit/deploy/ops/push-monitor.py --failure %i
+TimeoutStartSec=45
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true

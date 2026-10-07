@@ -55,6 +55,12 @@ void main() {
       'ALTER TABLE sync_state DROP COLUMN offline_access',
     );
     await db.customStatement('DROP TABLE IF EXISTS sync_deferred_records');
+    // Historical v2 had neither the health table nor the v6 capability flag.
+    await db.customStatement('DROP TABLE health_samples');
+    await db.customStatement('ALTER TABLE sync_state DROP COLUMN full_cursor');
+    await db.customStatement(
+      'ALTER TABLE sync_state DROP COLUMN health_replay_enabled',
+    );
     await db.customStatement('PRAGMA user_version = 2');
     sync.dispose();
     await db.close();

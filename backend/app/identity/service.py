@@ -5,13 +5,14 @@ import re
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
 from fastapi import Depends, HTTPException, Request, status
-from sqlalchemy import select, text
+from sqlalchemy import delete, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import get_session
 from app.identity.models import Session, User
+from app.push.models import PushSubscription
 from app.security.tokens import create_token, hash_token, token_matches
 
 
@@ -22,6 +23,10 @@ email_pattern = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 class InitialAccountAlreadyExistsError(Exception):
+    pass
+
+
+class AccountNotFoundError(Exception):
     pass
 
 
@@ -64,6 +69,31 @@ async def create_initial_account(database: AsyncSession, email: str, password: s
     return account
 
 
+async def reset_password(database: AsyncSession, email: str, password: str) -> User:
+    normalized_email = validate_and_normalize_email(email)
+    async with database.begin():
+        account_id = await database.scalar(select(User.id).where(User.email == normalized_email))
+        if account_id is None:
+            raise AccountNotFoundError
+        await database.execute(select(Session.id).where(Session.user_id == account_id).with_for_update())
+        account = await database.scalar(
+            select(User).where(User.id == account_id).with_for_update()
+        )
+        await database.execute(
+            select(PushSubscription.installation_id).where(PushSubscription.user_id == account.id).with_for_update()
+        )
+        await database.execute(
+            delete(PushSubscription).where(PushSubscription.user_id == account.id)
+        )
+        await database.execute(
+            update(Session)
+            .where(Session.user_id == account.id)
+            .values(revoked_at=datetime.now(timezone.utc))
+        )
+        account.password_hash = hash_password(password)
+    return account
+
+
 def password_is_valid(password_hash: str, password: str) -> bool:
     try:
         return password_hasher.verify(password_hash, password)
@@ -72,7 +102,7 @@ def password_is_valid(password_hash: str, password: str) -> bool:
 
 
 async def authenticate(database: AsyncSession, email: str, password: str) -> User | None:
-    account = await database.scalar(select(User).where(User.email == email))
+    account = await database.scalar(select(User).where(User.email == email).with_for_update())
     if account is None:
         password_is_valid(dummy_password_hash, password)
         return None
@@ -81,26 +111,40 @@ async def authenticate(database: AsyncSession, email: str, password: str) -> Use
     return account
 
 
-async def issue_session(database: AsyncSession, account: User) -> IssuedSession:
+async def issue_session(
+    database: AsyncSession,
+    account: User,
+    *,
+    verified_password_hash: str | None = None,
+    commit: bool = True,
+) -> IssuedSession | None:
+    if verified_password_hash is not None:
+        current_password_hash = await database.scalar(
+            select(User.password_hash).where(User.id == account.id).with_for_update()
+        )
+        if current_password_hash != verified_password_hash:
+            return None
     account_id = account.id
     for _ in range(session_issue_attempts):
         session_token = create_token()
         csrf_token = create_token()
         expires_at = datetime.now(timezone.utc) + timedelta(hours=settings.session_lifetime_hours)
-        database.add(
-            Session(
-                user_id=account_id,
-                token_hash=hash_token(session_token),
-                csrf_hash=hash_token(csrf_token),
-                expires_at=expires_at,
-            )
-        )
         try:
-            await database.commit()
+            async with database.begin_nested():
+                database.add(
+                    Session(
+                        user_id=account_id,
+                        token_hash=hash_token(session_token),
+                        csrf_hash=hash_token(csrf_token),
+                        expires_at=expires_at,
+                    )
+                )
+                await database.flush()
         except IntegrityError:
-            await database.rollback()
-        else:
-            return IssuedSession(session_token=session_token, csrf_token=csrf_token, expires_at=expires_at)
+            continue
+        if commit:
+            await database.commit()
+        return IssuedSession(session_token=session_token, csrf_token=csrf_token, expires_at=expires_at)
     raise RuntimeError("Unable to issue a unique session token")
 
 
@@ -124,6 +168,8 @@ async def authenticated_session(database: AsyncSession, session_token: str | Non
 
 
 async def revoke_session(database: AsyncSession, active_session: Session) -> None:
+    await database.scalar(select(Session.id).where(Session.id == active_session.id).with_for_update())
+    await database.execute(delete(PushSubscription).where(PushSubscription.session_id == active_session.id))
     active_session.revoked_at = datetime.now(timezone.utc)
     await database.commit()
 

@@ -28,7 +28,10 @@ class HttpSyncApi implements SyncApi {
   @override
   Future<Map<String, dynamic>> pull(int cursor) async =>
       Map<String, dynamic>.from(
-        (await client.get('/api/sync/pull?cursor=$cursor')).data as Map,
+        (await client.get(
+              '/api/sync/pull?cursor=$cursor&include_health=true',
+            )).data
+            as Map,
       );
 }
 
@@ -223,12 +226,12 @@ class SyncService extends ChangeNotifier {
       while (_enabled) {
         final state = await db.syncDao.readState();
         if (state == null) throw StateError('Missing account binding');
-        final page = await api.pull(state.cursor);
+        final page = await api.pull(state.fullCursor);
         if (generation != _generation) return;
         final cursor = page['cursor'] as int;
         final changes = page['changes'] as List;
-        if (cursor < state.cursor ||
-            (changes.isNotEmpty && cursor <= state.cursor)) {
+        if (cursor < state.fullCursor ||
+            (changes.isNotEmpty && cursor <= state.fullCursor)) {
           throw const FormatException('Invalid cursor');
         }
         await db.transaction(() async {
@@ -245,7 +248,7 @@ class SyncService extends ChangeNotifier {
           }
           await db
               .update(db.syncState)
-              .write(SyncStateCompanion(cursor: Value(cursor)));
+              .write(SyncStateCompanion(fullCursor: Value(cursor)));
         });
         if (changes.length < 500) break;
       }

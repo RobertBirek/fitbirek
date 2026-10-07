@@ -6,6 +6,10 @@ import subprocess
 import tempfile
 
 scripts = Path(__file__).resolve().parent
+backup_source = (scripts / "database-backup.py").read_text()
+assert 'Path("/docker/fit/compose.mentor.yaml").is_file()' in backup_source
+print("PASS: installed mentor overlay is preserved for backup and restore")
+
 result = subprocess.run(["bash", str(scripts / "restore-verify.sh")],
                         env={**os.environ, "RESTORE_DATABASE": "fit"}, capture_output=True, text=True)
 assert result.returncode == 2

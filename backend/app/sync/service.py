@@ -5,9 +5,10 @@ from hashlib import sha256
 import json
 from uuid import UUID
 
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.health.contract import HEALTH_SAMPLE_ENTITY_TYPE
 from app.sync.models import SyncChange, SyncOperation, SyncRecord
 from app.sync.schemas import (
     AcceptedOperation,
@@ -196,6 +197,20 @@ async def push_operations(
 
             record_key = record_lock_key(user_id, operation)
             record = records[record_key]
+            if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE:
+                # Imported health samples are server-owned: clients may only
+                # delete an existing record, never create, modify or revive
+                # it. A rebased second deletion must also accept a tombstone
+                # so offline clients do not enter an endless conflict loop.
+                committed = committed_records[record_key]
+                if not operation.deleted or record.version == 0:
+                    conflicts.append(
+                        SyncConflict(
+                            operation_id=operation.operation_id,
+                            record=planned_record_response(committed),
+                        )
+                    )
+                    continue
             if operation.base_version != record.version:
                 conflicts.append(
                     SyncConflict(
@@ -207,8 +222,10 @@ async def push_operations(
 
             updated_at = datetime.now(timezone.utc)
             deleted_at = updated_at if operation.deleted else None
+            if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE and record.deleted_at is not None:
+                deleted_at = record.deleted_at
             record.version += 1
-            record.payload = operation.payload
+            record.payload = record.payload if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else operation.payload
             record.deleted_at = deleted_at
             record.updated_at = updated_at
             outcome = AcceptedOperation(
@@ -275,7 +292,7 @@ async def push_operations(
                     entity_type=write.operation.entity_type,
                     entity_id=write.operation.entity_id,
                     version=write.version,
-                    payload=write.operation.payload,
+                    payload=records[write.record_key].payload if write.operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else write.operation.payload,
                     deleted_at=write.deleted_at,
                     updated_at=write.updated_at,
                 )
@@ -289,13 +306,22 @@ async def push_operations(
     return PushResponse(accepted=accepted, conflicts=conflicts)
 
 
-async def pull_changes(database: AsyncSession, user_id: UUID, cursor: int) -> PullResponse:
+async def pull_changes(database: AsyncSession, user_id: UUID, cursor: int, include_health: bool = False) -> PullResponse:
+    # Capture the committed per-user ceiling first. A later commit must remain
+    # for the next pull, including when this page contains only hidden types.
+    watermark = max(cursor, await database.scalar(
+        select(func.max(SyncChange.cursor)).where(SyncChange.user_id == user_id)
+    ) or 0)
+    query = select(SyncChange).where(
+        SyncChange.user_id == user_id,
+        SyncChange.cursor > cursor,
+        SyncChange.cursor <= watermark,
+    )
+    if not include_health:
+        query = query.where(SyncChange.entity_type != HEALTH_SAMPLE_ENTITY_TYPE)
     changes = (
         await database.scalars(
-            select(SyncChange)
-            .where(SyncChange.user_id == user_id, SyncChange.cursor > cursor)
-            .order_by(SyncChange.cursor)
-            .limit(pull_limit)
+            query.order_by(SyncChange.cursor).limit(pull_limit)
         )
     ).all()
     response_changes = [
@@ -310,4 +336,4 @@ async def pull_changes(database: AsyncSession, user_id: UUID, cursor: int) -> Pu
         )
         for change in changes
     ]
-    return PullResponse(cursor=response_changes[-1].cursor if response_changes else cursor, changes=response_changes)
+    return PullResponse(cursor=response_changes[-1].cursor if len(response_changes) == pull_limit else watermark, changes=response_changes)

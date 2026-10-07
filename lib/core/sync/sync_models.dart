@@ -9,6 +9,7 @@ enum SyncEntityType {
   personalRecord,
   workoutPlan,
   exerciseFavorite,
+  healthSample,
 }
 
 extension SyncEntityTypeWireName on SyncEntityType {
@@ -22,6 +23,7 @@ extension SyncEntityTypeWireName on SyncEntityType {
     SyncEntityType.personalRecord => 'personalRecord',
     SyncEntityType.workoutPlan => 'workoutPlan',
     SyncEntityType.exerciseFavorite => 'exerciseFavorite',
+    SyncEntityType.healthSample => 'healthSample',
   };
 }
 

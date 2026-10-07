@@ -5,7 +5,9 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/weight_line_chart.dart';
 import '../../../../core/widgets/test_score_chart.dart';
 import '../../prs/providers/prs_providers.dart';
-import '../../measurements/providers/measurements_providers.dart';
+import '../../../health/providers/health_providers.dart';
+import '../../../health/presentation/widgets/health_sample_delete_button.dart';
+import '../../../health/presentation/widgets/health_steps_history.dart';
 import '../../tests/providers/tests_providers.dart';
 
 /// Ekran "Postępy" - pomiary, testy, PR (lista + linki do dodawania danych).
@@ -15,7 +17,7 @@ class ProgressPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final prsAsync = ref.watch(allPrsProvider);
-    final measurementsAsync = ref.watch(allMeasurementsProvider);
+    final measurementsAsync = ref.watch(mergedWeightsProvider);
     final testResultsAsync = ref.watch(allTestResultsProvider);
 
     return Scaffold(
@@ -51,6 +53,9 @@ class ProgressPage extends ConsumerWidget {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
+            const Text(
+              'Pomiar ręczny + Apple Zdrowie • źródło w dymku i historii',
+            ),
             measurementsAsync.when(
               data: (list) => Card(
                 child: Padding(
@@ -136,14 +141,20 @@ class ProgressPage extends ConsumerWidget {
                       style: TextStyle(color: Colors.grey),
                     )
                   : Column(
-                      children: list
-                          .take(10)
+                      children: list.reversed
                           .map(
                             (m) => Card(
                               margin: const EdgeInsets.only(bottom: 8),
                               child: ListTile(
                                 title: Text(Formatters.weight(m.wagaKg)),
-                                subtitle: Text(Formatters.date(m.data)),
+                                subtitle: Text(
+                                  '${Formatters.date(m.data)} • ${m.source ?? 'Pomiar ręczny'}',
+                                ),
+                                trailing: m.sample == null
+                                    ? null
+                                    : HealthSampleDeleteButton(
+                                        sample: m.sample!,
+                                      ),
                               ),
                             ),
                           )
@@ -152,6 +163,8 @@ class ProgressPage extends ConsumerWidget {
               loading: () => const CircularProgressIndicator(),
               error: (e, st) => Text('Błąd: $e'),
             ),
+            const SizedBox(height: 24),
+            const HealthStepsHistory(),
           ],
         ),
       ),

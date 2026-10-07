@@ -120,7 +120,7 @@ void main() {
     };
     await sync.synchronize();
     expect(await db.select(db.workoutSessions).get(), isEmpty);
-    expect((await db.syncDao.readState())!.cursor, 0);
+    expect((await db.syncDao.readState())!.fullCursor, 0);
     expect(sync.status, SyncStatus.error);
   });
 
@@ -177,7 +177,10 @@ void main() {
       final operations = await db.syncDao.pendingOperations();
       expect(
         operations.map((o) => o.entityType).toSet(),
-        SyncEntityType.values.toSet(),
+        // Health samples are imported by the server, never client upserts.
+        SyncEntityType.values
+            .where((t) => t != SyncEntityType.healthSample)
+            .toSet(),
       );
       final other = AppDatabase.forTesting(NativeDatabase.memory());
       final remoteApi = FakeSyncApi();
@@ -393,7 +396,7 @@ void main() {
     };
     await sync.synchronize();
     expect(sync.status, SyncStatus.idle);
-    expect((await db.syncDao.readState())!.cursor, 1);
+    expect((await db.syncDao.readState())!.fullCursor, 1);
     expect(await db.select(db.workoutSessions).get(), isEmpty);
   });
 

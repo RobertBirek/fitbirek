@@ -55,6 +55,9 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
     required int baseVersion,
     required Map<String, Object?> payload,
   }) {
+    if (entityType == SyncEntityType.healthSample) {
+      throw StateError('Health imports are server-owned');
+    }
     return _enqueue(
       entityType: entityType,
       entityId: entityId,

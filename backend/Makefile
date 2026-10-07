@@ -8,5 +8,6 @@ test-health:
 	@$(PYTHON) -c 'import sys; version = sys.version_info[:2]; assert version == (3, 12), f"Python 3.12 is required; found {version[0]}.{version[1]}"'
 	@if [ ! -x $(VENV_PYTHON) ]; then $(PYTHON) -m venv .venv; fi
 	@$(VENV_PYTHON) -c 'import sys; version = sys.version_info[:2]; assert version == (3, 12), f"Python 3.12 is required; found {version[0]}.{version[1]}"'
-	$(VENV_PYTHON) -m pip install --require-hashes -r requirements-dev.lock
+	$(VENV_PYTHON) -m pip install --require-hashes -r requirements-build.lock
+	$(VENV_PYTHON) -m pip install --no-build-isolation --require-hashes -r requirements-dev.lock
 	$(VENV_PYTHON) -m pytest tests/test_health.py -q

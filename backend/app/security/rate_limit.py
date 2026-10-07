@@ -100,7 +100,6 @@ class LoginRateLimiter:
         now = await database_now(database)
         attempt.failed_at = []
         attempt.last_failed_at = now
-        await database.commit()
 
 
 login_rate_limiter = LoginRateLimiter()

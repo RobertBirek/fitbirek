@@ -1,0 +1,23 @@
+from datetime import date, timedelta
+from zoneinfo import ZoneInfo
+
+
+HEALTH_SAMPLE_ENTITY_TYPE = "healthSample"
+WEIGHT_SAMPLE_KIND = "weight"
+STEPS_SAMPLE_KIND = "steps"
+WEIGHT_METHOD_HEALTH_SAMPLE = "health_sample"
+STEPS_METHOD_MANUAL_VERIFIED_TOTAL = "manual_verified_total"
+STEPS_SOURCE = "Apple Health"
+
+MAX_BATCH_BYTES = 64 * 1024
+MAX_BATCH_ITEMS = 100
+IMPORT_WINDOW_SECONDS = 60
+IMPORT_MAX_PER_WINDOW = 30
+MINIMUM_SAMPLE_DATE = date(2000, 1, 1)
+WEIGHT_FUTURE_TOLERANCE = timedelta(minutes=5)
+MINIMUM_WEIGHT_KG = 1.0
+MAXIMUM_WEIGHT_KG = 500.0
+MAXIMUM_STEPS = 100_000
+MAXIMUM_SOURCE_LENGTH = 100
+
+WARSAW_ZONE = ZoneInfo("Europe/Warsaw")

@@ -4,6 +4,7 @@
 #
 #    pip-compile --generate-hashes --no-index --output-file=requirements-dev.lock --strip-extras requirements-dev.txt
 #
+-r requirements-push.lock
 alembic==1.16.1 \
     --hash=sha256:0cdd48acada30d93aa1035767d67dff25702f8de74d7c3919f2e8492c8db2e67 \
     --hash=sha256:43d37ba24b3d17bc1eb1024fe0f51cd1dc95aeb5464594a02c6bb9ca9864bfa4

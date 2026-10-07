@@ -6733,6 +6733,18 @@ class $SyncStateTable extends SyncState
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _fullCursorMeta = const VerificationMeta(
+    'fullCursor',
+  );
+  @override
+  late final GeneratedColumn<int> fullCursor = GeneratedColumn<int>(
+    'full_cursor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _offlineAccessMeta = const VerificationMeta(
     'offlineAccess',
   );
@@ -6748,13 +6760,29 @@ class $SyncStateTable extends SyncState
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _healthReplayEnabledMeta =
+      const VerificationMeta('healthReplayEnabled');
+  @override
+  late final GeneratedColumn<bool> healthReplayEnabled = GeneratedColumn<bool>(
+    'health_replay_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("health_replay_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     accountId,
     deviceId,
     cursor,
+    fullCursor,
     offlineAccess,
+    healthReplayEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6793,12 +6821,27 @@ class $SyncStateTable extends SyncState
         cursor.isAcceptableOrUnknown(data['cursor']!, _cursorMeta),
       );
     }
+    if (data.containsKey('full_cursor')) {
+      context.handle(
+        _fullCursorMeta,
+        fullCursor.isAcceptableOrUnknown(data['full_cursor']!, _fullCursorMeta),
+      );
+    }
     if (data.containsKey('offline_access')) {
       context.handle(
         _offlineAccessMeta,
         offlineAccess.isAcceptableOrUnknown(
           data['offline_access']!,
           _offlineAccessMeta,
+        ),
+      );
+    }
+    if (data.containsKey('health_replay_enabled')) {
+      context.handle(
+        _healthReplayEnabledMeta,
+        healthReplayEnabled.isAcceptableOrUnknown(
+          data['health_replay_enabled']!,
+          _healthReplayEnabledMeta,
         ),
       );
     }
@@ -6827,9 +6870,17 @@ class $SyncStateTable extends SyncState
         DriftSqlType.int,
         data['${effectivePrefix}cursor'],
       )!,
+      fullCursor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}full_cursor'],
+      )!,
       offlineAccess: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}offline_access'],
+      )!,
+      healthReplayEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}health_replay_enabled'],
       )!,
     );
   }
@@ -6845,13 +6896,17 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
   final String accountId;
   final String deviceId;
   final int cursor;
+  final int fullCursor;
   final bool offlineAccess;
+  final bool healthReplayEnabled;
   const SyncStateData({
     required this.id,
     required this.accountId,
     required this.deviceId,
     required this.cursor,
+    required this.fullCursor,
     required this.offlineAccess,
+    required this.healthReplayEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6860,7 +6915,9 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
     map['account_id'] = Variable<String>(accountId);
     map['device_id'] = Variable<String>(deviceId);
     map['cursor'] = Variable<int>(cursor);
+    map['full_cursor'] = Variable<int>(fullCursor);
     map['offline_access'] = Variable<bool>(offlineAccess);
+    map['health_replay_enabled'] = Variable<bool>(healthReplayEnabled);
     return map;
   }
 
@@ -6870,7 +6927,9 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
       accountId: Value(accountId),
       deviceId: Value(deviceId),
       cursor: Value(cursor),
+      fullCursor: Value(fullCursor),
       offlineAccess: Value(offlineAccess),
+      healthReplayEnabled: Value(healthReplayEnabled),
     );
   }
 
@@ -6884,7 +6943,11 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
       accountId: serializer.fromJson<String>(json['accountId']),
       deviceId: serializer.fromJson<String>(json['deviceId']),
       cursor: serializer.fromJson<int>(json['cursor']),
+      fullCursor: serializer.fromJson<int>(json['fullCursor']),
       offlineAccess: serializer.fromJson<bool>(json['offlineAccess']),
+      healthReplayEnabled: serializer.fromJson<bool>(
+        json['healthReplayEnabled'],
+      ),
     );
   }
   @override
@@ -6895,7 +6958,9 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
       'accountId': serializer.toJson<String>(accountId),
       'deviceId': serializer.toJson<String>(deviceId),
       'cursor': serializer.toJson<int>(cursor),
+      'fullCursor': serializer.toJson<int>(fullCursor),
       'offlineAccess': serializer.toJson<bool>(offlineAccess),
+      'healthReplayEnabled': serializer.toJson<bool>(healthReplayEnabled),
     };
   }
 
@@ -6904,13 +6969,17 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
     String? accountId,
     String? deviceId,
     int? cursor,
+    int? fullCursor,
     bool? offlineAccess,
+    bool? healthReplayEnabled,
   }) => SyncStateData(
     id: id ?? this.id,
     accountId: accountId ?? this.accountId,
     deviceId: deviceId ?? this.deviceId,
     cursor: cursor ?? this.cursor,
+    fullCursor: fullCursor ?? this.fullCursor,
     offlineAccess: offlineAccess ?? this.offlineAccess,
+    healthReplayEnabled: healthReplayEnabled ?? this.healthReplayEnabled,
   );
   SyncStateData copyWithCompanion(SyncStateCompanion data) {
     return SyncStateData(
@@ -6918,9 +6987,15 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
       accountId: data.accountId.present ? data.accountId.value : this.accountId,
       deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
       cursor: data.cursor.present ? data.cursor.value : this.cursor,
+      fullCursor: data.fullCursor.present
+          ? data.fullCursor.value
+          : this.fullCursor,
       offlineAccess: data.offlineAccess.present
           ? data.offlineAccess.value
           : this.offlineAccess,
+      healthReplayEnabled: data.healthReplayEnabled.present
+          ? data.healthReplayEnabled.value
+          : this.healthReplayEnabled,
     );
   }
 
@@ -6931,14 +7006,23 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
           ..write('accountId: $accountId, ')
           ..write('deviceId: $deviceId, ')
           ..write('cursor: $cursor, ')
-          ..write('offlineAccess: $offlineAccess')
+          ..write('fullCursor: $fullCursor, ')
+          ..write('offlineAccess: $offlineAccess, ')
+          ..write('healthReplayEnabled: $healthReplayEnabled')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, accountId, deviceId, cursor, offlineAccess);
+  int get hashCode => Object.hash(
+    id,
+    accountId,
+    deviceId,
+    cursor,
+    fullCursor,
+    offlineAccess,
+    healthReplayEnabled,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -6947,7 +7031,9 @@ class SyncStateData extends DataClass implements Insertable<SyncStateData> {
           other.accountId == this.accountId &&
           other.deviceId == this.deviceId &&
           other.cursor == this.cursor &&
-          other.offlineAccess == this.offlineAccess);
+          other.fullCursor == this.fullCursor &&
+          other.offlineAccess == this.offlineAccess &&
+          other.healthReplayEnabled == this.healthReplayEnabled);
 }
 
 class SyncStateCompanion extends UpdateCompanion<SyncStateData> {
@@ -6955,20 +7041,26 @@ class SyncStateCompanion extends UpdateCompanion<SyncStateData> {
   final Value<String> accountId;
   final Value<String> deviceId;
   final Value<int> cursor;
+  final Value<int> fullCursor;
   final Value<bool> offlineAccess;
+  final Value<bool> healthReplayEnabled;
   const SyncStateCompanion({
     this.id = const Value.absent(),
     this.accountId = const Value.absent(),
     this.deviceId = const Value.absent(),
     this.cursor = const Value.absent(),
+    this.fullCursor = const Value.absent(),
     this.offlineAccess = const Value.absent(),
+    this.healthReplayEnabled = const Value.absent(),
   });
   SyncStateCompanion.insert({
     this.id = const Value.absent(),
     required String accountId,
     required String deviceId,
     this.cursor = const Value.absent(),
+    this.fullCursor = const Value.absent(),
     this.offlineAccess = const Value.absent(),
+    this.healthReplayEnabled = const Value.absent(),
   }) : accountId = Value(accountId),
        deviceId = Value(deviceId);
   static Insertable<SyncStateData> custom({
@@ -6976,14 +7068,19 @@ class SyncStateCompanion extends UpdateCompanion<SyncStateData> {
     Expression<String>? accountId,
     Expression<String>? deviceId,
     Expression<int>? cursor,
+    Expression<int>? fullCursor,
     Expression<bool>? offlineAccess,
+    Expression<bool>? healthReplayEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (accountId != null) 'account_id': accountId,
       if (deviceId != null) 'device_id': deviceId,
       if (cursor != null) 'cursor': cursor,
+      if (fullCursor != null) 'full_cursor': fullCursor,
       if (offlineAccess != null) 'offline_access': offlineAccess,
+      if (healthReplayEnabled != null)
+        'health_replay_enabled': healthReplayEnabled,
     });
   }
 
@@ -6992,14 +7089,18 @@ class SyncStateCompanion extends UpdateCompanion<SyncStateData> {
     Value<String>? accountId,
     Value<String>? deviceId,
     Value<int>? cursor,
+    Value<int>? fullCursor,
     Value<bool>? offlineAccess,
+    Value<bool>? healthReplayEnabled,
   }) {
     return SyncStateCompanion(
       id: id ?? this.id,
       accountId: accountId ?? this.accountId,
       deviceId: deviceId ?? this.deviceId,
       cursor: cursor ?? this.cursor,
+      fullCursor: fullCursor ?? this.fullCursor,
       offlineAccess: offlineAccess ?? this.offlineAccess,
+      healthReplayEnabled: healthReplayEnabled ?? this.healthReplayEnabled,
     );
   }
 
@@ -7018,8 +7119,14 @@ class SyncStateCompanion extends UpdateCompanion<SyncStateData> {
     if (cursor.present) {
       map['cursor'] = Variable<int>(cursor.value);
     }
+    if (fullCursor.present) {
+      map['full_cursor'] = Variable<int>(fullCursor.value);
+    }
     if (offlineAccess.present) {
       map['offline_access'] = Variable<bool>(offlineAccess.value);
+    }
+    if (healthReplayEnabled.present) {
+      map['health_replay_enabled'] = Variable<bool>(healthReplayEnabled.value);
     }
     return map;
   }
@@ -7031,7 +7138,9 @@ class SyncStateCompanion extends UpdateCompanion<SyncStateData> {
           ..write('accountId: $accountId, ')
           ..write('deviceId: $deviceId, ')
           ..write('cursor: $cursor, ')
-          ..write('offlineAccess: $offlineAccess')
+          ..write('fullCursor: $fullCursor, ')
+          ..write('offlineAccess: $offlineAccess, ')
+          ..write('healthReplayEnabled: $healthReplayEnabled')
           ..write(')'))
         .toString();
   }
@@ -8338,6 +8447,704 @@ class ExerciseFavoritesCompanion extends UpdateCompanion<ExerciseFavoriteData> {
   }
 }
 
+class $HealthSamplesTable extends HealthSamples
+    with TableInfo<$HealthSamplesTable, HealthSampleData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HealthSamplesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
+  @override
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => Uuid().v4(),
+  );
+  static const VerificationMeta _syncVersionMeta = const VerificationMeta(
+    'syncVersion',
+  );
+  @override
+  late final GeneratedColumn<int> syncVersion = GeneratedColumn<int>(
+    'sync_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtUtc = GeneratedColumn<DateTime>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    clientDefault: () => DateTime.now().toUtc(),
+  );
+  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
+    'deletedAtUtc',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAtUtc = GeneratedColumn<DateTime>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<String> day = GeneratedColumn<String>(
+    'day',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _measuredAtMeta = const VerificationMeta(
+    'measuredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> measuredAt = GeneratedColumn<DateTime>(
+    'measured_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<double> value = GeneratedColumn<double>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _methodMeta = const VerificationMeta('method');
+  @override
+  late final GeneratedColumn<String> method = GeneratedColumn<String>(
+    'method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _importedAtMeta = const VerificationMeta(
+    'importedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> importedAt = GeneratedColumn<DateTime>(
+    'imported_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    syncId,
+    syncVersion,
+    updatedAtUtc,
+    deletedAtUtc,
+    id,
+    kind,
+    day,
+    measuredAt,
+    value,
+    source,
+    method,
+    importedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'health_samples';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HealthSampleData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
+    if (data.containsKey('sync_version')) {
+      context.handle(
+        _syncVersionMeta,
+        syncVersion.isAcceptableOrUnknown(
+          data['sync_version']!,
+          _syncVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+        _deletedAtUtcMeta,
+        deletedAtUtc.isAcceptableOrUnknown(
+          data['deleted_at_utc']!,
+          _deletedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('measured_at')) {
+      context.handle(
+        _measuredAtMeta,
+        measuredAt.isAcceptableOrUnknown(data['measured_at']!, _measuredAtMeta),
+      );
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('method')) {
+      context.handle(
+        _methodMeta,
+        method.isAcceptableOrUnknown(data['method']!, _methodMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_methodMeta);
+    }
+    if (data.containsKey('imported_at')) {
+      context.handle(
+        _importedAtMeta,
+        importedAt.isAcceptableOrUnknown(data['imported_at']!, _importedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_importedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HealthSampleData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HealthSampleData(
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      )!,
+      syncVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sync_version'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at_utc'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day'],
+      )!,
+      measuredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}measured_at'],
+      ),
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}value'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      method: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method'],
+      )!,
+      importedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}imported_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HealthSamplesTable createAlias(String alias) {
+    return $HealthSamplesTable(attachedDatabase, alias);
+  }
+}
+
+class HealthSampleData extends DataClass
+    implements Insertable<HealthSampleData> {
+  final String syncId;
+  final int syncVersion;
+  final DateTime updatedAtUtc;
+  final DateTime? deletedAtUtc;
+  final int id;
+  final String kind;
+  final String day;
+  final DateTime? measuredAt;
+  final double value;
+  final String source;
+  final String method;
+  final DateTime importedAt;
+  const HealthSampleData({
+    required this.syncId,
+    required this.syncVersion,
+    required this.updatedAtUtc,
+    this.deletedAtUtc,
+    required this.id,
+    required this.kind,
+    required this.day,
+    this.measuredAt,
+    required this.value,
+    required this.source,
+    required this.method,
+    required this.importedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sync_id'] = Variable<String>(syncId);
+    map['sync_version'] = Variable<int>(syncVersion);
+    map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<DateTime>(deletedAtUtc);
+    }
+    map['id'] = Variable<int>(id);
+    map['kind'] = Variable<String>(kind);
+    map['day'] = Variable<String>(day);
+    if (!nullToAbsent || measuredAt != null) {
+      map['measured_at'] = Variable<DateTime>(measuredAt);
+    }
+    map['value'] = Variable<double>(value);
+    map['source'] = Variable<String>(source);
+    map['method'] = Variable<String>(method);
+    map['imported_at'] = Variable<DateTime>(importedAt);
+    return map;
+  }
+
+  HealthSamplesCompanion toCompanion(bool nullToAbsent) {
+    return HealthSamplesCompanion(
+      syncId: Value(syncId),
+      syncVersion: Value(syncVersion),
+      updatedAtUtc: Value(updatedAtUtc),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      id: Value(id),
+      kind: Value(kind),
+      day: Value(day),
+      measuredAt: measuredAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(measuredAt),
+      value: Value(value),
+      source: Value(source),
+      method: Value(method),
+      importedAt: Value(importedAt),
+    );
+  }
+
+  factory HealthSampleData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HealthSampleData(
+      syncId: serializer.fromJson<String>(json['syncId']),
+      syncVersion: serializer.fromJson<int>(json['syncVersion']),
+      updatedAtUtc: serializer.fromJson<DateTime>(json['updatedAtUtc']),
+      deletedAtUtc: serializer.fromJson<DateTime?>(json['deletedAtUtc']),
+      id: serializer.fromJson<int>(json['id']),
+      kind: serializer.fromJson<String>(json['kind']),
+      day: serializer.fromJson<String>(json['day']),
+      measuredAt: serializer.fromJson<DateTime?>(json['measuredAt']),
+      value: serializer.fromJson<double>(json['value']),
+      source: serializer.fromJson<String>(json['source']),
+      method: serializer.fromJson<String>(json['method']),
+      importedAt: serializer.fromJson<DateTime>(json['importedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'syncId': serializer.toJson<String>(syncId),
+      'syncVersion': serializer.toJson<int>(syncVersion),
+      'updatedAtUtc': serializer.toJson<DateTime>(updatedAtUtc),
+      'deletedAtUtc': serializer.toJson<DateTime?>(deletedAtUtc),
+      'id': serializer.toJson<int>(id),
+      'kind': serializer.toJson<String>(kind),
+      'day': serializer.toJson<String>(day),
+      'measuredAt': serializer.toJson<DateTime?>(measuredAt),
+      'value': serializer.toJson<double>(value),
+      'source': serializer.toJson<String>(source),
+      'method': serializer.toJson<String>(method),
+      'importedAt': serializer.toJson<DateTime>(importedAt),
+    };
+  }
+
+  HealthSampleData copyWith({
+    String? syncId,
+    int? syncVersion,
+    DateTime? updatedAtUtc,
+    Value<DateTime?> deletedAtUtc = const Value.absent(),
+    int? id,
+    String? kind,
+    String? day,
+    Value<DateTime?> measuredAt = const Value.absent(),
+    double? value,
+    String? source,
+    String? method,
+    DateTime? importedAt,
+  }) => HealthSampleData(
+    syncId: syncId ?? this.syncId,
+    syncVersion: syncVersion ?? this.syncVersion,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+    id: id ?? this.id,
+    kind: kind ?? this.kind,
+    day: day ?? this.day,
+    measuredAt: measuredAt.present ? measuredAt.value : this.measuredAt,
+    value: value ?? this.value,
+    source: source ?? this.source,
+    method: method ?? this.method,
+    importedAt: importedAt ?? this.importedAt,
+  );
+  HealthSampleData copyWithCompanion(HealthSamplesCompanion data) {
+    return HealthSampleData(
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
+      syncVersion: data.syncVersion.present
+          ? data.syncVersion.value
+          : this.syncVersion,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      id: data.id.present ? data.id.value : this.id,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      day: data.day.present ? data.day.value : this.day,
+      measuredAt: data.measuredAt.present
+          ? data.measuredAt.value
+          : this.measuredAt,
+      value: data.value.present ? data.value.value : this.value,
+      source: data.source.present ? data.source.value : this.source,
+      method: data.method.present ? data.method.value : this.method,
+      importedAt: data.importedAt.present
+          ? data.importedAt.value
+          : this.importedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HealthSampleData(')
+          ..write('syncId: $syncId, ')
+          ..write('syncVersion: $syncVersion, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('id: $id, ')
+          ..write('kind: $kind, ')
+          ..write('day: $day, ')
+          ..write('measuredAt: $measuredAt, ')
+          ..write('value: $value, ')
+          ..write('source: $source, ')
+          ..write('method: $method, ')
+          ..write('importedAt: $importedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    syncId,
+    syncVersion,
+    updatedAtUtc,
+    deletedAtUtc,
+    id,
+    kind,
+    day,
+    measuredAt,
+    value,
+    source,
+    method,
+    importedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HealthSampleData &&
+          other.syncId == this.syncId &&
+          other.syncVersion == this.syncVersion &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.id == this.id &&
+          other.kind == this.kind &&
+          other.day == this.day &&
+          other.measuredAt == this.measuredAt &&
+          other.value == this.value &&
+          other.source == this.source &&
+          other.method == this.method &&
+          other.importedAt == this.importedAt);
+}
+
+class HealthSamplesCompanion extends UpdateCompanion<HealthSampleData> {
+  final Value<String> syncId;
+  final Value<int> syncVersion;
+  final Value<DateTime> updatedAtUtc;
+  final Value<DateTime?> deletedAtUtc;
+  final Value<int> id;
+  final Value<String> kind;
+  final Value<String> day;
+  final Value<DateTime?> measuredAt;
+  final Value<double> value;
+  final Value<String> source;
+  final Value<String> method;
+  final Value<DateTime> importedAt;
+  const HealthSamplesCompanion({
+    this.syncId = const Value.absent(),
+    this.syncVersion = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.id = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.day = const Value.absent(),
+    this.measuredAt = const Value.absent(),
+    this.value = const Value.absent(),
+    this.source = const Value.absent(),
+    this.method = const Value.absent(),
+    this.importedAt = const Value.absent(),
+  });
+  HealthSamplesCompanion.insert({
+    this.syncId = const Value.absent(),
+    this.syncVersion = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.id = const Value.absent(),
+    required String kind,
+    required String day,
+    this.measuredAt = const Value.absent(),
+    required double value,
+    required String source,
+    required String method,
+    required DateTime importedAt,
+  }) : kind = Value(kind),
+       day = Value(day),
+       value = Value(value),
+       source = Value(source),
+       method = Value(method),
+       importedAt = Value(importedAt);
+  static Insertable<HealthSampleData> custom({
+    Expression<String>? syncId,
+    Expression<int>? syncVersion,
+    Expression<DateTime>? updatedAtUtc,
+    Expression<DateTime>? deletedAtUtc,
+    Expression<int>? id,
+    Expression<String>? kind,
+    Expression<String>? day,
+    Expression<DateTime>? measuredAt,
+    Expression<double>? value,
+    Expression<String>? source,
+    Expression<String>? method,
+    Expression<DateTime>? importedAt,
+  }) {
+    return RawValuesInsertable({
+      if (syncId != null) 'sync_id': syncId,
+      if (syncVersion != null) 'sync_version': syncVersion,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (id != null) 'id': id,
+      if (kind != null) 'kind': kind,
+      if (day != null) 'day': day,
+      if (measuredAt != null) 'measured_at': measuredAt,
+      if (value != null) 'value': value,
+      if (source != null) 'source': source,
+      if (method != null) 'method': method,
+      if (importedAt != null) 'imported_at': importedAt,
+    });
+  }
+
+  HealthSamplesCompanion copyWith({
+    Value<String>? syncId,
+    Value<int>? syncVersion,
+    Value<DateTime>? updatedAtUtc,
+    Value<DateTime?>? deletedAtUtc,
+    Value<int>? id,
+    Value<String>? kind,
+    Value<String>? day,
+    Value<DateTime?>? measuredAt,
+    Value<double>? value,
+    Value<String>? source,
+    Value<String>? method,
+    Value<DateTime>? importedAt,
+  }) {
+    return HealthSamplesCompanion(
+      syncId: syncId ?? this.syncId,
+      syncVersion: syncVersion ?? this.syncVersion,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      id: id ?? this.id,
+      kind: kind ?? this.kind,
+      day: day ?? this.day,
+      measuredAt: measuredAt ?? this.measuredAt,
+      value: value ?? this.value,
+      source: source ?? this.source,
+      method: method ?? this.method,
+      importedAt: importedAt ?? this.importedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
+    if (syncVersion.present) {
+      map['sync_version'] = Variable<int>(syncVersion.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<DateTime>(updatedAtUtc.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<DateTime>(deletedAtUtc.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<String>(day.value);
+    }
+    if (measuredAt.present) {
+      map['measured_at'] = Variable<DateTime>(measuredAt.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<double>(value.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (method.present) {
+      map['method'] = Variable<String>(method.value);
+    }
+    if (importedAt.present) {
+      map['imported_at'] = Variable<DateTime>(importedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HealthSamplesCompanion(')
+          ..write('syncId: $syncId, ')
+          ..write('syncVersion: $syncVersion, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('id: $id, ')
+          ..write('kind: $kind, ')
+          ..write('day: $day, ')
+          ..write('measuredAt: $measuredAt, ')
+          ..write('value: $value, ')
+          ..write('source: $source, ')
+          ..write('method: $method, ')
+          ..write('importedAt: $importedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8361,6 +9168,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SyncDeferredRecordsTable(this);
   late final $ExerciseFavoritesTable exerciseFavorites =
       $ExerciseFavoritesTable(this);
+  late final $HealthSamplesTable healthSamples = $HealthSamplesTable(this);
   late final UserProfileDao userProfileDao = UserProfileDao(
     this as AppDatabase,
   );
@@ -8392,6 +9200,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     syncOutbox,
     syncDeferredRecords,
     exerciseFavorites,
+    healthSamples,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -11942,7 +12751,9 @@ typedef $$SyncStateTableCreateCompanionBuilder =
       required String accountId,
       required String deviceId,
       Value<int> cursor,
+      Value<int> fullCursor,
       Value<bool> offlineAccess,
+      Value<bool> healthReplayEnabled,
     });
 typedef $$SyncStateTableUpdateCompanionBuilder =
     SyncStateCompanion Function({
@@ -11950,7 +12761,9 @@ typedef $$SyncStateTableUpdateCompanionBuilder =
       Value<String> accountId,
       Value<String> deviceId,
       Value<int> cursor,
+      Value<int> fullCursor,
       Value<bool> offlineAccess,
+      Value<bool> healthReplayEnabled,
     });
 
 class $$SyncStateTableFilterComposer
@@ -11982,8 +12795,18 @@ class $$SyncStateTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get fullCursor => $composableBuilder(
+    column: $table.fullCursor,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<bool> get offlineAccess => $composableBuilder(
     column: $table.offlineAccess,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get healthReplayEnabled => $composableBuilder(
+    column: $table.healthReplayEnabled,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -12017,8 +12840,18 @@ class $$SyncStateTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get fullCursor => $composableBuilder(
+    column: $table.fullCursor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get offlineAccess => $composableBuilder(
     column: $table.offlineAccess,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get healthReplayEnabled => $composableBuilder(
+    column: $table.healthReplayEnabled,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -12044,8 +12877,18 @@ class $$SyncStateTableAnnotationComposer
   GeneratedColumn<int> get cursor =>
       $composableBuilder(column: $table.cursor, builder: (column) => column);
 
+  GeneratedColumn<int> get fullCursor => $composableBuilder(
+    column: $table.fullCursor,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get offlineAccess => $composableBuilder(
     column: $table.offlineAccess,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get healthReplayEnabled => $composableBuilder(
+    column: $table.healthReplayEnabled,
     builder: (column) => column,
   );
 }
@@ -12085,13 +12928,17 @@ class $$SyncStateTableTableManager
                 Value<String> accountId = const Value.absent(),
                 Value<String> deviceId = const Value.absent(),
                 Value<int> cursor = const Value.absent(),
+                Value<int> fullCursor = const Value.absent(),
                 Value<bool> offlineAccess = const Value.absent(),
+                Value<bool> healthReplayEnabled = const Value.absent(),
               }) => SyncStateCompanion(
                 id: id,
                 accountId: accountId,
                 deviceId: deviceId,
                 cursor: cursor,
+                fullCursor: fullCursor,
                 offlineAccess: offlineAccess,
+                healthReplayEnabled: healthReplayEnabled,
               ),
           createCompanionCallback:
               ({
@@ -12099,13 +12946,17 @@ class $$SyncStateTableTableManager
                 required String accountId,
                 required String deviceId,
                 Value<int> cursor = const Value.absent(),
+                Value<int> fullCursor = const Value.absent(),
                 Value<bool> offlineAccess = const Value.absent(),
+                Value<bool> healthReplayEnabled = const Value.absent(),
               }) => SyncStateCompanion.insert(
                 id: id,
                 accountId: accountId,
                 deviceId: deviceId,
                 cursor: cursor,
+                fullCursor: fullCursor,
                 offlineAccess: offlineAccess,
+                healthReplayEnabled: healthReplayEnabled,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -12962,6 +13813,347 @@ typedef $$ExerciseFavoritesTableProcessedTableManager =
       ExerciseFavoriteData,
       PrefetchHooks Function({bool exerciseId})
     >;
+typedef $$HealthSamplesTableCreateCompanionBuilder =
+    HealthSamplesCompanion Function({
+      Value<String> syncId,
+      Value<int> syncVersion,
+      Value<DateTime> updatedAtUtc,
+      Value<DateTime?> deletedAtUtc,
+      Value<int> id,
+      required String kind,
+      required String day,
+      Value<DateTime?> measuredAt,
+      required double value,
+      required String source,
+      required String method,
+      required DateTime importedAt,
+    });
+typedef $$HealthSamplesTableUpdateCompanionBuilder =
+    HealthSamplesCompanion Function({
+      Value<String> syncId,
+      Value<int> syncVersion,
+      Value<DateTime> updatedAtUtc,
+      Value<DateTime?> deletedAtUtc,
+      Value<int> id,
+      Value<String> kind,
+      Value<String> day,
+      Value<DateTime?> measuredAt,
+      Value<double> value,
+      Value<String> source,
+      Value<String> method,
+      Value<DateTime> importedAt,
+    });
+
+class $$HealthSamplesTableFilterComposer
+    extends Composer<_$AppDatabase, $HealthSamplesTable> {
+  $$HealthSamplesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncVersion => $composableBuilder(
+    column: $table.syncVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get measuredAt => $composableBuilder(
+    column: $table.measuredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HealthSamplesTableOrderingComposer
+    extends Composer<_$AppDatabase, $HealthSamplesTable> {
+  $$HealthSamplesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncVersion => $composableBuilder(
+    column: $table.syncVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get measuredAt => $composableBuilder(
+    column: $table.measuredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HealthSamplesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HealthSamplesTable> {
+  $$HealthSamplesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
+
+  GeneratedColumn<int> get syncVersion => $composableBuilder(
+    column: $table.syncVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get measuredAt => $composableBuilder(
+    column: $table.measuredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get method =>
+      $composableBuilder(column: $table.method, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$HealthSamplesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HealthSamplesTable,
+          HealthSampleData,
+          $$HealthSamplesTableFilterComposer,
+          $$HealthSamplesTableOrderingComposer,
+          $$HealthSamplesTableAnnotationComposer,
+          $$HealthSamplesTableCreateCompanionBuilder,
+          $$HealthSamplesTableUpdateCompanionBuilder,
+          (
+            HealthSampleData,
+            BaseReferences<
+              _$AppDatabase,
+              $HealthSamplesTable,
+              HealthSampleData
+            >,
+          ),
+          HealthSampleData,
+          PrefetchHooks Function()
+        > {
+  $$HealthSamplesTableTableManager(_$AppDatabase db, $HealthSamplesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HealthSamplesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HealthSamplesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HealthSamplesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> syncId = const Value.absent(),
+                Value<int> syncVersion = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<DateTime?> deletedAtUtc = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> day = const Value.absent(),
+                Value<DateTime?> measuredAt = const Value.absent(),
+                Value<double> value = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<String> method = const Value.absent(),
+                Value<DateTime> importedAt = const Value.absent(),
+              }) => HealthSamplesCompanion(
+                syncId: syncId,
+                syncVersion: syncVersion,
+                updatedAtUtc: updatedAtUtc,
+                deletedAtUtc: deletedAtUtc,
+                id: id,
+                kind: kind,
+                day: day,
+                measuredAt: measuredAt,
+                value: value,
+                source: source,
+                method: method,
+                importedAt: importedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> syncId = const Value.absent(),
+                Value<int> syncVersion = const Value.absent(),
+                Value<DateTime> updatedAtUtc = const Value.absent(),
+                Value<DateTime?> deletedAtUtc = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required String kind,
+                required String day,
+                Value<DateTime?> measuredAt = const Value.absent(),
+                required double value,
+                required String source,
+                required String method,
+                required DateTime importedAt,
+              }) => HealthSamplesCompanion.insert(
+                syncId: syncId,
+                syncVersion: syncVersion,
+                updatedAtUtc: updatedAtUtc,
+                deletedAtUtc: deletedAtUtc,
+                id: id,
+                kind: kind,
+                day: day,
+                measuredAt: measuredAt,
+                value: value,
+                source: source,
+                method: method,
+                importedAt: importedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HealthSamplesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HealthSamplesTable,
+      HealthSampleData,
+      $$HealthSamplesTableFilterComposer,
+      $$HealthSamplesTableOrderingComposer,
+      $$HealthSamplesTableAnnotationComposer,
+      $$HealthSamplesTableCreateCompanionBuilder,
+      $$HealthSamplesTableUpdateCompanionBuilder,
+      (
+        HealthSampleData,
+        BaseReferences<_$AppDatabase, $HealthSamplesTable, HealthSampleData>,
+      ),
+      HealthSampleData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12992,4 +14184,6 @@ class $AppDatabaseManager {
       $$SyncDeferredRecordsTableTableManager(_db, _db.syncDeferredRecords);
   $$ExerciseFavoritesTableTableManager get exerciseFavorites =>
       $$ExerciseFavoritesTableTableManager(_db, _db.exerciseFavorites);
+  $$HealthSamplesTableTableManager get healthSamples =>
+      $$HealthSamplesTableTableManager(_db, _db.healthSamples);
 }

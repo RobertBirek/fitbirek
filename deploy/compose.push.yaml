@@ -1,0 +1,29 @@
+# Optional overlay, applied only after explicit operator VAPID configuration.
+# docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml ...
+services:
+  api:
+    env_file: [.env, push.env]
+  push-sender:
+    image: fit-api:production
+    user: "65532:65532"
+    command: [python, -m, app.push.worker]
+    env_file: [.env, push.env]
+    environment:
+      PUSH_VAPID_PRIVATE_KEY_FILE: /run/secrets/push_vapid_private
+    secrets: [push_vapid_private]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    networks: [fit_internal, fit_ingress]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      disable: true
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: "3"}
+secrets:
+  push_vapid_private:
+    file: ./secrets/push-vapid-private.pem

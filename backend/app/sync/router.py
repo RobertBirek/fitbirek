@@ -24,7 +24,8 @@ async def push(
 @router.get("/pull", response_model=PullResponse)
 async def pull(
     cursor: int = Query(default=0, ge=0, le=postgres_bigint_maximum),
+    include_health: bool = Query(default=False),
     database: AsyncSession = Depends(get_session),
     authenticated: AuthenticatedSession = Depends(require_authenticated),
 ) -> PullResponse:
-    return await pull_changes(database, authenticated.account.id, cursor)
+    return await pull_changes(database, authenticated.account.id, cursor, include_health=include_health)

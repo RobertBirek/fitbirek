@@ -2,18 +2,18 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/theme.dart';
-import '../database/app_database.dart';
+import '../models/weight_entry.dart';
 import '../utils/formatters.dart';
 
 /// Wykres liniowy wagi w czasie na podstawie historii pomiarów.
 ///
-/// Przyjmuje listę [MeasurementData] w KOLEJNOŚCI od najstarszego do
+/// Przyjmuje listę [WeightEntry] w KOLEJNOŚCI od najstarszego do
 /// najnowszego (odwrotnie niż `watchAll()`, który zwraca desc - sortowanie
 /// odbywa się wewnątrz widgetu, żeby wywołujący nie musiał o tym pamiętać).
 class WeightLineChart extends StatelessWidget {
   const WeightLineChart({super.key, required this.measurements});
 
-  final List<MeasurementData> measurements;
+  final List<WeightEntry> measurements;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,7 @@ class WeightLineChart extends StatelessWidget {
               getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
                 final m = sorted[spot.x.round()];
                 return LineTooltipItem(
-                  '${Formatters.weight(m.wagaKg)}\n${Formatters.date(m.data)}',
+                  '${Formatters.weight(m.wagaKg)}\n${Formatters.date(m.data)}\n${m.source ?? 'Pomiar ręczny'}',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:uuid/uuid.dart';
 
+import '../../app/constants.dart';
+
 import '../database/app_database.dart';
 import 'package:drift/drift.dart';
 import '../sync/sync_store.dart';
@@ -70,7 +72,7 @@ class BackupService {
 
     final payload = {
       'schemaVersion': currentSchemaVersion,
-      'appVersion': '1.0.0',
+      'appVersion': AppConstants.appVersion,
       'exportedAt': DateTime.now().toUtc().toIso8601String(),
       'data': {
         'userProfiles': userProfiles
@@ -115,6 +117,12 @@ class BackupService {
         'exerciseFavorites': favorites
             .where((favorite) => favorite.deletedAtUtc == null)
             .map((favorite) => {'exerciseId': favorite.exerciseId})
+            .toList(),
+        // Informational archive only: imports are refreshed from the account's
+        // server, never restored as user-created records or new UUIDs.
+        'healthSamples': (await db.select(db.healthSamples).get())
+            .where((s) => s.deletedAtUtc == null)
+            .map(_withoutSyncMetadata)
             .toList(),
       },
     };
@@ -288,7 +296,9 @@ class BackupService {
       success: true,
       message:
           'Import zakończony pomyślnie. Wczytano $totalRecords '
-          'rekordów.',
+          'rekordów. Apple Zdrowie: importy i oczekujące usunięcia pozostają '
+          'bez zmian; próbki z pliku nie są odtwarzane. Na nowym urządzeniu '
+          'pobierze je synchronizacja bieżącego konta.',
       importedCounts: counts,
     );
   }

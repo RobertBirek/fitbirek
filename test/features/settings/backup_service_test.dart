@@ -4,6 +4,7 @@
 // pamięci, nie na dysku, każdy test dostaje czystą instancję.
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:drift/drift.dart' show Value;
@@ -11,6 +12,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitbirek_training/core/database/app_database.dart';
+import 'package:fitbirek_training/app/constants.dart';
 import 'package:fitbirek_training/core/services/backup_service.dart';
 import 'package:fitbirek_training/core/sync/sync_models.dart';
 import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
@@ -47,6 +49,20 @@ void main() {
   tearDown(() async {
     await db.close();
   });
+
+  test(
+    'backup version matches pubspec and UI, schema remains independent',
+    () async {
+      final version = RegExp(
+        r'^version: (\S+)$',
+        multiLine: true,
+      ).firstMatch(File('pubspec.yaml').readAsStringSync())!.group(1);
+      final payload = jsonDecode(utf8.decode(await service.exportToBytes()));
+      expect(payload['appVersion'], version);
+      expect(payload['appVersion'], AppConstants.appVersion);
+      expect(payload['schemaVersion'], 2);
+    },
+  );
 
   test(
     'eksport pustej bazy tworzy poprawny JSON ze wszystkimi sekcjami',
