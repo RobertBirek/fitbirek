@@ -6,6 +6,14 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.3.1+6] — 2026-10-07
+
+### Added
+- Komiksowa ilustracja 90/90 hip stretch z oznaczeniem głównych i wspierających
+  partii mięśni w szczegółach ćwiczenia.
+
+---
+
 ## [1.3.0+5] — 2026-10-05
 
 ### Added

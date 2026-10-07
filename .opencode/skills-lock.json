@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "imagen": {
+      "sourceType": "upstream",
+      "upstream": "francostino-opencode-skills-collection",
+      "id": "imagen",
+      "path": "skills/imagen",
+      "category": "graphics-processing",
+      "risk": "safe",
+      "source": "https://github.com/sanjay3290/ai-skills/tree/main/skills/imagen",
+      "computedHash": "8c233c20c714e48faa5e706789730ca877708c8546e4ef58f49ee63587e97405"
+    }
+  }
+}

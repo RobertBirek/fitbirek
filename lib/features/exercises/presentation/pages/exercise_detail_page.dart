@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../exercise_illustrations.dart';
 import '../../providers/exercises_providers.dart';
 import '../../../workout/providers/workout_providers.dart';
 
@@ -23,6 +24,7 @@ class ExerciseDetailPage extends ConsumerWidget {
             body: Center(child: Text('Ćwiczenie nie znalezione')),
           );
         }
+        final illustrationAsset = exerciseIllustrationAsset(ex.id);
         return Scaffold(
           appBar: AppBar(
             title: Text(ex.nazwaPl),
@@ -50,6 +52,17 @@ class ExerciseDetailPage extends ConsumerWidget {
                     Chip(label: Text(ex.typ)),
                   ],
                 ),
+                if (illustrationAsset != null) ...[
+                  const SizedBox(height: 16),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      illustrationAsset,
+                      semanticLabel: 'Ilustracja ćwiczenia ${ex.nazwaPl}',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 16),
                 _section('Seria x powtórzenia', ex.seriexPowtorzenia),
                 _section('Tempo', ex.tempo),

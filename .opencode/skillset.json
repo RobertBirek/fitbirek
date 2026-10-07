@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "generatedBy": "/add-skill",
+  "registry": "/root/.config/opencode/skills-registry/registry.json",
+  "selected": [
+    "imagen"
+  ],
+  "required": [],
+  "blocked": [],
+  "overrides": {}
+}
