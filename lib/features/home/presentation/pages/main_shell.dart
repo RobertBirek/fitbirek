@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../app/theme.dart';
 
 /// Główny shell aplikacji z BottomNavigationBar (5 zakładek).
 class MainShell extends StatelessWidget {
@@ -53,9 +52,4 @@ class MainShell extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Kolor pomocniczy do accentowanych elementów w zakładkach.
-class TabColors {
-  static const active = FitBirekColors.accent;
 }

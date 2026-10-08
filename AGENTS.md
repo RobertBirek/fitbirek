@@ -5,6 +5,7 @@
 - The repository root is the Flutter client (`lib/main.dart`); `backend/` is the FastAPI/PostgreSQL sync service. The client remains usable offline through local Drift SQLite and synchronizes authenticated data through `/api`.
 - Keep Flutter 3.35.4 and Dart 3.9.2. Do not run `flutter upgrade` or change the toolchain without an explicit decision.
 - Production source lives at `/opt/fit`; deployed Compose configuration and persistent data live under `/docker/fit`. Read `DEPLOY.md` before changing deployment files.
+- For feature-scoped work, read the matching working-set guide in `docs/modules/` before loading unrelated code.
 
 ## Commands
 
