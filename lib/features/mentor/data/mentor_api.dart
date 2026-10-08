@@ -21,7 +21,8 @@ abstract class MentorApi {
   Future<MentorOperation?> operation(String requestId);
   void cancel();
   Future<MentorSettings> settings();
-  Future<MentorSettings> saveSettings(Map<String, Object> values);
+  Future<MentorSettings> saveSettings(Map<String, Object?> patch);
+  Future<MentorContextOptions> contextOptions();
   Future<List<MentorSession>> sessions();
   Future<String> createSession(String id);
   Future<List<MentorMessage>> messages(String sessionId);
@@ -29,6 +30,8 @@ abstract class MentorApi {
     String sessionId,
     String text, {
     required String requestId,
+    int? settingsRevision,
+    MentorContextSelection? context,
   });
   Future<void> deleteSession(String id);
   Future<void> saveKey(String provider, String key);
@@ -134,13 +137,34 @@ class HttpMentorApi implements MentorApi {
   }
 
   @override
-  Future<MentorSettings> saveSettings(Map<String, Object> values) async {
+  Future<MentorSettings> saveSettings(Map<String, Object?> patch) async {
     try {
       return MentorSettings.fromJson(
         _map(
           (await _client.dio.put(
             '/api/mentor/settings',
-            data: values,
+            data: patch,
+            cancelToken: _cancelToken,
+          )).data,
+        ),
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 409) {
+        throw const MentorException('settings_conflict');
+      }
+      _error(e);
+    } catch (e) {
+      _error(e);
+    }
+  }
+
+  @override
+  Future<MentorContextOptions> contextOptions() async {
+    try {
+      return MentorContextOptions.fromJson(
+        _map(
+          (await _client.dio.get(
+            '/api/mentor/context-options',
             cancelToken: _cancelToken,
           )).data,
         ),
@@ -207,13 +231,20 @@ class HttpMentorApi implements MentorApi {
     String id,
     String text, {
     required String requestId,
+    int? settingsRevision,
+    MentorContextSelection? context,
   }) async {
     try {
       return MentorMessage.fromJson(
         _map(
           (await _client.dio.post(
             '/api/mentor/sessions/$id/messages',
-            data: {'request_id': requestId, 'text': text},
+            data: {
+              'request_id': requestId,
+              'text': text,
+              if (settingsRevision != null) 'settings_revision': settingsRevision,
+              if (context != null && !context.isEmpty) 'context': context.toJson(),
+            },
             cancelToken: _cancelToken,
             options: Options(receiveTimeout: const Duration(seconds: 55)),
           )).data,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/mentor_models.dart';
 import '../../providers/mentor_providers.dart';
@@ -21,42 +22,220 @@ class MentorSettingsPage extends ConsumerStatefulWidget {
 
 class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
   final _memory = TextEditingController();
+  final _persona = TextEditingController();
   bool _loaded = false, _saving = false;
+  String? _conflictMessage;
   DateTime? _voicesRefreshed;
   @override
   void dispose() {
     _memory.dispose();
+    _persona.dispose();
     super.dispose();
   }
 
   void _message(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  Future<void> _save(
-    MentorSettings current, {
-    bool? text,
-    bool? voice,
-    String? model,
-    String? tts,
-    String? stt,
-    String? voiceId,
-    bool saveMemory = false,
-  }) async {
+  Future<void> _savePatch(
+    MentorSettings current,
+    Map<String, Object?> values,
+  ) async {
     setState(() => _saving = true);
     try {
       await ref.read(mentorApiProvider).saveSettings({
-        'consent_text': text ?? current.consentText,
-        'consent_voice': voice ?? current.consentVoice,
-        'memory': saveMemory ? _memory.text.trim() : current.memory,
-        'model': model ?? current.model,
-        'tts_model': tts ?? current.ttsModel,
-        'stt_model': stt ?? current.sttModel,
-        'voice_id': voiceId ?? current.voiceId,
+        'expected_revision': current.revision,
+        ...values,
       });
       ref.invalidate(mentorSettingsProvider);
+    } on MentorException catch (error) {
+      if (error.code == 'settings_conflict') {
+        _loaded = false;
+        try {
+          await ref.read(mentorApiProvider).settings();
+        } catch (_) {}
+        ref.invalidate(mentorSettingsProvider);
+        if (mounted) {
+          const message =
+              'Ustawienia zostały zmienione na innym urządzeniu. Odświeżono je.';
+          setState(() => _conflictMessage = message);
+          _message(message);
+        }
+      } else if (mounted) {
+        _message('Nie udało się zapisać ustawień.');
+      }
     } catch (_) {
       if (mounted) _message('Nie udało się zapisać ustawień.');
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _savePersona(MentorSettings current) async {
+    final persona = _persona.text.trim();
+    if (persona.length > 800) {
+      _message('Persona mentora może mieć maksymalnie 800 znaków.');
+      return;
+    }
+    await _savePatch(current, {'persona': persona});
+  }
+
+  Future<void> _confirmContextConsents(MentorSettings current) async {
+    var consents = current.contextConsents;
+    final confirmed = await showDialog<MentorContextConsents>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Potwierdź zgody kontekstu'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Wybierz świadomie dane, które mogą trafić do OpenAI podczas rozmowy tekstowej. Zapis wymaga potwierdzenia wszystkich pięciu decyzji.',
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Kontekst treningowy'),
+                  value: consents.training,
+                  onChanged: (value) => setDialogState(
+                    () => consents = MentorContextConsents(
+                      training: value ?? false,
+                      profile: consents.profile,
+                      weight: consents.weight,
+                      note: consents.note,
+                      appleHealth: consents.appleHealth,
+                    ),
+                  ),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Profil treningowy'),
+                  value: consents.profile,
+                  onChanged: (value) => setDialogState(
+                    () => consents = MentorContextConsents(
+                      training: consents.training,
+                      profile: value ?? false,
+                      weight: consents.weight,
+                      note: consents.note,
+                      appleHealth: consents.appleHealth,
+                    ),
+                  ),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Masa ciała'),
+                  value: consents.weight,
+                  onChanged: (value) => setDialogState(
+                    () => consents = MentorContextConsents(
+                      training: consents.training,
+                      profile: consents.profile,
+                      weight: value ?? false,
+                      note: consents.note,
+                      appleHealth: consents.appleHealth,
+                    ),
+                  ),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Notatka treningowa'),
+                  value: consents.note,
+                  onChanged: (value) => setDialogState(
+                    () => consents = MentorContextConsents(
+                      training: consents.training,
+                      profile: consents.profile,
+                      weight: consents.weight,
+                      note: value ?? false,
+                      appleHealth: consents.appleHealth,
+                    ),
+                  ),
+                ),
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Apple Health'),
+                  value: consents.appleHealth,
+                  onChanged: (value) => setDialogState(
+                    () => consents = MentorContextConsents(
+                      training: consents.training,
+                      profile: consents.profile,
+                      weight: consents.weight,
+                      note: consents.note,
+                      appleHealth: value ?? false,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Anuluj'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, consents),
+              child: const Text('Potwierdź komplet zgód'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || confirmed == null) return;
+    await _savePatch(current, {
+      'context_policy_version': current.contextPolicyVersion,
+      'context_consents': {
+        'training': confirmed.training,
+        'profile': confirmed.profile,
+        'weight': confirmed.weight,
+        'note': confirmed.note,
+        'apple_health': confirmed.appleHealth,
+      },
+    });
+  }
+
+  Future<void> _selectModel(MentorSettings current) async {
+    final profile = await showDialog<MentorModelProfile>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Wybierz model mentora'),
+        children: current.modelProfiles
+            .map(
+              (profile) => SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, profile),
+                child: Text(profile.label),
+              ),
+            )
+            .toList(),
+      ),
+    );
+    if (!mounted || profile == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Potwierdź wybór modelu'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(profile.label),
+            Text('Identyfikator: ${profile.identifier}'),
+            Text('Jakość: ${profile.qualityClass}'),
+            Text('Koszt: ${profile.costWarning}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Anuluj'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Wybierz model'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await _savePatch(current, {'model_profile_key': profile.key});
     }
   }
 
@@ -92,7 +271,9 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
     ref.listen(authStateProvider, (previous, next) {
       if (previous != next) {
         _memory.clear();
+        _persona.clear();
         _loaded = false;
+        _conflictMessage = null;
       }
     });
     final async = ref.watch(mentorSettingsProvider);
@@ -109,6 +290,7 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
         data: (settings) {
           if (!_loaded) {
             _memory.text = settings.memory;
+            _persona.text = settings.persona;
             _loaded = true;
           }
           return ListView(
@@ -123,6 +305,13 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                     ),
                   ),
                 ),
+              if (_conflictMessage != null)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(_conflictMessage!),
+                  ),
+                ),
               const Text(
                 'Prywatność i zgody',
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -135,7 +324,7 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                 value: settings.consentText,
                 onChanged: _saving || !settings.available
                     ? null
-                    : (v) => _save(settings, text: v),
+                    : (v) => _savePatch(settings, {'consent_text': v}),
               ),
               SwitchListTile(
                 title: const Text('Wiadomości głosowe'),
@@ -145,11 +334,124 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                 value: settings.consentVoice,
                 onChanged: _saving || !settings.available
                     ? null
-                    : (v) => _save(settings, voice: v),
+                    : (v) => _savePatch(settings, {'consent_voice': v}),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Domyślnie nie wysyłamy masy ciała, kroków, Apple Health, prywatnych dokumentów ani kluczy. Pamięć jest zapisywana wyłącznie na serwerze po Twoim zatwierdzeniu.',
+               const Text(
+                 'Persona, pamięć i opcjonalny kontekst są wysyłane do OpenAI wyłącznie podczas rozmowy tekstowej po osobnych zgodach.',
+               ),
+               const Text(
+                  'store:false nie gwarantuje zerowej retencji dostawcy. Usunięcie rozmowy nie cofa danych już wysłanych do OpenAI.',
+                ),
+               if (!settings.contextConsentsActive)
+                 Card(
+                   child: Padding(
+                     padding: const EdgeInsets.all(16),
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         const Text(
+                           'Po przywróceniu danych lub zmianie polityki poprzednie zgody kontekstu są nieaktywne. Pojedyncze przełączniki nie mogą ich ponownie włączyć.',
+                         ),
+                         const SizedBox(height: 8),
+                         FilledButton(
+                           onPressed: _saving || !settings.available
+                               ? null
+                               : () => _confirmContextConsents(settings),
+                           child: const Text(
+                             'Przejrzyj i zatwierdź zgody kontekstu',
+                           ),
+                         ),
+                       ],
+                     ),
+                   ),
+                 ),
+               TextField(
+                 enabled: settings.available && !_saving,
+                controller: _persona,
+                maxLength: 800,
+                maxLengthEnforcement: MaxLengthEnforcement.none,
+                minLines: 3,
+                maxLines: 6,
+                decoration: const InputDecoration(
+                  labelText: 'Persona mentora',
+                  helperText: 'Styl i zasady, które mentor ma uwzględniać.',
+                ),
+                onSubmitted: (_) => _savePersona(settings),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton(
+                  onPressed: _saving || !settings.available
+                      ? null
+                      : () => _savePersona(settings),
+                  child: const Text('Zapisz personę'),
+                ),
+              ),
+               _ContextConsentTile(
+                title: 'Kontekst treningowy',
+                subtitle:
+                    'Historia treningów jest wysyłana do OpenAI tylko z wiadomością tekstową.',
+                value: settings.contextConsents.training,
+                 enabled:
+                     settings.available &&
+                     !_saving &&
+                     settings.contextConsentsActive,
+                onChanged: (value) => _savePatch(settings, {
+                  'context_consents': {'training': value},
+                }),
+              ),
+              _ContextConsentTile(
+                title: 'Profil treningowy',
+                subtitle:
+                    'Dane profilu są wysyłane do OpenAI tylko z wiadomością tekstową.',
+                value: settings.contextConsents.profile,
+                 enabled:
+                     settings.available &&
+                     !_saving &&
+                     settings.contextConsentsActive,
+                onChanged: (value) => _savePatch(settings, {
+                  'context_consents': {'profile': value},
+                }),
+              ),
+              _ContextConsentTile(
+                title: 'Masa ciała',
+                subtitle:
+                    'Wybrany pomiar masy jest wysyłany do OpenAI tylko z wiadomością tekstową.',
+                value: settings.contextConsents.weight,
+                 enabled:
+                     settings.available &&
+                     !_saving &&
+                     settings.contextConsentsActive,
+                onChanged: (value) => _savePatch(settings, {
+                  'context_consents': {'weight': value},
+                }),
+              ),
+              _ContextConsentTile(
+                title: 'Notatka treningowa',
+                subtitle:
+                    'Wybrana notatka jest wysyłana do OpenAI tylko z wiadomością tekstową.',
+                value: settings.contextConsents.note,
+                 enabled:
+                     settings.available &&
+                     !_saving &&
+                     settings.contextConsentsActive,
+                onChanged: (value) => _savePatch(settings, {
+                  'context_consents': {'note': value},
+                }),
+              ),
+              _ContextConsentTile(
+                title: 'Apple Health',
+                subtitle:
+                    'To osobna zgoda na wysłanie podsumowania do OpenAI, a nie zgoda na import.',
+                value: settings.contextConsents.appleHealth,
+                 enabled:
+                     settings.available &&
+                     !_saving &&
+                     settings.contextConsentsActive,
+                onChanged: (value) => _savePatch(settings, {
+                  'context_consents': {'apple_health': value},
+                }),
               ),
               TextField(
                 enabled: settings.available && !_saving,
@@ -162,14 +464,17 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                   helperText:
                       'Wyłącznie informacje, które świadomie chcesz podać.',
                 ),
-                onSubmitted: (_) => _save(settings, saveMemory: true),
+                onSubmitted: (_) =>
+                    _savePatch(settings, {'memory': _memory.text.trim()}),
               ),
               Align(
                 alignment: Alignment.centerRight,
                 child: FilledButton(
                   onPressed: _saving || !settings.available
                       ? null
-                      : () => _save(settings, saveMemory: true),
+                      : () => _savePatch(settings, {
+                          'memory': _memory.text.trim(),
+                        }),
                   child: const Text('Zapisz pamięć'),
                 ),
               ),
@@ -237,21 +542,31 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                 Text(
                   '${_counterLabels[entry.key] ?? entry.key}: ${settings.usage[entry.key] ?? 0} / ${entry.value}',
                 ),
-              _ChoiceTile(
-                label: 'Model rozmów',
-                value: settings.model,
-                choices: settings.models,
-                onChanged: _saving || !settings.available
-                    ? null
-                    : (v) => _save(settings, model: v),
-              ),
+              if (settings.modelProfiles.isNotEmpty)
+                ListTile(
+                  title: const Text('Model mentora'),
+                  subtitle: Text(
+                    settings.modelProfiles
+                            .where(
+                              (profile) =>
+                                  profile.key == settings.activeModelProfileKey,
+                            )
+                            .map((profile) => profile.label)
+                            .firstOrNull ??
+                        'Wybierz model',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _saving || !settings.available
+                      ? null
+                      : () => _selectModel(settings),
+                ),
               _ChoiceTile(
                 label: 'Model mowy',
                 value: settings.ttsModel,
                 choices: settings.ttsModels,
                 onChanged: _saving || !settings.available
                     ? null
-                    : (v) => _save(settings, tts: v),
+                    : (v) => _savePatch(settings, {'tts_model': v}),
               ),
               _ChoiceTile(
                 label: 'Model transkrypcji',
@@ -259,7 +574,7 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                 choices: settings.sttModels,
                 onChanged: _saving || !settings.available
                     ? null
-                    : (v) => _save(settings, stt: v),
+                    : (v) => _savePatch(settings, {'stt_model': v}),
               ),
               ListTile(
                 title: const Text('Głos mentora'),
@@ -317,7 +632,9 @@ class _MentorSettingsPageState extends ConsumerState<MentorSettingsPage> {
                   onChanged: _saving || !settings.available
                       ? null
                       : (v) {
-                          if (v != null) _save(settings, voiceId: v);
+                          if (v != null) {
+                            _savePatch(settings, {'voice_id': v});
+                          }
                         },
                 ),
             ],
@@ -488,4 +805,26 @@ class _ChoiceTile extends StatelessWidget {
                   },
           ),
         );
+}
+
+class _ContextConsentTile extends StatelessWidget {
+  const _ContextConsentTile({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final String title, subtitle;
+  final bool value, enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) => SwitchListTile(
+    title: Text(title),
+    subtitle: Text(subtitle),
+    value: value,
+    onChanged: enabled ? onChanged : null,
+  );
 }

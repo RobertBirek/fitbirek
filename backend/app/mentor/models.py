@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from app.models import Base
+from app.mentor.catalog import DEFAULT_PERSONA
 
 class MentorSettings(Base):
     __tablename__ = "mentor_settings"
@@ -11,6 +12,15 @@ class MentorSettings(Base):
     consent_voice: Mapped[bool] = mapped_column(Boolean, default=False)
     memory: Mapped[str] = mapped_column(Text, default="")
     model: Mapped[str] = mapped_column(String(64), default="gpt-4.1-mini-2025-04-14")
+    persona: Mapped[str] = mapped_column(Text, default=DEFAULT_PERSONA)
+    model_profile_key: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    context_policy_version: Mapped[int] = mapped_column(Integer, default=0)
+    context_generation_digest: Mapped[str] = mapped_column(String(64), default="")
+    consent_context_training: Mapped[bool] = mapped_column(Boolean, default=False)
+    consent_context_profile: Mapped[bool] = mapped_column(Boolean, default=False)
+    consent_context_weight: Mapped[bool] = mapped_column(Boolean, default=False)
+    consent_context_note: Mapped[bool] = mapped_column(Boolean, default=False)
+    consent_context_apple_health: Mapped[bool] = mapped_column(Boolean, default=False)
     tts_model: Mapped[str] = mapped_column(String(64), default="eleven_multilingual_v2")
     stt_model: Mapped[str] = mapped_column(String(64), default="scribe_v2")
     voice_id: Mapped[str] = mapped_column(String(64), default="JBFqnCBsd6RMkjVDRZzb")
@@ -56,6 +66,7 @@ class MentorUsage(Base):
     tts_chars: Mapped[int] = mapped_column(Integer, default=0)
     stt_bytes: Mapped[int] = mapped_column(Integer, default=0)
     stt_seconds: Mapped[int] = mapped_column(Integer, default=0)
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
 class MentorLease(Base):
     __tablename__ = "mentor_leases"

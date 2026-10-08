@@ -12,10 +12,20 @@ from app.identity.service import AuthenticatedSession, require_authenticated
 from app.security.csrf import require_csrf
 from . import service
 from .models import MentorCredential, MentorMessage, MentorRequest, MentorSession
-from .schemas import KeyInput, MessageInput, RequestInput, SessionInput, SettingsUpdate
+from .catalog import profile_for_key, public_profiles
+from .schemas import KeyInput, MessageInput, RequestInput, SessionInput, SettingsPatch
+from .context import context_options
 
 router = APIRouter(prefix="/api/mentor", tags=["mentor"])
 Provider = Literal["openai", "elevenlabs"]
+LEGACY_SETTING_FIELDS = ("consent_text", "consent_voice", "memory", "model", "tts_model", "stt_model", "voice_id")
+CONTEXT_CONSENT_FIELDS = {
+    "training": "consent_context_training",
+    "profile": "consent_context_profile",
+    "weight": "consent_context_weight",
+    "note": "consent_context_note",
+    "apple_health": "consent_context_apple_health",
+}
 
 
 @router.get("/settings")
@@ -27,7 +37,17 @@ async def get_settings(db: AsyncSession = Depends(get_session),
     result = {"available": service.available(),
         "openai_configured": await service.configured(db, auth.account.id, "openai"),
         "elevenlabs_configured": await service.configured(db, auth.account.id, "elevenlabs"),
-        **{key: getattr(row, key) for key in SettingsUpdate.model_fields},
+        **{key: getattr(row, key) for key in LEGACY_SETTING_FIELDS},
+        "persona": row.persona,
+        "revision": row.revision,
+        "active_model_profile_key": row.model_profile_key,
+        "model_profiles": public_profiles(),
+        "context_policy_version": service.CONTEXT_POLICY_VERSION,
+        "context_consents_active": service.context_consents_active(row),
+        "context_consents": {
+            key: service.context_consents_active(row) and getattr(row, column)
+            for key, column in CONTEXT_CONSENT_FIELDS.items()
+        },
         "models": service.MODELS, "tts_models": service.TTS_MODELS, "stt_models": service.STT_MODELS,
         "voices": [service.DEFAULT_VOICE] + [v for v in row.voices if v["voice_id"] != service.DEFAULT_VOICE["voice_id"]],
         "limits": service.LIMITS, "usage": {key: getattr(usage, key) for key in service.LIMITS}}
@@ -36,19 +56,63 @@ async def get_settings(db: AsyncSession = Depends(get_session),
 
 
 @router.put("/settings")
-async def put_settings(payload: SettingsUpdate, db: AsyncSession = Depends(get_session),
+async def put_settings(payload: SettingsPatch, db: AsyncSession = Depends(get_session),
                        auth: AuthenticatedSession = Depends(require_csrf)):
     await service.lock_user(db, auth.account.id)
-    row = await service.user_settings(db, auth.account.id)
-    voices = {v["voice_id"] for v in row.voices} | {service.DEFAULT_VOICE["voice_id"]}
-    if payload.voice_id not in voices:
-        raise HTTPException(422, "Select an available voice")
-    await service.reject_credentials(db, auth.account.id, payload.memory)
-    for key, value in payload.model_dump().items():
+    row = await service.locked_user_settings(db, auth.account.id)
+    if payload.expected_revision is not None and payload.expected_revision != row.revision:
+        raise HTTPException(409, "Mentor settings changed")
+
+    fields = payload.model_fields_set
+    changed = {
+        key: getattr(payload, key)
+        for key in LEGACY_SETTING_FIELDS + ("persona", "model_profile_key")
+        if key in fields and getattr(row, key) != getattr(payload, key)
+    }
+    if payload.context_consents is not None:
+        consent_fields = payload.context_consents.model_fields_set
+        if not service.context_consents_active(row):
+            if (consent_fields != service.CONTEXT_CONSENT_FIELDS
+                    or payload.context_policy_version != service.CONTEXT_POLICY_VERSION):
+                raise HTTPException(409, "Current context consent required")
+            generation_digest = service.context_generation_digest()
+            if generation_digest is None:
+                raise HTTPException(503, "Mentor context unavailable")
+            if row.context_policy_version != service.CONTEXT_POLICY_VERSION:
+                changed["context_policy_version"] = service.CONTEXT_POLICY_VERSION
+            if row.context_generation_digest != generation_digest:
+                changed["context_generation_digest"] = generation_digest
+        for key in consent_fields:
+            column = CONTEXT_CONSENT_FIELDS[key]
+            value = getattr(payload.context_consents, key)
+            if getattr(row, column) != value:
+                changed[column] = value
+    if "voice_id" in changed:
+        voices = {v["voice_id"] for v in row.voices} | {service.DEFAULT_VOICE["voice_id"]}
+        if payload.voice_id not in voices:
+            raise HTTPException(422, "Select an available voice")
+    if "model_profile_key" in changed and profile_for_key(payload.model_profile_key) is None:
+        raise HTTPException(422, "Select an available model")
+
+    for key in ("memory", "persona"):
+        if key in changed:
+            await service.reject_credentials(db, auth.account.id, changed[key])
+    for key, value in changed.items():
         setattr(row, key, value)
-    await service.invalidate_pending(db, auth.account.id)
+    if changed:
+        await service.invalidate_pending(db, auth.account.id)
     await db.commit()
     return await get_settings(db, auth)
+
+
+@router.get("/context-options")
+async def get_context_options(db: AsyncSession = Depends(get_session),
+                              auth: AuthenticatedSession = Depends(require_authenticated)):
+    await service.lock_user(db, auth.account.id)
+    row = await service.user_settings(db, auth.account.id)
+    result = await context_options(db, auth.account.id, row.revision)
+    await db.commit()
+    return result
 
 
 @router.put("/keys/{provider}")
@@ -167,8 +231,9 @@ async def messages(session_id: UUID, db: AsyncSession = Depends(get_session),
 
 @router.post("/sessions/{session_id}/messages")
 async def create_message(session_id: UUID, payload: MessageInput, db: AsyncSession = Depends(get_session),
-                         auth: AuthenticatedSession = Depends(require_csrf)):
-    return await service.reply(db, auth.account.id, session_id, payload.request_id, payload.text, auth.session.id)
+                          auth: AuthenticatedSession = Depends(require_csrf)):
+    return await service.reply(db, auth.account.id, session_id, payload.request_id, payload.text, auth.session.id,
+                               payload.settings_revision, payload.context)
 
 
 @router.post("/voices")

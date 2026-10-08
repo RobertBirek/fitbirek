@@ -100,7 +100,12 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
     }
   }
 
-  Future<void> send(String text, {bool regenerate = false}) async {
+  Future<void> send(
+    String text, {
+    bool regenerate = false,
+    MentorContextSelection? context,
+    int? settingsRevision,
+  }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty || trimmed.length > 2000 || state.loading) return;
     if (state.sessionId == null) {
@@ -127,6 +132,7 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
         'chat',
         sessionId: id,
         text: trimmed,
+        selection: context?.toJson() ?? const {},
         regenerate: regenerate,
       );
       if (!_valid(generation)) return;
@@ -142,7 +148,9 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
       final reply = await _api.send(
         id,
         trimmed,
-        requestId: operation.requestId,
+          requestId: operation.requestId,
+          settingsRevision: settingsRevision,
+          context: context,
       );
       if (generation != _generation || !mounted) return;
       state = state.copyWith(

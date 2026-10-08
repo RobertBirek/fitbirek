@@ -10,7 +10,7 @@ from fastapi import HTTPException
 
 @pytest.mark.asyncio
 async def test_openai_uses_fixed_endpoint_and_keeps_key_out_of_body(monkeypatch):
-    from app.mentor import vendor
+    from app.mentor import catalog, vendor
 
     captured = {}
 
@@ -20,24 +20,30 @@ async def test_openai_uses_fixed_endpoint_and_keeps_key_out_of_body(monkeypatch)
             200,
             json={
                 "status": "completed",
-                "output": [{"type": "message", "content": [{"type": "output_text", "text": json.dumps({"text": "Spokojnie, zrób jedną serię.", "proposal": None})}]}],
-                "usage": {"output_tokens": 7},
+                "output": [{"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": json.dumps({"text": "Spokojnie, zrób jedną serię.", "proposal": None})}]}],
+                "usage": {"input_tokens": 3, "output_tokens": 7},
             },
         )
 
     monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(handler))
-    result = await vendor.openai_reply("private-key", "gpt-4.1-mini", [{"role": "user", "content": "Pomóż"}])
+    profile = catalog.profile_for_key("legacy-gpt-4.1-mini-2025-04-14")
+    result = await vendor.openai_reply("private-key", profile, [{"role": "user", "content": "Pomóż"}])
 
     request = captured["request"]
     assert str(request.url) == "https://api.openai.com/v1/responses"
     assert request.headers["authorization"] == "Bearer private-key"
     assert "private-key" not in request.content.decode()
-    assert result == {"text": "Spokojnie, zrób jedną serię.", "proposal": None, "tokens": 7}
+    payload = json.loads(request.content)
+    assert payload["model"] == profile.provider_model_id
+    assert payload["max_output_tokens"] == profile.max_output_tokens
+    assert payload["store"] is False
+    assert "tools" not in payload
+    assert result == {"text": "Spokojnie, zrób jedną serię.", "proposal": None, "input_tokens": 3, "output_tokens": 7}
 
 
 @pytest.mark.asyncio
 async def test_openai_requires_usage_and_sends_safety_contract(monkeypatch):
-    from app.mentor import vendor
+    from app.mentor import catalog, vendor
 
     captured = {}
     response = {"status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": '{"text":"ok","proposal":null}'}]}]}
@@ -46,10 +52,74 @@ async def test_openai_requires_usage_and_sends_safety_contract(monkeypatch):
         return httpx.Response(200, json=response)
     monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(handler))
     with pytest.raises(HTTPException):
-        await vendor.openai_reply("key", "gpt-4.1-mini", [])
+        await vendor.openai_reply("key", catalog.profile_for_key("legacy-gpt-4.1-mini-2025-04-14"), [])
     instructions = captured["instructions"].lower()
-    for phrase in ("wymagając", "dyscyplin", "wszechstron", "oyama", "pas", "medycz", "potwierdzenia"):
+    for phrase in ("bez presji", "bez oceniania", "wszechstron", "oyama", "pas", "medycz", "potwierdzenia", "persona", "pamięć", "historia", "kontekst", "nieufn", "niższego priorytetu"):
         assert phrase in instructions
+    assert "wymagając" not in instructions
+
+
+@pytest.mark.asyncio
+async def test_openai_uses_reasoning_only_when_active_profile_requires_it(monkeypatch):
+    from app.mentor import catalog, vendor
+
+    captured = []
+    response = {
+        "status": "completed",
+        "output": [
+            {"type": "reasoning", "id": "rs_1", "status": "completed", "summary": []},
+            {"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": '{"text":"ok","proposal":null}'}]},
+        ],
+        "usage": {"input_tokens": 1, "output_tokens": 1},
+    }
+
+    def handler(request):
+        captured.append(json.loads(request.content))
+        return httpx.Response(200, json=response)
+
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(handler))
+    legacy = catalog.profile_for_key("legacy-gpt-4.1-mini-2025-04-14")
+    luna = catalog.profile_for_key("gpt-6-luna")
+    await vendor.openai_reply("key", legacy, [])
+    await vendor.openai_reply("key", luna, [])
+
+    assert "reasoning" not in captured[0]
+    assert captured[1]["reasoning"] == {"effort": "none"}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("profile_key", "provider_model_id", "max_output_tokens", "reasoning_effort"),
+    [
+        ("legacy-gpt-4.1-mini-2025-04-14", "gpt-4.1-mini-2025-04-14", 800, None),
+        ("gpt-6-luna", "gpt-6-luna", 800, "none"),
+        ("gpt-6.1-sol", "gpt-6.1-sol", 1600, "low"),
+        ("gpt-6-astra", "gpt-6-astra", 1600, "low"),
+    ],
+)
+async def test_openai_contract_uses_every_active_catalog_profile(
+    monkeypatch, profile_key, provider_model_id, max_output_tokens, reasoning_effort,
+):
+    from app.mentor import catalog, vendor
+
+    captured = {}
+    response = {
+        "status": "completed",
+        "output": [{"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": '{"text":"ok","proposal":null}'}]}],
+        "usage": {"input_tokens": 1, "output_tokens": 1},
+    }
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(
+        lambda request: (captured.update(json.loads(request.content)), httpx.Response(200, json=response))[1],
+    ))
+
+    await vendor.openai_reply("key", catalog.profile_for_key(profile_key), [])
+
+    assert captured["model"] == provider_model_id
+    assert captured["max_output_tokens"] == max_output_tokens
+    if reasoning_effort is None:
+        assert "reasoning" not in captured
+    else:
+        assert captured["reasoning"] == {"effort": reasoning_effort}
 
 
 @pytest.mark.asyncio
@@ -71,16 +141,54 @@ async def test_client_disables_redirects_environment_proxies_and_uses_granular_t
     {"status": "incomplete", "output": []},
     {"status": "completed", "output": [{"type": "message", "content": [{"type": "refusal", "refusal": "nie"}]}]},
     {"status": "completed", "output": [{"type": "message", "content": [{"type": "output_text", "text": "{}"}]}]},
-    {"status": "completed", "output": [{"type": "function_call", "name": "tool", "arguments": "{}"}], "usage": {"output_tokens": 1}},
+    {"status": "completed", "output": [{"type": "function_call", "name": "tool", "arguments": "{}"}], "usage": {"input_tokens": 1, "output_tokens": 1}},
+    {"status": "completed", "output": [{"type": "reasoning"}, {"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": '{"text":"ok","proposal":null}'}]}, {"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": '{"text":"again","proposal":null}'}]}], "usage": {"input_tokens": 1, "output_tokens": 1}},
 ])
 async def test_openai_fails_closed_for_incomplete_refusal_or_malformed_output(monkeypatch, response):
-    from app.mentor import vendor
+    from app.mentor import catalog, vendor
 
     monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(lambda request: httpx.Response(200, json=response)))
     with pytest.raises(HTTPException) as failure:
-        await vendor.openai_reply("private-key", "gpt-4.1-mini", [])
+        await vendor.openai_reply("private-key", catalog.profile_for_key("legacy-gpt-4.1-mini-2025-04-14"), [])
     assert failure.value.status_code == 502
     assert failure.value.detail == "Mentor unavailable"
+
+
+@pytest.mark.asyncio
+async def test_openai_rejects_missing_output_tokens_even_with_valid_input_tokens(monkeypatch):
+    from app.mentor import catalog, vendor
+
+    response = {
+        "status": "completed",
+        "output": [{"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": '{"text":"ok","proposal":null}'}]}],
+        "usage": {"input_tokens": 1},
+    }
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(
+        lambda request: httpx.Response(200, json=response),
+    ))
+
+    with pytest.raises(HTTPException, match="Mentor unavailable"):
+        await vendor.openai_reply("key", catalog.profile_for_key("legacy-gpt-4.1-mini-2025-04-14"), [])
+
+
+@pytest.mark.asyncio
+async def test_openai_rejects_malformed_reasoning_item(monkeypatch):
+    from app.mentor import catalog, vendor
+
+    response = {
+        "status": "completed",
+        "output": [
+            {"type": "reasoning", "status": "in_progress", "unexpected": True},
+            {"type": "message", "role": "assistant", "status": "completed", "content": [{"type": "output_text", "text": '{"text":"ok","proposal":null}'}]},
+        ],
+        "usage": {"input_tokens": 1, "output_tokens": 1},
+    }
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(
+        lambda request: httpx.Response(200, json=response),
+    ))
+
+    with pytest.raises(HTTPException, match="Mentor unavailable"):
+        await vendor.openai_reply("key", catalog.profile_for_key("legacy-gpt-4.1-mini-2025-04-14"), [])
 
 
 @pytest.mark.asyncio

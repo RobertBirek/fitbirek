@@ -9,6 +9,7 @@ import '../../data/mentor_models.dart';
 import '../../data/mentor_api.dart';
 import '../../providers/mentor_providers.dart';
 import '../../providers/mentor_actions.dart';
+import '../widgets/mentor_context_composer.dart';
 import '../../voice/mentor_voice.dart';
 import '../../../auth/providers/auth_providers.dart';
 
@@ -147,7 +148,11 @@ class _MentorPageState extends ConsumerState<MentorPage>
     super.dispose();
   }
 
-  Future<void> _send({bool regenerate = false}) async {
+  Future<void> _send({
+    bool regenerate = false,
+    MentorContextSelection? context,
+    int? settingsRevision,
+  }) async {
     if (ref.read(mentorConversationProvider).loading ||
         _voiceBusy ||
         _recording) {
@@ -165,13 +170,31 @@ class _MentorPageState extends ConsumerState<MentorPage>
     if (!mounted || generation != _generation) return;
     await ref
         .read(mentorConversationProvider.notifier)
-        .send(text, regenerate: regenerate);
+        .send(
+          text,
+          regenerate: regenerate,
+          context: context,
+          settingsRevision: settingsRevision,
+        );
     if (mounted &&
         generation == _generation &&
         _input.text == text &&
         ref.read(mentorConversationProvider).error == null) {
       _input.clear();
     }
+  }
+
+  Future<void> _composeContext() async {
+    final settings = ref.read(mentorSettingsProvider).valueOrNull;
+    if (settings == null || _input.text.trim().isEmpty) return;
+    final selection = await showDialog<MentorContextSelection>(
+      context: context,
+      builder: (_) => MentorContextComposer(
+        consents: settings.contextConsents,
+      ),
+    );
+    if (!mounted || selection == null) return;
+    await _send(context: selection, settingsRevision: settings.revision);
   }
 
   Future<void> _record() async {
@@ -674,8 +697,14 @@ class _MentorPageState extends ConsumerState<MentorPage>
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
+                   const SizedBox(width: 8),
+                   IconButton.outlined(
+                     tooltip: 'Dodaj kontekst do tej wiadomości',
+                     onPressed: state.loading || !enabled ? null : _composeContext,
+                     icon: const Icon(Icons.tune),
+                   ),
+                   const SizedBox(width: 8),
+                   IconButton.filled(
                     tooltip: 'Wyślij',
                     onPressed: state.loading || !enabled ? null : () => _send(),
                     icon: const Icon(Icons.send),

@@ -34,6 +34,36 @@ pamięć mentora, ograniczony kontekst treningowy po stronie serwera i ewentualn
 audio przesłane do transkrypcji. Nie wysyłaj domyślnie danych profilu, masy,
 kroków, Apple Zdrowie, prywatnych dokumentów, zrzutów bazy ani kluczy.
 
+## Kontekst wybierany dla każdej wiadomości
+
+Zgoda na tekst pozostaje warunkiem wysłania wiadomości do OpenAI. Niezależnie od
+niej ustawienia zawierają osobne, domyślnie wyłączone zgody na kategorie
+kontekstu: **trening**, **profil treningowy**, **masa ciała**, **notatka
+treningowa** i **Apple Health**. Włączenie kategorii nie wysyła danych samo w
+sobie ani nie jest zgodą na inną kategorię.
+
+Przed wysłaniem tekstu użytkownik otwiera okno „Kontekst tej wiadomości” i dla
+tej konkretnej wiadomości włącza lub wyłącza dostępne kategorie. Wybiera też
+jeden pomiar masy oraz jedną notatkę, jeżeli chce je dołączyć. Okno pokazuje datę
+i wartość pomiaru oraz podgląd wybranej notatki; opcje i podglądy istnieją tylko
+w otwartym komponencie klienta. Nie są zapisywane w lokalnym eksporcie ani jako
+osobna historia podglądów.
+
+Kontekst treningowy obejmuje najwyżej **24 najnowsze sesje z ostatnich 12
+tygodni**, po maksymalnie cztery rozpoznane serie na sesję. Dołączany profil to
+wyłącznie prawidłowe dane celu, wieku i — jeśli dostępny — wzrostu. Dla Apple
+Health do OpenAI trafia co najwyżej podsumowanie kroków z ostatnich 7 dni
+(suma i liczba dni z danymi) oraz trend masy z tego samego okresu, a nie surowe
+próbki. Zgoda Apple Health dotyczy wyłącznie tego podsumowania dla Mentora; nie
+jest zgodą na import przez Skrót iOS ani nie zmienia tokenu importu.
+
+Serwer przyjmuje dla wiadomości tylko przełączniki i nieprzezroczyste selektory
+rekordów. Sprawdza aktualność ustawień oraz zgody ponownie przed wywołaniem
+dostawcy, a właściwy projekcyjny kontekst buduje wyłącznie w pamięci. Treść
+źródłowych danych pozostaje w ich istniejących rekordach synchronizacji; Mentor
+nie tworzy dodatkowej kopii wybranego kontekstu. Zapis operacji idempotentnej
+może zachować techniczny wybór kategorii i selektory, lecz nie projekcję danych.
+
 ## Klucz główny i overlay
 
 `deploy/compose.mentor.yaml` jest opcjonalnym overlayem wyłącznie dla `api`.
@@ -81,6 +111,14 @@ w v1. Usunięcie w aplikacji nie odwołuje danych już przekazanych dostawcy.
 Kopia usuniętych danych może pozostać w lokalnych bundle'ach do ich rotacji:
 zachowywane jest ostatnie 35 pełnych backupów, a starsze mogą dodatkowo żyć w
 snapshotach Restic. Usunięcie z backupów jest więc opóźnione.
+
+Wybór kontekstu ma zasięg jednej wiadomości, nie staje się pamięcią Mentora ani
+nie zmienia retencji rekordów treningu, profilu, masy czy Apple Health. Po
+wysłaniu projekcja jest używana tylko do bieżącego żądania; nie jest zapisywana
+w rozmowie. Ustawienia zgód i techniczne metadane operacji podlegają opisanej
+wyżej retencji serwera. `store: false` w żądaniu OpenAI nie jest gwarancją
+zero-retention u dostawcy, a usunięcie rozmowy lub cofnięcie zgody nie usuwa
+danych przekazanych już dostawcy.
 
 Audio STT nie jest przechowywane przez serwer. Nagranie klienta ma maksimum
 30 sekund i 2 MiB. Pobrane TTS pozostaje wyłącznie w pamięci klienta maksymalnie
@@ -144,6 +182,24 @@ Odpowiedź czatu można odzyskać z serwera i historii bez ponownego generowania
 jej treść i pierwotna wiadomość użytkownika pozostają po stronie serwera.
 Starsze rekordy bez powiązania tekstu lub TTS są traktowane zachowawczo.
 
+### Marker zgód kontekstu po odtworzeniu
+
+`MENTOR_CONTEXT_GENERATION` jest **niesekretnym**, losowym identyfikatorem
+operatora: co najmniej 32 znaki URL-safe. API zapisuje w PostgreSQL wyłącznie
+jego SHA-256 razem z wersją polityki; sama wartość nie trafia do dumpu, odpowiedzi
+API ani repozytorium. Wartość jest ustawiana wyłącznie w zainstalowanym
+`/docker/fit/.env`, nie w `deploy/.env.example`.
+
+Przed **każdym rzeczywistym odtworzeniem produkcyjnej bazy** operator, pod
+istniejącą blokadą `/run/lock/fit-backup-restore.lock`, najpierw zastępuje tę
+wartość nowym losowym identyfikatorem, następnie odtwarza bazę i odtwarza API.
+Nie wolno przywracać poprzedniej wartości z Restic ani z kopii `.env`. Zmiana
+markera powoduje fail-closed: zwykły czat bez kontekstu nadal działa, ale wszystkie
+zgody kontekstowe z dumpu są nieskuteczne, dopóki użytkownik online nie wyśle
+pełnego zestawu pięciu zgód dla aktualnej `context_policy_version`. Izolowany
+`fit_restore` używany przez automatyczny drill nie jest produkcyjnym restore i
+nie zmienia markera.
+
 Kody `409` rozróżniają `operation_pending`, `result_unavailable`,
 `operation_failed`, `operation_cancelled` i `operation_conflict`. Błąd odczytu
 statusu nie uprawnia klienta do utworzenia nowego płatnego żądania. Nowy UUID
@@ -177,7 +233,8 @@ oryginalny klucz główny, przechowywany i odzyskiwany osobno.
 
 ## Kontrakt i zakres v1
 
-- Migracja Alembic `0009`; treść rozmów, pamięć i poświadczenia mentora są na serwerze. Brak nowych typów
+- Wydanie 1.4.0+7 wymaga zaplanowanej migracji Alembic `0010`; treść rozmów,
+  pamięć i poświadczenia mentora są na serwerze. Brak nowych typów
   protokołu synchronizacji i brak rozmów, pamięci czy kluczy w Drift/backupie klienta.
 - `/api/mentor/settings`, `/keys/{openai|elevenlabs}`; odczyt nigdy nie zwraca
   klucza, jego fragmentu ani szyfrogramu. Klucz Fernet szyfruje kopertę powiązaną
@@ -190,9 +247,12 @@ oryginalny klucz główny, przechowywany i odzyskiwany osobno.
   asystenta, nigdy dowolny tekst lub URL. Audio jest obrabiane w pamięci.
 - Przed parserem JSON działa limit ASGI 32 KiB, dla audio 2 MiB, również dla
   chunked transfer; upload ma 15 s, wywołanie dostawcy 45 s całkowitego timeoutu.
-- Kontekst: do 3 własnych zsynchronizowanych treningów, do 20 serii i ograniczony
-  katalog zweryfikowanych ID/nazw. Notatki, profil, masa i Apple Zdrowie nie są
-  automatycznie dodawane. Niezsynchronizowany trening może nie być jeszcze widoczny.
+- Kontekst jest wybierany dla każdej wiadomości po osobnej zgodzie kategorii.
+  Historia treningów to najwyżej 24 sesje z 12 tygodni i po cztery rozpoznane
+  serie na sesję; masa i notatka wymagają jawnego wyboru jednego rekordu, a Apple
+  Health jest podsumowaniem 7 dni. Żadna z tych kategorii nie jest dodawana bez
+  wyboru w oknie wiadomości. Niezsynchronizowany trening może nie być jeszcze
+  widoczny.
 - Mentor proponuje rozpoczęcie treningu, serię znanego ćwiczenia albo przejście
   do katalogu. Dopiero potwierdzenie użytkownika wywołuje lokalne repozytorium i
   outbox. Stabilne UUID propozycji służą deduplikacji istniejących rekordów.

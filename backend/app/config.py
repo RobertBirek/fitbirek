@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     push_vapid_private_key_file: str = ""
     push_vapid_subject: str = ""
     mentor_master_key_file: str = ""
+    # Non-secret, operator-rotated value outside PostgreSQL. A changed value
+    # invalidates context consents restored from any database backup.
+    mentor_context_generation: str = ""
 
     @field_validator("database_url")
     @classmethod

@@ -6,6 +6,17 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.4.0+7] — 2026-10-08
+
+### Added
+- Mentor: wybierany dla każdej wiadomości kontekst z osobnymi zgodami na
+  trening, profil, masę, notatkę treningową i dane Apple Health oraz podglądem
+  wyboru przed wysłaniem do OpenAI.
+- Mentor: persona i profile modelu oraz ograniczenie historii treningów do
+  24 sesji z ostatnich 12 tygodni.
+
+---
+
 ## [1.3.1+6] — 2026-10-07
 
 ### Added

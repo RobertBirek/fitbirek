@@ -4,8 +4,59 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/api/api_client.dart';
 import 'package:fitbirek_training/features/mentor/data/mentor_api.dart';
+import 'package:fitbirek_training/features/mentor/data/mentor_models.dart';
 
 void main() {
+  test('settings save sends the supplied partial patch unchanged', () async {
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
+    Map<String, dynamic>? body;
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (request, handler) {
+          body = Map<String, dynamic>.from(request.data as Map);
+          handler.resolve(Response(requestOptions: request, data: {}));
+        },
+      ),
+    );
+
+    await HttpMentorApi(
+      ApiClient(dio),
+    ).saveSettings({'expected_revision': 4, 'persona': ''});
+
+    expect(body, {'expected_revision': 4, 'persona': ''});
+  });
+  test('settings conflict has a safe dedicated error code', () async {
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (request, handler) => handler.reject(
+          DioException(
+            requestOptions: request,
+            response: Response(
+              requestOptions: request,
+              statusCode: 409,
+              data: {'detail': 'SECRET stale revision'},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await expectLater(
+      HttpMentorApi(
+        ApiClient(dio),
+      ).saveSettings({'expected_revision': 4, 'persona': 'Nowa persona'}),
+      throwsA(
+        isA<MentorException>()
+            .having((error) => error.code, 'code', 'settings_conflict')
+            .having(
+              (error) => error.toString(),
+              'safe message',
+              isNot(contains('SECRET')),
+            ),
+      ),
+    );
+  });
   test(
     'STT sends explicit logical ID unchanged across transport retries',
     () async {
@@ -49,6 +100,67 @@ void main() {
       throwsA(isA<MentorException>()),
     );
     expect(requests, 0);
+  });
+  test('message context sends only opaque selectors and settings revision', () async {
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
+    Map<String, dynamic>? body;
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (request, handler) {
+          body = Map<String, dynamic>.from(request.data as Map);
+          handler.resolve(
+            Response(
+              requestOptions: request,
+              data: {
+                'id': 'answer',
+                'role': 'assistant',
+                'text': 'OK',
+                'created_at': '2026-10-08T00:00:00Z',
+              },
+            ),
+          );
+        },
+      ),
+    );
+    final context = MentorContextSelection(
+      training: true,
+      weight: const MentorContextWeightOption(
+        selectionId: 'opaque-weight-selector-that-is-long-enough',
+        source: 'measurement',
+        summary: '73 kg · 2026-10-08',
+      ),
+      note: const MentorContextNoteOption(
+        selectionId: 'opaque-note-selector-that-is-long-enough',
+        summary: '2026-10-07',
+        preview: 'Prywatna notatka',
+      ),
+    );
+
+    await HttpMentorApi(ApiClient(dio)).send(
+      'session',
+      'Jak trenować?',
+      requestId: 'request',
+      settingsRevision: 4,
+      context: context,
+    );
+
+    expect(body, {
+      'request_id': 'request',
+      'text': 'Jak trenować?',
+      'settings_revision': 4,
+      'context': {
+        'training': true,
+        'profile': false,
+        'apple_health': false,
+        'weight': {
+          'source': 'measurement',
+          'selection_id': 'opaque-weight-selector-that-is-long-enough',
+        },
+        'note': {'selection_id': 'opaque-note-selector-that-is-long-enough'},
+      },
+    });
+    expect(jsonEncode(body), isNot(contains('73 kg')));
+    expect(jsonEncode(body), isNot(contains('Prywatna notatka')));
   });
   test(
     'every endpoint carries revocable token and errors never expose secrets',

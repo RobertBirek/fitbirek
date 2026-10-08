@@ -75,13 +75,43 @@ MentorMessage reply() => MentorMessage(
   text: 'Odpowiedź mentora',
   createdAt: DateTime(2026),
 );
-MentorSettings settings({bool enabled = true}) => MentorSettings.fromJson({
+MentorSettings mentorSettings({
+  bool enabled = true,
+  String persona = 'Wspieraj spokojnie.',
+  int revision = 4,
+  MentorContextConsents consents = const MentorContextConsents(),
+  bool contextConsentsActive = true,
+}) => MentorSettings.fromJson({
   'available': enabled,
   'openai_configured': enabled,
   'elevenlabs_configured': enabled,
   'consent_text': enabled,
   'consent_voice': enabled,
+  'persona': persona,
+  'revision': revision,
+  'context_policy_version': 1,
+  'context_consents_active': contextConsentsActive,
+  'active_model_profile_key': 'gpt-6-luna',
+  'model_profiles': [
+    {
+      'key': 'gpt-6-luna',
+      'identifier': 'gpt-6-luna',
+      'label': 'GPT-6 Luna',
+      'quality_class': 'ekonomiczny',
+      'cost_warning': 'Niski koszt do codziennych rozmów.',
+    },
+  ],
+  'context_consents': {
+    'training': consents.training,
+    'profile': consents.profile,
+    'weight': consents.weight,
+    'note': consents.note,
+    'apple_health': consents.appleHealth,
+  },
 });
+
+MentorSettings settings({bool enabled = true}) =>
+    mentorSettings(enabled: enabled);
 
 class ApiFake implements MentorApi {
   bool lostPaidResponse = false, expiredSpeech = false;
@@ -102,14 +132,53 @@ class ApiFake implements MentorApi {
   Completer<MentorMessage>? pending;
   Completer<void>? keyPending;
   bool fail = false;
+  bool settingsConflict = false;
   String? savedKey;
+  int settingsCalls = 0;
+  final savedSettings = <Map<String, Object?>>[];
   @override
   void cancel() {
     cancelled++;
   }
 
   @override
-  Future<MentorSettings> settings() async => MentorSettings.fromJson({});
+  Future<MentorSettings> settings() async {
+    settingsCalls++;
+    return mentorSettings();
+  }
+
+  @override
+  Future<MentorSettings> saveSettings(Map<String, Object?> patch) async {
+    savedSettings.add(Map<String, Object?>.from(patch));
+    if (settingsConflict) throw const MentorException('settings_conflict');
+    return mentorSettings();
+  }
+
+  @override
+  Future<MentorContextOptions> contextOptions() async =>
+      MentorContextOptions.fromJson({
+        'settings_revision': 4,
+        'options': {
+          'training': {'available': true, 'summary': 'Ostatnie 12 tygodni'},
+          'profile': {'available': true},
+          'weight': [
+            {
+              'selection_id': 'opaque-weight-selector-that-is-long-enough',
+              'source': 'measurement',
+              'summary': '72 kg · 2026-10-08',
+            },
+          ],
+          'workout_notes': [
+            {
+              'selection_id': 'opaque-note-selector-that-is-long-enough',
+              'summary': '2026-10-07',
+              'preview': 'Dobra energia',
+            },
+          ],
+          'apple_health': {'available': true},
+        },
+      });
+
   @override
   Future<List<MentorSession>> sessions() async {
     queries++;
@@ -133,6 +202,8 @@ class ApiFake implements MentorApi {
     String id,
     String text, {
     required String requestId,
+    int? settingsRevision,
+    MentorContextSelection? context,
   }) async {
     sends++;
     requestIds.add(requestId);
@@ -226,6 +297,7 @@ Future<void> mount(
   bool enabled = true,
   AuthFake? auth,
   ActionsFake? actions,
+  MentorSettings? configuredSettings,
 }) async {
   await tester.binding.setSurfaceSize(const Size(1000, 1100));
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -285,7 +357,7 @@ Future<void> mount(
           return api;
         }),
         mentorSettingsProvider.overrideWith(
-          (ref) async => settings(enabled: enabled),
+          (ref) async => configuredSettings ?? mentorSettings(enabled: enabled),
         ),
         mentorVoiceProvider.overrideWithValue(voice),
         mentorVoiceApiProvider.overrideWithValue(api),
@@ -449,6 +521,193 @@ void main() {
     expect(api.sends, 0);
     expect(api.speechCalls, 0);
   });
+  testWidgets(
+    'context composer previews only consented categories and requires final confirmation',
+    (tester) async {
+      await mount(
+        tester,
+        ApiFake(),
+        VoiceFake(),
+        configuredSettings: mentorSettings(
+          consents: const MentorContextConsents(
+            training: true,
+            profile: true,
+            weight: true,
+            note: true,
+            appleHealth: true,
+          ),
+        ),
+      );
+
+      await tester.enterText(find.byType(TextField), 'Sprawdź mój plan');
+      await tester.tap(find.byTooltip('Dodaj kontekst do tej wiadomości'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Kontekst tej wiadomości'), findsOneWidget);
+      expect(find.text('Kontekst treningowy'), findsOneWidget);
+      expect(
+        tester
+            .widget<CheckboxListTile>(
+              find.widgetWithText(CheckboxListTile, 'Kontekst treningowy'),
+            )
+            .value,
+        isTrue,
+      );
+      expect(find.text('Wyślij z tym kontekstem'), findsOneWidget);
+      expect(
+        find.textContaining('Persona i wybrane kategorie trafiają do OpenAI'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('store:false nie gwarantuje zerowej retencji'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('Usunięcie rozmowy nie cofa danych'),
+        findsOneWidget,
+      );
+    },
+  );
+  testWidgets('settings send independent persona and context-consent patches', (
+    tester,
+  ) async {
+    final api = ApiFake();
+    await mount(tester, api, VoiceFake());
+    await tester.tap(find.byTooltip('Ustawienia mentora'));
+    await tester.pumpAndSettle();
+
+    final persona = find.widgetWithText(TextField, 'Persona mentora');
+    expect(
+      tester.widget<TextField>(persona).controller!.text,
+      'Wspieraj spokojnie.',
+    );
+    await tester.enterText(persona, '');
+    await tester.tap(find.text('Zapisz personę'));
+    await tester.pumpAndSettle();
+    expect(api.savedSettings, [
+      {'expected_revision': 4, 'persona': ''},
+    ]);
+
+    await tester.tap(
+      find.widgetWithText(SwitchListTile, 'Kontekst treningowy'),
+    );
+    await tester.pumpAndSettle();
+    expect(api.savedSettings.last, {
+      'expected_revision': 4,
+      'context_consents': {'training': true},
+    });
+  });
+  testWidgets(
+    'settings require explicit full context consent acknowledgement after restore',
+    (tester) async {
+      final api = ApiFake();
+      await mount(
+        tester,
+        api,
+        VoiceFake(),
+        configuredSettings: mentorSettings(contextConsentsActive: false),
+      );
+      await tester.tap(find.byTooltip('Ustawienia mentora'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('przywróceniu danych lub zmianie polityki'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Przejrzyj i zatwierdź zgody kontekstu'));
+      await tester.pumpAndSettle();
+      expect(find.text('Potwierdź zgody kontekstu'), findsOneWidget);
+
+      await tester.tap(
+        find.widgetWithText(CheckboxListTile, 'Kontekst treningowy'),
+      );
+      await tester.tap(find.text('Potwierdź komplet zgód'));
+      await tester.pumpAndSettle();
+
+      expect(api.savedSettings, [
+        {
+          'expected_revision': 4,
+          'context_policy_version': 1,
+          'context_consents': {
+            'training': true,
+            'profile': false,
+            'weight': false,
+            'note': false,
+            'apple_health': false,
+          },
+        },
+      ]);
+    },
+  );
+  testWidgets(
+    'model selection explains quality and cost before sending a patch',
+    (tester) async {
+      final api = ApiFake();
+      await mount(tester, api, VoiceFake());
+      await tester.tap(find.byTooltip('Ustawienia mentora'));
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('Model mentora'),
+        300,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.tap(find.text('Model mentora'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(SimpleDialogOption));
+      await tester.pumpAndSettle();
+      expect(find.text('GPT-6 Luna'), findsWidgets);
+      expect(find.textContaining('ekonomiczny'), findsOneWidget);
+      expect(find.textContaining('Niski koszt'), findsOneWidget);
+      await tester.tap(find.text('Anuluj'));
+      await tester.pumpAndSettle();
+      expect(api.savedSettings, isEmpty);
+
+      await tester.tap(find.text('Model mentora'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(SimpleDialogOption));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Wybierz model'));
+      await tester.pumpAndSettle();
+      expect(api.savedSettings, [
+        {'expected_revision': 4, 'model_profile_key': 'gpt-6-luna'},
+      ]);
+    },
+  );
+  testWidgets(
+    'too long persona is blocked locally and a conflict refreshes settings',
+    (tester) async {
+      final api = ApiFake();
+      await mount(tester, api, VoiceFake());
+      await tester.tap(find.byTooltip('Ustawienia mentora'));
+      await tester.pumpAndSettle();
+
+      final persona = find.widgetWithText(TextField, 'Persona mentora');
+      await tester.enterText(persona, 'x' * 801);
+      await tester.tap(find.text('Zapisz personę'));
+      await tester.pumpAndSettle();
+      expect(api.savedSettings, isEmpty);
+      expect(
+        find.text('Persona mentora może mieć maksymalnie 800 znaków.'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(persona, 'Nowa persona');
+      api.settingsConflict = true;
+      await tester.tap(find.text('Zapisz personę'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(api.savedSettings.single, {
+        'expected_revision': 4,
+        'persona': 'Nowa persona',
+      });
+      expect(api.settingsCalls, 1);
+      expect(
+        find.textContaining('zmienione na innym urządzeniu'),
+        findsOneWidget,
+      );
+    },
+  );
   test(
     'ambiguous retry preserves request ID and cancellation rejects late reply',
     () async {

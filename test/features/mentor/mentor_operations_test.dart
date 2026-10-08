@@ -44,6 +44,8 @@ class DebitedApi implements MentorApi {
     String sessionId,
     String text, {
     required String requestId,
+    int? settingsRevision,
+    MentorContextSelection? context,
   }) async {
     posts++;
     if (!ledger.containsKey(requestId)) {

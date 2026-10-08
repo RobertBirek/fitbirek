@@ -18,8 +18,20 @@ class MentorOperationRegistry {
 
   String get storageKey =>
       'mentor.operations.v1.${const Uuid().v5(Namespace.url.value, accountId)}';
-  String fingerprint(String text) =>
-      const Uuid().v5(Namespace.url.value, '$accountId:${text.trim()}');
+  String fingerprint(String text, [Map<String, Object?> selection = const {}]) =>
+      const Uuid().v5(
+        Namespace.url.value,
+        '$accountId:${text.trim()}:${jsonEncode(_canonical(selection))}',
+      );
+
+  Object? _canonical(Object? value) {
+    if (value is Map) {
+      final ordered = value.keys.map((key) => key.toString()).toList()..sort();
+      return {for (final key in ordered) key: _canonical(value[key])};
+    }
+    if (value is List) return value.map(_canonical).toList(growable: false);
+    return value;
+  }
 
   /// Always reconcile, including on the first click after reload. A failed GET
   /// is not permission to allocate another paid request.
@@ -29,6 +41,7 @@ class MentorOperationRegistry {
     String? sessionId,
     String? subjectId,
     String? text,
+    Map<String, Object?> selection = const {},
     bool regenerate = false,
   }) async {
     _check();
@@ -39,7 +52,7 @@ class MentorOperationRegistry {
       _check();
       final rows = (jsonDecode(prefs.getString(storageKey) ?? '[]') as List)
           .cast<Map>();
-      final hash = text == null ? null : fingerprint(text);
+      final hash = text == null ? null : fingerprint(text, selection);
       final slot = rows
           .where(
             (r) =>
@@ -69,8 +82,8 @@ class MentorOperationRegistry {
                     o.subjectId == subjectId ||
                     o.subjectId == null) &&
                 (kind != 'chat' ||
-                    o.userText == null ||
-                    fingerprint(o.userText!) == hash),
+                    (selection.isEmpty &&
+                        (o.userText == null || fingerprint(o.userText!) == hash))),
           )
           .toList();
       MentorOperation? previous = matches.firstOrNull;

@@ -8,6 +8,10 @@ Alembic **0009**. This deploy enables configuration and local encryption only:
 no provider credentials, both consent defaults false, no provider calls.
 Hardware/provider acceptance and independent off-host master-key escrow remain
 pending. See [deployment evidence](docs/mentor-deployment-2026-09-15.md).
+Release **1.4.0+7** includes planned Alembic migration **0010** for Mentor
+customization and context consents. It has not been deployed: run the serialized
+migration and post-update checks from the Updates section before describing
+revision `0010` as production state.
 All current runtime Compose commands must include **base + push + mentor**;
 two-file commands in historical sections describe earlier deployments only.
 Apple Zdrowie **1.1.0+3 deployed**, verified on the host at
@@ -313,8 +317,9 @@ curl -fsSI https://fit.birek.online/today
 python3 /opt/fit/deploy/ops/check-shared-sites.py after
 ```
 
-Expected: three healthy services, running sender with fresh DB heartbeat and
-explicit migration exit 0 / DB revision `0009`; health `{"status":"ok"}`;
+Expected for the currently deployed stack: three healthy services, running sender
+with fresh DB heartbeat and explicit migration exit 0 / DB revision `0009`;
+health `{"status":"ok"}`;
 static/SPA paths 200; Wasm `application/wasm`; workers `Cache-Control: no-cache`;
 valid public TLS chain. Browser verification includes login, offline mood
 creation, reconnect, second-profile synchronization, logout and protected-route
