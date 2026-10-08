@@ -1,8 +1,3 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'fitness_test.freezed.dart';
-part 'fitness_test.g.dart';
-
 /// Definicja predefiniowanego testu sprawnościowego (11 testów wg brief).
 enum TypTestu {
   maxPompki,
@@ -66,19 +61,4 @@ extension TypTestuLabel on TypTestu {
         return 'cm';
     }
   }
-}
-
-/// Wynik jednego testu w ramach sesji testowej.
-@freezed
-class FitnessTestResult with _$FitnessTestResult {
-  const factory FitnessTestResult({
-    required int id,
-    required TypTestu typ,
-    required DateTime data,
-    required double wynik,
-    @Default(0) int score,
-  }) = _FitnessTestResult;
-
-  factory FitnessTestResult.fromJson(Map<String, dynamic> json) =>
-      _$FitnessTestResultFromJson(json);
 }
