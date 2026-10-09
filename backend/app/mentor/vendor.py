@@ -13,6 +13,7 @@ from .catalog import OpenAIModelProfile, profile_for_key
 _OPENAI_URL = "https://api.openai.com/v1/responses"
 _ELEVEN_VOICES_URL = "https://api.elevenlabs.io/v2/voices?page_size=20&include_total_count=false"
 _MAX_RESPONSE = 64 * 1024
+_MAX_VOICES_RESPONSE = 128 * 1024
 _MAX_AUDIO_RESPONSE = 2 * 1024 * 1024
 _transport: httpx.AsyncBaseTransport | None = None
 
@@ -210,7 +211,7 @@ async def openai_reply(key: str, profile: OpenAIModelProfile, messages: list[dic
 async def list_voices(key: str) -> list[dict]:
     if not isinstance(key, str) or not key:
         raise _unavailable()
-    _, body = await _request_bytes("GET", _ELEVEN_VOICES_URL, maximum=_MAX_RESPONSE, headers={"xi-api-key": key})
+    _, body = await _request_bytes("GET", _ELEVEN_VOICES_URL, maximum=_MAX_VOICES_RESPONSE, headers={"xi-api-key": key})
     voices = _json_object(body).get("voices")
     if not isinstance(voices, list):
         raise _unavailable()

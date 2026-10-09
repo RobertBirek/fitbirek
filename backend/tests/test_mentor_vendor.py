@@ -278,6 +278,26 @@ async def test_elevenlabs_uses_fixed_paths_and_filters_voice_metadata(monkeypatc
 
 
 @pytest.mark.asyncio
+async def test_elevenlabs_accepts_large_voice_metadata(monkeypatch):
+    from app.mentor import vendor
+
+    response = {
+        "voices": [{
+            "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+            "name": "Polski głos",
+            "preview_url": "x" * (vendor._MAX_RESPONSE + 1),
+        }],
+    }
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(
+        lambda request: httpx.Response(200, json=response),
+    ))
+
+    assert await vendor.list_voices("eleven-secret") == [
+        {"voice_id": "JBFqnCBsd6RMkjVDRZzb", "name": "Polski głos"},
+    ]
+
+
+@pytest.mark.asyncio
 async def test_vendor_rejects_oversized_audio_response(monkeypatch):
     from app.mentor import vendor
 

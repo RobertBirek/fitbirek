@@ -697,14 +697,21 @@ class _MentorPageState extends ConsumerState<MentorPage>
                       ),
                     ),
                   ),
-                   const SizedBox(width: 8),
-                   IconButton.outlined(
-                     tooltip: 'Dodaj kontekst do tej wiadomości',
-                     onPressed: state.loading || !enabled ? null : _composeContext,
-                     icon: const Icon(Icons.tune),
-                   ),
-                   const SizedBox(width: 8),
-                   IconButton.filled(
+                  const SizedBox(width: 8),
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _input,
+                    builder: (context, value, child) => IconButton.outlined(
+                      tooltip: 'Dodaj kontekst do tej wiadomości',
+                      onPressed:
+                          state.loading || !enabled || value.text.trim().isEmpty
+                          ? null
+                          : _composeContext,
+                      icon: child!,
+                    ),
+                    child: const Icon(Icons.tune),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filled(
                     tooltip: 'Wyślij',
                     onPressed: state.loading || !enabled ? null : () => _send(),
                     icon: const Icon(Icons.send),

@@ -6,6 +6,14 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.4.1+8] — 2026-10-09
+
+### Fixed
+- Mentor: przycisk wyboru kontekstu jest aktywny tylko dla niepustej wiadomości.
+- Mentor: lista głosów ElevenLabs akceptuje prawidłowe odpowiedzi dostawcy do 128 KiB.
+
+---
+
 ## [1.4.0+7] — 2026-10-08
 
 ### Added

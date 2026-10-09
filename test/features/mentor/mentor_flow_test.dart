@@ -540,6 +540,7 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextField), 'Sprawdź mój plan');
+      await tester.pump();
       await tester.tap(find.byTooltip('Dodaj kontekst do tej wiadomości'));
       await tester.pumpAndSettle();
 
@@ -566,6 +567,30 @@ void main() {
         find.textContaining('Usunięcie rozmowy nie cofa danych'),
         findsOneWidget,
       );
+    },
+  );
+  testWidgets(
+    'context composer requires a non-whitespace message before it opens',
+    (tester) async {
+      await mount(tester, ApiFake(), VoiceFake());
+
+      final contextButton = find.ancestor(
+        of: find.byTooltip('Dodaj kontekst do tej wiadomości'),
+        matching: find.byType(IconButton),
+      );
+      expect(tester.widget<IconButton>(contextButton).onPressed, isNull);
+
+      await tester.enterText(find.byType(TextField), '   \n  ');
+      await tester.pump();
+      expect(tester.widget<IconButton>(contextButton).onPressed, isNull);
+
+      await tester.enterText(find.byType(TextField), 'Sprawdź mój plan');
+      await tester.pump();
+      expect(tester.widget<IconButton>(contextButton).onPressed, isNotNull);
+
+      await tester.tap(find.byTooltip('Dodaj kontekst do tej wiadomości'));
+      await tester.pumpAndSettle();
+      expect(find.text('Kontekst tej wiadomości'), findsOneWidget);
     },
   );
   testWidgets('settings send independent persona and context-consent patches', (
