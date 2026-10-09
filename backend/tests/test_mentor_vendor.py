@@ -1,7 +1,5 @@
 import json
-from datetime import datetime, timezone
 from pathlib import Path
-from uuid import uuid4
 
 import httpx
 import pytest
@@ -254,28 +252,18 @@ async def test_transcribe_sends_only_fixed_multipart_fields_and_keeps_key_in_hea
         assert field in body
 
 
-@pytest.mark.asyncio
-async def test_training_context_projects_only_safe_workout_fields():
-    from app.mentor.context import training_context
-    from app.sync.models import SyncRecord
+def test_legacy_training_context_is_not_exported(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://fit:fit@127.0.0.1:1/fit")
+    from app.mentor import context
 
-    user_id, session_uuid = uuid4(), uuid4()
-    session_id = str(session_uuid)
-    records = [
-        SyncRecord(user_id=user_id, entity_type="workoutSession", entity_id=session_uuid, version=1, deleted_at=None, updated_at=datetime.now(timezone.utc), payload={"dataStart": "2026-09-01T10:00:00Z", "dataKoniec": None, "czasTrwaniaSekund": 1200, "notatka": "PRIVATE-NOTE", "health": "HEALTH-TOKEN"}),
-        SyncRecord(user_id=user_id, entity_type="workoutSet", entity_id=uuid4(), version=1, deleted_at=None, updated_at=datetime.now(timezone.utc), payload={"sessionSyncId": session_id, "cwiczenieId": "cw001", "nazwaCwiczeniaPl": "PRIVATE-NAME", "numerSerii": 2, "ciezarKg": 20.0, "powtorzenia": 8, "profile": "PROFILE-TOKEN"}),
-    ]
+    assert not hasattr(context, "training_context")
 
-    class Result:
-        def all(self): return records
-    class Db:
-        async def scalars(self, query): return Result()
 
-    context = await training_context(Db(), user_id)
-    rendered = json.dumps(context)
-    assert "PRIVATE" not in rendered and "HEALTH" not in rendered and "PROFILE" not in rendered
-    assert context["sessions"][0]["started_at"] == "2026-09-01T10:00:00+00:00"
-    assert context["sets"][0] == {"session_id": session_id, "exercise_id": "cw001", "set_number": 2, "weight_kg": 20.0, "reps": 8}
+def test_service_does_not_export_duplicate_voice_validator(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://fit:fit@127.0.0.1:1/fit")
+    from app.mentor import service
+
+    assert not hasattr(service, "VOICE_ID")
 
 
 def test_catalogue_is_a_verified_subset_of_public_exercise_asset():

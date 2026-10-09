@@ -28,7 +28,6 @@ DEFAULT_VOICE = {"voice_id": "JBFqnCBsd6RMkjVDRZzb", "name": "Głos domyślny El
 MODELS = ["gpt-4.1-mini-2025-04-14", "gpt-4.1-mini"]
 TTS_MODELS = ["eleven_multilingual_v2"]
 STT_MODELS = ["scribe_v2"]
-VOICE_ID = re.compile(r"^[A-Za-z0-9]{1,64}$")
 CONTEXT_POLICY_VERSION = 1
 CONTEXT_CONSENT_FIELDS = frozenset({
     "training", "profile", "weight", "note", "apple_health",
