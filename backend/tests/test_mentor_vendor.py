@@ -32,6 +32,35 @@ async def test_openai_accepts_completed_message_phase(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_openai_accepts_empty_output_text_logprobs(monkeypatch):
+    from app.mentor import catalog, vendor
+
+    response = {
+        "status": "completed",
+        "output": [{
+            "content": [{
+                "annotations": [],
+                "logprobs": [],
+                "text": '{"text":"gotowe","proposal":null}',
+                "type": "output_text",
+            }],
+            "id": "msg_1",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+        }],
+        "usage": {"input_tokens": 1, "output_tokens": 1},
+    }
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(
+        lambda request: httpx.Response(200, json=response),
+    ))
+
+    result = await vendor.openai_reply("key", catalog.profile_for_key("gpt-6-luna"), [])
+
+    assert result["text"] == "gotowe"
+
+
+@pytest.mark.asyncio
 async def test_openai_uses_fixed_endpoint_and_keeps_key_out_of_body(monkeypatch):
     from app.mentor import catalog, vendor
 

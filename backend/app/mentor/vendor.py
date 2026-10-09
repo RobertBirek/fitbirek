@@ -186,8 +186,9 @@ async def openai_reply(key: str, profile: OpenAIModelProfile, messages: list[dic
             or not isinstance(message.get("content"), list) or len(message["content"]) != 1):
         raise _unavailable()
     content = message["content"][0]
-    if (not isinstance(content, dict) or set(content) - {"type", "text", "annotations"}
-            or content.get("type") != "output_text" or not isinstance(content.get("text"), str)):
+    if (not isinstance(content, dict) or set(content) - {"type", "text", "annotations", "logprobs"}
+            or content.get("type") != "output_text" or not isinstance(content.get("text"), str)
+            or ("logprobs" in content and (not isinstance(content["logprobs"], list) or content["logprobs"]))):
         raise _unavailable()
     text = content["text"]
     decoded = _json_object(text.encode())
