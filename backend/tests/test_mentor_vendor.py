@@ -7,6 +7,31 @@ from fastapi import HTTPException
 
 
 @pytest.mark.asyncio
+async def test_openai_accepts_completed_message_phase(monkeypatch):
+    from app.mentor import catalog, vendor
+
+    response = {
+        "status": "completed",
+        "output": [{
+            "content": [{"type": "output_text", "text": '{"text":"gotowe","proposal":null}'}],
+            "id": "msg_1",
+            "phase": "final",
+            "role": "assistant",
+            "status": "completed",
+            "type": "message",
+        }],
+        "usage": {"input_tokens": 1, "output_tokens": 1},
+    }
+    monkeypatch.setattr(vendor, "_transport", httpx.MockTransport(
+        lambda request: httpx.Response(200, json=response),
+    ))
+
+    result = await vendor.openai_reply("key", catalog.profile_for_key("gpt-6-luna"), [])
+
+    assert result["text"] == "gotowe"
+
+
+@pytest.mark.asyncio
 async def test_openai_uses_fixed_endpoint_and_keeps_key_out_of_body(monkeypatch):
     from app.mentor import catalog, vendor
 

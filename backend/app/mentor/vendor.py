@@ -180,8 +180,9 @@ async def openai_reply(key: str, profile: OpenAIModelProfile, messages: list[dic
     if len(messages_output) != 1:
         raise _unavailable()
     message = messages_output[0]
-    if (set(message) - {"id", "type", "role", "status", "content"}
+    if (set(message) - {"id", "type", "role", "status", "content", "phase"}
             or message.get("role") != "assistant" or message.get("status") != "completed"
+            or ("phase" in message and (not isinstance(message["phase"], str) or not message["phase"] or len(message["phase"]) > 32))
             or not isinstance(message.get("content"), list) or len(message["content"]) != 1):
         raise _unavailable()
     content = message["content"][0]
