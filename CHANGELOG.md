@@ -6,6 +6,18 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.4.2+9] — 2026-10-09
+
+### Added
+- Mentor: mikrofon obsługuje pełny turn głosowy - automatycznie transkrybuje,
+  wysyła pytanie i odtwarza odpowiedź.
+
+### Fixed
+- Mentor: zablokowane autoplay pozostawia przygotowaną odpowiedź do ręcznego
+  odtworzenia bez drugiego żądania ElevenLabs.
+
+---
+
 ## [1.4.1+8] — 2026-10-09
 
 ### Fixed

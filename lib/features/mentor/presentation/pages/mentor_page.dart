@@ -150,6 +150,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
 
   Future<void> _send({
     bool regenerate = false,
+    bool autoPlayReply = false,
     MentorContextSelection? context,
     int? settingsRevision,
   }) async {
@@ -181,6 +182,13 @@ class _MentorPageState extends ConsumerState<MentorPage>
         _input.text == text &&
         ref.read(mentorConversationProvider).error == null) {
       _input.clear();
+    }
+    if (!autoPlayReply || !mounted || generation != _generation) return;
+    final state = ref.read(mentorConversationProvider);
+    if (state.error != null) return;
+    final replies = state.messages.where((message) => message.isAssistant);
+    if (replies.isNotEmpty) {
+      await _play(replies.last, autoStart: true);
     }
   }
 
@@ -217,7 +225,8 @@ class _MentorPageState extends ConsumerState<MentorPage>
             );
         if (mounted && generation == _voiceGeneration) {
           _input.text = text;
-          _notice('Sprawdź i popraw transkrypcję przed wysłaniem.');
+          setState(() => _voiceBusy = false);
+          await _send(autoPlayReply: true);
         }
       } else {
         final api = ref.read(mentorVoiceApiProvider);
@@ -270,7 +279,11 @@ class _MentorPageState extends ConsumerState<MentorPage>
 
   void _notice(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  Future<void> _play(MentorMessage message, {bool regenerate = false}) async {
+  Future<void> _play(
+    MentorMessage message, {
+    bool regenerate = false,
+    bool autoStart = false,
+  }) async {
     if (_voiceBusy) return;
     final generation = _voiceGeneration;
     setState(() => _voiceBusy = true);
@@ -289,6 +302,17 @@ class _MentorPageState extends ConsumerState<MentorPage>
       _ttl = Timer(const Duration(seconds: 60), () {
         if (mounted) setState(() => _playing = null);
       });
+      if (autoStart) {
+        try {
+          await _voice.play();
+        } catch (_) {
+          if (mounted && generation == _voiceGeneration) {
+            _notice(
+              'Głos jest gotowy. Użyj Odtwórz, aby rozpocząć odtwarzanie.',
+            );
+          }
+        }
+      }
     } on MentorException catch (e) {
       if (mounted && generation == _voiceGeneration) {
         _notice(

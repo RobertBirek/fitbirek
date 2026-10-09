@@ -127,7 +127,12 @@ class ApiFake implements MentorApi {
   Future<MentorOperation?> operation(String requestId) async =>
       ledger[requestId];
   MentorProposal? proposal;
-  int sends = 0, queries = 0, cancelled = 0, deleted = 0, speechCalls = 0;
+  int sends = 0,
+      queries = 0,
+      cancelled = 0,
+      deleted = 0,
+      speechCalls = 0,
+      transcriptions = 0;
   final requestIds = <String>[];
   Completer<MentorMessage>? pending;
   Completer<void>? keyPending;
@@ -233,7 +238,11 @@ class ApiFake implements MentorApi {
     String type,
     double duration, {
     required String requestId,
-  }) async => 'Tekst do poprawienia';
+  }) async {
+    transcriptions++;
+    return 'Tekst do poprawienia';
+  }
+
   @override
   Future<Uint8List> speech(String id, {required String requestId}) async {
     speechCalls++;
@@ -257,6 +266,7 @@ class ApiFake implements MentorApi {
 
 class VoiceFake implements MentorVoice {
   int prepares = 0, plays = 0, stops = 0, disposals = 0;
+  bool rejectNextPlay = false;
   @override
   bool get supported => true;
   @override
@@ -277,6 +287,10 @@ class VoiceFake implements MentorVoice {
   @override
   Future<void> play() async {
     plays++;
+    if (rejectNextPlay) {
+      rejectNextPlay = false;
+      throw StateError('autoplay denied');
+    }
   }
 
   @override
@@ -780,29 +794,63 @@ void main() {
     },
   );
   testWidgets(
-    'transcript is editable and speech requires separate play gesture',
+    'voice turn transcribes, sends, prepares and plays the assistant reply',
     (tester) async {
       final api = ApiFake();
       final voice = VoiceFake();
       await mount(tester, api, voice);
+
       await tester.tap(find.byTooltip('Nagraj wiadomość'));
       await tester.pump();
       await tester.tap(find.byTooltip('Zakończ nagranie'));
       await tester.pumpAndSettle();
-      expect(find.text('Tekst do poprawienia'), findsOneWidget);
-      expect(api.sends, 0);
-      await tester.enterText(find.byType(TextField), 'Poprawiony tekst');
-      await tester.tap(find.byTooltip('Przygotuj głos'));
-      await tester.pumpAndSettle();
+
+      expect(api.transcriptions, 1);
+      expect(api.sends, 1);
+      expect(api.speechCalls, 1);
       expect(voice.prepares, 1);
-      expect(voice.plays, 0);
+      expect(voice.plays, 1);
+      expect(find.text('Tekst do poprawienia'), findsOneWidget);
+      expect(find.text('Odpowiedź mentora'), findsWidgets);
+    },
+  );
+  testWidgets('typed text sends without preparing or playing speech', (
+    tester,
+  ) async {
+    final api = ApiFake();
+    final voice = VoiceFake();
+    await mount(tester, api, voice);
+
+    await tester.enterText(find.byType(TextField), 'Wiadomość pisana');
+    await tester.tap(find.byTooltip('Wyślij'));
+    await tester.pumpAndSettle();
+
+    expect(api.sends, 1);
+    expect(voice.prepares, 0);
+    expect(voice.plays, 0);
+  });
+  testWidgets(
+    'voice turn keeps prepared speech for manual playback after autoplay denial',
+    (tester) async {
+      final api = ApiFake();
+      final voice = VoiceFake()..rejectNextPlay = true;
+      await mount(tester, api, voice);
+
+      await tester.tap(find.byTooltip('Nagraj wiadomość'));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Zakończ nagranie'));
+      await tester.pumpAndSettle();
+
+      expect(api.speechCalls, 1);
+      expect(voice.prepares, 1);
+      expect(voice.plays, 1);
+      expect(find.text('Odtwórz'), findsOneWidget);
+
       await tester.tap(find.text('Odtwórz'));
       await tester.pump();
-      expect(voice.plays, 1);
-      await tester.tap(find.text('Stop'));
-      await tester.pump();
-      expect(voice.stops, greaterThan(0));
-      await tester.pumpWidget(const SizedBox());
+
+      expect(api.speechCalls, 1);
+      expect(voice.plays, 2);
     },
   );
   testWidgets('account transition removes draft and discards late answer', (
