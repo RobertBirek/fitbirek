@@ -8,7 +8,14 @@ import 'package:fitbirek_training/features/exercises/presentation/exercise_illus
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const expectedIllustrationIds = {'cw256', 'cw257', 'cw261', 'cw264', 'cw265'};
+  const expectedIllustrationIds = {
+    'cw256',
+    'cw257',
+    'cw261',
+    'cw264',
+    'cw265',
+    'cw278',
+  };
 
   test('registry contains exactly the illustration assets in the catalog', () {
     expect(illustratedExerciseIds, expectedIllustrationIds);
@@ -57,6 +64,10 @@ void main() {
     expect(exerciseIllustrationAsset('cw264'), 'assets/exercises/cw264.webp');
   });
 
+  test('maps cw278 to its illustration asset', () {
+    expect(exerciseIllustrationAsset('cw278'), 'assets/exercises/cw278.webp');
+  });
+
   test('loads and decodes the cw261 illustration as 512x512', () async {
     final data = await rootBundle.load('assets/exercises/cw261.webp');
     final codec = await ui.instantiateImageCodec(
@@ -98,6 +109,19 @@ void main() {
 
   test('loads and decodes the cw265 illustration as 512x512', () async {
     final data = await rootBundle.load('assets/exercises/cw265.webp');
+    final codec = await ui.instantiateImageCodec(
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+    );
+    addTearDown(codec.dispose);
+    final frame = await codec.getNextFrame();
+    addTearDown(frame.image.dispose);
+
+    expect(frame.image.width, 512);
+    expect(frame.image.height, 512);
+  });
+
+  test('loads and decodes the cw278 illustration as 512x512', () async {
+    final data = await rootBundle.load('assets/exercises/cw278.webp');
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
     );

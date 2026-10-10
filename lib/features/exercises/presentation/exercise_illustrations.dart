@@ -1,4 +1,11 @@
-const illustratedExerciseIds = {'cw256', 'cw257', 'cw261', 'cw264', 'cw265'};
+const illustratedExerciseIds = {
+  'cw256',
+  'cw257',
+  'cw261',
+  'cw264',
+  'cw265',
+  'cw278',
+};
 
 String? exerciseIllustrationAsset(String exerciseId) {
   return illustratedExerciseIds.contains(exerciseId)
