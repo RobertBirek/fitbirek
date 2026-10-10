@@ -1,14 +1,22 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-10, wersja webowa 1.4.5+12.
+Stan na 2026-10-10, wersja webowa 1.4.6+13.
 
 ## Wydane ilustracje
 
 | ID | Ćwiczenie | Kadry | Status |
 |---|---|---:|---|
 | cw256 | Rozciąganie bioder 90/90 | 2 | Wydane w 1.3.1+6; referencja stylu serii. |
+| cw257 | Rozciąganie motylkowe | 1 | Wydane w 1.4.6+13. |
 | cw261 | Rozciąganie mięśnia czworogłowego uda w staniu | 1 | Wydane w 1.4.4+11; pomarańcz oznacza czworogłowy. Nie oznaczono zasłoniętego stabilizatora biodra. |
+| cw264 | Rozciąganie łydki przy ścianie | 2 | Wydane w 1.4.6+13. |
 | cw265 | Rozciąganie klatki piersiowej w futrynie | 2 | Wydane w 1.4.3+10; pomarańcz oznacza prawy piersiowy większy. |
+
+## Odrzucone próby
+
+| ID | Status |
+|---|---|
+| cw278 | Odrzucone po jednej próbie: guma jest z przodu w końcowym panelu. Wymaga przeprojektowania sceny przed kolejną próbą. |
 
 `assets/exercises/`, `illustratedExerciseIds` i testy ilustracji są wspólnym
 rejestrem tych trzech zasobów. Każdy nowy plik WebP wymaga wpisu w rejestrze,
@@ -17,7 +25,7 @@ dekodowania 512×512 oraz kontroli braku osieroconych plików.
 ## Pierwsza partia
 
 Zakres pierwszej partii obejmuje `cw251–cw267`, `cw273`, `cw274` i
-`cw276–cw281`. Do przygotowania pozostają 22 zasoby. `cw279` jest wstrzymane:
+`cw276–cw281`. Do przygotowania pozostaje 20 zasobów. `cw279` jest wstrzymane:
 opis nie określa wysokości kotwy gumy ani ustawienia ramienia.
 
 ## Obowiązujące zasady

@@ -8,7 +8,7 @@ import 'package:fitbirek_training/features/exercises/presentation/exercise_illus
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const expectedIllustrationIds = {'cw256', 'cw261', 'cw265'};
+  const expectedIllustrationIds = {'cw256', 'cw257', 'cw261', 'cw264', 'cw265'};
 
   test('registry contains exactly the illustration assets in the catalog', () {
     expect(illustratedExerciseIds, expectedIllustrationIds);
@@ -49,8 +49,42 @@ void main() {
     expect(exerciseIllustrationAsset('cw261'), 'assets/exercises/cw261.webp');
   });
 
+  test('maps cw257 to its illustration asset', () {
+    expect(exerciseIllustrationAsset('cw257'), 'assets/exercises/cw257.webp');
+  });
+
+  test('maps cw264 to its illustration asset', () {
+    expect(exerciseIllustrationAsset('cw264'), 'assets/exercises/cw264.webp');
+  });
+
   test('loads and decodes the cw261 illustration as 512x512', () async {
     final data = await rootBundle.load('assets/exercises/cw261.webp');
+    final codec = await ui.instantiateImageCodec(
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+    );
+    addTearDown(codec.dispose);
+    final frame = await codec.getNextFrame();
+    addTearDown(frame.image.dispose);
+
+    expect(frame.image.width, 512);
+    expect(frame.image.height, 512);
+  });
+
+  test('loads and decodes the cw257 illustration as 512x512', () async {
+    final data = await rootBundle.load('assets/exercises/cw257.webp');
+    final codec = await ui.instantiateImageCodec(
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+    );
+    addTearDown(codec.dispose);
+    final frame = await codec.getNextFrame();
+    addTearDown(frame.image.dispose);
+
+    expect(frame.image.width, 512);
+    expect(frame.image.height, 512);
+  });
+
+  test('loads and decodes the cw264 illustration as 512x512', () async {
+    final data = await rootBundle.load('assets/exercises/cw264.webp');
     final codec = await ui.instantiateImageCodec(
       data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
     );

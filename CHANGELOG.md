@@ -6,6 +6,14 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.4.6+13] — 2026-10-10
+
+### Added
+- Dodano ilustracje do szczegółów ćwiczeń `cw257` (rozciąganie motylkowe) i
+  `cw264` (rozciąganie łydki przy ścianie).
+
+---
+
 ## [1.4.5+12] — 2026-10-10
 
 ### Changed

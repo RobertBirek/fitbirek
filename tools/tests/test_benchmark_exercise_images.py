@@ -36,18 +36,36 @@ class BenchmarkTests(unittest.TestCase):
     def ledger(self):
         return [json.loads(line) for line in (self.out / 'ledger.jsonl').read_text().splitlines()]
 
-    def run_benchmark(self, transport):
+    def run_benchmark(self, transport, single=False):
+        arguments = ['--prompt', str(self.prompt), '--reference',
+                     str(self.reference), '--output-dir', str(self.out),
+                     '--exercise-id', 'cw265']
+        if single:
+            arguments.append('--single-sunburst-medium')
         with patch.object(self.mod, 'send_request', side_effect=transport), \
                 patch.dict('os.environ', {'OPENAI_API_KEY': 'SECRET-KEY'}), \
                 contextlib.redirect_stdout(io.StringIO()) as stdout, \
                 contextlib.redirect_stderr(io.StringIO()) as stderr:
-            code = self.mod.main(['--prompt', str(self.prompt), '--reference',
-                                  str(self.reference), '--output-dir', str(self.out),
-                                  '--exercise-id', 'cw265'])
+            code = self.mod.main(arguments)
         return code, stdout.getvalue(), stderr.getvalue()
 
     def response(self, usage=USAGE, image=None):
         return {'usage': usage, 'data': [{'b64_json': image or base64.b64encode(PNG).decode()}]}, 'req_123'
+
+    def test_single_sunburst_medium_help_explains_one_paid_request(self):
+        with contextlib.redirect_stdout(io.StringIO()) as stdout, \
+                self.assertRaises(SystemExit) as exit_code:
+            self.mod.main(['--help'])
+        self.assertEqual(exit_code.exception.code, 0)
+        help_text = ' '.join(stdout.getvalue().split())
+        self.assertIn('By default, makes three paid image edits.', help_text)
+        self.assertIn(
+            '--single-sunburst-medium makes exactly one Sunburst medium request.',
+            help_text)
+        self.assertIn('--single-sunburst-medium', help_text)
+        self.assertIn(
+            'make exactly one paid gpt-image-2.5-sunburst medium request',
+            help_text)
 
     def test_regular_cost(self):
         self.assertEqual(self.mod.estimate_cost(USAGE),
@@ -97,6 +115,29 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual([x['status'] for x in self.ledger()],
                          ['started', 'response_received', 'success'] * 3)
 
+    def test_single_sunburst_medium_makes_one_request(self):
+        calls = []
+
+        def transport(request):
+            calls.append(request.data)
+            return self.response()
+
+        code, stdout, stderr = self.run_benchmark(transport, single=True)
+        self.assertEqual((code, stderr), (0, ''))
+        self.assertEqual(len(calls), 1)
+        for value in ('gpt-image-2.5-sunburst', 'medium', '1024x1024',
+                      'name="n"\r\n\r\n1', 'PRIVATE PROMPT', 'name="image"'):
+            self.assertIn(value.encode(), calls[0])
+        self.assertEqual(len(list(self.out.glob('*.png'))), 1)
+        self.assertEqual(stdout.count('gpt-image-2.5-sunburst/medium'), 1)
+        self.assertEqual([x['status'] for x in self.ledger()],
+                         ['started', 'response_received', 'success'])
+        self.assertTrue(all(event['configuration'] == {
+            'exercise_id': 'cw265', 'model': 'gpt-image-2.5-sunburst',
+            'quality': 'medium', 'size': '1024x1024', 'n': 1,
+            'output_format': 'png',
+        } for event in self.ledger()))
+
     def test_no_usage_still_saves_image_and_reports_unknown(self):
         code, stdout, _ = self.run_benchmark(lambda request: self.response(None))
         self.assertEqual(code, 0)
@@ -120,6 +161,14 @@ class BenchmarkTests(unittest.TestCase):
             self.fail('duplicate request')
         self.assertEqual(self.run_benchmark(forbidden)[0], 1)
         self.assertEqual(marker.read_text(), 'preserve')
+
+    def test_existing_directory_prevents_any_single_request(self):
+        self.out.mkdir()
+
+        def forbidden(request):
+            self.fail('duplicate request')
+
+        self.assertEqual(self.run_benchmark(forbidden, single=True)[0], 1)
 
     def test_timeout_network_http_stop_without_retry(self):
         for error, status in [(TimeoutError('SECRET-KEY'), 'uncertain'),

@@ -1,4 +1,5 @@
-"""Three paid image edits when explicitly run; standard library only.
+"""By default, makes three paid image edits. --single-sunburst-medium makes
+exactly one Sunburst medium request. Standard library only.
 
 Never resume an output directory: an unfinished request may still be billable.
 Prices are USD per million tokens, identical for the two configured models.
@@ -120,8 +121,10 @@ def run(args):
         'prompt_sha256': hashlib.sha256(prompt_bytes).hexdigest(),
         'reference_sha256': hashlib.sha256(reference).hexdigest(),
     }
+    configurations = (CONFIGURATIONS[:1] if args.single_sunburst_medium
+                      else CONFIGURATIONS)
     with (args.output_dir / 'ledger.jsonl').open('x', encoding='utf-8') as ledger:
-        for model, quality in CONFIGURATIONS:
+        for model, quality in configurations:
             configuration = {'exercise_id': args.exercise_id, 'model': model,
                              'quality': quality, 'size': '1024x1024',
                              'n': 1, 'output_format': 'png'}
@@ -187,6 +190,9 @@ def main(argv=None):
     parser.add_argument('--reference', type=Path, required=True, help='PNG reference image')
     parser.add_argument('--output-dir', type=Path, required=True, help='must not exist')
     parser.add_argument('--exercise-id', required=True)
+    parser.add_argument(
+        '--single-sunburst-medium', action='store_true',
+        help='make exactly one paid gpt-image-2.5-sunburst medium request')
     args = parser.parse_args(argv)
     try:
         code = run(args)
