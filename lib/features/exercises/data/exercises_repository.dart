@@ -15,47 +15,60 @@ class ExercisesRepository {
   /// Synchronizuje ćwiczenia z assets/data/exercises.json do bazy Drift.
   ///
   /// Import jest PRZYROSTOWY: wstawia tylko ćwiczenia, których `id` nie
-  /// istnieje jeszcze w bazie. Dzięki temu:
+  /// istnieje jeszcze w bazie, oraz odświeża wyłącznie zmienione `nazwaPl`.
+  /// Obie operacje wykonuje w jednej transakcji. Dzięki temu:
   /// - na pierwszym uruchomieniu wgrywa cały starter pack,
   /// - po aktualizacji aplikacji z rozszerzoną bazą (np. 38 -> 316) dopisuje
   ///   tylko nowe pozycje na urządzeniach, które już mają starsze dane,
-  /// - nigdy nie nadpisuje/nie usuwa istniejących wierszy; favorite flags
-  ///   live separately in `ExerciseFavorites` and therefore survive refreshes.
+  /// - nie usuwa wierszy ani nie zmienia pozostałych kolumn; ulubione
+  ///   w `ExerciseFavorites` i dane synchronizacji pozostają nietknięte.
   Future<void> syncFromAssets() async {
-    final existingIds = await _db.exercisesDao.getAllIds();
-
     final jsonString = await rootBundle.loadString(
       'assets/data/exercises.json',
     );
     final List<dynamic> data = jsonDecode(jsonString);
 
-    final rows = data
-        .cast<Map<String, dynamic>>()
-        .where((map) => !existingIds.contains(map['id'] as String))
-        .map((map) {
-          return ExercisesCompanion.insert(
-            id: map['id'] as String,
-            nazwaPl: map['nazwaPl'] as String,
-            nazwaEn: map['nazwaEn'] as String,
-            partiaGlowna: map['partiaGlowna'] as String,
-            partieWspierajace: jsonEncode(map['partieWspierajace']),
-            sprzet: jsonEncode(map['sprzet']),
-            typ: map['typ'] as String,
-            poziom: map['poziom'] as String,
-            wzorzecRuchu: map['wzorzecRuchu'] as String,
-            seriexPowtorzenia: map['seriexPowtorzenia'] as String,
-            tempo: map['tempo'] as String,
-            kluczoweWskazowki: jsonEncode(map['kluczoweWskazowki']),
-            czesteBledy: jsonEncode(map['czesteBledy']),
-            progresja: map['progresja'] as String,
-            regresja: map['regresja'] as String,
-            zrodlo: map['zrodlo'] as String,
-          );
-        })
-        .toList();
+    await _db.transaction(() async {
+      final existingIds = await _db.exercisesDao.getAllIds();
+      final rows = data
+          .cast<Map<String, dynamic>>()
+          .where((map) => !existingIds.contains(map['id'] as String))
+          .map((map) {
+            return ExercisesCompanion.insert(
+              id: map['id'] as String,
+              nazwaPl: map['nazwaPl'] as String,
+              nazwaEn: map['nazwaEn'] as String,
+              partiaGlowna: map['partiaGlowna'] as String,
+              partieWspierajace: jsonEncode(map['partieWspierajace']),
+              sprzet: jsonEncode(map['sprzet']),
+              typ: map['typ'] as String,
+              poziom: map['poziom'] as String,
+              wzorzecRuchu: map['wzorzecRuchu'] as String,
+              seriexPowtorzenia: map['seriexPowtorzenia'] as String,
+              tempo: map['tempo'] as String,
+              kluczoweWskazowki: jsonEncode(map['kluczoweWskazowki']),
+              czesteBledy: jsonEncode(map['czesteBledy']),
+              progresja: map['progresja'] as String,
+              regresja: map['regresja'] as String,
+              zrodlo: map['zrodlo'] as String,
+            );
+          })
+          .toList();
 
-    if (rows.isEmpty) return;
-    await _db.exercisesDao.insertAll(rows);
+      if (rows.isNotEmpty) await _db.exercisesDao.insertAll(rows);
+      await _db.batch((batch) {
+        for (final map in data.cast<Map<String, dynamic>>()) {
+          final id = map['id'] as String;
+          final name = map['nazwaPl'] as String;
+          batch.update(
+            _db.exercises,
+            ExercisesCompanion(nazwaPl: Value(name)),
+            where: (table) =>
+                table.id.equals(id) & table.nazwaPl.equals(name).not(),
+          );
+        }
+      });
+    });
   }
 
   Exercise _mapRowToModel(ExerciseData row, bool ulubione) {

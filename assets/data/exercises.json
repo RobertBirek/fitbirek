@@ -104,7 +104,7 @@
   },
   {
     "id": "cw004",
-    "nazwaPl": "Pompki archer (łucznika)",
+    "nazwaPl": "Pompki łucznika",
     "nazwaEn": "Archer push-up",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -207,7 +207,7 @@
   },
   {
     "id": "cw007",
-    "nazwaPl": "Pompki hindu",
+    "nazwaPl": "Pompki hinduskie",
     "nazwaEn": "Hindu push-up",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -242,7 +242,7 @@
   },
   {
     "id": "cw008",
-    "nazwaPl": "Pompki spiderman",
+    "nazwaPl": "Pompki z przyciąganiem kolana do łokcia",
     "nazwaEn": "Spiderman push-up",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -311,7 +311,7 @@
   },
   {
     "id": "cw010",
-    "nazwaPl": "Pompki na hantlach głębokie",
+    "nazwaPl": "Głębokie pompki na hantlach",
     "nazwaEn": "Deep push-up on dumbbells",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -380,7 +380,7 @@
   },
   {
     "id": "cw012",
-    "nazwaPl": "Wyciskanie hantli leżąc płasko",
+    "nazwaPl": "Wyciskanie hantli na ławce płaskiej",
     "nazwaEn": "Dumbbell bench press flat",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -415,7 +415,7 @@
   },
   {
     "id": "cw013",
-    "nazwaPl": "Wyciskanie hantli skos dodatni",
+    "nazwaPl": "Wyciskanie hantli na ławce skośnej głową w górę",
     "nazwaEn": "Incline dumbbell press",
     "partiaGlowna": "Górna klatka piersiowa",
     "partieWspierajace": [
@@ -450,7 +450,7 @@
   },
   {
     "id": "cw014",
-    "nazwaPl": "Wyciskanie hantli z podłogi",
+    "nazwaPl": "Wyciskanie hantli w leżeniu na podłodze",
     "nazwaEn": "Dumbbell floor press",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -516,7 +516,7 @@
   },
   {
     "id": "cw016",
-    "nazwaPl": "Rozpiętki hantlami na płasko",
+    "nazwaPl": "Rozpiętki z hantlami na ławce płaskiej",
     "nazwaEn": "Dumbbell flye flat",
     "partiaGlowna": "Klatka piersiowa (izolacja)",
     "partieWspierajace": [
@@ -550,7 +550,7 @@
   },
   {
     "id": "cw017",
-    "nazwaPl": "Rozpiętki hantlami skos dodatni",
+    "nazwaPl": "Rozpiętki z hantlami na ławce skośnej głową w górę",
     "nazwaEn": "Incline dumbbell flye",
     "partiaGlowna": "Górna klatka piersiowa",
     "partieWspierajace": [
@@ -584,7 +584,7 @@
   },
   {
     "id": "cw018",
-    "nazwaPl": "Rozpiętki hantlami z podłogi",
+    "nazwaPl": "Rozpiętki z hantlami w leżeniu na podłodze",
     "nazwaEn": "Floor flye",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -617,7 +617,7 @@
   },
   {
     "id": "cw019",
-    "nazwaPl": "Pullover hantlami",
+    "nazwaPl": "Przenoszenie hantla za głowę w leżeniu na ławce",
     "nazwaEn": "Dumbbell pullover",
     "partiaGlowna": "Klatka piersiowa, Latissimus dorsi",
     "partieWspierajace": [
@@ -652,7 +652,7 @@
   },
   {
     "id": "cw020",
-    "nazwaPl": "Wyciskanie mostkiem hantlami",
+    "nazwaPl": "Wyciskanie hantli w moście biodrowym",
     "nazwaEn": "Glute bridge dumbbell press",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -686,7 +686,7 @@
   },
   {
     "id": "cw021",
-    "nazwaPl": "Chest press gumą stojąc",
+    "nazwaPl": "Wyciskanie gumy przed klatkę piersiową w staniu",
     "nazwaEn": "Standing band chest press",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -720,7 +720,7 @@
   },
   {
     "id": "cw022",
-    "nazwaPl": "Rozpiętki gumą stojąc",
+    "nazwaPl": "Rozpiętki z gumą w staniu",
     "nazwaEn": "Standing band flye",
     "partiaGlowna": "Klatka piersiowa (izolacja)",
     "partieWspierajace": [
@@ -789,7 +789,7 @@
   },
   {
     "id": "cw024",
-    "nazwaPl": "Band pullover",
+    "nazwaPl": "Ściąganie gumy znad głowy do bioder na prostych ramionach",
     "nazwaEn": "Band pullover",
     "partiaGlowna": "Klatka piersiowa, Lat",
     "partieWspierajace": [
@@ -822,7 +822,7 @@
   },
   {
     "id": "cw025",
-    "nazwaPl": "Dipy między krzesłami / o ławkę (klatka)",
+    "nazwaPl": "Pompki między krzesłami lub na ławce (na klatkę piersiową)",
     "nazwaEn": "Bench chest dip",
     "partiaGlowna": "Klatka piersiowa dolna",
     "partieWspierajace": [
@@ -857,7 +857,7 @@
   },
   {
     "id": "cw026",
-    "nazwaPl": "Pompki pseudo planche",
+    "nazwaPl": "Pompki z dłońmi przy biodrach i pochyleniem w przód",
     "nazwaEn": "Pseudo planche push-up",
     "partiaGlowna": "Klatka piersiowa dolna",
     "partieWspierajace": [
@@ -927,7 +927,7 @@
   },
   {
     "id": "cw028",
-    "nazwaPl": "Pompki archer skos",
+    "nazwaPl": "Pompki łucznika z nogami na ławce",
     "nazwaEn": "Archer decline push-up",
     "partiaGlowna": "Klatka piersiowa górna",
     "partieWspierajace": [
@@ -997,7 +997,7 @@
   },
   {
     "id": "cw030",
-    "nazwaPl": "Explosive push-up na bok",
+    "nazwaPl": "Pompki eksplozywne z przeskokiem w bok",
     "nazwaEn": "Side-to-side plyo push-up",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -1032,7 +1032,7 @@
   },
   {
     "id": "cw031",
-    "nazwaPl": "Podciąganie nachwytem szerokie",
+    "nazwaPl": "Podciąganie szerokim nachwytem",
     "nazwaEn": "Wide grip pull-up",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1101,7 +1101,7 @@
   },
   {
     "id": "cw033",
-    "nazwaPl": "Podciąganie neutralne",
+    "nazwaPl": "Podciąganie chwytem neutralnym",
     "nazwaEn": "Neutral grip pull-up",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1135,7 +1135,7 @@
   },
   {
     "id": "cw034",
-    "nazwaPl": "Podciąganie wąskie",
+    "nazwaPl": "Podciąganie wąskim chwytem",
     "nazwaEn": "Close grip pull-up",
     "partiaGlowna": "Dolna część latissimus",
     "partieWspierajace": [
@@ -1169,7 +1169,7 @@
   },
   {
     "id": "cw035",
-    "nazwaPl": "Podciąganie mieszane",
+    "nazwaPl": "Podciąganie chwytem mieszanym",
     "nazwaEn": "Mixed grip pull-up",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1237,7 +1237,7 @@
   },
   {
     "id": "cw037",
-    "nazwaPl": "Podciąganie L-sit",
+    "nazwaPl": "Podciąganie z prostymi nogami uniesionymi do poziomu",
     "nazwaEn": "L-sit pull-up",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1306,7 +1306,7 @@
   },
   {
     "id": "cw039",
-    "nazwaPl": "Podciąganie na jednej ręce negatyw",
+    "nazwaPl": "Opuszczanie na jednej ręce z podciągnięcia",
     "nazwaEn": "One-arm negative pull-up",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1410,7 +1410,7 @@
   },
   {
     "id": "cw042",
-    "nazwaPl": "Negatywne podciąganie",
+    "nazwaPl": "Opuszczanie z podciągnięcia",
     "nazwaEn": "Negative pull-up (5-8 sek)",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1513,7 +1513,7 @@
   },
   {
     "id": "cw045",
-    "nazwaPl": "Scapular pull-up",
+    "nazwaPl": "Podciąganie łopatkowe",
     "nazwaEn": "Scapular pull-up",
     "partiaGlowna": "Łopatki, Dolne trapezy",
     "partieWspierajace": [
@@ -1618,7 +1618,7 @@
   },
   {
     "id": "cw048",
-    "nazwaPl": "Wiosłowanie chest-supported",
+    "nazwaPl": "Wiosłowanie hantlami z klatką opartą na ławce skośnej",
     "nazwaEn": "Chest supported dumbbell row",
     "partiaGlowna": "Środkowe plecy, Latissimus",
     "partieWspierajace": [
@@ -1653,7 +1653,7 @@
   },
   {
     "id": "cw049",
-    "nazwaPl": "Renegade row",
+    "nazwaPl": "Wiosłowanie hantlami w podporze przodem",
     "nazwaEn": "Renegade row",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1688,7 +1688,7 @@
   },
   {
     "id": "cw050",
-    "nazwaPl": "Meadows row hantlem",
+    "nazwaPl": "Wiosłowanie Meadowsa z hantlem",
     "nazwaEn": "Meadows row (single-arm)",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1722,7 +1722,7 @@
   },
   {
     "id": "cw051",
-    "nazwaPl": "Wiosłowanie odwrotnym chwytem",
+    "nazwaPl": "Wiosłowanie hantlami podchwytem",
     "nazwaEn": "Reverse grip dumbbell row",
     "partiaGlowna": "Dolna część lat",
     "partieWspierajace": [
@@ -1756,7 +1756,7 @@
   },
   {
     "id": "cw052",
-    "nazwaPl": "Wiosłowanie gorilla",
+    "nazwaPl": "Naprzemienne wiosłowanie hantlami z podłogi w opadzie",
     "nazwaEn": "Gorilla row (alternating)",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1790,7 +1790,7 @@
   },
   {
     "id": "cw053",
-    "nazwaPl": "Kelso shrug",
+    "nazwaPl": "Ściąganie łopatek Kelso z hantlami na ławce skośnej",
     "nazwaEn": "Kelso shrug (chest supported)",
     "partiaGlowna": "Środkowa część trapezów",
     "partieWspierajace": [
@@ -1824,7 +1824,7 @@
   },
   {
     "id": "cw054",
-    "nazwaPl": "Szrugsy hantlami",
+    "nazwaPl": "Wzruszanie barkami z hantlami",
     "nazwaEn": "Dumbbell shrug",
     "partiaGlowna": "Górne trapezy",
     "partieWspierajace": [
@@ -1858,7 +1858,7 @@
   },
   {
     "id": "cw055",
-    "nazwaPl": "Band pull-apart",
+    "nazwaPl": "Rozciąganie gumy przed klatką piersiową",
     "nazwaEn": "Band pull-apart",
     "partiaGlowna": "Tylne barki, Romboidy",
     "partieWspierajace": [
@@ -1891,7 +1891,7 @@
   },
   {
     "id": "cw056",
-    "nazwaPl": "Band row siedząc",
+    "nazwaPl": "Wiosłowanie gumą w siadzie",
     "nazwaEn": "Seated band row",
     "partiaGlowna": "Środkowe plecy, Lat",
     "partieWspierajace": [
@@ -1925,7 +1925,7 @@
   },
   {
     "id": "cw057",
-    "nazwaPl": "Band lat pulldown",
+    "nazwaPl": "Ściąganie gumy z góry do klatki piersiowej",
     "nazwaEn": "Band lat pulldown",
     "partiaGlowna": "Latissimus dorsi",
     "partieWspierajace": [
@@ -1959,7 +1959,7 @@
   },
   {
     "id": "cw058",
-    "nazwaPl": "Band face pull",
+    "nazwaPl": "Face pull z gumą",
     "nazwaEn": "Band face pull",
     "partiaGlowna": "Tylne barki, Górne plecy",
     "partieWspierajace": [
@@ -1993,7 +1993,7 @@
   },
   {
     "id": "cw059",
-    "nazwaPl": "Superman",
+    "nazwaPl": "Unoszenie ramion i nóg w leżeniu na brzuchu",
     "nazwaEn": "Superman",
     "partiaGlowna": "Prostowniki grzbietu",
     "partieWspierajace": [
@@ -2027,7 +2027,7 @@
   },
   {
     "id": "cw060",
-    "nazwaPl": "Superman hold",
+    "nazwaPl": "Utrzymanie uniesionych ramion i nóg w leżeniu na brzuchu",
     "nazwaEn": "Superman hold (3-5 sek)",
     "partiaGlowna": "Prostowniki grzbietu",
     "partieWspierajace": [
@@ -2060,7 +2060,7 @@
   },
   {
     "id": "cw061",
-    "nazwaPl": "Reverse snow angel",
+    "nazwaPl": "Przenoszenie ramion łukiem nad głowę w leżeniu na brzuchu",
     "nazwaEn": "Reverse snow angel",
     "partiaGlowna": "Tylne barki, Górne plecy",
     "partieWspierajace": [
@@ -2094,7 +2094,7 @@
   },
   {
     "id": "cw062",
-    "nazwaPl": "Good morning z hantlem",
+    "nazwaPl": "Skłony tułowia z hantlem i cofnięciem bioder",
     "nazwaEn": "Dumbbell good morning",
     "partiaGlowna": "Prostowniki grzbietu",
     "partieWspierajace": [
@@ -2128,7 +2128,7 @@
   },
   {
     "id": "cw063",
-    "nazwaPl": "Deadlift rumuński hantlami",
+    "nazwaPl": "Rumuński martwy ciąg z hantlami",
     "nazwaEn": "Dumbbell RDL",
     "partiaGlowna": "Dwugłowe uda, Pośladki",
     "partieWspierajace": [
@@ -2162,7 +2162,7 @@
   },
   {
     "id": "cw064",
-    "nazwaPl": "Wiosłowanie T-bar z hantlem (imitacja)",
+    "nazwaPl": "Wiosłowanie oburącz hantlem opartym jednym końcem w rogu",
     "nazwaEn": "Landmine-style row with dumbbell",
     "partiaGlowna": "Latissimus dorsi, Środkowe plecy",
     "partieWspierajace": [
@@ -2196,7 +2196,7 @@
   },
   {
     "id": "cw065",
-    "nazwaPl": "Wyciskanie hantli nad głowę siedząc",
+    "nazwaPl": "Wyciskanie hantli nad głowę w siadzie",
     "nazwaEn": "Seated dumbbell overhead press",
     "partiaGlowna": "Barki (wszystkie aktony)",
     "partieWspierajace": [
@@ -2232,7 +2232,7 @@
   },
   {
     "id": "cw066",
-    "nazwaPl": "Wyciskanie hantli stojąc",
+    "nazwaPl": "Wyciskanie hantli nad głowę w staniu",
     "nazwaEn": "Standing dumbbell overhead press",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2267,7 +2267,7 @@
   },
   {
     "id": "cw067",
-    "nazwaPl": "Arnold press",
+    "nazwaPl": "Wyciskanie Arnolda z hantlami",
     "nazwaEn": "Arnold press",
     "partiaGlowna": "Barki (wszystkie 3 aktony)",
     "partieWspierajace": [
@@ -2301,7 +2301,7 @@
   },
   {
     "id": "cw068",
-    "nazwaPl": "Wyciskanie neutralne",
+    "nazwaPl": "Wyciskanie hantli nad głowę chwytem neutralnym",
     "nazwaEn": "Neutral grip DB press",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2335,7 +2335,7 @@
   },
   {
     "id": "cw069",
-    "nazwaPl": "Push press hantlami",
+    "nazwaPl": "Wyciskanie hantli nad głowę z wybiciem z nóg",
     "nazwaEn": "Dumbbell push press",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2370,7 +2370,7 @@
   },
   {
     "id": "cw070",
-    "nazwaPl": "Wznosy bokiem hantlami",
+    "nazwaPl": "Unoszenie hantli bokiem",
     "nazwaEn": "Dumbbell lateral raise",
     "partiaGlowna": "Boczne aktony barków",
     "partieWspierajace": [
@@ -2403,7 +2403,7 @@
   },
   {
     "id": "cw071",
-    "nazwaPl": "Wznosy bokiem na jednej nodze",
+    "nazwaPl": "Unoszenie hantli bokiem w staniu na jednej nodze",
     "nazwaEn": "Single-leg lateral raise",
     "partiaGlowna": "Boczne aktony barków",
     "partieWspierajace": [
@@ -2437,7 +2437,7 @@
   },
   {
     "id": "cw072",
-    "nazwaPl": "Wznosy bokiem z pauzą",
+    "nazwaPl": "Unoszenie hantli bokiem z pauzą",
     "nazwaEn": "Paused lateral raise",
     "partiaGlowna": "Boczne aktony barków",
     "partieWspierajace": [
@@ -2470,7 +2470,7 @@
   },
   {
     "id": "cw073",
-    "nazwaPl": "Wznosy w przód hantlami",
+    "nazwaPl": "Unoszenie hantli w przód",
     "nazwaEn": "Dumbbell front raise",
     "partiaGlowna": "Przednie aktony barków",
     "partieWspierajace": [
@@ -2503,7 +2503,7 @@
   },
   {
     "id": "cw074",
-    "nazwaPl": "Front raise naprzemienny",
+    "nazwaPl": "Naprzemienne unoszenie hantli w przód",
     "nazwaEn": "Alternating dumbbell front raise",
     "partiaGlowna": "Przednie aktony barków",
     "partieWspierajace": [
@@ -2536,7 +2536,7 @@
   },
   {
     "id": "cw075",
-    "nazwaPl": "Rozpiętki w opadzie hantlami",
+    "nazwaPl": "Odwrotne rozpiętki z hantlami w opadzie",
     "nazwaEn": "Bent-over reverse flye",
     "partiaGlowna": "Tylne aktony barków",
     "partieWspierajace": [
@@ -2570,7 +2570,7 @@
   },
   {
     "id": "cw076",
-    "nazwaPl": "Reverse flye na skośnej ławce",
+    "nazwaPl": "Odwrotne rozpiętki z hantlami na ławce skośnej",
     "nazwaEn": "Chest-supported reverse flye",
     "partiaGlowna": "Tylne aktony barków",
     "partieWspierajace": [
@@ -2604,7 +2604,7 @@
   },
   {
     "id": "cw077",
-    "nazwaPl": "Y-raise hantlami",
+    "nazwaPl": "Unoszenie hantli w kształt litery Y na ławce skośnej",
     "nazwaEn": "Y raise",
     "partiaGlowna": "Dolne trapezy, Tylne barki",
     "partieWspierajace": [
@@ -2637,7 +2637,7 @@
   },
   {
     "id": "cw078",
-    "nazwaPl": "Pike push-up",
+    "nazwaPl": "Pompki z biodrami uniesionymi wysoko",
     "nazwaEn": "Pike push-up",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2671,7 +2671,7 @@
   },
   {
     "id": "cw079",
-    "nazwaPl": "Pike push-up z nogami na ławce",
+    "nazwaPl": "Pompki z biodrami uniesionymi wysoko i nogami na ławce",
     "nazwaEn": "Elevated pike push-up",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2705,7 +2705,7 @@
   },
   {
     "id": "cw080",
-    "nazwaPl": "Handstand hold przy ścianie",
+    "nazwaPl": "Stanie na rękach przy ścianie",
     "nazwaEn": "Wall handstand hold",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2741,7 +2741,7 @@
   },
   {
     "id": "cw081",
-    "nazwaPl": "Handstand push-up przy ścianie",
+    "nazwaPl": "Pompki w staniu na rękach przy ścianie",
     "nazwaEn": "Wall HSPU",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2775,7 +2775,7 @@
   },
   {
     "id": "cw082",
-    "nazwaPl": "Wyciskanie gumą nad głowę",
+    "nazwaPl": "Wyciskanie gumy nad głowę",
     "nazwaEn": "Band overhead press",
     "partiaGlowna": "Barki",
     "partieWspierajace": [
@@ -2809,7 +2809,7 @@
   },
   {
     "id": "cw083",
-    "nazwaPl": "Band lateral raise",
+    "nazwaPl": "Unoszenie ramienia bokiem z gumą",
     "nazwaEn": "Band lateral raise",
     "partiaGlowna": "Boczne aktony barków",
     "partieWspierajace": [
@@ -2842,7 +2842,7 @@
   },
   {
     "id": "cw084",
-    "nazwaPl": "Band front raise",
+    "nazwaPl": "Unoszenie ramion w przód z gumą",
     "nazwaEn": "Band front raise",
     "partiaGlowna": "Przednie aktony barków",
     "partieWspierajace": [
@@ -2875,7 +2875,7 @@
   },
   {
     "id": "cw085",
-    "nazwaPl": "Band face pull",
+    "nazwaPl": "Face pull z gumą",
     "nazwaEn": "Band face pull",
     "partiaGlowna": "Tylne aktony barków",
     "partieWspierajace": [
@@ -2909,7 +2909,7 @@
   },
   {
     "id": "cw086",
-    "nazwaPl": "Band pull-apart",
+    "nazwaPl": "Rozciąganie gumy przed klatką piersiową",
     "nazwaEn": "Band pull-apart",
     "partiaGlowna": "Tylne aktony barków",
     "partieWspierajace": [
@@ -2943,7 +2943,7 @@
   },
   {
     "id": "cw087",
-    "nazwaPl": "Band external rotation",
+    "nazwaPl": "Rotacja zewnętrzna ramienia z gumą",
     "nazwaEn": "Band external rotation",
     "partiaGlowna": "Rotatory (infraspinatus, teres minor)",
     "partieWspierajace": [
@@ -2976,7 +2976,7 @@
   },
   {
     "id": "cw088",
-    "nazwaPl": "Band internal rotation",
+    "nazwaPl": "Rotacja wewnętrzna ramienia z gumą",
     "nazwaEn": "Band internal rotation",
     "partiaGlowna": "Rotatory (subscapularis)",
     "partieWspierajace": [
@@ -3009,7 +3009,7 @@
   },
   {
     "id": "cw089",
-    "nazwaPl": "Cuban press hantlami",
+    "nazwaPl": "Wyciskanie kubańskie z hantlami",
     "nazwaEn": "Cuban press",
     "partiaGlowna": "Rotatory + Barki",
     "partieWspierajace": [
@@ -3043,7 +3043,7 @@
   },
   {
     "id": "cw090",
-    "nazwaPl": "Rotacja zewnętrzna leżąc bokiem",
+    "nazwaPl": "Rotacja zewnętrzna ramienia z hantlem w leżeniu bokiem",
     "nazwaEn": "Side-lying external rotation",
     "partiaGlowna": "Rotatory (infraspinatus)",
     "partieWspierajace": [
@@ -3076,7 +3076,7 @@
   },
   {
     "id": "cw091",
-    "nazwaPl": "Empty can raise",
+    "nazwaPl": "Unoszenie hantli w skos w przód z kciukami w dół",
     "nazwaEn": "Empty can raise (kciuki w dół)",
     "partiaGlowna": "Supraspinatus",
     "partieWspierajace": [
@@ -3109,7 +3109,7 @@
   },
   {
     "id": "cw092",
-    "nazwaPl": "Full can raise",
+    "nazwaPl": "Unoszenie hantli w skos w przód z kciukami w górę",
     "nazwaEn": "Full can raise (kciuki w górę)",
     "partiaGlowna": "Supraspinatus",
     "partieWspierajace": [
@@ -3142,7 +3142,7 @@
   },
   {
     "id": "cw093",
-    "nazwaPl": "Uginanie hantli stojąc",
+    "nazwaPl": "Uginanie przedramion z hantlami w staniu",
     "nazwaEn": "Standing dumbbell curl",
     "partiaGlowna": "Biceps",
     "partieWspierajace": [
@@ -3176,7 +3176,7 @@
   },
   {
     "id": "cw094",
-    "nazwaPl": "Uginanie młotkowe",
+    "nazwaPl": "Uginanie młotkowe z hantlami",
     "nazwaEn": "Hammer curl",
     "partiaGlowna": "Biceps, Ramienny (brachialis)",
     "partieWspierajace": [
@@ -3209,7 +3209,7 @@
   },
   {
     "id": "cw095",
-    "nazwaPl": "Uginanie naprzemienne",
+    "nazwaPl": "Naprzemienne uginanie przedramion z hantlami",
     "nazwaEn": "Alternating DB curl",
     "partiaGlowna": "Biceps",
     "partieWspierajace": [
@@ -3242,7 +3242,7 @@
   },
   {
     "id": "cw096",
-    "nazwaPl": "Uginanie na ławce skośnej",
+    "nazwaPl": "Uginanie przedramion z hantlami na ławce skośnej",
     "nazwaEn": "Incline dumbbell curl",
     "partiaGlowna": "Biceps (długa głowa)",
     "partieWspierajace": [
@@ -3276,7 +3276,7 @@
   },
   {
     "id": "cw097",
-    "nazwaPl": "Zottman curl",
+    "nazwaPl": "Uginanie Zottmana z hantlami",
     "nazwaEn": "Zottman curl",
     "partiaGlowna": "Biceps, Przedramię",
     "partieWspierajace": [
@@ -3309,7 +3309,7 @@
   },
   {
     "id": "cw098",
-    "nazwaPl": "Uginanie koncentracyjne",
+    "nazwaPl": "Uginanie przedramienia z hantlem w oparciu o udo",
     "nazwaEn": "Concentration curl",
     "partiaGlowna": "Biceps (szczyt)",
     "partieWspierajace": [
@@ -3343,7 +3343,7 @@
   },
   {
     "id": "cw099",
-    "nazwaPl": "Uginanie krzyżowe",
+    "nazwaPl": "Uginanie młotkowe z hantlem do przeciwnego barku",
     "nazwaEn": "Cross-body hammer curl",
     "partiaGlowna": "Ramienny (brachialis)",
     "partieWspierajace": [
@@ -3376,7 +3376,7 @@
   },
   {
     "id": "cw100",
-    "nazwaPl": "Uginanie odwrotnym chwytem",
+    "nazwaPl": "Uginanie przedramion z hantlami nachwytem",
     "nazwaEn": "Reverse curl",
     "partiaGlowna": "Przedramię (brachioradialis), Ramienny",
     "partieWspierajace": [
@@ -3409,7 +3409,7 @@
   },
   {
     "id": "cw101",
-    "nazwaPl": "Uginanie 21s",
+    "nazwaPl": "Uginanie przedramion z hantlami metodą 21 powtórzeń",
     "nazwaEn": "21s dumbbell curl",
     "partiaGlowna": "Biceps",
     "partieWspierajace": [
@@ -3442,7 +3442,7 @@
   },
   {
     "id": "cw102",
-    "nazwaPl": "Chin-up jako biceps",
+    "nazwaPl": "Podciąganie podchwytem z naciskiem na biceps",
     "nazwaEn": "Chin-up biceps focus",
     "partiaGlowna": "Biceps",
     "partieWspierajace": [
@@ -3475,7 +3475,7 @@
   },
   {
     "id": "cw103",
-    "nazwaPl": "Band curl",
+    "nazwaPl": "Uginanie przedramion z gumą",
     "nazwaEn": "Band curl",
     "partiaGlowna": "Biceps",
     "partieWspierajace": [
@@ -3508,7 +3508,7 @@
   },
   {
     "id": "cw104",
-    "nazwaPl": "Drag curl",
+    "nazwaPl": "Uginanie przedramion z hantlami prowadzonymi wzdłuż tułowia",
     "nazwaEn": "Drag curl",
     "partiaGlowna": "Biceps (długa głowa)",
     "partieWspierajace": [
@@ -3541,7 +3541,7 @@
   },
   {
     "id": "cw105",
-    "nazwaPl": "French press hantlami oburącz",
+    "nazwaPl": "Wyciskanie francuskie hantla oburącz nad głową",
     "nazwaEn": "Overhead DB triceps extension",
     "partiaGlowna": "Triceps (długa głowa)",
     "partieWspierajace": [
@@ -3574,7 +3574,7 @@
   },
   {
     "id": "cw106",
-    "nazwaPl": "French press jednorącz",
+    "nazwaPl": "Wyciskanie francuskie hantla jednorącz nad głową",
     "nazwaEn": "One-arm overhead extension",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3607,7 +3607,7 @@
   },
   {
     "id": "cw107",
-    "nazwaPl": "Wyciskanie francuskie leżąc",
+    "nazwaPl": "Wyciskanie francuskie hantli w leżeniu na ławce",
     "nazwaEn": "Skull crusher (dumbbell)",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3641,7 +3641,7 @@
   },
   {
     "id": "cw108",
-    "nazwaPl": "Wyciskanie wąsko hantli",
+    "nazwaPl": "Wyciskanie hantli wąsko na ławce",
     "nazwaEn": "Close-grip DB press",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3676,7 +3676,7 @@
   },
   {
     "id": "cw109",
-    "nazwaPl": "Kickback hantlem",
+    "nazwaPl": "Prostowanie przedramienia z hantlem w opadzie",
     "nazwaEn": "Triceps kickback",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3709,7 +3709,7 @@
   },
   {
     "id": "cw110",
-    "nazwaPl": "Pompki diamentowe (triceps focus)",
+    "nazwaPl": "Pompki diamentowe z naciskiem na triceps",
     "nazwaEn": "Diamond push-up (triceps)",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3742,7 +3742,7 @@
   },
   {
     "id": "cw111",
-    "nazwaPl": "Dipy o ławkę tyłem",
+    "nazwaPl": "Pompki tyłem na ławce",
     "nazwaEn": "Bench dips",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3776,7 +3776,7 @@
   },
   {
     "id": "cw112",
-    "nazwaPl": "Weighted bench dips",
+    "nazwaPl": "Pompki tyłem na ławce z hantlem na udach",
     "nazwaEn": "Weighted bench dips",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3811,7 +3811,7 @@
   },
   {
     "id": "cw113",
-    "nazwaPl": "JM press hantlami",
+    "nazwaPl": "Wyciskanie JM z hantlami",
     "nazwaEn": "JM press",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3846,7 +3846,7 @@
   },
   {
     "id": "cw114",
-    "nazwaPl": "Band triceps pushdown",
+    "nazwaPl": "Prostowanie przedramion w dół z gumą",
     "nazwaEn": "Band triceps pushdown",
     "partiaGlowna": "Triceps",
     "partieWspierajace": [
@@ -3879,7 +3879,7 @@
   },
   {
     "id": "cw115",
-    "nazwaPl": "Band overhead triceps extension",
+    "nazwaPl": "Prostowanie przedramion nad głową z gumą",
     "nazwaEn": "Band overhead triceps extension",
     "partiaGlowna": "Triceps (długa głowa)",
     "partieWspierajace": [
@@ -3912,7 +3912,7 @@
   },
   {
     "id": "cw116",
-    "nazwaPl": "Tate press hantlami",
+    "nazwaPl": "Wyciskanie Tate'a z hantlami",
     "nazwaEn": "Tate press",
     "partiaGlowna": "Triceps (przyśrodkowa głowa)",
     "partieWspierajace": [
@@ -3946,7 +3946,7 @@
   },
   {
     "id": "cw117",
-    "nazwaPl": "Wrist curl hantlami",
+    "nazwaPl": "Uginanie nadgarstków z hantlami podchwytem",
     "nazwaEn": "Wrist curl",
     "partiaGlowna": "Zginacze nadgarstka",
     "partieWspierajace": [
@@ -3979,7 +3979,7 @@
   },
   {
     "id": "cw118",
-    "nazwaPl": "Reverse wrist curl",
+    "nazwaPl": "Prostowanie nadgarstków z hantlami nachwytem",
     "nazwaEn": "Reverse wrist curl",
     "partiaGlowna": "Prostowniki nadgarstka",
     "partieWspierajace": [
@@ -4012,7 +4012,7 @@
   },
   {
     "id": "cw119",
-    "nazwaPl": "Chód farmera",
+    "nazwaPl": "Chód farmera z hantlami",
     "nazwaEn": "Farmer's walk",
     "partiaGlowna": "Grip, Trapezy",
     "partieWspierajace": [
@@ -4047,7 +4047,7 @@
   },
   {
     "id": "cw120",
-    "nazwaPl": "Zwis martwy (grip)",
+    "nazwaPl": "Zwis martwy na siłę chwytu",
     "nazwaEn": "Dead hang (grip focus)",
     "partiaGlowna": "Grip",
     "partieWspierajace": [
@@ -4081,7 +4081,7 @@
   },
   {
     "id": "cw121",
-    "nazwaPl": "Towel pull-up",
+    "nazwaPl": "Podciąganie na ręcznikach przewieszonych przez drążek",
     "nazwaEn": "Towel pull-up",
     "partiaGlowna": "Grip, Latissimus",
     "partieWspierajace": [
@@ -4116,7 +4116,7 @@
   },
   {
     "id": "cw122",
-    "nazwaPl": "Plate pinch (ściskanie hantla)",
+    "nazwaPl": "Ściskanie końca hantla palcami",
     "nazwaEn": "Plate pinch",
     "partiaGlowna": "Grip (kciuk-palce)",
     "partieWspierajace": [
@@ -4149,7 +4149,7 @@
   },
   {
     "id": "cw123",
-    "nazwaPl": "Wrist roller",
+    "nazwaPl": "Nawijanie linki z hantlem na drążek",
     "nazwaEn": "Wrist roller",
     "partiaGlowna": "Przedramiona (zginacze + prostowniki)",
     "partieWspierajace": [
@@ -4181,7 +4181,7 @@
   },
   {
     "id": "cw124",
-    "nazwaPl": "Behind-back wrist curl",
+    "nazwaPl": "Uginanie nadgarstków z hantlami za plecami",
     "nazwaEn": "Behind-back wrist curl",
     "partiaGlowna": "Zginacze nadgarstka",
     "partieWspierajace": [
@@ -4214,7 +4214,7 @@
   },
   {
     "id": "cw125",
-    "nazwaPl": "Przysiad goblet",
+    "nazwaPl": "Przysiad z hantlem trzymanym oburącz przy klatce",
     "nazwaEn": "Goblet squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4319,7 +4319,7 @@
   },
   {
     "id": "cw128",
-    "nazwaPl": "Przysiad bułgarski",
+    "nazwaPl": "Przysiad bułgarski z hantlami",
     "nazwaEn": "Bulgarian split squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4354,7 +4354,7 @@
   },
   {
     "id": "cw129",
-    "nazwaPl": "Split squat statyczny",
+    "nazwaPl": "Przysiad w wykroku z hantlami",
     "nazwaEn": "Static split squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4388,7 +4388,7 @@
   },
   {
     "id": "cw130",
-    "nazwaPl": "Zakroki chodzące",
+    "nazwaPl": "Wykroki chodzone z hantlami",
     "nazwaEn": "Walking lunges",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4422,7 +4422,7 @@
   },
   {
     "id": "cw131",
-    "nazwaPl": "Zakroki w tył",
+    "nazwaPl": "Zakroki z hantlami",
     "nazwaEn": "Reverse lunges",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4456,7 +4456,7 @@
   },
   {
     "id": "cw132",
-    "nazwaPl": "Zakroki na boki",
+    "nazwaPl": "Wypady w bok z hantlami",
     "nazwaEn": "Lateral lunge (cossack squat)",
     "partiaGlowna": "Kwadryceps, Adduktory",
     "partieWspierajace": [
@@ -4490,7 +4490,7 @@
   },
   {
     "id": "cw133",
-    "nazwaPl": "Curtsy lunge",
+    "nazwaPl": "Zakroki skrzyżne z hantlami",
     "nazwaEn": "Curtsy lunge",
     "partiaGlowna": "Pośladki (glute medius)",
     "partieWspierajace": [
@@ -4523,7 +4523,7 @@
   },
   {
     "id": "cw134",
-    "nazwaPl": "Wykroki w chodzie z rotacją",
+    "nazwaPl": "Wykroki chodzone z rotacją tułowia i hantlami",
     "nazwaEn": "Walking lunge with twist",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4557,7 +4557,7 @@
   },
   {
     "id": "cw135",
-    "nazwaPl": "Wchodzenie na ławkę",
+    "nazwaPl": "Wchodzenie na ławkę z hantlami",
     "nazwaEn": "Dumbbell step-up",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4592,7 +4592,7 @@
   },
   {
     "id": "cw136",
-    "nazwaPl": "Wchodzenie na ławkę z kolanem",
+    "nazwaPl": "Wchodzenie na ławkę z uniesieniem kolana i hantlami",
     "nazwaEn": "Step-up with knee drive",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4628,7 +4628,7 @@
   },
   {
     "id": "cw137",
-    "nazwaPl": "Przysiad pistolet",
+    "nazwaPl": "Przysiad na jednej nodze z drugą wyprostowaną w przód",
     "nazwaEn": "Pistol squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4663,7 +4663,7 @@
   },
   {
     "id": "cw138",
-    "nazwaPl": "Pistol squat asystowany",
+    "nazwaPl": "Przysiad na jednej nodze z drugą wyprostowaną w przód z podparciem",
     "nazwaEn": "Assisted pistol squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4698,7 +4698,7 @@
   },
   {
     "id": "cw139",
-    "nazwaPl": "Skater squat",
+    "nazwaPl": "Przysiad łyżwiarski",
     "nazwaEn": "Skater squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4733,7 +4733,7 @@
   },
   {
     "id": "cw140",
-    "nazwaPl": "Sissy squat z asystą",
+    "nazwaPl": "Przysiad na palcach z odchyleniem tułowia w tył i podparciem",
     "nazwaEn": "Sissy squat",
     "partiaGlowna": "Kwadryceps",
     "partieWspierajace": [
@@ -4766,7 +4766,7 @@
   },
   {
     "id": "cw141",
-    "nazwaPl": "Wall sit",
+    "nazwaPl": "Siad przy ścianie",
     "nazwaEn": "Wall sit",
     "partiaGlowna": "Kwadryceps",
     "partieWspierajace": [
@@ -4801,7 +4801,7 @@
   },
   {
     "id": "cw142",
-    "nazwaPl": "Weighted wall sit",
+    "nazwaPl": "Siad przy ścianie z hantlem",
     "nazwaEn": "Weighted wall sit",
     "partiaGlowna": "Kwadryceps",
     "partieWspierajace": [
@@ -4835,7 +4835,7 @@
   },
   {
     "id": "cw143",
-    "nazwaPl": "Cossack squat",
+    "nazwaPl": "Przysiad kozacki z hantlem",
     "nazwaEn": "Cossack squat",
     "partiaGlowna": "Kwadryceps, Adduktory",
     "partieWspierajace": [
@@ -4903,7 +4903,7 @@
   },
   {
     "id": "cw145",
-    "nazwaPl": "Przysiad ze skokiem 180°",
+    "nazwaPl": "Przysiad ze skokiem i obrotem o 180°",
     "nazwaEn": "180° jump squat",
     "partiaGlowna": "Kwadryceps, Pośladki",
     "partieWspierajace": [
@@ -4938,7 +4938,7 @@
   },
   {
     "id": "cw146",
-    "nazwaPl": "Wyskoki na skrzynię/ławkę",
+    "nazwaPl": "Wyskoki na skrzynię lub ławkę",
     "nazwaEn": "Box jump",
     "partiaGlowna": "Nogi (eksplozja)",
     "partieWspierajace": [
@@ -4974,7 +4974,7 @@
   },
   {
     "id": "cw147",
-    "nazwaPl": "Broad jump",
+    "nazwaPl": "Skok w dal z miejsca",
     "nazwaEn": "Broad jump",
     "partiaGlowna": "Nogi (eksplozja)",
     "partieWspierajace": [
@@ -5008,7 +5008,7 @@
   },
   {
     "id": "cw148",
-    "nazwaPl": "Deadlift rumuński hantlami (nogi)",
+    "nazwaPl": "Rumuński martwy ciąg z hantlami (na nogi)",
     "nazwaEn": "Dumbbell RDL (legs focus)",
     "partiaGlowna": "Dwugłowe uda, Pośladki",
     "partieWspierajace": [
@@ -5042,7 +5042,7 @@
   },
   {
     "id": "cw149",
-    "nazwaPl": "Deadlift rumuński jednonóż",
+    "nazwaPl": "Rumuński martwy ciąg z hantlami na jednej nodze",
     "nazwaEn": "Single-leg RDL",
     "partiaGlowna": "Dwugłowe uda, Pośladki",
     "partieWspierajace": [
@@ -5077,7 +5077,7 @@
   },
   {
     "id": "cw150",
-    "nazwaPl": "Deadlift stiff-leg hantlami",
+    "nazwaPl": "Martwy ciąg z hantlami na prostych nogach",
     "nazwaEn": "Stiff-leg dumbbell deadlift",
     "partiaGlowna": "Dwugłowe uda, Prostowniki",
     "partieWspierajace": [
@@ -5110,7 +5110,7 @@
   },
   {
     "id": "cw151",
-    "nazwaPl": "Deadlift sumo hantlem",
+    "nazwaPl": "Martwy ciąg z hantlem w szerokim rozkroku",
     "nazwaEn": "Sumo dumbbell deadlift",
     "partiaGlowna": "Adduktory, Pośladki",
     "partieWspierajace": [
@@ -5145,7 +5145,7 @@
   },
   {
     "id": "cw152",
-    "nazwaPl": "Good morning z gumą",
+    "nazwaPl": "Skłony tułowia z gumą i cofnięciem bioder",
     "nazwaEn": "Band good morning",
     "partiaGlowna": "Prostowniki grzbietu, Dwugłowe",
     "partieWspierajace": [
@@ -5179,7 +5179,7 @@
   },
   {
     "id": "cw153",
-    "nazwaPl": "Nordic hamstring curl asystowany",
+    "nazwaPl": "Opad tułowia w klęku z zablokowanymi stopami i pomocą rąk",
     "nazwaEn": "Assisted Nordic hamstring curl",
     "partiaGlowna": "Dwugłowe uda",
     "partieWspierajace": [
@@ -5213,7 +5213,7 @@
   },
   {
     "id": "cw154",
-    "nazwaPl": "Glute bridge",
+    "nazwaPl": "Most biodrowy",
     "nazwaEn": "Glute bridge",
     "partiaGlowna": "Pośladki",
     "partieWspierajace": [
@@ -5247,7 +5247,7 @@
   },
   {
     "id": "cw155",
-    "nazwaPl": "Glute bridge z hantlem",
+    "nazwaPl": "Most biodrowy z hantlem",
     "nazwaEn": "Weighted glute bridge",
     "partiaGlowna": "Pośladki",
     "partieWspierajace": [
@@ -5352,7 +5352,7 @@
   },
   {
     "id": "cw158",
-    "nazwaPl": "Frog pump",
+    "nazwaPl": "Unoszenie bioder w leżeniu ze złączonymi podeszwami stóp",
     "nazwaEn": "Frog pump",
     "partiaGlowna": "Pośladki",
     "partieWspierajace": [
@@ -5386,7 +5386,7 @@
   },
   {
     "id": "cw159",
-    "nazwaPl": "Donkey kick",
+    "nazwaPl": "Unoszenie ugiętej nogi w tył w klęku podpartym",
     "nazwaEn": "Donkey kick",
     "partiaGlowna": "Pośladki",
     "partieWspierajace": [
@@ -5421,7 +5421,7 @@
   },
   {
     "id": "cw160",
-    "nazwaPl": "Fire hydrant",
+    "nazwaPl": "Odwodzenie ugiętej nogi w bok w klęku podpartym z gumą",
     "nazwaEn": "Fire hydrant",
     "partiaGlowna": "Pośladki (glute medius)",
     "partieWspierajace": [
@@ -5455,7 +5455,7 @@
   },
   {
     "id": "cw161",
-    "nazwaPl": "Clamshell z gumą",
+    "nazwaPl": "Rozwieranie kolan w leżeniu bokiem z gumą",
     "nazwaEn": "Clamshell (banded)",
     "partiaGlowna": "Pośladki (glute medius)",
     "partieWspierajace": [
@@ -5489,7 +5489,7 @@
   },
   {
     "id": "cw162",
-    "nazwaPl": "Band monster walk",
+    "nazwaPl": "Chód w półprzysiadzie z gumą",
     "nazwaEn": "Banded monster walk",
     "partiaGlowna": "Odwodziciele bioder, Pośladki",
     "partieWspierajace": [
@@ -5522,7 +5522,7 @@
   },
   {
     "id": "cw163",
-    "nazwaPl": "Wznosy na palce stojąc",
+    "nazwaPl": "Wspięcia na palce w staniu",
     "nazwaEn": "Standing calf raise",
     "partiaGlowna": "Łydka (gastrocnemius)",
     "partieWspierajace": [
@@ -5556,7 +5556,7 @@
   },
   {
     "id": "cw164",
-    "nazwaPl": "Wznosy na palce jednonóż",
+    "nazwaPl": "Wspięcia na palce na jednej nodze z hantlem",
     "nazwaEn": "Single-leg calf raise",
     "partiaGlowna": "Łydka (gastrocnemius)",
     "partieWspierajace": [
@@ -5590,7 +5590,7 @@
   },
   {
     "id": "cw165",
-    "nazwaPl": "Wznosy na palce z ławeczki",
+    "nazwaPl": "Wspięcia na palce na krawędzi ławki z hantlami",
     "nazwaEn": "Deficit calf raise",
     "partiaGlowna": "Łydka (pełny zakres)",
     "partieWspierajace": [
@@ -5624,7 +5624,7 @@
   },
   {
     "id": "cw166",
-    "nazwaPl": "Seated calf raise z hantlami",
+    "nazwaPl": "Wspięcia na palce w siadzie z hantlami",
     "nazwaEn": "Seated calf raise",
     "partiaGlowna": "Łydka (soleus)",
     "partieWspierajace": [
@@ -5658,7 +5658,7 @@
   },
   {
     "id": "cw167",
-    "nazwaPl": "Donkey calf raise",
+    "nazwaPl": "Wspięcia na palce w opadzie tułowia",
     "nazwaEn": "Donkey calf raise",
     "partiaGlowna": "Łydka (gastrocnemius)",
     "partieWspierajace": [
@@ -5692,7 +5692,7 @@
   },
   {
     "id": "cw168",
-    "nazwaPl": "Tibialis raise",
+    "nazwaPl": "Unoszenie przodostopia w oparciu plecami o ścianę",
     "nazwaEn": "Tibialis raise",
     "partiaGlowna": "Przednia goleń (tibialis anterior)",
     "partieWspierajace": [
@@ -5725,7 +5725,7 @@
   },
   {
     "id": "cw169",
-    "nazwaPl": "Plank klasyczny na przedramionach",
+    "nazwaPl": "Deska na przedramionach",
     "nazwaEn": "Forearm plank",
     "partiaGlowna": "Core (proste + poprzeczny)",
     "partieWspierajace": [
@@ -5760,7 +5760,7 @@
   },
   {
     "id": "cw170",
-    "nazwaPl": "Plank wysoki",
+    "nazwaPl": "Deska na prostych ramionach",
     "nazwaEn": "High plank",
     "partiaGlowna": "Core",
     "partieWspierajace": [
@@ -5795,7 +5795,7 @@
   },
   {
     "id": "cw171",
-    "nazwaPl": "Plank bokiem",
+    "nazwaPl": "Deska bokiem",
     "nazwaEn": "Side plank",
     "partiaGlowna": "Skośne brzucha (anty-fleksja boczna)",
     "partieWspierajace": [
@@ -5830,7 +5830,7 @@
   },
   {
     "id": "cw172",
-    "nazwaPl": "Side plank z uniesieniem biodra",
+    "nazwaPl": "Deska bokiem z opuszczaniem i unoszeniem bioder",
     "nazwaEn": "Side plank hip dip",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -5864,7 +5864,7 @@
   },
   {
     "id": "cw173",
-    "nazwaPl": "Side plank z uniesioną nogą",
+    "nazwaPl": "Deska bokiem z unoszeniem nogi",
     "nazwaEn": "Side plank leg raise",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -5897,7 +5897,7 @@
   },
   {
     "id": "cw174",
-    "nazwaPl": "Plank shoulder tap",
+    "nazwaPl": "Deska z dotykaniem przeciwnego barku",
     "nazwaEn": "Plank shoulder tap",
     "partiaGlowna": "Core (anty-rotacja)",
     "partieWspierajace": [
@@ -5930,7 +5930,7 @@
   },
   {
     "id": "cw175",
-    "nazwaPl": "Plank walk-up",
+    "nazwaPl": "Przejścia z deski na przedramionach do podporu na dłoniach",
     "nazwaEn": "Plank up-down",
     "partiaGlowna": "Core, Barki",
     "partieWspierajace": [
@@ -5964,7 +5964,7 @@
   },
   {
     "id": "cw176",
-    "nazwaPl": "Renegade row (core)",
+    "nazwaPl": "Wiosłowanie hantlami w podporze przodem (stabilizacja tułowia)",
     "nazwaEn": "Renegade row (core focus)",
     "partiaGlowna": "Core (anty-rotacja)",
     "partieWspierajace": [
@@ -5999,7 +5999,7 @@
   },
   {
     "id": "cw177",
-    "nazwaPl": "Plank z uniesieniem nogi",
+    "nazwaPl": "Deska z unoszeniem nogi",
     "nazwaEn": "Plank leg lift",
     "partiaGlowna": "Core, Pośladki",
     "partieWspierajace": [
@@ -6033,7 +6033,7 @@
   },
   {
     "id": "cw178",
-    "nazwaPl": "Copenhagen plank",
+    "nazwaPl": "Deska kopenhaska z nogą na ławce",
     "nazwaEn": "Copenhagen plank",
     "partiaGlowna": "Adduktory",
     "partieWspierajace": [
@@ -6068,7 +6068,7 @@
   },
   {
     "id": "cw179",
-    "nazwaPl": "Dead bug",
+    "nazwaPl": "Martwy robak",
     "nazwaEn": "Dead bug",
     "partiaGlowna": "Deep core (poprzeczny)",
     "partieWspierajace": [
@@ -6101,7 +6101,7 @@
   },
   {
     "id": "cw180",
-    "nazwaPl": "Dead bug z hantlem",
+    "nazwaPl": "Martwy robak z hantlem",
     "nazwaEn": "Weighted dead bug",
     "partiaGlowna": "Deep core",
     "partieWspierajace": [
@@ -6134,7 +6134,7 @@
   },
   {
     "id": "cw181",
-    "nazwaPl": "Bird dog",
+    "nazwaPl": "Prostowanie przeciwnej ręki i nogi w klęku podpartym",
     "nazwaEn": "Bird dog",
     "partiaGlowna": "Stabilizacja core, Prostowniki",
     "partieWspierajace": [
@@ -6168,7 +6168,7 @@
   },
   {
     "id": "cw182",
-    "nazwaPl": "Bird dog dynamiczny łokieć-kolano",
+    "nazwaPl": "Prostowanie przeciwnej ręki i nogi z przyciąganiem łokcia do kolana w klęku podpartym",
     "nazwaEn": "Dynamic bird dog",
     "partiaGlowna": "Stabilizacja core",
     "partieWspierajace": [
@@ -6202,7 +6202,7 @@
   },
   {
     "id": "cw183",
-    "nazwaPl": "Hollow body hold",
+    "nazwaPl": "Utrzymanie pozycji łódki w leżeniu na plecach",
     "nazwaEn": "Hollow body hold",
     "partiaGlowna": "Core (proste, anty-ekstensja)",
     "partieWspierajace": [
@@ -6236,7 +6236,7 @@
   },
   {
     "id": "cw184",
-    "nazwaPl": "Hollow rocks",
+    "nazwaPl": "Kołysanie w pozycji łódki na plecach",
     "nazwaEn": "Hollow rocks",
     "partiaGlowna": "Core (proste)",
     "partieWspierajace": [
@@ -6269,7 +6269,7 @@
   },
   {
     "id": "cw185",
-    "nazwaPl": "Arch body hold (Superman hold)",
+    "nazwaPl": "Utrzymanie pozycji łódki w leżeniu na brzuchu",
     "nazwaEn": "Arch body hold",
     "partiaGlowna": "Tylny łańcuch (erektory)",
     "partieWspierajace": [
@@ -6303,7 +6303,7 @@
   },
   {
     "id": "cw186",
-    "nazwaPl": "Sit-up klasyczny",
+    "nazwaPl": "Pełne brzuszki",
     "nazwaEn": "Sit-up",
     "partiaGlowna": "Proste brzucha",
     "partieWspierajace": [
@@ -6336,7 +6336,7 @@
   },
   {
     "id": "cw187",
-    "nazwaPl": "Sit-up z hantlem na klatce",
+    "nazwaPl": "Pełne brzuszki z hantlem na klatce piersiowej",
     "nazwaEn": "Weighted sit-up",
     "partiaGlowna": "Proste brzucha",
     "partieWspierajace": [
@@ -6369,7 +6369,7 @@
   },
   {
     "id": "cw188",
-    "nazwaPl": "Crunch",
+    "nazwaPl": "Spięcia brzucha",
     "nazwaEn": "Crunch",
     "partiaGlowna": "Górne proste brzucha",
     "partieWspierajace": [
@@ -6402,7 +6402,7 @@
   },
   {
     "id": "cw189",
-    "nazwaPl": "Reverse crunch",
+    "nazwaPl": "Odwrotne spięcia brzucha",
     "nazwaEn": "Reverse crunch",
     "partiaGlowna": "Dolne proste brzucha",
     "partieWspierajace": [
@@ -6435,7 +6435,7 @@
   },
   {
     "id": "cw190",
-    "nazwaPl": "V-up",
+    "nazwaPl": "Scyzoryki",
     "nazwaEn": "V-up",
     "partiaGlowna": "Proste brzucha (pełne)",
     "partieWspierajace": [
@@ -6467,7 +6467,7 @@
   },
   {
     "id": "cw191",
-    "nazwaPl": "Toe touch leżąc",
+    "nazwaPl": "Sięganie dłońmi do uniesionych stóp w leżeniu",
     "nazwaEn": "Toe touch",
     "partiaGlowna": "Górne proste brzucha",
     "partieWspierajace": [
@@ -6499,7 +6499,7 @@
   },
   {
     "id": "cw192",
-    "nazwaPl": "Bicycle crunch",
+    "nazwaPl": "Spięcia brzucha ze skrętem i naprzemienną pracą nóg",
     "nazwaEn": "Bicycle crunch",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -6533,7 +6533,7 @@
   },
   {
     "id": "cw193",
-    "nazwaPl": "Russian twist bez ciężaru",
+    "nazwaPl": "Skręty tułowia w siadzie bez obciążenia",
     "nazwaEn": "Russian twist",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -6566,7 +6566,7 @@
   },
   {
     "id": "cw194",
-    "nazwaPl": "Russian twist z hantlem",
+    "nazwaPl": "Skręty tułowia w siadzie z hantlem",
     "nazwaEn": "Weighted Russian twist",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -6599,7 +6599,7 @@
   },
   {
     "id": "cw195",
-    "nazwaPl": "Wood chop hantlem",
+    "nazwaPl": "Rąbanie drewna z hantlem po przekątnej",
     "nazwaEn": "Dumbbell wood chop",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -6633,7 +6633,7 @@
   },
   {
     "id": "cw196",
-    "nazwaPl": "Pallof press",
+    "nazwaPl": "Wyciskanie Pallofa z gumą",
     "nazwaEn": "Pallof press",
     "partiaGlowna": "Core (anty-rotacja)",
     "partieWspierajace": [
@@ -6668,7 +6668,7 @@
   },
   {
     "id": "cw197",
-    "nazwaPl": "Pallof press z rotacją",
+    "nazwaPl": "Wyciskanie Pallofa z gumą i rotacją tułowia",
     "nazwaEn": "Pallof press with rotation",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -6702,7 +6702,7 @@
   },
   {
     "id": "cw198",
-    "nazwaPl": "Standing side bend hantlem",
+    "nazwaPl": "Skłony boczne z hantlem w staniu",
     "nazwaEn": "Dumbbell side bend",
     "partiaGlowna": "Skośne brzucha, QL",
     "partieWspierajace": [
@@ -6736,7 +6736,7 @@
   },
   {
     "id": "cw199",
-    "nazwaPl": "Hanging knee raise",
+    "nazwaPl": "Unoszenie kolan w zwisie na drążku",
     "nazwaEn": "Hanging knee raise",
     "partiaGlowna": "Dolne proste brzucha",
     "partieWspierajace": [
@@ -6770,7 +6770,7 @@
   },
   {
     "id": "cw200",
-    "nazwaPl": "Hanging leg raise",
+    "nazwaPl": "Unoszenie prostych nóg w zwisie na drążku",
     "nazwaEn": "Hanging leg raise",
     "partiaGlowna": "Dolne proste brzucha",
     "partieWspierajace": [
@@ -6804,7 +6804,7 @@
   },
   {
     "id": "cw201",
-    "nazwaPl": "Hanging windshield wiper",
+    "nazwaPl": "Przenoszenie uniesionych nóg na boki w zwisie na drążku",
     "nazwaEn": "Hanging windshield wiper",
     "partiaGlowna": "Skośne brzucha",
     "partieWspierajace": [
@@ -6838,7 +6838,7 @@
   },
   {
     "id": "cw202",
-    "nazwaPl": "Toes to bar",
+    "nazwaPl": "Unoszenie stóp do drążka w zwisie",
     "nazwaEn": "Toes to bar",
     "partiaGlowna": "Proste brzucha, Latissimus",
     "partieWspierajace": [
@@ -6872,7 +6872,7 @@
   },
   {
     "id": "cw203",
-    "nazwaPl": "L-sit hold",
+    "nazwaPl": "Utrzymanie podporu z prostymi nogami uniesionymi do poziomu",
     "nazwaEn": "L-sit",
     "partiaGlowna": "Core, Zginacze bioder",
     "partieWspierajace": [
@@ -6907,7 +6907,7 @@
   },
   {
     "id": "cw204",
-    "nazwaPl": "Dragon flag",
+    "nazwaPl": "Unoszenie i opuszczanie prostego ciała w oparciu na barkach na ławce",
     "nazwaEn": "Dragon flag",
     "partiaGlowna": "Core (anty-ekstensja)",
     "partieWspierajace": [
@@ -6940,7 +6940,7 @@
   },
   {
     "id": "cw205",
-    "nazwaPl": "Ab rollout z hantli hex",
+    "nazwaPl": "Przetaczanie hantli sześciokątnych w przód w klęku",
     "nazwaEn": "Dumbbell ab rollout",
     "partiaGlowna": "Core (anty-ekstensja)",
     "partieWspierajace": [
@@ -6974,7 +6974,7 @@
   },
   {
     "id": "cw206",
-    "nazwaPl": "Farmer carry (core focus)",
+    "nazwaPl": "Chód farmera z hantlami (stabilizacja tułowia)",
     "nazwaEn": "Farmer carry (core focus)",
     "partiaGlowna": "Core (anty-fleksja boczna)",
     "partieWspierajace": [
@@ -7009,7 +7009,7 @@
   },
   {
     "id": "cw207",
-    "nazwaPl": "Suitcase carry",
+    "nazwaPl": "Chód z hantlem w jednej ręce",
     "nazwaEn": "Suitcase carry",
     "partiaGlowna": "Core (anty-fleksja boczna)",
     "partieWspierajace": [
@@ -7043,7 +7043,7 @@
   },
   {
     "id": "cw208",
-    "nazwaPl": "Mountain climbers (core)",
+    "nazwaPl": "Bieg w podporze (na brzuch)",
     "nazwaEn": "Mountain climbers",
     "partiaGlowna": "Core, Zginacze bioder",
     "partieWspierajace": [
@@ -7179,7 +7179,7 @@
   },
   {
     "id": "cw212",
-    "nazwaPl": "Half burpee",
+    "nazwaPl": "Burpee bez pompki i wyskoku",
     "nazwaEn": "Half burpee",
     "partiaGlowna": "Cardio",
     "partieWspierajace": [
@@ -7213,7 +7213,7 @@
   },
   {
     "id": "cw213",
-    "nazwaPl": "Jumping jacks (pajacyki)",
+    "nazwaPl": "Pajacyki",
     "nazwaEn": "Jumping jacks",
     "partiaGlowna": "Cardio",
     "partieWspierajace": [
@@ -7246,7 +7246,7 @@
   },
   {
     "id": "cw214",
-    "nazwaPl": "Star jumps",
+    "nazwaPl": "Wyskoki z przysiadu do pozycji gwiazdy",
     "nazwaEn": "Star jumps",
     "partiaGlowna": "Cardio (explosive)",
     "partieWspierajace": [
@@ -7279,7 +7279,7 @@
   },
   {
     "id": "cw215",
-    "nazwaPl": "High knees (wysokie kolana)",
+    "nazwaPl": "Bieg w miejscu z wysokim unoszeniem kolan",
     "nazwaEn": "High knees",
     "partiaGlowna": "Cardio, Zginacze bioder",
     "partieWspierajace": [
@@ -7313,7 +7313,7 @@
   },
   {
     "id": "cw216",
-    "nazwaPl": "Butt kicks",
+    "nazwaPl": "Bieg w miejscu z uderzaniem piętami o pośladki",
     "nazwaEn": "Butt kicks",
     "partiaGlowna": "Cardio, Dwugłowe uda",
     "partieWspierajace": [
@@ -7347,7 +7347,7 @@
   },
   {
     "id": "cw217",
-    "nazwaPl": "Mountain climbers",
+    "nazwaPl": "Bieg w podporze",
     "nazwaEn": "Mountain climbers",
     "partiaGlowna": "Core, Cardio",
     "partieWspierajace": [
@@ -7381,7 +7381,7 @@
   },
   {
     "id": "cw218",
-    "nazwaPl": "Cross-body mountain climbers",
+    "nazwaPl": "Bieg w podporze z kolanami do przeciwnych łokci",
     "nazwaEn": "Cross-body mountain climbers",
     "partiaGlowna": "Skośne brzucha, Cardio",
     "partieWspierajace": [
@@ -7415,7 +7415,7 @@
   },
   {
     "id": "cw219",
-    "nazwaPl": "Squat thrust",
+    "nazwaPl": "Wyrzuty nóg w tył do podporu z przysiadu",
     "nazwaEn": "Squat thrust",
     "partiaGlowna": "Cardio, Nogi",
     "partieWspierajace": [
@@ -7449,7 +7449,7 @@
   },
   {
     "id": "cw220",
-    "nazwaPl": "Skater jumps",
+    "nazwaPl": "Skoki łyżwiarskie",
     "nazwaEn": "Skater jumps",
     "partiaGlowna": "Nogi (bok-bok), Pośladki",
     "partieWspierajace": [
@@ -7483,7 +7483,7 @@
   },
   {
     "id": "cw221",
-    "nazwaPl": "Tuck jumps",
+    "nazwaPl": "Wyskoki z przyciąganiem kolan do klatki piersiowej",
     "nazwaEn": "Tuck jumps",
     "partiaGlowna": "Nogi (explosive)",
     "partieWspierajace": [
@@ -7517,7 +7517,7 @@
   },
   {
     "id": "cw222",
-    "nazwaPl": "Broad jump + jog back",
+    "nazwaPl": "Skok w dal z miejsca z powrotem truchtem",
     "nazwaEn": "Broad jump + jog back",
     "partiaGlowna": "Nogi (explosive)",
     "partieWspierajace": [
@@ -7552,7 +7552,7 @@
   },
   {
     "id": "cw223",
-    "nazwaPl": "Bear crawl",
+    "nazwaPl": "Chód niedźwiedzia",
     "nazwaEn": "Bear crawl",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -7586,7 +7586,7 @@
   },
   {
     "id": "cw224",
-    "nazwaPl": "Crab walk",
+    "nazwaPl": "Chód kraba",
     "nazwaEn": "Crab walk",
     "partiaGlowna": "Triceps, Tylne barki",
     "partieWspierajace": [
@@ -7620,7 +7620,7 @@
   },
   {
     "id": "cw225",
-    "nazwaPl": "Skakanka podskoki obunóż",
+    "nazwaPl": "Skakanka — podskoki obunóż",
     "nazwaEn": "Basic bounce jump rope",
     "partiaGlowna": "Cardio, Łydki",
     "partieWspierajace": [
@@ -7654,7 +7654,7 @@
   },
   {
     "id": "cw226",
-    "nazwaPl": "Skakanka boxer step",
+    "nazwaPl": "Skakanka — krok bokserski",
     "nazwaEn": "Boxer step",
     "partiaGlowna": "Cardio, Łydki",
     "partieWspierajace": [
@@ -7687,7 +7687,7 @@
   },
   {
     "id": "cw227",
-    "nazwaPl": "Skakanka wysokie kolana",
+    "nazwaPl": "Skakanka — wysokie unoszenie kolan",
     "nazwaEn": "High knees jump rope",
     "partiaGlowna": "Cardio, Zginacze bioder",
     "partieWspierajace": [
@@ -7721,7 +7721,7 @@
   },
   {
     "id": "cw228",
-    "nazwaPl": "Skakanka jednonóż",
+    "nazwaPl": "Skakanka — podskoki na jednej nodze",
     "nazwaEn": "Single leg jump rope",
     "partiaGlowna": "Cardio, Łydka",
     "partieWspierajace": [
@@ -7755,7 +7755,7 @@
   },
   {
     "id": "cw229",
-    "nazwaPl": "Skakanka bok-bok",
+    "nazwaPl": "Skakanka — podskoki na boki",
     "nazwaEn": "Side to side jump rope",
     "partiaGlowna": "Cardio, Skośne",
     "partieWspierajace": [
@@ -7788,7 +7788,7 @@
   },
   {
     "id": "cw230",
-    "nazwaPl": "Skakanka przód-tył",
+    "nazwaPl": "Skakanka — podskoki w przód i w tył",
     "nazwaEn": "Front to back jump rope",
     "partiaGlowna": "Cardio",
     "partieWspierajace": [
@@ -7822,7 +7822,7 @@
   },
   {
     "id": "cw231",
-    "nazwaPl": "Skakanka double under",
+    "nazwaPl": "Skakanka — podwójny obrót linki w podskoku",
     "nazwaEn": "Double under",
     "partiaGlowna": "Cardio (explosive)",
     "partieWspierajace": [
@@ -7856,7 +7856,7 @@
   },
   {
     "id": "cw232",
-    "nazwaPl": "Skakanka criss-cross",
+    "nazwaPl": "Skakanka — podskoki ze skrzyżowaniem ramion",
     "nazwaEn": "Criss-cross jump rope",
     "partiaGlowna": "Koordynacja, Cardio",
     "partieWspierajace": [
@@ -7890,7 +7890,7 @@
   },
   {
     "id": "cw233",
-    "nazwaPl": "Skakanka double under crossover",
+    "nazwaPl": "Skakanka — podwójny obrót linki ze skrzyżowaniem ramion",
     "nazwaEn": "Double under crossover",
     "partiaGlowna": "Koordynacja, Cardio (explosive)",
     "partieWspierajace": [
@@ -7923,7 +7923,7 @@
   },
   {
     "id": "cw234",
-    "nazwaPl": "Bieżnia — spokojny bieg zone 2",
+    "nazwaPl": "Bieżnia — spokojny bieg w drugiej strefie tętna",
     "nazwaEn": "Steady state Z2 run",
     "partiaGlowna": "Cardio (baza tlenowa)",
     "partieWspierajace": [
@@ -7957,7 +7957,7 @@
   },
   {
     "id": "cw235",
-    "nazwaPl": "Bieżnia — 12-3-30 (nachylenie 12%, 3 mph, 30 min)",
+    "nazwaPl": "Bieżnia — marsz 12-3-30 (nachylenie 12%, 3 mile/h, 30 min)",
     "nazwaEn": "12-3-30 walk",
     "partiaGlowna": "Cardio",
     "partieWspierajace": [
@@ -7992,7 +7992,7 @@
   },
   {
     "id": "cw236",
-    "nazwaPl": "Bieżnia — interwały HIIT sprint 30/90",
+    "nazwaPl": "Bieżnia — interwały: 30 sekund sprintu i 90 sekund truchtu",
     "nazwaEn": "HIIT sprint intervals 30/90",
     "partiaGlowna": "Cardio (HIIT)",
     "partieWspierajace": [
@@ -8027,7 +8027,7 @@
   },
   {
     "id": "cw237",
-    "nazwaPl": "Bieżnia — hill sprints (nachylenie 5-7%)",
+    "nazwaPl": "Bieżnia — sprinty pod górę (nachylenie 5–7%)",
     "nazwaEn": "Hill sprints",
     "partiaGlowna": "Cardio (HIIT)",
     "partieWspierajace": [
@@ -8094,7 +8094,7 @@
   },
   {
     "id": "cw239",
-    "nazwaPl": "Bieżnia — tempo run",
+    "nazwaPl": "Bieżnia — bieg tempowy",
     "nazwaEn": "Tempo run (80% HRmax)",
     "partiaGlowna": "Cardio (próg mleczanowy)",
     "partieWspierajace": [
@@ -8128,7 +8128,7 @@
   },
   {
     "id": "cw240",
-    "nazwaPl": "Bieżnia — long slow distance (LSD)",
+    "nazwaPl": "Bieżnia — długi, spokojny bieg",
     "nazwaEn": "Long slow distance",
     "partiaGlowna": "Cardio (baza tlenowa)",
     "partieWspierajace": [
@@ -8228,7 +8228,7 @@
   },
   {
     "id": "cw243",
-    "nazwaPl": "Leg swings do przodu",
+    "nazwaPl": "Wymachy nogi w przód i w tył",
     "nazwaEn": "Front leg swings",
     "partiaGlowna": "Biodra (mobilność)",
     "partieWspierajace": [
@@ -8262,7 +8262,7 @@
   },
   {
     "id": "cw244",
-    "nazwaPl": "Leg swings bokiem",
+    "nazwaPl": "Wymachy nogi na boki",
     "nazwaEn": "Lateral leg swings",
     "partiaGlowna": "Biodra (adduktory, odwodziciele)",
     "partieWspierajace": [
@@ -8329,7 +8329,7 @@
   },
   {
     "id": "cw246",
-    "nazwaPl": "Walking lunges z rotacją",
+    "nazwaPl": "Wykroki chodzone z rotacją tułowia bez obciążenia",
     "nazwaEn": "Walking lunge with twist",
     "partiaGlowna": "Biodra, Th kręgosłup",
     "partieWspierajace": [
@@ -8363,7 +8363,7 @@
   },
   {
     "id": "cw247",
-    "nazwaPl": "Gąsienica (inchworm)",
+    "nazwaPl": "Gąsienica",
     "nazwaEn": "Inchworm",
     "partiaGlowna": "Full body dynamic stretch",
     "partieWspierajace": [
@@ -8397,7 +8397,7 @@
   },
   {
     "id": "cw248",
-    "nazwaPl": "World's greatest stretch",
+    "nazwaPl": "Rozciąganie w wykroku z rotacją tułowia",
     "nazwaEn": "World's greatest stretch",
     "partiaGlowna": "Full body mobility",
     "partieWspierajace": [
@@ -8432,7 +8432,7 @@
   },
   {
     "id": "cw249",
-    "nazwaPl": "Spider-Man lunge",
+    "nazwaPl": "Przyciąganie stopy do zewnętrznej strony dłoni w podporze",
     "nazwaEn": "Spider-Man lunge",
     "partiaGlowna": "Biodra (mobilność)",
     "partieWspierajace": [
@@ -8467,7 +8467,7 @@
   },
   {
     "id": "cw250",
-    "nazwaPl": "Cat-cow",
+    "nazwaPl": "Koci grzbiet i wygięcie pleców w klęku podpartym",
     "nazwaEn": "Cat-cow",
     "partiaGlowna": "Kręgosłup (mobilność)",
     "partieWspierajace": [
@@ -8500,7 +8500,7 @@
   },
   {
     "id": "cw251",
-    "nazwaPl": "Kobra (cobra pose)",
+    "nazwaPl": "Pozycja kobry",
     "nazwaEn": "Cobra pose",
     "partiaGlowna": "Prostowniki grzbietu (rozciąganie)",
     "partieWspierajace": [
@@ -8569,7 +8569,7 @@
   },
   {
     "id": "cw253",
-    "nazwaPl": "Downward dog",
+    "nazwaPl": "Pies z głową w dół",
     "nazwaEn": "Downward dog",
     "partiaGlowna": "Cała tylna łańcuch, Barki",
     "partieWspierajace": [
@@ -8603,7 +8603,7 @@
   },
   {
     "id": "cw254",
-    "nazwaPl": "Upward dog",
+    "nazwaPl": "Pies z głową w górę",
     "nazwaEn": "Upward dog",
     "partiaGlowna": "Prostowniki grzbietu, Klatka",
     "partieWspierajace": [
@@ -8668,7 +8668,7 @@
   },
   {
     "id": "cw256",
-    "nazwaPl": "90/90 hip stretch",
+    "nazwaPl": "Rozciąganie bioder w siadzie 90/90",
     "nazwaEn": "90/90 hip stretch",
     "partiaGlowna": "Biodra (rotatory)",
     "partieWspierajace": [
@@ -8701,7 +8701,7 @@
   },
   {
     "id": "cw257",
-    "nazwaPl": "Motyl (butterfly stretch)",
+    "nazwaPl": "Rozciąganie w pozycji motyla",
     "nazwaEn": "Butterfly stretch",
     "partiaGlowna": "Adduktory, Biodra",
     "partieWspierajace": [
@@ -8734,7 +8734,7 @@
   },
   {
     "id": "cw258",
-    "nazwaPl": "Żaba (frog stretch)",
+    "nazwaPl": "Rozciąganie w pozycji żaby",
     "nazwaEn": "Frog stretch",
     "partiaGlowna": "Adduktory (głębokie)",
     "partieWspierajace": [
@@ -8767,7 +8767,7 @@
   },
   {
     "id": "cw259",
-    "nazwaPl": "Cossack stretch",
+    "nazwaPl": "Rozciąganie w przysiadzie kozackim",
     "nazwaEn": "Cossack stretch",
     "partiaGlowna": "Biodra, Adduktory",
     "partieWspierajace": [
@@ -8800,7 +8800,7 @@
   },
   {
     "id": "cw260",
-    "nazwaPl": "Couch stretch",
+    "nazwaPl": "Rozciąganie zginaczy biodra w klęku ze stopą na ławce",
     "nazwaEn": "Couch stretch (iliopsoas)",
     "partiaGlowna": "Zginacze bioder (iliopsoas)",
     "partieWspierajace": [
@@ -8835,7 +8835,7 @@
   },
   {
     "id": "cw261",
-    "nazwaPl": "Standing quad stretch",
+    "nazwaPl": "Rozciąganie mięśnia czworogłowego uda w staniu",
     "nazwaEn": "Standing quad stretch",
     "partiaGlowna": "Kwadryceps",
     "partieWspierajace": [
@@ -8868,7 +8868,7 @@
   },
   {
     "id": "cw262",
-    "nazwaPl": "Standing hamstring stretch",
+    "nazwaPl": "Rozciąganie tylnej części uda w staniu z nogą na podwyższeniu",
     "nazwaEn": "Standing hamstring stretch",
     "partiaGlowna": "Dwugłowe uda",
     "partieWspierajace": [
@@ -8900,7 +8900,7 @@
   },
   {
     "id": "cw263",
-    "nazwaPl": "Seated forward fold",
+    "nazwaPl": "Skłon w przód w siadzie prostym",
     "nazwaEn": "Seated forward fold",
     "partiaGlowna": "Cała tylna łańcuch (dwugłowe, plecy)",
     "partieWspierajace": [
@@ -8933,7 +8933,7 @@
   },
   {
     "id": "cw264",
-    "nazwaPl": "Wall calf stretch",
+    "nazwaPl": "Rozciąganie łydki przy ścianie",
     "nazwaEn": "Wall calf stretch",
     "partiaGlowna": "Łydka (gastrocnemius + soleus)",
     "partieWspierajace": [
@@ -8966,7 +8966,7 @@
   },
   {
     "id": "cw265",
-    "nazwaPl": "Rozciąg klatki w futrynie",
+    "nazwaPl": "Rozciąganie klatki piersiowej w futrynie",
     "nazwaEn": "Doorway chest stretch",
     "partiaGlowna": "Klatka piersiowa",
     "partieWspierajace": [
@@ -8999,7 +8999,7 @@
   },
   {
     "id": "cw266",
-    "nazwaPl": "Thread the needle",
+    "nazwaPl": "Przekładanie ręki pod tułowiem w klęku podpartym",
     "nazwaEn": "Thread the needle",
     "partiaGlowna": "Th kręgosłup, Górne plecy",
     "partieWspierajace": [
@@ -9032,7 +9032,7 @@
   },
   {
     "id": "cw267",
-    "nazwaPl": "Thoracic extension na ławce",
+    "nazwaPl": "Wyprost odcinka piersiowego kręgosłupa na ławce",
     "nazwaEn": "Bench T-spine extension",
     "partiaGlowna": "Th kręgosłup (mobilność)",
     "partieWspierajace": [
@@ -9065,7 +9065,7 @@
   },
   {
     "id": "cw268",
-    "nazwaPl": "Cat-cow siedząc",
+    "nazwaPl": "Koci grzbiet i wygięcie pleców w siadzie",
     "nazwaEn": "Seated cat-cow",
     "partiaGlowna": "Kręgosłup (mobilność)",
     "partieWspierajace": [
@@ -9131,7 +9131,7 @@
   },
   {
     "id": "cw270",
-    "nazwaPl": "Chin tucks",
+    "nazwaPl": "Cofanie brody",
     "nazwaEn": "Chin tucks",
     "partiaGlowna": "Głębokie zginacze szyi",
     "partieWspierajace": [
@@ -9229,7 +9229,7 @@
   },
   {
     "id": "cw273",
-    "nazwaPl": "Wrist prayer stretch",
+    "nazwaPl": "Rozciąganie nadgarstków ze złożonymi dłońmi",
     "nazwaEn": "Wrist prayer stretch",
     "partiaGlowna": "Nadgarstki, Przedramiona",
     "partieWspierajace": [
@@ -9262,7 +9262,7 @@
   },
   {
     "id": "cw274",
-    "nazwaPl": "Wrist extension push-up hold",
+    "nazwaPl": "Rozciąganie nadgarstków w klęku podpartym z palcami ku kolanom",
     "nazwaEn": "Wrist extension push-up hold",
     "partiaGlowna": "Nadgarstki (przygotowanie)",
     "partieWspierajace": [
@@ -9328,7 +9328,7 @@
   },
   {
     "id": "cw276",
-    "nazwaPl": "Ankle wall dorsiflexion",
+    "nazwaPl": "Zgięcie grzbietowe stawu skokowego z kolanem do ściany",
     "nazwaEn": "Ankle wall dorsiflexion",
     "partiaGlowna": "Kostki (dorsalfleksja)",
     "partieWspierajace": [
@@ -9360,7 +9360,7 @@
   },
   {
     "id": "cw277",
-    "nazwaPl": "Deep squat hold",
+    "nazwaPl": "Utrzymanie głębokiego przysiadu",
     "nazwaEn": "Deep squat hold",
     "partiaGlowna": "Biodra, Kostki (mobilność)",
     "partieWspierajace": [
@@ -9394,7 +9394,7 @@
   },
   {
     "id": "cw278",
-    "nazwaPl": "Band shoulder dislocates",
+    "nazwaPl": "Przenoszenie gumy nad głową za plecy na prostych ramionach",
     "nazwaEn": "Band pass-through",
     "partiaGlowna": "Barki (mobilność)",
     "partieWspierajace": [
@@ -9426,7 +9426,7 @@
   },
   {
     "id": "cw279",
-    "nazwaPl": "Band front-back shoulder stretch",
+    "nazwaPl": "Rozciąganie przedniej i tylnej części barków z gumą",
     "nazwaEn": "Band front-back shoulder stretch",
     "partiaGlowna": "Barki (mobilność)",
     "partieWspierajace": [
@@ -9459,7 +9459,7 @@
   },
   {
     "id": "cw280",
-    "nazwaPl": "Standing quad stretch z rotacją",
+    "nazwaPl": "Rozciąganie mięśnia czworogłowego uda w staniu z rotacją tułowia",
     "nazwaEn": "Standing quad stretch with rotation",
     "partiaGlowna": "Kwadryceps + biodra",
     "partieWspierajace": [
@@ -9491,7 +9491,7 @@
   },
   {
     "id": "cw281",
-    "nazwaPl": "Powitanie słońca A (Sun salutation A)",
+    "nazwaPl": "Powitanie słońca A",
     "nazwaEn": "Sun salutation A",
     "partiaGlowna": "Full body flow",
     "partieWspierajace": [
@@ -9522,7 +9522,7 @@
   },
   {
     "id": "cw282",
-    "nazwaPl": "Tai Chi - otwarcie klatki siedząc",
+    "nazwaPl": "Tai Chi — otwarcie klatki piersiowej w siadzie na krześle",
     "nazwaEn": "Chair Tai Chi opening",
     "partiaGlowna": "Klatka piersiowa (regeneracja)",
     "partieWspierajace": [
@@ -9556,7 +9556,7 @@
   },
   {
     "id": "cw283",
-    "nazwaPl": "Tai Chi cloud hands siedząc",
+    "nazwaPl": "Tai Chi — dłonie jak chmury w siadzie na krześle",
     "nazwaEn": "Cloud hands seated",
     "partiaGlowna": "Koordynacja, Barki",
     "partieWspierajace": [
@@ -9589,7 +9589,7 @@
   },
   {
     "id": "cw284",
-    "nazwaPl": "Tai Chi grasp sparrow's tail",
+    "nazwaPl": "Tai Chi — chwytanie wróblego ogona w siadzie na krześle",
     "nazwaEn": "Grasp sparrow's tail seated",
     "partiaGlowna": "Koordynacja, Barki",
     "partieWspierajace": [
@@ -9621,7 +9621,7 @@
   },
   {
     "id": "cw285",
-    "nazwaPl": "Tai Chi wave hands like clouds",
+    "nazwaPl": "Tai Chi — falowanie dłońmi jak chmurami w siadzie na krześle",
     "nazwaEn": "Wave hands like clouds",
     "partiaGlowna": "Barki, Th kręgosłup",
     "partieWspierajace": [
@@ -9654,7 +9654,7 @@
   },
   {
     "id": "cw286",
-    "nazwaPl": "Tai Chi part wild horse's mane",
+    "nazwaPl": "Tai Chi — rozdzielanie grzywy dzikiego konia w siadzie na krześle",
     "nazwaEn": "Part wild horse's mane",
     "partiaGlowna": "Koordynacja",
     "partieWspierajace": [
@@ -9687,7 +9687,7 @@
   },
   {
     "id": "cw287",
-    "nazwaPl": "Tai Chi golden rooster (siedząca modyfikacja)",
+    "nazwaPl": "Tai Chi — złoty kogut w siadzie na krześle",
     "nazwaEn": "Golden rooster stands (seated mod)",
     "partiaGlowna": "Równowaga, Zginacze bioder",
     "partieWspierajace": [
@@ -9720,7 +9720,7 @@
   },
   {
     "id": "cw288",
-    "nazwaPl": "Tai Chi brush knee",
+    "nazwaPl": "Tai Chi — omiatanie kolana w siadzie na krześle",
     "nazwaEn": "Brush knee (seated)",
     "partiaGlowna": "Koordynacja, Barki",
     "partieWspierajace": [
@@ -9752,7 +9752,7 @@
   },
   {
     "id": "cw289",
-    "nazwaPl": "Tai Chi single whip",
+    "nazwaPl": "Tai Chi — pojedynczy bicz w siadzie na krześle",
     "nazwaEn": "Single whip (seated)",
     "partiaGlowna": "Koordynacja, Barki",
     "partieWspierajace": [
@@ -9784,7 +9784,7 @@
   },
   {
     "id": "cw290",
-    "nazwaPl": "Seated spinal twist",
+    "nazwaPl": "Skręt tułowia w siadzie na krześle",
     "nazwaEn": "Seated spinal twist",
     "partiaGlowna": "Th kręgosłup (rotacja)",
     "partieWspierajace": [
@@ -9817,7 +9817,7 @@
   },
   {
     "id": "cw291",
-    "nazwaPl": "Seated cat-cow",
+    "nazwaPl": "Koci grzbiet i wygięcie pleców w siadzie na krześle",
     "nazwaEn": "Seated cat-cow",
     "partiaGlowna": "Kręgosłup (mobilność)",
     "partieWspierajace": [
@@ -9850,7 +9850,7 @@
   },
   {
     "id": "cw292",
-    "nazwaPl": "Seated forward bend",
+    "nazwaPl": "Skłon w przód w siadzie na krześle",
     "nazwaEn": "Seated forward bend",
     "partiaGlowna": "Dolne plecy (rozciąganie)",
     "partieWspierajace": [
@@ -9883,7 +9883,7 @@
   },
   {
     "id": "cw293",
-    "nazwaPl": "Seated pigeon",
+    "nazwaPl": "Pozycja gołębia w siadzie na krześle",
     "nazwaEn": "Seated pigeon",
     "partiaGlowna": "Biodra (rotator zewnętrzny)",
     "partieWspierajace": [
@@ -9916,7 +9916,7 @@
   },
   {
     "id": "cw294",
-    "nazwaPl": "Seated side bend",
+    "nazwaPl": "Skłon boczny w siadzie na krześle",
     "nazwaEn": "Seated side bend",
     "partiaGlowna": "QL, Skośne",
     "partieWspierajace": [
@@ -9949,7 +9949,7 @@
   },
   {
     "id": "cw295",
-    "nazwaPl": "Seated lateral neck stretch",
+    "nazwaPl": "Boczne rozciąganie szyi w siadzie na krześle",
     "nazwaEn": "Seated lateral neck stretch",
     "partiaGlowna": "Szyja (bok)",
     "partieWspierajace": [
@@ -9982,7 +9982,7 @@
   },
   {
     "id": "cw296",
-    "nazwaPl": "Seated shoulder rolls",
+    "nazwaPl": "Krążenia barków w siadzie na krześle",
     "nazwaEn": "Seated shoulder rolls",
     "partiaGlowna": "Barki (mobilność)",
     "partieWspierajace": [
@@ -10015,7 +10015,7 @@
   },
   {
     "id": "cw297",
-    "nazwaPl": "Seated eagle arms",
+    "nazwaPl": "Ramiona orła w siadzie na krześle",
     "nazwaEn": "Seated eagle arms",
     "partiaGlowna": "Górne plecy, Barki",
     "partieWspierajace": [
@@ -10048,7 +10048,7 @@
   },
   {
     "id": "cw298",
-    "nazwaPl": "Seated ankle rolls",
+    "nazwaPl": "Krążenia kostek w siadzie na krześle",
     "nazwaEn": "Seated ankle rolls",
     "partiaGlowna": "Kostki (mobilność)",
     "partieWspierajace": [
@@ -10082,7 +10082,7 @@
   },
   {
     "id": "cw299",
-    "nazwaPl": "Seated hip circles",
+    "nazwaPl": "Krążenia bioder w siadzie na krześle",
     "nazwaEn": "Seated hip circles",
     "partiaGlowna": "Biodra (mobilność)",
     "partieWspierajace": [
@@ -10115,7 +10115,7 @@
   },
   {
     "id": "cw300",
-    "nazwaPl": "Box breathing (oddech kwadratowy)",
+    "nazwaPl": "Oddech kwadratowy 4–4–4–4",
     "nazwaEn": "Box breathing 4-4-4-4",
     "partiaGlowna": "Regeneracja, Nerw błędny",
     "partieWspierajace": [
@@ -10150,7 +10150,7 @@
   },
   {
     "id": "cw301",
-    "nazwaPl": "Oddech przeponą",
+    "nazwaPl": "Oddech przeponowy",
     "nazwaEn": "Diaphragmatic breathing",
     "partiaGlowna": "Regeneracja, Przepona",
     "partieWspierajace": [
@@ -10183,7 +10183,7 @@
   },
   {
     "id": "cw302",
-    "nazwaPl": "Thruster hantlami",
+    "nazwaPl": "Przysiad z dynamicznym wyciśnięciem hantli nad głowę",
     "nazwaEn": "Dumbbell thruster",
     "partiaGlowna": "Full body (nogi + barki)",
     "partieWspierajace": [
@@ -10217,7 +10217,7 @@
   },
   {
     "id": "cw303",
-    "nazwaPl": "Man maker",
+    "nazwaPl": "Pompka, wiosłowanie w podporze i przysiad z wyciskaniem hantli",
     "nazwaEn": "Man maker",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -10250,7 +10250,7 @@
   },
   {
     "id": "cw304",
-    "nazwaPl": "Devil press hantlami",
+    "nazwaPl": "Burpee z rwaniem dwóch hantli nad głowę",
     "nazwaEn": "Devil press",
     "partiaGlowna": "Full body (explosive)",
     "partieWspierajace": [
@@ -10283,7 +10283,7 @@
   },
   {
     "id": "cw305",
-    "nazwaPl": "Dumbbell clean and press",
+    "nazwaPl": "Zarzut hantli z wyciskaniem nad głowę",
     "nazwaEn": "Dumbbell clean and press",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -10318,7 +10318,7 @@
   },
   {
     "id": "cw306",
-    "nazwaPl": "Dumbbell snatch jednorącz",
+    "nazwaPl": "Rwanie hantla jednorącz",
     "nazwaEn": "Single-arm dumbbell snatch",
     "partiaGlowna": "Full body (explosive)",
     "partieWspierajace": [
@@ -10353,7 +10353,7 @@
   },
   {
     "id": "cw307",
-    "nazwaPl": "Dumbbell swing (KB swing z hantlem)",
+    "nazwaPl": "Wymach hantlem oburącz",
     "nazwaEn": "Dumbbell swing",
     "partiaGlowna": "Pośladki, Dwugłowe",
     "partieWspierajace": [
@@ -10388,7 +10388,7 @@
   },
   {
     "id": "cw308",
-    "nazwaPl": "Turkish get-up hantlem",
+    "nazwaPl": "Wstawanie tureckie z hantlem",
     "nazwaEn": "Turkish get-up",
     "partiaGlowna": "Full body (stabilizacja)",
     "partieWspierajace": [
@@ -10422,7 +10422,7 @@
   },
   {
     "id": "cw309",
-    "nazwaPl": "Squat + curl + press combo",
+    "nazwaPl": "Przysiad, uginanie przedramion i wyciskanie hantli nad głowę",
     "nazwaEn": "Squat to curl to press combo",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -10457,7 +10457,7 @@
   },
   {
     "id": "cw310",
-    "nazwaPl": "Renegade row + push-up combo",
+    "nazwaPl": "Wiosłowanie hantlami w podporze z pompką",
     "nazwaEn": "Renegade row + push-up combo",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -10494,7 +10494,7 @@
   },
   {
     "id": "cw311",
-    "nazwaPl": "Lunge + biceps curl combo",
+    "nazwaPl": "Wykrok z uginaniem przedramion z hantlami",
     "nazwaEn": "Lunge + biceps curl combo",
     "partiaGlowna": "Nogi + biceps",
     "partieWspierajace": [
@@ -10527,7 +10527,7 @@
   },
   {
     "id": "cw312",
-    "nazwaPl": "Deadlift + row combo",
+    "nazwaPl": "Rumuński martwy ciąg z wiosłowaniem hantlami",
     "nazwaEn": "Deadlift + row combo",
     "partiaGlowna": "Cała tylna łańcuch",
     "partieWspierajace": [
@@ -10561,7 +10561,7 @@
   },
   {
     "id": "cw313",
-    "nazwaPl": "Bear crawl + push-up combo",
+    "nazwaPl": "Chód niedźwiedzia z pompkami",
     "nazwaEn": "Bear crawl + push-up combo",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -10597,7 +10597,7 @@
   },
   {
     "id": "cw314",
-    "nazwaPl": "Squat + shoulder press (DB squat press)",
+    "nazwaPl": "Przysiad z wyciskaniem hantli nad głowę",
     "nazwaEn": "Dumbbell squat press",
     "partiaGlowna": "Nogi + barki",
     "partieWspierajace": [
@@ -10630,7 +10630,7 @@
   },
   {
     "id": "cw315",
-    "nazwaPl": "Burpee + pull-up combo",
+    "nazwaPl": "Burpee z podciąganiem na drążku",
     "nazwaEn": "Burpee + pull-up combo",
     "partiaGlowna": "Full body",
     "partieWspierajace": [
@@ -10666,7 +10666,7 @@
   },
   {
     "id": "cw316",
-    "nazwaPl": "Farmer's walk + suitcase carry (przemiennie)",
+    "nazwaPl": "Chód farmera naprzemiennie z chodem z hantlem w jednej ręce",
     "nazwaEn": "Farmer + suitcase carry alternating",
     "partiaGlowna": "Full body carry",
     "partieWspierajace": [

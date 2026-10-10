@@ -6,6 +6,30 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.4.5+12] — 2026-10-10
+
+### Changed
+- Spolonizowano pole `nazwaPl` całego katalogu ćwiczeń; identyfikatory `cw...`
+  oraz nazwy angielskie nie uległy zmianie.
+- Wyszukiwanie po nazwach angielskich pozostaje dostępne, także dla istniejących
+  instalacji aktualizujących katalog lokalnie.
+
+---
+
+## [1.4.4+11] — 2026-10-10
+
+### Fixed
+- Uzupełniono szczegóły ćwiczenia `cw261` o poprawioną ilustrację.
+
+---
+
+## [1.4.3+10] — 2026-10-09
+
+### Fixed
+- Uzupełniono brakującą ilustrację w szczegółach ćwiczenia `cw265`.
+
+---
+
 ## [1.4.2+9] — 2026-10-09
 
 ### Added

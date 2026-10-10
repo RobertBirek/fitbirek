@@ -5,12 +5,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/utils/partia_kategoria.dart';
 import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
+import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +29,147 @@ void main() {
   tearDown(() async => await db.close());
 
   group('syncFromAssets - import przyrostowy', () {
+    test(
+      'aktualizuje tylko nazwaPl, gdy wszystkie 316 ID już istnieją',
+      () async {
+        await repo.syncFromAssets();
+        final catalog = await db.exercisesDao.getAll();
+        // Symulacja starszego katalogu: każde ID istnieje, każda nazwa jest inna.
+        for (final row in catalog) {
+          await (db.update(db.exercises)..where((t) => t.id.equals(row.id)))
+              .write(ExercisesCompanion(nazwaPl: Value('Stara ${row.id}')));
+        }
+        await (db.update(
+          db.exercises,
+        )..where((t) => t.id.equals('cw001'))).write(
+          const ExercisesCompanion(
+            nazwaEn: Value('Local English push-up'),
+            partiaGlowna: Value('Plecy'),
+            partieWspierajace: Value('["Biceps"]'),
+            sprzet: Value('["Hantle"]'),
+            typ: Value('Siła'),
+            poziom: Value('Zaawansowany'),
+            wzorzecRuchu: Value('Lokalny wzorzec'),
+            seriexPowtorzenia: Value('7 x 3'),
+            tempo: Value('3-1-3-1'),
+            kluczoweWskazowki: Value('["Lokalna wskazówka"]'),
+            czesteBledy: Value('["Lokalny błąd"]'),
+            progresja: Value('Lokalna progresja'),
+            regresja: Value('Lokalna regresja'),
+            zrodlo: Value('Lokalne źródło'),
+          ),
+        );
+        await repo.toggleFavorite('cw001', true);
+        await repo.toggleFavorite('cw002', true);
+        await repo.toggleFavorite('cw002', false);
+        final before = await db.exercisesDao.getAll();
+        final favorites = await db.select(db.exerciseFavorites).get();
+        final outbox = await db.select(db.syncOutbox).get();
+        final names = {for (final row in catalog) row.id: row.nazwaPl};
+
+        await repo.syncFromAssets();
+
+        final after = await db.exercisesDao.getAll();
+        expect(after, hasLength(316));
+        expect(
+          {for (final row in after) row.id: row},
+          {
+            for (final row in before)
+              row.id: row.copyWith(nazwaPl: names[row.id]),
+          },
+        );
+        expect(await db.select(db.exerciseFavorites).get(), favorites);
+        expect(await db.select(db.syncOutbox).get(), outbox);
+        expect((await repo.getById('cw001'))!.ulubione, isTrue);
+        expect((await repo.getById('cw002'))!.ulubione, isFalse);
+      },
+    );
+
+    test(
+      'dopisuje brakujące, zachowuje rekord spoza katalogu i nie zapisuje ponownie',
+      () async {
+        await repo.syncFromAssets();
+        final original = (await db.exercisesDao.getAll()).first;
+        final extra = original.copyWith(
+          id: 'custom',
+          nazwaPl: 'Moje ćwiczenie',
+        );
+        await db.into(db.exercises).insert(extra);
+        await (db.delete(
+          db.exercises,
+        )..where((t) => t.id.equals('cw316'))).go();
+        await (db.update(db.exercises)..where((t) => t.id.equals(original.id)))
+            .write(const ExercisesCompanion(nazwaPl: Value('Stara nazwa')));
+
+        await repo.syncFromAssets();
+
+        expect(await db.exercisesDao.count(), 317);
+        expect(await repo.getById('cw316'), isNotNull);
+        expect(
+          (await db.exercisesDao.getByIdWithFavorite(original.id))!.$1,
+          original,
+        );
+        expect(
+          (await db.exercisesDao.getByIdWithFavorite('custom'))!.$1,
+          extra,
+        );
+        final changes = await db
+            .customSelect('SELECT total_changes() AS n')
+            .getSingle();
+        await repo.syncFromAssets();
+        final repeated = await db
+            .customSelect('SELECT total_changes() AS n')
+            .getSingle();
+        expect(repeated.read<int>('n'), changes.read<int>('n'));
+      },
+    );
+
+    test('po zmianie nazwy PL wyszukiwanie nadal znajduje nazwę EN', () async {
+      await repo.syncFromAssets();
+      await (db.update(db.exercises)..where((t) => t.id.equals('cw001'))).write(
+        const ExercisesCompanion(nazwaPl: Value('Old push-up')),
+      );
+      await repo.syncFromAssets();
+      final container = ProviderContainer(
+        overrides: [exercisesRepositoryProvider.overrideWithValue(repo)],
+      );
+      addTearDown(container.dispose);
+      await container.read(allExercisesProvider.future);
+      container.read(exerciseFiltersProvider.notifier).state =
+          const ExerciseFilters(query: 'PUSH-UP');
+      final result = container.read(filteredExercisesProvider);
+      final exercise = result.singleWhere((e) => e.id == 'cw001');
+      expect(exercise.nazwaPl, 'Pompki klasyczne');
+      expect(exercise.nazwaEn, 'Push-up');
+    });
+
+    test(
+      'błąd aktualizacji wycofuje także dopisanie brakujących ćwiczeń',
+      () async {
+        await repo.syncFromAssets();
+        await (db.delete(
+          db.exercises,
+        )..where((t) => t.id.equals('cw316'))).go();
+        await (db.update(db.exercises)..where((t) => t.id.equals('cw001')))
+            .write(const ExercisesCompanion(nazwaPl: Value('Stara nazwa')));
+        final before = await db.exercisesDao.getAll();
+        await db.customStatement('''
+        CREATE TEMP TRIGGER reject_rename BEFORE UPDATE ON exercises
+        WHEN NEW.id = 'cw001'
+        BEGIN SELECT RAISE(ABORT, 'rename rejected'); END
+      ''');
+
+        await expectLater(
+          repo.syncFromAssets(),
+          throwsA(
+            predicate((error) => error.toString().contains('rename rejected')),
+          ),
+        );
+
+        expect(await db.exercisesDao.getAll(), before);
+      },
+    );
+
     test('wgrywa całą bazę (316 ćwiczeń) przy pustej tabeli', () async {
       await repo.syncFromAssets();
 
