@@ -2,7 +2,7 @@
 // Source: pubspec.yaml; run dart tools/generate_app_version.dart.
 
 abstract final class AppVersion {
-  static const String name = '1.4.7';
-  static const String buildNumber = '14';
-  static const String full = '1.4.7+14';
+  static const String name = '1.4.9';
+  static const String buildNumber = '16';
+  static const String full = '1.4.9+16';
 }
