@@ -6,6 +6,30 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.6.0+19] — 2026-10-11
+
+### Added
+- Dodano ilustracje szczegółów ćwiczeń `cw282`–`cw313`.
+
+---
+
+## [1.5.1+18] — 2026-10-11
+
+### Fixed
+- Poprawiono ilustrację `cw267`: dłonie są splecione za głową podczas wyprostu
+  odcinka piersiowego na ławce.
+
+---
+
+## [1.5.0+17] — 2026-10-11
+
+### Added
+- Dodano ilustracje szczegółów ćwiczeń `cw254`, `cw255`, `cw258`–`cw260`,
+  `cw263`, `cw266`, `cw267`, `cw273`, `cw274`, `cw276`, `cw277` oraz
+  `cw279`–`cw281`.
+
+---
+
 ## [1.4.6+13] — 2026-10-10
 
 ### Added

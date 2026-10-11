@@ -12,13 +12,60 @@ void main() {
     'cw251',
     'cw252',
     'cw253',
+    'cw254',
+    'cw255',
     'cw256',
     'cw257',
+    'cw258',
+    'cw259',
+    'cw260',
     'cw261',
     'cw262',
+    'cw263',
     'cw264',
     'cw265',
+    'cw266',
+    'cw267',
+    'cw273',
+    'cw274',
+    'cw276',
+    'cw277',
     'cw278',
+    'cw279',
+    'cw280',
+    'cw281',
+    'cw282',
+    'cw283',
+    'cw284',
+    'cw285',
+    'cw286',
+    'cw287',
+    'cw288',
+    'cw289',
+    'cw290',
+    'cw291',
+    'cw292',
+    'cw293',
+    'cw294',
+    'cw295',
+    'cw296',
+    'cw297',
+    'cw298',
+    'cw299',
+    'cw300',
+    'cw301',
+    'cw302',
+    'cw303',
+    'cw304',
+    'cw305',
+    'cw306',
+    'cw307',
+    'cw308',
+    'cw309',
+    'cw310',
+    'cw311',
+    'cw312',
+    'cw313',
   };
 
   test('registry contains exactly the illustration assets in the catalog', () {
@@ -88,120 +135,18 @@ void main() {
     expect(exerciseIllustrationAsset('cw278'), 'assets/exercises/cw278.webp');
   });
 
-  test('loads and decodes the cw261 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw261.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
+  test('loads and decodes every illustration as 512x512', () async {
+    for (final id in illustratedExerciseIds) {
+      final data = await rootBundle.load('assets/exercises/$id.webp');
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+      );
+      addTearDown(codec.dispose);
+      final frame = await codec.getNextFrame();
+      addTearDown(frame.image.dispose);
 
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw262 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw262.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw257 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw257.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw264 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw264.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw265 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw265.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw278 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw278.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw251 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw251.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw252 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw252.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
-  });
-
-  test('loads and decodes the cw253 illustration as 512x512', () async {
-    final data = await rootBundle.load('assets/exercises/cw253.webp');
-    final codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-    );
-    addTearDown(codec.dispose);
-    final frame = await codec.getNextFrame();
-    addTearDown(frame.image.dispose);
-
-    expect(frame.image.width, 512);
-    expect(frame.image.height, 512);
+      expect(frame.image.width, 512, reason: id);
+      expect(frame.image.height, 512, reason: id);
+    }
   });
 }
