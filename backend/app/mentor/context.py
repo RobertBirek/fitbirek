@@ -17,17 +17,17 @@ from app.sync.models import SyncRecord
 # Checked-in identifiers and public Polish names from assets/data/exercises.json.
 CATALOGUE = {
     "cw001": "Pompki klasyczne",
-    "cw007": "Pompki hindu",
-    "cw012": "Wyciskanie hantli leżąc płasko",
-    "cw031": "Podciąganie nachwytem szerokie",
+    "cw007": "Pompki hinduskie",
+    "cw012": "Wyciskanie hantli na ławce płaskiej",
+    "cw031": "Podciąganie szerokim nachwytem",
     "cw032": "Podciąganie podchwytem",
-    "cw061": "Reverse snow angel",
-    "cw091": "Empty can raise",
-    "cw121": "Towel pull-up",
-    "cw125": "Przysiad goblet",
-    "cw151": "Deadlift sumo hantlem",
-    "cw154": "Glute bridge",
-    "cw169": "Plank klasyczny na przedramionach",
+    "cw061": "Przenoszenie ramion łukiem nad głowę w leżeniu na brzuchu",
+    "cw091": "Unoszenie hantli w skos w przód z kciukami w dół",
+    "cw121": "Podciąganie na ręcznikach przewieszonych przez drążek",
+    "cw125": "Przysiad z hantlem trzymanym oburącz przy klatce",
+    "cw151": "Martwy ciąg z hantlem w szerokim rozkroku",
+    "cw154": "Most biodrowy",
+    "cw169": "Deska na przedramionach",
 }
 
 
