@@ -1,33 +1,29 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-12, produkcyjna wersja webowa 1.8.0+21.
+Stan na 2026-10-12, produkcyjna wersja webowa 1.9.0+22.
 
-Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają 78 ilustracji:
-66 wydanych oraz 12 lokalnie zintegrowanych, niewydanych z Partii 05 i 06.
+Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają 78 wydanych ilustracji.
 238 ćwiczeń pozostaje bez ilustracji.
 
-Kandydat wydania `1.9.0+22` obejmuje obie Partie 05 i 06 (`cw001–cw012`)
-oraz zachowuje wszystkie 66 wydanych ilustracji, w tym sześć z Partii 04.
-Przygotowanie i budowa kandydata nie oznaczają wdrożenia: produkcja pozostaje
-`1.8.0+21`, a 12 nowych ilustracji pozostaje lokalnie zintegrowanych,
-niewydanych do czasu wdrożenia.
+Wydanie `1.9.0+22` obejmuje obie Partie 05 i 06 (`cw001–cw012`)
+oraz zachowuje wszystkie 66 wcześniej wydanych ilustracji, w tym sześć z Partii 04.
 
-## Ilustracje — wydane i lokalnie zintegrowane
+## Wydane ilustracje
 
 | ID | Ćwiczenie | Kadry | Status |
 |---|---|---:|---|
-| cw001 | Pompki klasyczne | 2 | Lokalnie zintegrowane; niewydane. |
-| cw002 | Pompki wąskie (diamentowe) | 2 | Lokalnie zintegrowane; niewydane. |
-| cw003 | Pompki szerokie | 2 | Lokalnie zintegrowane; niewydane. |
-| cw004 | Pompki łucznika | 2 | Lokalnie zintegrowane; niewydane. |
-| cw005 | Pompki na jednej ręce | 2 | Lokalnie zintegrowane; niewydane. |
-| cw006 | Pompki plyometryczne z klaśnięciem | 2 | Lokalnie zintegrowane; niewydane. |
-| cw007 | Pompki hinduskie | 3 | Lokalnie zintegrowane; niewydane. |
-| cw008 | Pompki z przyciąganiem kolana do łokcia | 2 | Lokalnie zintegrowane; niewydane. |
-| cw009 | Pompki z podniesionymi nogami | 2 | Lokalnie zintegrowane; niewydane. |
-| cw010 | Głębokie pompki na hantlach | 2 | Lokalnie zintegrowane; niewydane. |
-| cw011 | Pompki z rotacją | 3 | Lokalnie zintegrowane; niewydane. |
-| cw012 | Wyciskanie hantli na ławce płaskiej | 2 | Lokalnie zintegrowane; niewydane. |
+| cw001 | Pompki klasyczne | 2 | Wydane w 1.9.0+22. |
+| cw002 | Pompki wąskie (diamentowe) | 2 | Wydane w 1.9.0+22. |
+| cw003 | Pompki szerokie | 2 | Wydane w 1.9.0+22. |
+| cw004 | Pompki łucznika | 2 | Wydane w 1.9.0+22. |
+| cw005 | Pompki na jednej ręce | 2 | Wydane w 1.9.0+22. |
+| cw006 | Pompki plyometryczne z klaśnięciem | 2 | Wydane w 1.9.0+22. |
+| cw007 | Pompki hinduskie | 3 | Wydane w 1.9.0+22. |
+| cw008 | Pompki z przyciąganiem kolana do łokcia | 2 | Wydane w 1.9.0+22. |
+| cw009 | Pompki z podniesionymi nogami | 2 | Wydane w 1.9.0+22. |
+| cw010 | Głębokie pompki na hantlach | 2 | Wydane w 1.9.0+22. |
+| cw011 | Pompki z rotacją | 3 | Wydane w 1.9.0+22. |
+| cw012 | Wyciskanie hantli na ławce płaskiej | 2 | Wydane w 1.9.0+22. |
 | cw251 | Pozycja kobry | 2 | Wydane w 1.4.9+16. |
 | cw252 | Pozycja dziecka | 2 | Wydane w 1.4.9+16. |
 | cw253 | Pies z głową w dół | 2 | Wydane w 1.4.9+16. |
@@ -130,18 +126,42 @@ Rollback: `fit-web:rollback-1.7.0-20-20261012T174440Z`, obraz
 ## Piąta partia
 
 Zakres piątej partii obejmuje `cw001–cw006`. Wszystkie sześć zatwierdzonych
-WebP 512×512 ma po dwa kadry i jest lokalnie zintegrowanych. Weryfikacja
-Dockerowa obejmuje analizę i pełny zestaw testów. Pakiet nie jest jeszcze
-wydany; wersja produkcyjna pozostaje `1.8.0+21`.
+WebP 512×512 ma po dwa kadry i jest wydanych w `1.9.0+22`. Weryfikacja
+Dockerowa obejmuje analizę i pełny zestaw testów.
 
 ## Szósta partia
 
 Zakres szóstej partii obejmuje `cw007–cw012`. Wszystkie sześć zatwierdzonych
-WebP 512×512 jest lokalnie zintegrowanych. `cw007` i `cw011` mają po trzy kadry
-w poziomych pasach ułożonych pionowo, od góry do dołu; pozostałe ilustracje mają po dwa kadry. Weryfikacja
+WebP 512×512 jest wydanych w `1.9.0+22`. `cw007` i `cw011` mają po trzy kadry
+w poziomych pasach ułożonych pionowo, od góry do dołu; pozostałe ilustracje
+mają po dwa kadry. Weryfikacja
 Dockerowa obejmuje analizę i pełny zestaw testów: 366 testów przeszło,
-analiza wykazała 0 problemów. Pakiet nie jest jeszcze wydany; wersja
-produkcyjna pozostaje `1.8.0+21`.
+analiza wykazała 0 problemów.
+
+## Wspólne wydanie Partii 05 i 06 — 1.9.0+22
+
+Wdrożono wyłącznie web z commitu `c1453441a0b8b98800fb3ea5363a52549964ed2d`.
+Kontener web uruchomiono 2026-10-12 o 20:25:14 UTC; weryfikację zakończono
+o 20:25:48 UTC. Obraz runtime:
+`sha256:bf346275aaa74a2fad4f55a5f4b776298b73d616649ea8891ae29d0e9dc5e62e`.
+
+Przed zmianą tagu produkcyjnego wykonano `fit-backup.service`:
+`Result=success`, `ExecMainStatus=0`. Backup `20261012T202511791611Z`,
+SHA-256 dumpa:
+`82217dc0c969f860b4d23b9b9b3474f2461f11b13f3284a47ed940fdded52424`.
+
+Rollback: `fit-web:rollback-1.8.0-21-20261012T202511Z`, obraz
+`sha256:6dc5ac2d652c96ba61f436b9bc32ba03bbc7fbce66ddba5d663eeff96fa415e7`.
+
+Compose zweryfikowano przez `config --quiet` z nakładkami push i mentor.
+Publiczne `version.json` potwierdza `1.9.0`, build `22`, a `/api/health`
+zwraca `{"status":"ok"}`. Manifest obejmuje wszystkie 78 ilustracji;
+każda zwraca HTTP 200 i `image/webp`, z SHA-256 zgodnym z lokalnym assetem.
+Kontrola obejmuje również wszystkie 18 assetów Partii 04–06.
+`sqlite3.wasm` i `drift_worker.dart.js` są niepuste, zgodne bajtowo z lokalnymi
+plikami, zwracają HTTP 200, właściwy Content-Type oraz `Cache-Control: no-cache`.
+Kontener web jest zdrowy. API, PostgreSQL i push-sender zachowały identyczne
+identyfikatory kontenerów, obrazy i czasy uruchomienia; nie wykonywano migracji.
 
 ## Obowiązujące zasady
 
