@@ -1,6 +1,6 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-11, wersja webowa 1.6.0+19.
+Stan na 2026-10-12, wersja webowa 1.7.0+20.
 
 ## Wydane ilustracje
 
@@ -63,6 +63,9 @@ Stan na 2026-10-11, wersja webowa 1.6.0+19.
 | cw311 | Wykrok z uginaniem przedramion z hantlami | 2 | Wydane w 1.6.0+19. |
 | cw312 | Rumuński martwy ciąg z wiosłowaniem hantlami | 3 | Wydane w 1.6.0+19. |
 | cw313 | Chód niedźwiedzia z pompkami | 4 | Wydane w 1.6.0+19. |
+| cw314 | Przysiad z wyciskaniem hantli nad głowę | 3 | Wydane w 1.7.0+20. |
+| cw315 | Burpee z podciąganiem na drążku | 4 | Wydane w 1.7.0+20. |
+| cw316 | Chód farmera naprzemiennie z chodem z hantlem w jednej ręce | 3 | Wydane w 1.7.0+20. |
 
 `assets/exercises/`, `illustratedExerciseIds` i testy ilustracji są wspólnym
 rejestrem tych trzech zasobów. Każdy nowy plik WebP wymaga wpisu w rejestrze,
@@ -78,6 +81,11 @@ gumy na wysokości barku i obejmuje wariant przednią oraz tylną stronę barku.
 
 Zakres drugiej partii obejmuje `cw282–cw313`. Wszystkie 32 zasoby są wydane w
 wersji 1.6.0+19.
+
+## Trzecia partia
+
+Zakres trzeciej partii obejmuje `cw314–cw316`. Wszystkie trzy zasoby są wydane
+w wersji 1.7.0+20.
 
 ## Obowiązujące zasady
 

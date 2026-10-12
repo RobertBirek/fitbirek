@@ -66,6 +66,9 @@ void main() {
     'cw311',
     'cw312',
     'cw313',
+    'cw314',
+    'cw315',
+    'cw316',
   };
 
   test('registry contains exactly the illustration assets in the catalog', () {

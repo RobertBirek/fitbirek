@@ -56,6 +56,9 @@ const illustratedExerciseIds = {
   'cw311',
   'cw312',
   'cw313',
+  'cw314',
+  'cw315',
+  'cw316',
 };
 
 String? exerciseIllustrationAsset(String exerciseId) {

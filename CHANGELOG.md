@@ -6,6 +6,13 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.7.0+20] — 2026-10-12
+
+### Added
+- Dodano ilustracje szczegółów ćwiczeń `cw314`–`cw316`.
+
+---
+
 ## [1.6.0+19] — 2026-10-11
 
 ### Added
