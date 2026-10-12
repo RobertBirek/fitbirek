@@ -1,11 +1,33 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-12, wersja webowa 1.7.0+20.
+Stan na 2026-10-12, produkcyjna wersja webowa 1.8.0+21.
 
-## Wydane ilustracje
+Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają 78 ilustracji:
+66 wydanych oraz 12 lokalnie zintegrowanych, niewydanych z Partii 05 i 06.
+238 ćwiczeń pozostaje bez ilustracji.
+
+Kandydat wydania `1.9.0+22` obejmuje obie Partie 05 i 06 (`cw001–cw012`)
+oraz zachowuje wszystkie 66 wydanych ilustracji, w tym sześć z Partii 04.
+Przygotowanie i budowa kandydata nie oznaczają wdrożenia: produkcja pozostaje
+`1.8.0+21`, a 12 nowych ilustracji pozostaje lokalnie zintegrowanych,
+niewydanych do czasu wdrożenia.
+
+## Ilustracje — wydane i lokalnie zintegrowane
 
 | ID | Ćwiczenie | Kadry | Status |
 |---|---|---:|---|
+| cw001 | Pompki klasyczne | 2 | Lokalnie zintegrowane; niewydane. |
+| cw002 | Pompki wąskie (diamentowe) | 2 | Lokalnie zintegrowane; niewydane. |
+| cw003 | Pompki szerokie | 2 | Lokalnie zintegrowane; niewydane. |
+| cw004 | Pompki łucznika | 2 | Lokalnie zintegrowane; niewydane. |
+| cw005 | Pompki na jednej ręce | 2 | Lokalnie zintegrowane; niewydane. |
+| cw006 | Pompki plyometryczne z klaśnięciem | 2 | Lokalnie zintegrowane; niewydane. |
+| cw007 | Pompki hinduskie | 3 | Lokalnie zintegrowane; niewydane. |
+| cw008 | Pompki z przyciąganiem kolana do łokcia | 2 | Lokalnie zintegrowane; niewydane. |
+| cw009 | Pompki z podniesionymi nogami | 2 | Lokalnie zintegrowane; niewydane. |
+| cw010 | Głębokie pompki na hantlach | 2 | Lokalnie zintegrowane; niewydane. |
+| cw011 | Pompki z rotacją | 3 | Lokalnie zintegrowane; niewydane. |
+| cw012 | Wyciskanie hantli na ławce płaskiej | 2 | Lokalnie zintegrowane; niewydane. |
 | cw251 | Pozycja kobry | 2 | Wydane w 1.4.9+16. |
 | cw252 | Pozycja dziecka | 2 | Wydane w 1.4.9+16. |
 | cw253 | Pies z głową w dół | 2 | Wydane w 1.4.9+16. |
@@ -23,8 +45,14 @@ Stan na 2026-10-12, wersja webowa 1.7.0+20.
 | cw265 | Rozciąganie klatki piersiowej w futrynie | 2 | Wydane w 1.4.3+10; pomarańcz oznacza prawy piersiowy większy. |
 | cw266 | Przekładanie ręki pod tułowiem w klęku podpartym | 3 | Wydane w 1.5.1+18. |
 | cw267 | Wyprost odcinka piersiowego kręgosłupa na ławce | 3 | Wydane w 1.5.1+18; dłonie splecione za głową. |
+| cw268 | Koci grzbiet i wygięcie pleców w siadzie | 2 | Wydane w 1.8.0+21. |
+| cw269 | Krążenia szyi | 2 | Wydane w 1.8.0+21. |
+| cw270 | Cofanie brody | 2 | Wydane w 1.8.0+21. |
+| cw271 | Krążenia barków | 2 | Wydane w 1.8.0+21. |
+| cw272 | Krążenia nadgarstków | 2 | Wydane w 1.8.0+21. |
 | cw273 | Rozciąganie nadgarstków ze złożonymi dłońmi | 2 | Wydane w 1.5.1+18. |
 | cw274 | Rozciąganie nadgarstków w klęku podpartym z palcami ku kolanom | 2 | Wydane w 1.5.1+18. |
+| cw275 | Krążenia kostek | 2 | Wydane w 1.8.0+21. |
 | cw276 | Zgięcie grzbietowe stawu skokowego z kolanem do ściany | 2 | Wydane w 1.5.1+18. |
 | cw277 | Utrzymanie głębokiego przysiadu | 2 | Wydane w 1.5.1+18. |
 | cw278 | Przenoszenie gumy nad głową | 3 | Wydane w 1.4.7+14; świadoma zmiana kamery z front 3/4 na rear 3/4, z gumą za biodrami w ostatnim panelu. |
@@ -86,6 +114,34 @@ wersji 1.6.0+19.
 
 Zakres trzeciej partii obejmuje `cw314–cw316`. Wszystkie trzy zasoby są wydane
 w wersji 1.7.0+20.
+
+## Czwarta partia
+
+Zakres czwartej partii obejmuje `cw268–cw272` oraz `cw275`. Wszystkie sześć
+zatwierdzonych zasobów WebP 512×512 ma po dwa kadry i jest wydanych w wersji
+1.8.0+21. Wdrożono wyłącznie web; publiczną wersję, nagłówki i zgodność bajtów
+wszystkich sześciu ilustracji z lokalnymi assetami zweryfikowano
+2026-10-12 o 17:45:16 UTC. API, PostgreSQL i push-sender zachowały identyfikatory
+kontenerów oraz czasy uruchomienia.
+
+Rollback: `fit-web:rollback-1.7.0-20-20261012T174440Z`, obraz
+`sha256:d97bfc12b01a1068e67a422ba3d132321a421333eb23af0ef5a752c1ee21c3d6`.
+
+## Piąta partia
+
+Zakres piątej partii obejmuje `cw001–cw006`. Wszystkie sześć zatwierdzonych
+WebP 512×512 ma po dwa kadry i jest lokalnie zintegrowanych. Weryfikacja
+Dockerowa obejmuje analizę i pełny zestaw testów. Pakiet nie jest jeszcze
+wydany; wersja produkcyjna pozostaje `1.8.0+21`.
+
+## Szósta partia
+
+Zakres szóstej partii obejmuje `cw007–cw012`. Wszystkie sześć zatwierdzonych
+WebP 512×512 jest lokalnie zintegrowanych. `cw007` i `cw011` mają po trzy kadry
+w poziomych pasach ułożonych pionowo, od góry do dołu; pozostałe ilustracje mają po dwa kadry. Weryfikacja
+Dockerowa obejmuje analizę i pełny zestaw testów: 366 testów przeszło,
+analiza wykazała 0 problemów. Pakiet nie jest jeszcze wydany; wersja
+produkcyjna pozostaje `1.8.0+21`.
 
 ## Obowiązujące zasady
 

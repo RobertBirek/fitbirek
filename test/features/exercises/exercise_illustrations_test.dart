@@ -9,6 +9,18 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const expectedIllustrationIds = {
+    'cw001',
+    'cw002',
+    'cw003',
+    'cw004',
+    'cw005',
+    'cw006',
+    'cw007',
+    'cw008',
+    'cw009',
+    'cw010',
+    'cw011',
+    'cw012',
     'cw251',
     'cw252',
     'cw253',
@@ -26,8 +38,14 @@ void main() {
     'cw265',
     'cw266',
     'cw267',
+    'cw268',
+    'cw269',
+    'cw270',
+    'cw271',
+    'cw272',
     'cw273',
     'cw274',
+    'cw275',
     'cw276',
     'cw277',
     'cw278',
@@ -111,7 +129,7 @@ void main() {
   });
 
   test('returns no illustration for an exercise without an asset', () {
-    expect(exerciseIllustrationAsset('cw001'), isNull);
+    expect(exerciseIllustrationAsset('cw013'), isNull);
   });
 
   test('maps cw265 to its illustration asset', () {

@@ -6,6 +6,22 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.9.0+22] — 2026-10-12
+
+### Added
+- Dodano dwanaście ilustracji szczegółów ćwiczeń `cw001`–`cw012` z Partii 05
+  i 06. `cw007` i `cw011` mają po trzy kadry; pozostałe po dwa.
+
+---
+
+## [1.8.0+21] — 2026-10-12
+
+### Added
+- Dodano sześć ilustracji szczegółów ćwiczeń `cw268`–`cw272` oraz `cw275`,
+  po dwa kadry każda.
+
+---
+
 ## [1.7.0+20] — 2026-10-12
 
 ### Added
