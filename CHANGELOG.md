@@ -6,6 +6,15 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.10.0+23] — 2026-10-15
+
+### Added
+- Dodano 126 ilustracji szczegółów ćwiczeń `cw013`–`cw138` z Partii 07–27:
+  wyciskania, wiosłowania, ćwiczenia barków, ramion i chwytu, przysiady,
+  wykroki oraz wejścia na ławkę. Katalog zawiera teraz 204 ilustracje.
+
+---
+
 ## [1.9.0+22] — 2026-10-12
 
 ### Added
