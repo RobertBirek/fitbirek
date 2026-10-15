@@ -1,18 +1,25 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-15, produkcyjna wersja webowa 1.9.0+22.
+Stan na 2026-10-15, produkcyjna wersja webowa 1.10.0+23.
 
-Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają 204 ilustracje:
-78 wydanych oraz 126 lokalnie zintegrowanych, niewydanych z Partii 07–27.
+Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają 204 wydane ilustracje.
+Nie ma lokalnie zintegrowanych, niewydanych ilustracji.
 112 ćwiczeń pozostaje bez ilustracji.
 
-Partie 07–27 (`cw013–cw138`) przygotowano do wspólnego wydania webowego
-`1.10.0+23`. Stan wdrożenia i dowody zostaną zapisane po kontroli produkcji.
+Partie 07–27 (`cw013–cw138`) wydano wspólnie w wersji webowej `1.10.0+23`.
+Wszystkie 126 nowych ilustracji oraz 78 wcześniejszych zweryfikowano publicznie.
+Dowody: [wydanie 1.10.0+23](releases/2026-10-15-web-1.10.0-23.md).
 
 Wydanie `1.9.0+22` obejmuje obie Partie 05 i 06 (`cw001–cw012`)
 oraz zachowuje wszystkie 66 wcześniej wydanych ilustracji, w tym sześć z Partii 04.
 
-## Ilustracje — wydane i lokalnie zintegrowane
+## Ilustracje — rejestr i historyczny status integracji
+
+**Aktualny status cw013–cw138: wydane w 1.10.0+23.** Zachowane poniżej
+oznaczenia „lokalnie zintegrowane; niewydane” oraz opisy Partii 07–27
+dokumentują stan w chwili ukończenia poszczególnych pakietów. Wspólne wydanie
+opisane powyżej zastępuje te historyczne oznaczenia publikacji; warianty,
+liczby kadrów i historia generacji pozostają aktualne.
 
 | ID | Ćwiczenie | Kadry | Status |
 |---|---|---:|---|
