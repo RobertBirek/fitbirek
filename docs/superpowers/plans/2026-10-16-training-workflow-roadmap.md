@@ -43,5 +43,11 @@ addytywne migracje tylko gdy wymagane; osobne testy granic offline/sync.
   format 9 plików bez zmian. Flutter3.35.4/Dart3.9.2, aktualne tree readonly
   kopiowane do /tmp w fit-web:catalog-expanded-verified. Czas/rundy utrzymaj:
   brak zapisanej porównywalnej konfiguracji. Bez schema/codegen/version/deploy.
-- [ ] Pełnaweryfikacja: Dockerverification, Pythonpipeline, backendpełny,
+- [x] Pełnaweryfikacja: Dockerverification, Pythonpipeline, backendpełny,
   generatedfilechecks i dokumentacjawyników/ograniczeń.
+  Wydanie1.13.0+26:560 Flutter/analyze0,344 backend,37 Python; format67 Dartów
+  bez zmian,17 wygenerowanych plików zgodnych. Commit źródełb1a6017 wypchnięty
+  przed backupem; backup/SHA/manifest zweryfikowane, web-only wdrożony.
+  Publiczne363 WebP/type/cache/SHA, wszystkie metadane, katalog, WebSQLite,
+  wersja/build, API health i SPA/bootstrap/worker poprawne. Pozostałe usługi
+  bez restartów. Dowody i ograniczenia: `docs/releases/2026-10-16-web-1.13.0-26.md`.

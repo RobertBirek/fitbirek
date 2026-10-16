@@ -1,5 +1,9 @@
 # Usprawnienia prowadzenia treningu — 2026-10-16
 
+**Wydane jako1.13.0+26**, web-only2026-10-16 o19:56:57 UTC;
+kontrola publiczna zakończona19:57:35 UTC. Pełne dowody:
+[raport wydania](releases/2026-10-16-web-1.13.0-26.md).
+
 ## Zakres wykonany po wydaniu katalogu1.12.0+25
 
 1. **PR per strona i porównania:** rozdzielone exerciseID+NULL/both/left/right,

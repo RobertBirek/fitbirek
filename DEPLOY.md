@@ -3,6 +3,11 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
+Current web **1.13.0+26 deployed 2026-10-16 19:56:57 UTC**: six training-workflow
+improvements, local Drift10,363 illustrations unchanged and publicly reverified.
+Web-only; no API/PostgreSQL/push-sender restart, no Alembic or Compose/Caddy change.
+Standard backup retention35 unchanged. Evidence and rollback:
+[release1.13.0+26](docs/releases/2026-10-16-web-1.13.0-26.md).
 Web **1.12.0+25 deployed 2026-10-16 13:51:33 UTC**:363 exercises and363
 publicly verified illustrations, offline filters and set tracking (local Drift8).
 Web-only update; API/PostgreSQL/push-sender unchanged, no Alembic migration.

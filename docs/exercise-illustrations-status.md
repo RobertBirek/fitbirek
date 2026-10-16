@@ -1,6 +1,8 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-16, produkcyjna wersja webowa 1.12.0+25.
+Stan na 2026-10-16, produkcyjna wersja webowa 1.13.0+26.
+Wszystkie363 ilustracje zachowano bez zmian i ponownie sprawdzono publicznie;
+[aktualne dowody](releases/2026-10-16-web-1.13.0-26.md).
 
 Katalog obejmuje **363 ćwiczenia i363 publicznie wydane ilustracje**:
 **0 brakujących i0 niewydanych**. Nowe47 (`cw317–cw363`) wydano w1.12.0+25.

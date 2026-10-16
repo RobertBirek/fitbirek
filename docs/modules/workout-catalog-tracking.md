@@ -11,7 +11,8 @@ kilogramy, także gdy lista sprzętu zawiera masę własną.
 
 ## Trwałość i wire
 
-- Drift schema **9**, migracje addytywne z wcześniejszych wersji:
+- Etap PR: Drift schema **9** (całe wydanie1.13.0+26: **10**, dodatkowa
+  struktura planów opisana w `structured-planner.md`), migracje addytywne:
   `sets_log.side TEXT NULL CHECK (side IS NULL OR side IN ('left','right','both'))`.
 - Migracja **8→9** dodaje takie samo nullable `side` do `personal_records`.
   Nie zmienia wartości, ID ani metadanych synchronizacji istniejących PR.
