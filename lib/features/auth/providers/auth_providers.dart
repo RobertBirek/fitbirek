@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show ValueNotifier;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
@@ -39,6 +40,34 @@ class AuthState {
   @override
   int get hashCode => Object.hash(status, accountId);
 }
+
+/// Passive, synchronous authority for local writes. Reading it never creates
+/// authStateProvider or bootstraps HTTP. Once auth is initialized, every state
+/// transition invalidates captures, including departure and return to one ID.
+class CachedAuthWriteAuthority {
+  /// Passive invalidation only; observing this never initializes HTTP/auth.
+  final revision = ValueNotifier<int>(0);
+  AuthState? _state;
+  int _epoch = 0;
+
+  AuthState? get state => _state;
+  int get epoch => _epoch;
+
+  void _observe(AuthState next) {
+    if (_state == next) return;
+    _state = next;
+    _epoch++;
+    revision.value = _epoch;
+  }
+}
+
+final cachedAuthWriteAuthorityProvider = Provider<CachedAuthWriteAuthority>((
+  ref,
+) {
+  final authority = CachedAuthWriteAuthority();
+  ref.onDispose(authority.revision.dispose);
+  return authority;
+});
 
 class AuthController extends StateNotifier<AuthState> {
   AuthController(
@@ -175,6 +204,12 @@ final StateNotifierProvider<AuthController, AuthState> authStateProvider =
         },
         disablePush: () => ref.read(pushClientProvider).logout(),
       );
+      final authority = ref.read(cachedAuthWriteAuthorityProvider);
+      final removeListener = controller.addListener(authority._observe);
+      ref.onDispose(() {
+        removeListener();
+        authority._observe(const AuthState.loading());
+      });
       Future<void>.microtask(controller.bootstrap);
       return controller;
     });

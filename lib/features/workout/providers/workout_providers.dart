@@ -3,8 +3,11 @@ import 'dart:async';
 import '../../../core/database/app_database.dart' show WorkoutSessionData;
 import '../../../core/providers/database_provider.dart';
 import '../../../core/utils/pr_detector.dart';
+import '../../../core/utils/set_comparison.dart';
 import '../../../core/models/exercise.dart';
 import '../data/workout_repository.dart';
+import '../domain/interval_timer.dart';
+import '../../auth/providers/auth_providers.dart';
 import '../../progress/prs/providers/prs_providers.dart';
 
 final workoutRepositoryProvider = Provider<WorkoutRepository>((ref) {
@@ -25,6 +28,7 @@ class ActiveSetEntry {
     this.side,
     this.rpe,
     this.isNewPr = false,
+    this.comparison,
   });
 
   final String exerciseId;
@@ -36,6 +40,7 @@ class ActiveSetEntry {
   final String? side;
   final int? rpe;
   final bool isNewPr;
+  final String? comparison;
 }
 
 /// Stan aktywnej sesji treningowej.
@@ -71,12 +76,34 @@ class ActiveWorkoutState {
   }
 }
 
+/// Opaque single-use capture. Never retarget a returned timer to a newer session.
+class IntervalWriteOrigin {
+  IntervalWriteOrigin._(
+    this._owner,
+    this.sessionId,
+    this._generation,
+    this._authority,
+    this._epoch,
+    this.exercise,
+    this.side,
+    this.rpe,
+  );
+  final ActiveWorkoutNotifier _owner;
+  final int sessionId, _generation, _epoch;
+  final CachedAuthWriteAuthority _authority;
+  final Exercise exercise;
+  final String? side;
+  final int? rpe;
+  bool _claimed = false;
+}
+
 class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
   ActiveWorkoutNotifier(this._ref) : super(const ActiveWorkoutState());
 
   final Ref _ref;
   StreamSubscription<WorkoutSessionData?>? _sessionSubscription;
   int _generation = 0;
+  bool _intervalClosing = false;
   Future<IdempotentSessionWrite?>? _pendingMentorStart;
   String? _pendingMentorStartKey;
 
@@ -89,11 +116,23 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
 
   Future<void> startSession() async {
     final generation = ++_generation;
+    final authority = _ref.read(cachedAuthWriteAuthorityProvider);
+    final epoch = authority.epoch;
+    bool current() =>
+        mounted &&
+        generation == _generation &&
+        authority.epoch == epoch &&
+        (authority.state == null || authority.state!.isSignedIn);
+    _intervalClosing = false;
     await _sessionSubscription?.cancel();
     _sessionSubscription = null;
     final repo = _ref.read(workoutRepositoryProvider);
-    final id = await repo.startSession();
-    if (!mounted || generation != _generation) return;
+    if (!current()) return;
+    final id = await repo.startSession(
+      guard: current,
+      accountId: authority.state?.accountId,
+    );
+    if (!current()) return;
     state = ActiveWorkoutState(
       sessionId: id,
       startTime: DateTime.now(),
@@ -122,6 +161,122 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     );
   }
 
+  IntervalWriteOrigin? captureInterval({
+    required Exercise exercise,
+    String? side,
+    int? rpe,
+  }) {
+    if (!mounted || !state.isActive || state.sessionId == null) return null;
+    final authority = _ref.read(cachedAuthWriteAuthorityProvider);
+    final origin = IntervalWriteOrigin._(
+      this,
+      state.sessionId!,
+      _generation,
+      authority,
+      authority.epoch,
+      exercise,
+      side,
+      rpe,
+    );
+    return isIntervalCurrent(origin) ? origin : null;
+  }
+
+  bool isIntervalCurrent(IntervalWriteOrigin origin) =>
+      identical(origin._owner, this) &&
+      _isCurrent(origin.sessionId, origin._generation) &&
+      state.isActive &&
+      !_intervalClosing &&
+      origin._authority.epoch == origin._epoch &&
+      (origin._authority.state == null || origin._authority.state!.isSignedIn);
+
+  /// True means the entire batch was written, not a PR flag. One explicit
+  /// attempt per capture, with a synchronous reservation before the first await.
+  Future<bool> saveIntervalRounds(
+    IntervalWriteOrigin origin,
+    List<IntervalRound> rounds, {
+    bool Function()? guard,
+  }) async {
+    if (origin._claimed || !isIntervalCurrent(origin)) return false;
+    origin._claimed = true;
+    final results = List<IntervalRound>.of(rounds);
+    if (results.isEmpty ||
+        results.length > 100 ||
+        results.any((r) => r.seconds < 1 || r.seconds > 3600) ||
+        results.any((r) => r.round < 1 || r.round > 100) ||
+        results.map((r) => r.round).toSet().length != results.length) {
+      return false;
+    }
+    void requireOwnership() {
+      if (!isIntervalCurrent(origin) || !(guard?.call() ?? true)) {
+        throw WorkoutAccountUnavailable();
+      }
+    }
+
+    final db = _ref.read(appDatabaseProvider);
+    final repo = _ref.read(workoutRepositoryProvider);
+    final entries = <ActiveSetEntry>[];
+    try {
+      await db.transaction(() async {
+        requireOwnership();
+        final binding = await db.syncDao.readState();
+        requireOwnership();
+        if ((binding != null && !binding.offlineAccess) ||
+            (origin._authority.state != null &&
+                binding?.accountId != origin._authority.state!.accountId)) {
+          throw WorkoutAccountUnavailable();
+        }
+        final session = await db.workoutDao.getSession(origin.sessionId);
+        requireOwnership();
+        if (session == null ||
+            session.deletedAtUtc != null ||
+            session.dataKoniec != null) {
+          throw WorkoutSessionUnavailable(origin.sessionId);
+        }
+        // Read numbering inside the serialized transaction, not from stale UI.
+        final existing = await repo.getSetsForSession(origin.sessionId);
+        requireOwnership();
+        var number = existing
+            .where((s) => s.cwiczenieId == origin.exercise.id)
+            .fold<int>(0, (n, s) => s.numerSerii > n ? s.numerSerii : n);
+        for (final result in results) {
+          await repo.logSet(
+            sessionId: origin.sessionId,
+            exerciseId: origin.exercise.id,
+            exerciseNamePl: origin.exercise.nazwaPl,
+            setNumber: ++number,
+            seconds: result.seconds,
+            side: origin.side,
+            rpe: origin.rpe,
+          );
+          requireOwnership();
+          entries.add(
+            ActiveSetEntry(
+              exerciseId: origin.exercise.id,
+              exerciseNamePl: origin.exercise.nazwaPl,
+              setNumber: number,
+              seconds: result.seconds,
+              side: origin.side,
+              rpe: origin.rpe,
+            ),
+          );
+        }
+        final currentBinding = await db.syncDao.readState();
+        requireOwnership();
+        if (currentBinding?.accountId != binding?.accountId ||
+            (currentBinding != null && !currentBinding.offlineAccess)) {
+          throw WorkoutAccountUnavailable();
+        }
+      });
+    } on WorkoutAccountUnavailable {
+      return false;
+    } on WorkoutSessionUnavailable {
+      return false;
+    }
+    if (!isIntervalCurrent(origin)) return false;
+    state = state.copyWith(loggedSets: [...state.loggedSets, ...entries]);
+    return true;
+  }
+
   /// Zapisuje serię do bazy + wykrywa PR + zwraca info czy to nowy rekord.
   Future<bool> logSet({
     required Exercise exercise,
@@ -136,12 +291,47 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     final generation = _generation;
     final repo = _ref.read(workoutRepositoryProvider);
 
+    // SQLite reads inside this transaction cannot observe a logout lock queued
+    // behind it. The passive auth epoch changes synchronously at logout start.
+    final authority = _ref.read(cachedAuthWriteAuthorityProvider);
+    final authEpoch = authority.epoch;
+
     final setNumber =
         state.loggedSets.where((s) => s.exerciseId == exercise.id).length + 1;
 
     bool isNewPr = false;
+    String? comparison;
+    void requireOwnership() {
+      if (!_isCurrent(sessionId, generation) ||
+          authority.epoch != authEpoch ||
+          (authority.state != null && !authority.state!.isSignedIn)) {
+        throw WorkoutAccountUnavailable();
+      }
+    }
+
     try {
       await _ref.read(appDatabaseProvider).transaction(() async {
+        requireOwnership();
+        final binding = await _ref
+            .read(appDatabaseProvider)
+            .syncDao
+            .readState();
+        requireOwnership();
+        if ((binding != null && !binding.offlineAccess) ||
+            (authority.state != null &&
+                binding?.accountId != authority.state!.accountId)) {
+          throw WorkoutAccountUnavailable();
+        }
+        final previous = await repo.getLastSet(exercise.id, side: side);
+        requireOwnership();
+        comparison = setComparison(
+          weightKg: weightKg,
+          reps: reps,
+          seconds: seconds,
+          previousWeightKg: previous?.ciezarKg,
+          previousReps: previous?.powtorzenia,
+          previousSeconds: previous?.czasSekund,
+        );
         await repo.logSet(
           sessionId: sessionId,
           exerciseId: exercise.id,
@@ -153,16 +343,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           side: side,
           rpe: rpe,
         );
+        requireOwnership();
 
-        // PR storage has no side dimension: never compare left/right/both
-        // results with each other or with legacy unclassified sets.
-        if (side == null &&
-            weightKg != null &&
-            reps != null &&
-            weightKg > 0 &&
-            reps > 0) {
+        if (weightKg != null && reps != null && weightKg > 0 && reps > 0) {
           final prsRepo = _ref.read(prsRepositoryProvider);
-          final best = await prsRepo.getBestForExercise(exercise.id);
+          final best = await prsRepo.getBestForExercise(
+            exercise.id,
+            side: side,
+          );
+          requireOwnership();
           isNewPr = PrDetector.isNewRecord(
             nowyCiezar: weightKg,
             nowePowtorzenia: reps,
@@ -174,11 +363,25 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
               exerciseNamePl: exercise.nazwaPl,
               weightKg: weightKg,
               reps: reps,
+              side: side,
             );
+            requireOwnership();
           }
+        }
+        final currentBinding = await _ref
+            .read(appDatabaseProvider)
+            .syncDao
+            .readState();
+        requireOwnership();
+        if (currentBinding?.accountId != binding?.accountId ||
+            (currentBinding != null && !currentBinding.offlineAccess)) {
+          throw WorkoutAccountUnavailable();
         }
       });
     } on WorkoutSessionUnavailable {
+      _resetIfCurrent(sessionId, generation);
+      return false;
+    } on WorkoutAccountUnavailable {
       _resetIfCurrent(sessionId, generation);
       return false;
     }
@@ -197,6 +400,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           side: side,
           rpe: rpe,
           isNewPr: isNewPr,
+          comparison: comparison,
         ),
       ],
     );
@@ -401,6 +605,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     if (session.deletedAtUtc != null || session.dataKoniec != null) {
       return write;
     }
+    _intervalClosing = false;
     state = ActiveWorkoutState(
       sessionId: session.id,
       startTime: session.dataStart.toLocal(),
@@ -429,6 +634,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
 
   Future<void> finishSession() async {
     if (state.sessionId == null || state.startTime == null) return;
+    // Invalidate timer captures synchronously: SQLite finish may be queued
+    // behind an in-flight interval transaction, which must then roll back.
+    _intervalClosing = true;
     final sessionId = state.sessionId!;
     final startTime = state.startTime!;
     final generation = _generation;

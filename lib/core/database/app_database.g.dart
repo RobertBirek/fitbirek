@@ -5572,6 +5572,17 @@ class $PersonalRecordsTable extends PersonalRecords
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _sideMeta = const VerificationMeta('side');
+  @override
+  late final GeneratedColumn<String> side = GeneratedColumn<String>(
+    'side',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NULL CHECK (side IS NULL OR side IN (\'left\', \'right\', \'both\'))',
+  );
   static const VerificationMeta _nazwaCwiczeniaPlMeta = const VerificationMeta(
     'nazwaCwiczeniaPl',
   );
@@ -5634,6 +5645,7 @@ class $PersonalRecordsTable extends PersonalRecords
     deletedAtUtc,
     id,
     cwiczenieId,
+    side,
     nazwaCwiczeniaPl,
     ciezarKg,
     powtorzenia,
@@ -5698,6 +5710,12 @@ class $PersonalRecordsTable extends PersonalRecords
       );
     } else if (isInserting) {
       context.missing(_cwiczenieIdMeta);
+    }
+    if (data.containsKey('side')) {
+      context.handle(
+        _sideMeta,
+        side.isAcceptableOrUnknown(data['side']!, _sideMeta),
+      );
     }
     if (data.containsKey('nazwa_cwiczenia_pl')) {
       context.handle(
@@ -5779,6 +5797,10 @@ class $PersonalRecordsTable extends PersonalRecords
         DriftSqlType.string,
         data['${effectivePrefix}cwiczenie_id'],
       )!,
+      side: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}side'],
+      ),
       nazwaCwiczeniaPl: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}nazwa_cwiczenia_pl'],
@@ -5816,6 +5838,7 @@ class PersonalRecordData extends DataClass
   final DateTime? deletedAtUtc;
   final int id;
   final String cwiczenieId;
+  final String? side;
   final String nazwaCwiczeniaPl;
   final double ciezarKg;
   final int powtorzenia;
@@ -5828,6 +5851,7 @@ class PersonalRecordData extends DataClass
     this.deletedAtUtc,
     required this.id,
     required this.cwiczenieId,
+    this.side,
     required this.nazwaCwiczeniaPl,
     required this.ciezarKg,
     required this.powtorzenia,
@@ -5845,6 +5869,9 @@ class PersonalRecordData extends DataClass
     }
     map['id'] = Variable<int>(id);
     map['cwiczenie_id'] = Variable<String>(cwiczenieId);
+    if (!nullToAbsent || side != null) {
+      map['side'] = Variable<String>(side);
+    }
     map['nazwa_cwiczenia_pl'] = Variable<String>(nazwaCwiczeniaPl);
     map['ciezar_kg'] = Variable<double>(ciezarKg);
     map['powtorzenia'] = Variable<int>(powtorzenia);
@@ -5863,6 +5890,7 @@ class PersonalRecordData extends DataClass
           : Value(deletedAtUtc),
       id: Value(id),
       cwiczenieId: Value(cwiczenieId),
+      side: side == null && nullToAbsent ? const Value.absent() : Value(side),
       nazwaCwiczeniaPl: Value(nazwaCwiczeniaPl),
       ciezarKg: Value(ciezarKg),
       powtorzenia: Value(powtorzenia),
@@ -5883,6 +5911,7 @@ class PersonalRecordData extends DataClass
       deletedAtUtc: serializer.fromJson<DateTime?>(json['deletedAtUtc']),
       id: serializer.fromJson<int>(json['id']),
       cwiczenieId: serializer.fromJson<String>(json['cwiczenieId']),
+      side: serializer.fromJson<String?>(json['side']),
       nazwaCwiczeniaPl: serializer.fromJson<String>(json['nazwaCwiczeniaPl']),
       ciezarKg: serializer.fromJson<double>(json['ciezarKg']),
       powtorzenia: serializer.fromJson<int>(json['powtorzenia']),
@@ -5900,6 +5929,7 @@ class PersonalRecordData extends DataClass
       'deletedAtUtc': serializer.toJson<DateTime?>(deletedAtUtc),
       'id': serializer.toJson<int>(id),
       'cwiczenieId': serializer.toJson<String>(cwiczenieId),
+      'side': serializer.toJson<String?>(side),
       'nazwaCwiczeniaPl': serializer.toJson<String>(nazwaCwiczeniaPl),
       'ciezarKg': serializer.toJson<double>(ciezarKg),
       'powtorzenia': serializer.toJson<int>(powtorzenia),
@@ -5915,6 +5945,7 @@ class PersonalRecordData extends DataClass
     Value<DateTime?> deletedAtUtc = const Value.absent(),
     int? id,
     String? cwiczenieId,
+    Value<String?> side = const Value.absent(),
     String? nazwaCwiczeniaPl,
     double? ciezarKg,
     int? powtorzenia,
@@ -5927,6 +5958,7 @@ class PersonalRecordData extends DataClass
     deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
     id: id ?? this.id,
     cwiczenieId: cwiczenieId ?? this.cwiczenieId,
+    side: side.present ? side.value : this.side,
     nazwaCwiczeniaPl: nazwaCwiczeniaPl ?? this.nazwaCwiczeniaPl,
     ciezarKg: ciezarKg ?? this.ciezarKg,
     powtorzenia: powtorzenia ?? this.powtorzenia,
@@ -5949,6 +5981,7 @@ class PersonalRecordData extends DataClass
       cwiczenieId: data.cwiczenieId.present
           ? data.cwiczenieId.value
           : this.cwiczenieId,
+      side: data.side.present ? data.side.value : this.side,
       nazwaCwiczeniaPl: data.nazwaCwiczeniaPl.present
           ? data.nazwaCwiczeniaPl.value
           : this.nazwaCwiczeniaPl,
@@ -5972,6 +6005,7 @@ class PersonalRecordData extends DataClass
           ..write('deletedAtUtc: $deletedAtUtc, ')
           ..write('id: $id, ')
           ..write('cwiczenieId: $cwiczenieId, ')
+          ..write('side: $side, ')
           ..write('nazwaCwiczeniaPl: $nazwaCwiczeniaPl, ')
           ..write('ciezarKg: $ciezarKg, ')
           ..write('powtorzenia: $powtorzenia, ')
@@ -5989,6 +6023,7 @@ class PersonalRecordData extends DataClass
     deletedAtUtc,
     id,
     cwiczenieId,
+    side,
     nazwaCwiczeniaPl,
     ciezarKg,
     powtorzenia,
@@ -6005,6 +6040,7 @@ class PersonalRecordData extends DataClass
           other.deletedAtUtc == this.deletedAtUtc &&
           other.id == this.id &&
           other.cwiczenieId == this.cwiczenieId &&
+          other.side == this.side &&
           other.nazwaCwiczeniaPl == this.nazwaCwiczeniaPl &&
           other.ciezarKg == this.ciezarKg &&
           other.powtorzenia == this.powtorzenia &&
@@ -6019,6 +6055,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
   final Value<DateTime?> deletedAtUtc;
   final Value<int> id;
   final Value<String> cwiczenieId;
+  final Value<String?> side;
   final Value<String> nazwaCwiczeniaPl;
   final Value<double> ciezarKg;
   final Value<int> powtorzenia;
@@ -6031,6 +6068,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
     this.deletedAtUtc = const Value.absent(),
     this.id = const Value.absent(),
     this.cwiczenieId = const Value.absent(),
+    this.side = const Value.absent(),
     this.nazwaCwiczeniaPl = const Value.absent(),
     this.ciezarKg = const Value.absent(),
     this.powtorzenia = const Value.absent(),
@@ -6044,6 +6082,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
     this.deletedAtUtc = const Value.absent(),
     this.id = const Value.absent(),
     required String cwiczenieId,
+    this.side = const Value.absent(),
     required String nazwaCwiczeniaPl,
     required double ciezarKg,
     required int powtorzenia,
@@ -6061,6 +6100,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
     Expression<DateTime>? deletedAtUtc,
     Expression<int>? id,
     Expression<String>? cwiczenieId,
+    Expression<String>? side,
     Expression<String>? nazwaCwiczeniaPl,
     Expression<double>? ciezarKg,
     Expression<int>? powtorzenia,
@@ -6074,6 +6114,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
       if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
       if (id != null) 'id': id,
       if (cwiczenieId != null) 'cwiczenie_id': cwiczenieId,
+      if (side != null) 'side': side,
       if (nazwaCwiczeniaPl != null) 'nazwa_cwiczenia_pl': nazwaCwiczeniaPl,
       if (ciezarKg != null) 'ciezar_kg': ciezarKg,
       if (powtorzenia != null) 'powtorzenia': powtorzenia,
@@ -6089,6 +6130,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
     Value<DateTime?>? deletedAtUtc,
     Value<int>? id,
     Value<String>? cwiczenieId,
+    Value<String?>? side,
     Value<String>? nazwaCwiczeniaPl,
     Value<double>? ciezarKg,
     Value<int>? powtorzenia,
@@ -6102,6 +6144,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
       deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
       id: id ?? this.id,
       cwiczenieId: cwiczenieId ?? this.cwiczenieId,
+      side: side ?? this.side,
       nazwaCwiczeniaPl: nazwaCwiczeniaPl ?? this.nazwaCwiczeniaPl,
       ciezarKg: ciezarKg ?? this.ciezarKg,
       powtorzenia: powtorzenia ?? this.powtorzenia,
@@ -6131,6 +6174,9 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
     if (cwiczenieId.present) {
       map['cwiczenie_id'] = Variable<String>(cwiczenieId.value);
     }
+    if (side.present) {
+      map['side'] = Variable<String>(side.value);
+    }
     if (nazwaCwiczeniaPl.present) {
       map['nazwa_cwiczenia_pl'] = Variable<String>(nazwaCwiczeniaPl.value);
     }
@@ -6158,6 +6204,7 @@ class PersonalRecordsCompanion extends UpdateCompanion<PersonalRecordData> {
           ..write('deletedAtUtc: $deletedAtUtc, ')
           ..write('id: $id, ')
           ..write('cwiczenieId: $cwiczenieId, ')
+          ..write('side: $side, ')
           ..write('nazwaCwiczeniaPl: $nazwaCwiczeniaPl, ')
           ..write('ciezarKg: $ciezarKg, ')
           ..write('powtorzenia: $powtorzenia, ')
@@ -6261,6 +6308,17 @@ class $WorkoutPlansTable extends WorkoutPlans
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _structureJsonMeta = const VerificationMeta(
+    'structureJson',
+  );
+  @override
+  late final GeneratedColumn<String> structureJson = GeneratedColumn<String>(
+    'structure_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _dataUtworzeniaMeta = const VerificationMeta(
     'dataUtworzenia',
   );
@@ -6284,6 +6342,7 @@ class $WorkoutPlansTable extends WorkoutPlans
     nazwa,
     cwiczeniaIds,
     cel,
+    structureJson,
     dataUtworzenia,
   ];
   @override
@@ -6361,6 +6420,15 @@ class $WorkoutPlansTable extends WorkoutPlans
     } else if (isInserting) {
       context.missing(_celMeta);
     }
+    if (data.containsKey('structure_json')) {
+      context.handle(
+        _structureJsonMeta,
+        structureJson.isAcceptableOrUnknown(
+          data['structure_json']!,
+          _structureJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('data_utworzenia')) {
       context.handle(
         _dataUtworzeniaMeta,
@@ -6411,6 +6479,10 @@ class $WorkoutPlansTable extends WorkoutPlans
         DriftSqlType.string,
         data['${effectivePrefix}cel'],
       )!,
+      structureJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}structure_json'],
+      ),
       dataUtworzenia: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}data_utworzenia'],
@@ -6433,6 +6505,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
   final String nazwa;
   final String cwiczeniaIds;
   final String cel;
+  final String? structureJson;
   final DateTime dataUtworzenia;
   const WorkoutPlanData({
     required this.syncId,
@@ -6443,6 +6516,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
     required this.nazwa,
     required this.cwiczeniaIds,
     required this.cel,
+    this.structureJson,
     required this.dataUtworzenia,
   });
   @override
@@ -6458,6 +6532,9 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
     map['nazwa'] = Variable<String>(nazwa);
     map['cwiczenia_ids'] = Variable<String>(cwiczeniaIds);
     map['cel'] = Variable<String>(cel);
+    if (!nullToAbsent || structureJson != null) {
+      map['structure_json'] = Variable<String>(structureJson);
+    }
     map['data_utworzenia'] = Variable<DateTime>(dataUtworzenia);
     return map;
   }
@@ -6474,6 +6551,9 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
       nazwa: Value(nazwa),
       cwiczeniaIds: Value(cwiczeniaIds),
       cel: Value(cel),
+      structureJson: structureJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(structureJson),
       dataUtworzenia: Value(dataUtworzenia),
     );
   }
@@ -6492,6 +6572,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
       nazwa: serializer.fromJson<String>(json['nazwa']),
       cwiczeniaIds: serializer.fromJson<String>(json['cwiczeniaIds']),
       cel: serializer.fromJson<String>(json['cel']),
+      structureJson: serializer.fromJson<String?>(json['structureJson']),
       dataUtworzenia: serializer.fromJson<DateTime>(json['dataUtworzenia']),
     );
   }
@@ -6507,6 +6588,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
       'nazwa': serializer.toJson<String>(nazwa),
       'cwiczeniaIds': serializer.toJson<String>(cwiczeniaIds),
       'cel': serializer.toJson<String>(cel),
+      'structureJson': serializer.toJson<String?>(structureJson),
       'dataUtworzenia': serializer.toJson<DateTime>(dataUtworzenia),
     };
   }
@@ -6520,6 +6602,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
     String? nazwa,
     String? cwiczeniaIds,
     String? cel,
+    Value<String?> structureJson = const Value.absent(),
     DateTime? dataUtworzenia,
   }) => WorkoutPlanData(
     syncId: syncId ?? this.syncId,
@@ -6530,6 +6613,9 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
     nazwa: nazwa ?? this.nazwa,
     cwiczeniaIds: cwiczeniaIds ?? this.cwiczeniaIds,
     cel: cel ?? this.cel,
+    structureJson: structureJson.present
+        ? structureJson.value
+        : this.structureJson,
     dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
   );
   WorkoutPlanData copyWithCompanion(WorkoutPlansCompanion data) {
@@ -6550,6 +6636,9 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
           ? data.cwiczeniaIds.value
           : this.cwiczeniaIds,
       cel: data.cel.present ? data.cel.value : this.cel,
+      structureJson: data.structureJson.present
+          ? data.structureJson.value
+          : this.structureJson,
       dataUtworzenia: data.dataUtworzenia.present
           ? data.dataUtworzenia.value
           : this.dataUtworzenia,
@@ -6567,6 +6656,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
           ..write('nazwa: $nazwa, ')
           ..write('cwiczeniaIds: $cwiczeniaIds, ')
           ..write('cel: $cel, ')
+          ..write('structureJson: $structureJson, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
         .toString();
@@ -6582,6 +6672,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
     nazwa,
     cwiczeniaIds,
     cel,
+    structureJson,
     dataUtworzenia,
   );
   @override
@@ -6596,6 +6687,7 @@ class WorkoutPlanData extends DataClass implements Insertable<WorkoutPlanData> {
           other.nazwa == this.nazwa &&
           other.cwiczeniaIds == this.cwiczeniaIds &&
           other.cel == this.cel &&
+          other.structureJson == this.structureJson &&
           other.dataUtworzenia == this.dataUtworzenia);
 }
 
@@ -6608,6 +6700,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
   final Value<String> nazwa;
   final Value<String> cwiczeniaIds;
   final Value<String> cel;
+  final Value<String?> structureJson;
   final Value<DateTime> dataUtworzenia;
   const WorkoutPlansCompanion({
     this.syncId = const Value.absent(),
@@ -6618,6 +6711,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
     this.nazwa = const Value.absent(),
     this.cwiczeniaIds = const Value.absent(),
     this.cel = const Value.absent(),
+    this.structureJson = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   });
   WorkoutPlansCompanion.insert({
@@ -6629,6 +6723,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
     required String nazwa,
     required String cwiczeniaIds,
     required String cel,
+    this.structureJson = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   }) : nazwa = Value(nazwa),
        cwiczeniaIds = Value(cwiczeniaIds),
@@ -6642,6 +6737,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
     Expression<String>? nazwa,
     Expression<String>? cwiczeniaIds,
     Expression<String>? cel,
+    Expression<String>? structureJson,
     Expression<DateTime>? dataUtworzenia,
   }) {
     return RawValuesInsertable({
@@ -6653,6 +6749,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
       if (nazwa != null) 'nazwa': nazwa,
       if (cwiczeniaIds != null) 'cwiczenia_ids': cwiczeniaIds,
       if (cel != null) 'cel': cel,
+      if (structureJson != null) 'structure_json': structureJson,
       if (dataUtworzenia != null) 'data_utworzenia': dataUtworzenia,
     });
   }
@@ -6666,6 +6763,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
     Value<String>? nazwa,
     Value<String>? cwiczeniaIds,
     Value<String>? cel,
+    Value<String?>? structureJson,
     Value<DateTime>? dataUtworzenia,
   }) {
     return WorkoutPlansCompanion(
@@ -6677,6 +6775,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
       nazwa: nazwa ?? this.nazwa,
       cwiczeniaIds: cwiczeniaIds ?? this.cwiczeniaIds,
       cel: cel ?? this.cel,
+      structureJson: structureJson ?? this.structureJson,
       dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
     );
   }
@@ -6708,6 +6807,9 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
     if (cel.present) {
       map['cel'] = Variable<String>(cel.value);
     }
+    if (structureJson.present) {
+      map['structure_json'] = Variable<String>(structureJson.value);
+    }
     if (dataUtworzenia.present) {
       map['data_utworzenia'] = Variable<DateTime>(dataUtworzenia.value);
     }
@@ -6725,6 +6827,7 @@ class WorkoutPlansCompanion extends UpdateCompanion<WorkoutPlanData> {
           ..write('nazwa: $nazwa, ')
           ..write('cwiczeniaIds: $cwiczeniaIds, ')
           ..write('cel: $cel, ')
+          ..write('structureJson: $structureJson, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
         .toString();
@@ -12207,6 +12310,7 @@ typedef $$PersonalRecordsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAtUtc,
       Value<int> id,
       required String cwiczenieId,
+      Value<String?> side,
       required String nazwaCwiczeniaPl,
       required double ciezarKg,
       required int powtorzenia,
@@ -12221,6 +12325,7 @@ typedef $$PersonalRecordsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAtUtc,
       Value<int> id,
       Value<String> cwiczenieId,
+      Value<String?> side,
       Value<String> nazwaCwiczeniaPl,
       Value<double> ciezarKg,
       Value<int> powtorzenia,
@@ -12264,6 +12369,11 @@ class $$PersonalRecordsTableFilterComposer
 
   ColumnFilters<String> get cwiczenieId => $composableBuilder(
     column: $table.cwiczenieId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get side => $composableBuilder(
+    column: $table.side,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12332,6 +12442,11 @@ class $$PersonalRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get side => $composableBuilder(
+    column: $table.side,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get nazwaCwiczeniaPl => $composableBuilder(
     column: $table.nazwaCwiczeniaPl,
     builder: (column) => ColumnOrderings(column),
@@ -12392,6 +12507,9 @@ class $$PersonalRecordsTableAnnotationComposer
     column: $table.cwiczenieId,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get side =>
+      $composableBuilder(column: $table.side, builder: (column) => column);
 
   GeneratedColumn<String> get nazwaCwiczeniaPl => $composableBuilder(
     column: $table.nazwaCwiczeniaPl,
@@ -12458,6 +12576,7 @@ class $$PersonalRecordsTableTableManager
                 Value<DateTime?> deletedAtUtc = const Value.absent(),
                 Value<int> id = const Value.absent(),
                 Value<String> cwiczenieId = const Value.absent(),
+                Value<String?> side = const Value.absent(),
                 Value<String> nazwaCwiczeniaPl = const Value.absent(),
                 Value<double> ciezarKg = const Value.absent(),
                 Value<int> powtorzenia = const Value.absent(),
@@ -12470,6 +12589,7 @@ class $$PersonalRecordsTableTableManager
                 deletedAtUtc: deletedAtUtc,
                 id: id,
                 cwiczenieId: cwiczenieId,
+                side: side,
                 nazwaCwiczeniaPl: nazwaCwiczeniaPl,
                 ciezarKg: ciezarKg,
                 powtorzenia: powtorzenia,
@@ -12484,6 +12604,7 @@ class $$PersonalRecordsTableTableManager
                 Value<DateTime?> deletedAtUtc = const Value.absent(),
                 Value<int> id = const Value.absent(),
                 required String cwiczenieId,
+                Value<String?> side = const Value.absent(),
                 required String nazwaCwiczeniaPl,
                 required double ciezarKg,
                 required int powtorzenia,
@@ -12496,6 +12617,7 @@ class $$PersonalRecordsTableTableManager
                 deletedAtUtc: deletedAtUtc,
                 id: id,
                 cwiczenieId: cwiczenieId,
+                side: side,
                 nazwaCwiczeniaPl: nazwaCwiczeniaPl,
                 ciezarKg: ciezarKg,
                 powtorzenia: powtorzenia,
@@ -12541,6 +12663,7 @@ typedef $$WorkoutPlansTableCreateCompanionBuilder =
       required String nazwa,
       required String cwiczeniaIds,
       required String cel,
+      Value<String?> structureJson,
       Value<DateTime> dataUtworzenia,
     });
 typedef $$WorkoutPlansTableUpdateCompanionBuilder =
@@ -12553,6 +12676,7 @@ typedef $$WorkoutPlansTableUpdateCompanionBuilder =
       Value<String> nazwa,
       Value<String> cwiczeniaIds,
       Value<String> cel,
+      Value<String?> structureJson,
       Value<DateTime> dataUtworzenia,
     });
 
@@ -12602,6 +12726,11 @@ class $$WorkoutPlansTableFilterComposer
 
   ColumnFilters<String> get cel => $composableBuilder(
     column: $table.cel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get structureJson => $composableBuilder(
+    column: $table.structureJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12660,6 +12789,11 @@ class $$WorkoutPlansTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get structureJson => $composableBuilder(
+    column: $table.structureJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get dataUtworzenia => $composableBuilder(
     column: $table.dataUtworzenia,
     builder: (column) => ColumnOrderings(column),
@@ -12707,6 +12841,11 @@ class $$WorkoutPlansTableAnnotationComposer
   GeneratedColumn<String> get cel =>
       $composableBuilder(column: $table.cel, builder: (column) => column);
 
+  GeneratedColumn<String> get structureJson => $composableBuilder(
+    column: $table.structureJson,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get dataUtworzenia => $composableBuilder(
     column: $table.dataUtworzenia,
     builder: (column) => column,
@@ -12752,6 +12891,7 @@ class $$WorkoutPlansTableTableManager
                 Value<String> nazwa = const Value.absent(),
                 Value<String> cwiczeniaIds = const Value.absent(),
                 Value<String> cel = const Value.absent(),
+                Value<String?> structureJson = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => WorkoutPlansCompanion(
                 syncId: syncId,
@@ -12762,6 +12902,7 @@ class $$WorkoutPlansTableTableManager
                 nazwa: nazwa,
                 cwiczeniaIds: cwiczeniaIds,
                 cel: cel,
+                structureJson: structureJson,
                 dataUtworzenia: dataUtworzenia,
               ),
           createCompanionCallback:
@@ -12774,6 +12915,7 @@ class $$WorkoutPlansTableTableManager
                 required String nazwa,
                 required String cwiczeniaIds,
                 required String cel,
+                Value<String?> structureJson = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => WorkoutPlansCompanion.insert(
                 syncId: syncId,
@@ -12784,6 +12926,7 @@ class $$WorkoutPlansTableTableManager
                 nazwa: nazwa,
                 cwiczeniaIds: cwiczeniaIds,
                 cel: cel,
+                structureJson: structureJson,
                 dataUtworzenia: dataUtworzenia,
               ),
           withReferenceMapper: (p0) => p0

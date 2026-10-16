@@ -5,6 +5,11 @@ import '../../../../app/constants.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../providers/exercises_providers.dart';
+import '../../providers/filter_presets_providers.dart';
+import '../../data/filter_presets_repository.dart';
+import '../../domain/filter_preset.dart';
+import '../../domain/exercise_catalog_metadata.dart';
+import '../../../planner/providers/planner_providers.dart';
 
 class ExercisesListPage extends ConsumerStatefulWidget {
   const ExercisesListPage({super.key});
@@ -37,10 +42,29 @@ class _ExercisesListPageState extends ConsumerState<ExercisesListPage> {
     final catalog = ref.watch(exerciseCatalogMetadataProvider);
     final exercises = ref.watch(filteredExercisesProvider);
     final filters = ref.watch(exerciseFiltersProvider);
+    final executionVerified = ref
+        .watch(exerciseFilterEngineProvider)
+        .executionFiltersVerified(filters);
+    final presets = ref.watch(filterPresetsProvider);
+    final presetsController = ref.watch(filterPresetsProvider.notifier);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Baza ćwiczeń'),
         actions: [
+          IconButton(
+            tooltip: 'Zapisane filtry',
+            icon: const Icon(Icons.bookmarks_outlined),
+            onPressed: presetsController.accountId == null || presets.isLoading
+                ? null
+                : () {
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    showDialog<void>(
+                      context: context,
+                      builder: (_) =>
+                          _PresetsDialog(controller: presetsController),
+                    );
+                  },
+          ),
           IconButton(
             tooltip: 'Filtry',
             icon: Badge(
@@ -86,9 +110,35 @@ class _ExercisesListPageState extends ConsumerState<ExercisesListPage> {
               ),
             ),
             if (!filters.isEmpty) const _ActiveFilters(),
+            TextButton.icon(
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Ułóż trening z tych ćwiczeń'),
+              onPressed: () {
+                ref
+                    .read(plannerEntryCriteriaProvider.notifier)
+                    .state = FilterPreset.decodeFilters(
+                  FilterPreset.encodeFilters(filters),
+                );
+                context.push('/settings/planner');
+              },
+            ),
             if (catalog.isLoading)
               const LinearProgressIndicator(
                 semanticsLabel: 'Ładowanie klasyfikacji',
+              ),
+            if (!executionVerified)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Nie można zweryfikować wybranych warunków lub pozycji — dane niedostępne albo niezweryfikowane. Kryteriów nie pominięto; wyniki nie są poszerzane.',
+                ),
+              ),
+            if (filters.hasExecutionFilters && executionVerified)
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Wyniki obejmują tylko ćwiczenia z odpowiednimi oznaczeniami. Ćwiczenia bez tych danych, także własne, są pomijane.',
+                ),
               ),
             if (catalog.hasError)
               Padding(
@@ -214,6 +264,199 @@ class _ExercisesListPageState extends ConsumerState<ExercisesListPage> {
   }
 }
 
+class _PresetsDialog extends ConsumerStatefulWidget {
+  const _PresetsDialog({required this.controller});
+  final FilterPresetsController controller;
+  @override
+  ConsumerState<_PresetsDialog> createState() => _PresetsDialogState();
+}
+
+class _PresetsDialogState extends ConsumerState<_PresetsDialog> {
+  final _name = TextEditingController();
+  String? _error;
+  bool _busy = false;
+  bool get _current =>
+      mounted &&
+      identical(ref.read(filterPresetsProvider.notifier), widget.controller);
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    final filters = ref.read(exerciseFiltersProvider);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final name = FilterPreset.validateName(_name.text);
+      try {
+        await widget.controller.save(name, filters);
+      } on DuplicatePresetName catch (duplicate) {
+        if (!mounted || !_current) return;
+        final overwrite = await showDialog<bool>(
+          context: context,
+          builder: (context) => Consumer(
+            builder: (context, ref, _) {
+              ref.watch(filterPresetsProvider);
+              if (!identical(
+                ref.watch(filterPresetsProvider.notifier),
+                widget.controller,
+              )) {
+                return AlertDialog(
+                  title: const Text('Konto zostało zmienione.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Zamknij'),
+                    ),
+                  ],
+                );
+              }
+              return AlertDialog(
+                title: Text('Zastąpić zestaw „${duplicate.existing.name}”?'),
+                content: const Text(
+                  'Zapisane kryteria zostaną zastąpione aktualnymi.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Anuluj'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Zastąp'),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+        if (overwrite == true && _current) {
+          await widget.controller.save(
+            name,
+            filters,
+            overwriteId: duplicate.existing.id,
+          );
+        }
+      }
+    } on ArgumentError {
+      if (_current) {
+        setState(() => _error = 'Nazwa musi mieć od 1 do 80 znaków.');
+      }
+    } catch (_) {
+      if (_current) {
+        setState(
+          () => _error = 'Nie udało się zapisać filtrów. Spróbuj ponownie.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _delete(String id) async {
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await widget.controller.delete(id);
+    } catch (_) {
+      if (_current) setState(() => _error = 'Nie udało się usunąć zestawu.');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final presets = ref.watch(filterPresetsProvider);
+    final current = identical(
+      ref.watch(filterPresetsProvider.notifier),
+      widget.controller,
+    );
+    return AlertDialog(
+      title: const Text('Zapisane filtry'),
+      content: SizedBox(
+        width: 420,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!current)
+                const Text(
+                  'Konto zostało zmienione. Otwórz zapisane filtry ponownie.',
+                )
+              else ...[
+                const Text(
+                  'Zestawy są zapisane tylko na tym urządzeniu, dla bieżącego konta.',
+                ),
+                TextField(
+                  key: const Key('preset-name'),
+                  controller: _name,
+                  enabled: !_busy,
+                  decoration: InputDecoration(
+                    labelText: 'Nazwa zestawu',
+                    errorText: _error,
+                  ),
+                ),
+                FilledButton(
+                  onPressed: _busy ? null : _save,
+                  child: const Text('Zapisz aktualne'),
+                ),
+                if (_busy || presets.isLoading) const LinearProgressIndicator(),
+                if (presets.hasError)
+                  const Text('Nie udało się wczytać zestawów.'),
+                if (presets.valueOrNull?.isEmpty ?? false)
+                  const Text('Brak zapisanych zestawów'),
+                for (final preset in presets.valueOrNull ?? <FilterPreset>[])
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(preset.name),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: 'Wczytaj ${preset.name}',
+                          icon: const Icon(Icons.download),
+                          onPressed: _busy
+                              ? null
+                              : () {
+                                  if (!_current) return;
+                                  ref
+                                      .read(exerciseFiltersProvider.notifier)
+                                      .state = widget.controller.apply(
+                                    preset.id,
+                                  );
+                                  Navigator.pop(context);
+                                },
+                        ),
+                        IconButton(
+                          tooltip: 'Usuń ${preset.name}',
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: _busy ? null : () => _delete(preset.id),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Zamknij'),
+        ),
+      ],
+    );
+  }
+}
+
 class _ActiveFilters extends ConsumerWidget {
   const _ActiveFilters();
   @override
@@ -243,6 +486,18 @@ class _ActiveFilters extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
+          ...chips(
+            f.conditions,
+            (id) => (metadata ?? const ExerciseCatalogMetadata())
+                .conditionLabel(id),
+            (f, s) => f.copyWith(conditions: s),
+          ),
+          ...chips(
+            f.positions,
+            (id) =>
+                (metadata ?? const ExerciseCatalogMetadata()).positionLabel(id),
+            (f, s) => f.copyWith(positions: s),
+          ),
           ...chips(
             f.styles,
             (id) => metadata?.styleLabel(id) ?? id,
@@ -365,6 +620,12 @@ class _FilterSheet extends ConsumerWidget {
                 const Text(
                   'Filtry stylu i mięśni są czasowo pomijane. Wybory zachowano.',
                 ),
+              if (!ref
+                  .watch(exerciseFilterEngineProvider)
+                  .executionFiltersVerified(filters))
+                const Text(
+                  'Nie można zweryfikować warunków lub pozycji. Kryteriów nie pominięto; usuń wybór albo ponów ładowanie danych.',
+                ),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -377,6 +638,34 @@ class _FilterSheet extends ConsumerWidget {
                         onChanged: (v) => notifier.update(
                           (f) => f.copyWith(tylkoUlubione: v),
                         ),
+                      ),
+                      group(
+                        'Warunki wykonania (wszystkie naraz)',
+                        facets.conditions,
+                        filters.conditions,
+                        metadata.valueOrNull?.conditions.keys ?? [],
+                        (id) =>
+                            (metadata.valueOrNull ??
+                                    const ExerciseCatalogMetadata())
+                                .conditionLabel(id),
+                        (f, s) => f.copyWith(conditions: s),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          'Cichy trening: względnie mały impakt, nie gwarancja ciszy ani akustyki. Mało miejsca: ćwiczenie w miejscu, bez przemieszczania; potrzebny sprzęt musi się zmieścić. Oznaczenia opisują wykonanie, nie są poradą medyczną.',
+                        ),
+                      ),
+                      group(
+                        'Pozycja (dowolna z wybranych)',
+                        facets.positions,
+                        filters.positions,
+                        metadata.valueOrNull?.positions.keys ?? [],
+                        (id) =>
+                            (metadata.valueOrNull ??
+                                    const ExerciseCatalogMetadata())
+                                .positionLabel(id),
+                        (f, s) => f.copyWith(positions: s),
                       ),
                       group(
                         'Styl',

@@ -1,5 +1,11 @@
 # Katalog ćwiczeń — rozszerzenie 2026-10-16
 
+> Addytywny etap 5 rozszerza poniższy historyczny kontrakt sidecara (nadal
+> schemaVersion=1) o rejestry i listy `conditions`/`positions` dla wszystkich
+> 363 ID. Aktualne definicje, źródło decyzji i polecenia:
+> [EXECUTION_CONDITIONS.md](EXECUTION_CONDITIONS.md). Dotychczasowe pola
+> i wszystkie treści ćwiczeń pozostają bez zmian.
+
 ## Wynik i granice
 
 **47 nowych ćwiczeń, cw317–cw363; łącznie 363.** Podział przyrostu:

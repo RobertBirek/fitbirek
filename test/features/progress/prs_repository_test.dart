@@ -21,6 +21,34 @@ void main() {
     await db.close();
   });
 
+  test(
+    'best and history match exact side, including legacy NULL vs both',
+    () async {
+      for (final side in [null, 'left', 'right', 'both']) {
+        await repo.savePr(
+          exerciseId: 'same',
+          exerciseNamePl: 'Test',
+          weightKg: side == null ? 100 : 20,
+          reps: 5,
+          side: side,
+        );
+      }
+      for (final side in [null, 'left', 'right', 'both']) {
+        final best = await repo.getBestForExercise('same', side: side);
+        expect(best!.side, side);
+        expect(best.ciezarKg, side == null ? 100 : 20);
+        expect(
+          await repo.getHistoryForExercise('same', side: side),
+          hasLength(1),
+        );
+      }
+      expect((await repo.getBestForExercise('same'))!.ciezarKg, 100);
+      final ops = await db.syncDao.pendingOperations();
+      expect(ops.first.payload.containsKey('side'), isFalse);
+      expect(ops.last.payload['side'], 'both');
+    },
+  );
+
   test('savePr zapisuje rekord i przelicza szacowane 1RM wg Epley', () async {
     await repo.savePr(
       exerciseId: 'wyciskanie_hantli',

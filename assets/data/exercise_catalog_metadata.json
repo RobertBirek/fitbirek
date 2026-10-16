@@ -240,7 +240,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw002": {
       "styles": [
@@ -256,7 +265,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw003": {
       "styles": [
@@ -272,7 +290,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw004": {
       "styles": [
@@ -289,7 +316,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw005": {
       "styles": [
@@ -305,7 +341,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw006": {
       "styles": [
@@ -321,7 +366,14 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw007": {
       "styles": [
@@ -338,7 +390,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw008": {
       "styles": [
@@ -354,7 +415,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw009": {
       "styles": [
@@ -370,7 +440,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw010": {
       "styles": [
@@ -385,7 +465,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw011": {
       "styles": [
@@ -401,7 +490,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw012": {
       "styles": [
@@ -416,7 +514,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw013": {
       "styles": [
@@ -431,7 +540,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw014": {
       "styles": [
@@ -445,7 +565,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw015": {
       "styles": [
@@ -459,7 +589,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw016": {
       "styles": [
@@ -473,7 +613,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw017": {
       "styles": [
@@ -487,7 +638,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw018": {
       "styles": [
@@ -501,7 +663,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw019": {
       "styles": [
@@ -517,7 +689,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw020": {
       "styles": [
@@ -532,7 +715,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw021": {
       "styles": [
@@ -547,7 +740,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw022": {
       "styles": [
@@ -561,7 +765,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw023": {
       "styles": [
@@ -577,7 +792,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw024": {
       "styles": [
@@ -592,7 +816,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw025": {
       "styles": [
@@ -608,7 +843,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw026": {
       "styles": [
@@ -625,7 +870,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw027": {
       "styles": [
@@ -641,7 +895,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw028": {
       "styles": [
@@ -658,7 +921,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw029": {
       "styles": [
@@ -674,7 +947,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw030": {
       "styles": [
@@ -691,7 +973,13 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw031": {
       "styles": [
@@ -708,7 +996,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw032": {
       "styles": [
@@ -725,7 +1023,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw033": {
       "styles": [
@@ -741,7 +1049,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw034": {
       "styles": [
@@ -757,7 +1075,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw035": {
       "styles": [
@@ -773,7 +1101,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw036": {
       "styles": [
@@ -789,7 +1127,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw037": {
       "styles": [
@@ -806,7 +1154,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw038": {
       "styles": [
@@ -822,7 +1180,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw039": {
       "styles": [
@@ -839,7 +1207,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw040": {
       "styles": [
@@ -854,7 +1230,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw041": {
       "styles": [
@@ -871,7 +1257,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw042": {
       "styles": [
@@ -887,7 +1282,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw043": {
       "styles": [
@@ -904,7 +1307,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw044": {
       "styles": [
@@ -919,7 +1332,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw045": {
       "styles": [
@@ -934,7 +1357,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw046": {
       "styles": [
@@ -950,7 +1383,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw047": {
       "styles": [
@@ -965,7 +1407,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw048": {
       "styles": [
@@ -980,7 +1433,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw049": {
       "styles": [
@@ -996,7 +1460,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw050": {
       "styles": [
@@ -1010,7 +1483,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw051": {
       "styles": [
@@ -1024,7 +1508,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw052": {
       "styles": [
@@ -1039,7 +1534,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw053": {
       "styles": [
@@ -1051,7 +1556,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw054": {
       "styles": [
@@ -1065,7 +1581,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw055": {
       "styles": [
@@ -1078,7 +1605,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw056": {
       "styles": [
@@ -1093,7 +1631,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw057": {
       "styles": [
@@ -1108,7 +1657,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw058": {
       "styles": [
@@ -1123,7 +1682,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw059": {
       "styles": [
@@ -1139,7 +1709,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw060": {
       "styles": [
@@ -1154,7 +1733,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw061": {
       "styles": [
@@ -1170,7 +1758,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw062": {
       "styles": [
@@ -1185,7 +1782,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw063": {
       "styles": [
@@ -1200,7 +1808,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw064": {
       "styles": [
@@ -1215,7 +1834,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw065": {
       "styles": [
@@ -1231,7 +1861,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "bench"
+      ]
     },
     "cw066": {
       "styles": [
@@ -1247,7 +1889,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw067": {
       "styles": [
@@ -1262,7 +1915,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw068": {
       "styles": [
@@ -1277,7 +1941,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw069": {
       "styles": [
@@ -1294,7 +1969,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw070": {
       "styles": [
@@ -1308,7 +1993,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw071": {
       "styles": [
@@ -1324,7 +2020,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw072": {
       "styles": [
@@ -1338,7 +2045,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw073": {
       "styles": [
@@ -1352,7 +2070,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw074": {
       "styles": [
@@ -1366,7 +2095,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw075": {
       "styles": [
@@ -1380,7 +2120,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw076": {
       "styles": [
@@ -1394,7 +2145,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw077": {
       "styles": [
@@ -1409,7 +2171,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw078": {
       "styles": [
@@ -1425,7 +2198,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw079": {
       "styles": [
@@ -1440,7 +2222,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw080": {
       "styles": [
@@ -1457,7 +2249,14 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw081": {
       "styles": [
@@ -1473,7 +2272,14 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw082": {
       "styles": [
@@ -1488,7 +2294,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw083": {
       "styles": [
@@ -1502,7 +2319,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw084": {
       "styles": [
@@ -1516,7 +2344,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw085": {
       "styles": [
@@ -1531,7 +2370,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw086": {
       "styles": [
@@ -1546,7 +2396,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw087": {
       "styles": [
@@ -1560,7 +2421,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw088": {
       "styles": [
@@ -1574,7 +2446,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw089": {
       "styles": [
@@ -1589,7 +2472,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw090": {
       "styles": [
@@ -1603,7 +2497,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw091": {
       "styles": [
@@ -1617,7 +2520,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw092": {
       "styles": [
@@ -1631,7 +2545,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw093": {
       "styles": [
@@ -1646,7 +2571,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw094": {
       "styles": [
@@ -1661,7 +2597,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw095": {
       "styles": [
@@ -1675,7 +2622,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw096": {
       "styles": [
@@ -1689,7 +2647,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "bench"
+      ]
     },
     "cw097": {
       "styles": [
@@ -1704,7 +2674,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw098": {
       "styles": [
@@ -1718,7 +2699,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "bench"
+      ]
     },
     "cw099": {
       "styles": [
@@ -1732,7 +2725,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw100": {
       "styles": [
@@ -1747,7 +2751,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw101": {
       "styles": [
@@ -1761,7 +2776,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw102": {
       "styles": [
@@ -1776,7 +2802,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw103": {
       "styles": [
@@ -1790,7 +2826,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw104": {
       "styles": [
@@ -1804,7 +2851,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw105": {
       "styles": [
@@ -1818,7 +2876,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw106": {
       "styles": [
@@ -1832,7 +2901,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw107": {
       "styles": [
@@ -1846,7 +2926,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw108": {
       "styles": [
@@ -1861,7 +2952,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw109": {
       "styles": [
@@ -1875,7 +2977,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw110": {
       "styles": [
@@ -1890,7 +3003,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw111": {
       "styles": [
@@ -1905,7 +3027,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw112": {
       "styles": [
@@ -1919,7 +3051,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw113": {
       "styles": [
@@ -1933,7 +3075,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw114": {
       "styles": [
@@ -1947,7 +3100,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw115": {
       "styles": [
@@ -1961,7 +3125,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw116": {
       "styles": [
@@ -1975,7 +3150,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw117": {
       "styles": [
@@ -1987,7 +3173,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw118": {
       "styles": [
@@ -1999,7 +3196,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw119": {
       "styles": [
@@ -2017,7 +3225,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw120": {
       "styles": [
@@ -2033,7 +3251,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw121": {
       "styles": [
@@ -2049,7 +3277,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw122": {
       "styles": [
@@ -2061,7 +3299,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw123": {
       "styles": [
@@ -2073,7 +3322,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw124": {
       "styles": [
@@ -2085,7 +3345,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw125": {
       "styles": [
@@ -2101,7 +3372,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw126": {
       "styles": [
@@ -2117,7 +3399,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw127": {
       "styles": [
@@ -2134,7 +3427,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw128": {
       "styles": [
@@ -2150,7 +3454,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw129": {
       "styles": [
@@ -2165,7 +3481,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw130": {
       "styles": [
@@ -2181,7 +3508,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw131": {
       "styles": [
@@ -2197,7 +3534,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw132": {
       "styles": [
@@ -2213,7 +3561,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw133": {
       "styles": [
@@ -2228,7 +3587,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw134": {
       "styles": [
@@ -2243,7 +3613,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw135": {
       "styles": [
@@ -2258,7 +3638,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw136": {
       "styles": [
@@ -2274,7 +3666,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw137": {
       "styles": [
@@ -2292,7 +3696,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw138": {
       "styles": [
@@ -2309,7 +3724,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw139": {
       "styles": [
@@ -2326,7 +3751,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw140": {
       "styles": [
@@ -2341,7 +3777,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw141": {
       "styles": [
@@ -2357,7 +3803,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw142": {
       "styles": [
@@ -2372,7 +3829,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw143": {
       "styles": [
@@ -2387,7 +3855,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw144": {
       "styles": [
@@ -2404,7 +3883,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw145": {
       "styles": [
@@ -2421,7 +3909,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw146": {
       "styles": [
@@ -2439,7 +3936,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw147": {
       "styles": [
@@ -2457,7 +3963,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw148": {
       "styles": [
@@ -2472,7 +3986,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw149": {
       "styles": [
@@ -2487,7 +4012,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw150": {
       "styles": [
@@ -2502,7 +4038,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw151": {
       "styles": [
@@ -2518,7 +4065,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw152": {
       "styles": [
@@ -2533,7 +4091,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw153": {
       "styles": [
@@ -2549,7 +4118,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw154": {
       "styles": [
@@ -2565,7 +4142,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw155": {
       "styles": [
@@ -2579,7 +4166,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw156": {
       "styles": [
@@ -2594,7 +4191,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw157": {
       "styles": [
@@ -2610,7 +4218,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw158": {
       "styles": [
@@ -2625,7 +4244,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw159": {
       "styles": [
@@ -2641,7 +4270,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw160": {
       "styles": [
@@ -2653,7 +4290,15 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw161": {
       "styles": [
@@ -2665,7 +4310,16 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw162": {
       "styles": [
@@ -2679,7 +4333,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw163": {
       "styles": [
@@ -2694,7 +4358,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw164": {
       "styles": [
@@ -2708,7 +4383,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw165": {
       "styles": [
@@ -2722,7 +4407,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw166": {
       "styles": [
@@ -2736,7 +4433,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw167": {
       "styles": [
@@ -2751,7 +4459,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw168": {
       "styles": [
@@ -2766,7 +4485,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw169": {
       "styles": [
@@ -2782,7 +4512,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw170": {
       "styles": [
@@ -2799,7 +4539,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw171": {
       "styles": [
@@ -2815,7 +4564,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw172": {
       "styles": [
@@ -2831,7 +4590,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw173": {
       "styles": [
@@ -2846,7 +4615,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw174": {
       "styles": [
@@ -2861,7 +4640,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw175": {
       "styles": [
@@ -2878,7 +4666,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw176": {
       "styles": [
@@ -2893,7 +4690,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw177": {
       "styles": [
@@ -2909,7 +4715,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw178": {
       "styles": [
@@ -2924,7 +4739,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw179": {
       "styles": [
@@ -2937,7 +4763,17 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw180": {
       "styles": [
@@ -2949,7 +4785,17 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw181": {
       "styles": [
@@ -2966,7 +4812,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw182": {
       "styles": [
@@ -2982,7 +4836,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw183": {
       "styles": [
@@ -2997,7 +4859,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw184": {
       "styles": [
@@ -3012,7 +4884,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw185": {
       "styles": [
@@ -3028,7 +4910,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw186": {
       "styles": [
@@ -3043,7 +4934,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw187": {
       "styles": [
@@ -3057,7 +4959,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw188": {
       "styles": [
@@ -3070,7 +4983,17 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw189": {
       "styles": [
@@ -3085,7 +5008,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw190": {
       "styles": [
@@ -3100,7 +5033,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw191": {
       "styles": [
@@ -3115,7 +5059,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw192": {
       "styles": [
@@ -3130,7 +5084,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw193": {
       "styles": [
@@ -3143,7 +5107,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw194": {
       "styles": [
@@ -3155,7 +5130,17 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw195": {
       "styles": [
@@ -3169,7 +5154,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw196": {
       "styles": [
@@ -3183,7 +5179,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw197": {
       "styles": [
@@ -3197,7 +5204,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw198": {
       "styles": [
@@ -3210,7 +5228,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw199": {
       "styles": [
@@ -3226,7 +5255,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw200": {
       "styles": [
@@ -3242,7 +5281,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw201": {
       "styles": [
@@ -3257,7 +5306,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw202": {
       "styles": [
@@ -3274,7 +5333,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "hanging"
+      ]
     },
     "cw203": {
       "styles": [
@@ -3292,7 +5361,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw204": {
       "styles": [
@@ -3309,7 +5388,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
     },
     "cw205": {
       "styles": [
@@ -3324,7 +5413,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw206": {
       "styles": [
@@ -3339,7 +5436,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw207": {
       "styles": [
@@ -3353,7 +5460,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw208": {
       "styles": [
@@ -3370,7 +5487,14 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw209": {
       "styles": [
@@ -3390,7 +5514,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw210": {
       "styles": [
@@ -3410,7 +5542,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw211": {
       "styles": [
@@ -3429,7 +5569,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw212": {
       "styles": [
@@ -3446,7 +5594,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw213": {
       "styles": [
@@ -3463,7 +5619,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw214": {
       "styles": [
@@ -3481,7 +5646,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw215": {
       "styles": [
@@ -3498,7 +5672,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw216": {
       "styles": [
@@ -3514,7 +5697,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw217": {
       "styles": [
@@ -3530,7 +5722,14 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw218": {
       "styles": [
@@ -3546,7 +5745,14 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw219": {
       "styles": [
@@ -3563,7 +5769,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw220": {
       "styles": [
@@ -3580,7 +5794,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw221": {
       "styles": [
@@ -3598,7 +5820,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw222": {
       "styles": [
@@ -3616,7 +5847,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw223": {
       "styles": [
@@ -3634,7 +5873,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw224": {
       "styles": [
@@ -3651,7 +5898,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw225": {
       "styles": [
@@ -3666,7 +5921,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw226": {
       "styles": [
@@ -3680,7 +5943,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw227": {
       "styles": [
@@ -3695,7 +5966,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw228": {
       "styles": [
@@ -3710,7 +5989,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw229": {
       "styles": [
@@ -3724,7 +6011,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw230": {
       "styles": [
@@ -3738,7 +6033,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw231": {
       "styles": [
@@ -3753,7 +6056,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw232": {
       "styles": [
@@ -3768,7 +6079,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw233": {
       "styles": [
@@ -3783,7 +6102,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw234": {
       "styles": [
@@ -3801,7 +6128,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw235": {
       "styles": [
@@ -3818,7 +6154,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw236": {
       "styles": [
@@ -3836,7 +6182,16 @@
       ],
       "aliases": [],
       "tracking": "rounds",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw237": {
       "styles": [
@@ -3853,7 +6208,16 @@
       ],
       "aliases": [],
       "tracking": "rounds",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw238": {
       "styles": [
@@ -3871,7 +6235,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw239": {
       "styles": [
@@ -3889,7 +6262,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw240": {
       "styles": [
@@ -3907,7 +6289,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw241": {
       "styles": [
@@ -3923,7 +6314,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw242": {
       "styles": [
@@ -3937,7 +6338,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw243": {
       "styles": [
@@ -3954,7 +6366,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw244": {
       "styles": [
@@ -3970,7 +6392,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw245": {
       "styles": [
@@ -3986,7 +6418,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw246": {
       "styles": [
@@ -4003,7 +6446,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw247": {
       "styles": [
@@ -4020,7 +6473,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw248": {
       "styles": [
@@ -4038,7 +6500,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw249": {
       "styles": [
@@ -4054,7 +6525,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw250": {
       "styles": [
@@ -4070,7 +6550,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw251": {
       "styles": [
@@ -4085,7 +6573,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw252": {
       "styles": [
@@ -4101,7 +6597,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw253": {
       "styles": [
@@ -4119,7 +6624,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw254": {
       "styles": [
@@ -4135,7 +6649,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw255": {
       "styles": [
@@ -4150,7 +6672,15 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw256": {
       "styles": [
@@ -4164,7 +6694,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw257": {
       "styles": [
@@ -4179,7 +6719,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw258": {
       "styles": [
@@ -4194,7 +6744,16 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw259": {
       "styles": [
@@ -4209,7 +6768,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw260": {
       "styles": [
@@ -4223,7 +6793,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw261": {
       "styles": [
@@ -4237,7 +6817,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw262": {
       "styles": [
@@ -4251,7 +6842,19 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "bench"
+      ]
     },
     "cw263": {
       "styles": [
@@ -4267,7 +6870,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw264": {
       "styles": [
@@ -4279,7 +6893,17 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw265": {
       "styles": [
@@ -4293,7 +6917,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw266": {
       "styles": [
@@ -4308,7 +6943,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw267": {
       "styles": [
@@ -4322,7 +6965,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor",
+        "bench"
+      ]
     },
     "cw268": {
       "styles": [
@@ -4337,7 +6991,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw269": {
       "styles": [
@@ -4351,7 +7015,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw270": {
       "styles": [
@@ -4363,7 +7038,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw271": {
       "styles": [
@@ -4377,7 +7063,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw272": {
       "styles": [
@@ -4389,7 +7086,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw273": {
       "styles": [
@@ -4401,7 +7109,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw274": {
       "styles": [
@@ -4413,7 +7132,15 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw275": {
       "styles": [
@@ -4428,7 +7155,19 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "seated"
+      ]
     },
     "cw276": {
       "styles": [
@@ -4442,7 +7181,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw277": {
       "styles": [
@@ -4460,7 +7208,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw278": {
       "styles": [
@@ -4474,7 +7233,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw279": {
       "styles": [
@@ -4489,7 +7259,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw280": {
       "styles": [
@@ -4504,7 +7285,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw281": {
       "styles": [
@@ -4525,7 +7317,15 @@
       ],
       "aliases": [],
       "tracking": "rounds",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw282": {
       "styles": [
@@ -4543,7 +7343,18 @@
         "taichi siedzące"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw283": {
       "styles": [
@@ -4560,7 +7371,18 @@
         "taichi siedzące"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw284": {
       "styles": [
@@ -4577,7 +7399,18 @@
         "taichi siedzące"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw285": {
       "styles": [
@@ -4595,7 +7428,18 @@
         "taichi siedzące"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw286": {
       "styles": [
@@ -4612,7 +7456,18 @@
         "taichi siedzące"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw287": {
       "styles": [
@@ -4629,7 +7484,18 @@
         "taichi siedzące"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw288": {
       "styles": [
@@ -4646,7 +7512,18 @@
         "taichi siedzące"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw289": {
       "styles": [
@@ -4663,7 +7540,18 @@
         "taichi siedzące"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw290": {
       "styles": [
@@ -4678,7 +7566,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw291": {
       "styles": [
@@ -4693,7 +7592,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw292": {
       "styles": [
@@ -4708,7 +7618,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw293": {
       "styles": [
@@ -4721,7 +7642,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw294": {
       "styles": [
@@ -4737,7 +7669,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw295": {
       "styles": [
@@ -4751,7 +7694,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw296": {
       "styles": [
@@ -4765,7 +7719,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw297": {
       "styles": [
@@ -4781,7 +7746,18 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw298": {
       "styles": [
@@ -4796,7 +7772,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw299": {
       "styles": [
@@ -4811,7 +7798,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw300": {
       "styles": [
@@ -4823,7 +7821,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "rounds",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw301": {
       "styles": [
@@ -4835,7 +7844,18 @@
       "secondaryMuscles": [],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw302": {
       "styles": [
@@ -4854,7 +7874,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw303": {
       "styles": [
@@ -4874,7 +7903,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw304": {
       "styles": [
@@ -4893,7 +7930,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw305": {
       "styles": [
@@ -4912,7 +7957,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw306": {
       "styles": [
@@ -4930,7 +7985,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw307": {
       "styles": [
@@ -4947,7 +8012,17 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw308": {
       "styles": [
@@ -4965,7 +8040,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw309": {
       "styles": [
@@ -4984,7 +8068,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw310": {
       "styles": [
@@ -5002,7 +8097,16 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw311": {
       "styles": [
@@ -5019,7 +8123,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw312": {
       "styles": [
@@ -5036,7 +8151,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw313": {
       "styles": [
@@ -5056,7 +8182,15 @@
       ],
       "aliases": [],
       "tracking": "rounds",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw314": {
       "styles": [
@@ -5074,7 +8208,18 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw315": {
       "styles": [
@@ -5095,7 +8240,15 @@
       ],
       "aliases": [],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling"
+      ],
+      "positions": [
+        "standing",
+        "floor",
+        "hanging"
+      ]
     },
     "cw316": {
       "styles": [
@@ -5114,7 +8267,17 @@
       ],
       "aliases": [],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw317": {
       "styles": [
@@ -5134,7 +8297,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw318": {
       "styles": [
@@ -5154,7 +8328,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw319": {
       "styles": [
@@ -5174,7 +8359,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw320": {
       "styles": [
@@ -5194,7 +8390,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw321": {
       "styles": [
@@ -5213,7 +8420,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw322": {
       "styles": [
@@ -5234,7 +8452,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw323": {
       "styles": [
@@ -5255,7 +8484,17 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw324": {
       "styles": [
@@ -5276,7 +8515,17 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw325": {
       "styles": [
@@ -5296,7 +8545,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw326": {
       "styles": [
@@ -5318,7 +8578,17 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw327": {
       "styles": [
@@ -5338,7 +8608,18 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw328": {
       "styles": [
@@ -5359,7 +8640,17 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw329": {
       "styles": [
@@ -5378,7 +8669,16 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw330": {
       "styles": [
@@ -5398,7 +8698,15 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw331": {
       "styles": [
@@ -5418,7 +8726,17 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw332": {
       "styles": [
@@ -5438,7 +8756,16 @@
         "worek z piaskiem"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw333": {
       "styles": [
@@ -5459,7 +8786,15 @@
         "ab roller"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw334": {
       "styles": [
@@ -5480,7 +8815,15 @@
         "ab roller"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw335": {
       "styles": [
@@ -5501,7 +8844,16 @@
         "ab roller"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw336": {
       "styles": [
@@ -5523,7 +8875,18 @@
         "Warrior I — Virabhadrasana I"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw337": {
       "styles": [
@@ -5544,7 +8907,18 @@
         "Warrior II — Virabhadrasana II"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw338": {
       "styles": [
@@ -5566,7 +8940,18 @@
         "Warrior III — Virabhadrasana III"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw339": {
       "styles": [
@@ -5587,7 +8972,17 @@
         "Extended Triangle — Utthita Trikonasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw340": {
       "styles": [
@@ -5608,7 +9003,18 @@
         "Extended Side Angle — Utthita Parsvakonasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw341": {
       "styles": [
@@ -5629,7 +9035,17 @@
         "Half Moon — Ardha Chandrasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw342": {
       "styles": [
@@ -5649,7 +9065,18 @@
         "Tree — Vrksasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw343": {
       "styles": [
@@ -5670,7 +9097,18 @@
         "Eagle — Garudasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw344": {
       "styles": [
@@ -5691,7 +9129,18 @@
         "Chair — Utkatasana"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw345": {
       "styles": [
@@ -5713,7 +9162,15 @@
         "Camel — Ustrasana"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw346": {
       "styles": [
@@ -5735,7 +9192,16 @@
         "Bow — Dhanurasana"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw347": {
       "styles": [
@@ -5754,7 +9220,18 @@
         "Boat — Paripurna Navasana"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw348": {
       "styles": [
@@ -5773,7 +9250,16 @@
         "Half Lord of the Fishes — Ardha Matsyendrasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw349": {
       "styles": [
@@ -5793,7 +9279,15 @@
         "Gate — Parighasana"
       ],
       "tracking": "time",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw350": {
       "styles": [
@@ -5813,7 +9307,17 @@
         "Wide-Legged Forward Bend — Prasarita Padottanasana"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     },
     "cw351": {
       "styles": [
@@ -5832,7 +9336,17 @@
         "Happy Baby — Ananda Balasana"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw352": {
       "styles": [
@@ -5852,7 +9366,13 @@
         "GMB Monkey"
       ],
       "tracking": "rounds",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw353": {
       "styles": [
@@ -5872,7 +9392,13 @@
         "GMB Frogger"
       ],
       "tracking": "rounds",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_kneeling"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw354": {
       "styles": [
@@ -5890,7 +9416,17 @@
         "Shrimp squat"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw355": {
       "styles": [
@@ -5910,7 +9446,14 @@
         "Cartwheel"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_kneeling"
+      ],
+      "positions": [
+        "standing",
+        "floor"
+      ]
     },
     "cw356": {
       "styles": [
@@ -5930,7 +9473,16 @@
         "Three-point bridge"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw357": {
       "styles": [
@@ -5949,7 +9501,16 @@
         "Crow / frog stand"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     },
     "cw358": {
       "styles": [
@@ -5966,7 +9527,18 @@
         "Seated single-leg compression raise"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw359": {
       "styles": [
@@ -5986,7 +9558,17 @@
         "Supine tabletop hold"
       ],
       "tracking": "time",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "seated",
+        "floor"
+      ]
     },
     "cw360": {
       "styles": [
@@ -6004,7 +9586,18 @@
         "Picking Cherries (seated)"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw361": {
       "styles": [
@@ -6022,7 +9615,18 @@
         "Rowing a Boat (seated)"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw362": {
       "styles": [
@@ -6041,7 +9645,18 @@
         "Turtle Swims in the Ocean (seated)"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     },
     "cw363": {
       "styles": [
@@ -6060,7 +9675,77 @@
         "Kick with Sole (seated)"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     }
-  }
+  },
+  "conditions": [
+    {
+      "id": "no_jumps",
+      "label": "Bez skoków",
+      "aliases": []
+    },
+    {
+      "id": "quiet",
+      "label": "Cichy trening",
+      "aliases": []
+    },
+    {
+      "id": "no_kneeling",
+      "label": "Bez klęku",
+      "aliases": []
+    },
+    {
+      "id": "no_hand_support",
+      "label": "Bez podporu na dłoniach",
+      "aliases": []
+    },
+    {
+      "id": "no_floor",
+      "label": "Bez schodzenia na podłogę",
+      "aliases": []
+    },
+    {
+      "id": "small_space",
+      "label": "Mało miejsca",
+      "aliases": []
+    }
+  ],
+  "positions": [
+    {
+      "id": "standing",
+      "label": "Stojąco",
+      "aliases": []
+    },
+    {
+      "id": "seated",
+      "label": "Siedząco",
+      "aliases": []
+    },
+    {
+      "id": "floor",
+      "label": "Na podłodze",
+      "aliases": []
+    },
+    {
+      "id": "hanging",
+      "label": "W zwisie",
+      "aliases": []
+    },
+    {
+      "id": "bench",
+      "label": "Na ławce",
+      "aliases": []
+    }
+  ]
 }

@@ -102,7 +102,7 @@ void main() {
         };
         old.dispose();
         var db = AppDatabase.forTesting(NativeDatabase(file));
-        expect(db.schemaVersion, 8);
+        expect(db.schemaVersion, 10);
         for (final t in tables) {
           final after = (await db.customSelect('SELECT * FROM $t').get()).map((
             r,

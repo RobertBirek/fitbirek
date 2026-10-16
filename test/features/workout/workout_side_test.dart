@@ -110,7 +110,13 @@ void main() {
           .map((o) => o.toJson())
           .toList();
       await old.customStatement('ALTER TABLE sets_log DROP COLUMN side');
+      await old.customStatement(
+        'ALTER TABLE personal_records DROP COLUMN side',
+      );
       await old.customStatement('PRAGMA user_version = 7');
+      await old.customStatement(
+        'ALTER TABLE workout_plans DROP COLUMN structure_json',
+      );
       await old.close();
       var db = AppDatabase.forTesting(
         NativeDatabase.opened(raw, closeUnderlyingOnClose: false),
@@ -138,7 +144,7 @@ void main() {
         (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
           'user_version',
         ),
-        8,
+        10,
       );
     },
   );

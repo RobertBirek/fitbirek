@@ -6,6 +6,25 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.13.0+26] — 2026-10-16
+
+### Added
+- Rekordy osobiste i porównania serii osobno dla lewej/prawej/obu stron oraz
+  historii bez oznaczenia; lokalne migracje Drift 8→9→10 bez backfillu.
+- Nazwane zestawy filtrów przypisane do konta na urządzeniu oraz interwały
+  z jawnym, atomowym zapisem faktycznych sekund pracy.
+- Generator strukturalnych planów z aktywnych filtrów, budżetem czasu,
+  sekcjami i wymianą bloków; cele w podglądzie bez automatycznego zapisu serii.
+- Sześć warunków wykonania i pięć pozycji dla wszystkich 363 ćwiczeń.
+- Propozycje powtórzeń przy stałym ciężarze na podstawie dwóch zakończonych
+  sesji, strony i RPE; bez automatycznego zwiększania ciężaru.
+
+### Fixed
+- Zabezpieczono operacje asynchroniczne przy wylogowaniu, izolację historii
+  uszkodzonych planów i zgodność usuwania planów ze starszymi klientami.
+
+---
+
 ## [1.12.0+25] — 2026-10-16
 
 ### Added

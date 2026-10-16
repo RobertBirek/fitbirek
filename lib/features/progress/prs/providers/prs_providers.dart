@@ -12,3 +12,17 @@ final allPrsProvider = StreamProvider<List<PersonalRecordData>>((ref) {
   final repo = ref.watch(prsRepositoryProvider);
   return repo.watchAll();
 });
+
+/// History remains separated into exact scopes; NULL is not `both`.
+final prGroupsProvider =
+    Provider<AsyncValue<Map<(String, String?), List<PersonalRecordData>>>>((
+      ref,
+    ) {
+      return ref.watch(allPrsProvider).whenData((rows) {
+        final groups = <(String, String?), List<PersonalRecordData>>{};
+        for (final row in rows) {
+          groups.putIfAbsent((row.cwiczenieId, row.side), () => []).add(row);
+        }
+        return groups;
+      });
+    });

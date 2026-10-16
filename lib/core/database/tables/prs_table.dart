@@ -7,6 +7,9 @@ import 'sync_metadata.dart';
 class PersonalRecords extends Table with SyncMetadata {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get cwiczenieId => text()();
+  TextColumn get side => text().nullable().customConstraint(
+    "NULL CHECK (side IS NULL OR side IN ('left', 'right', 'both'))",
+  )();
   TextColumn get nazwaCwiczeniaPl => text()();
   RealColumn get ciezarKg => real()();
   IntColumn get powtorzenia => integer()();

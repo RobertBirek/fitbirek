@@ -13,11 +13,21 @@ class ExerciseFilters {
     this.typy = const {},
     this.styles = const {},
     this.muscles = const {},
+    this.conditions = const {},
+    this.positions = const {},
     this.tylkoUlubione = false,
     this.query = '',
     this.sortBy = ExerciseSortBy.alfabetycznie,
   });
-  final Set<String> partie, sprzet, poziomy, typy, styles, muscles;
+  final Set<String> partie,
+      sprzet,
+      poziomy,
+      typy,
+      styles,
+      muscles,
+      conditions,
+      positions;
+  bool get hasExecutionFilters => conditions.isNotEmpty || positions.isNotEmpty;
   final bool tylkoUlubione;
   final String query;
   final ExerciseSortBy sortBy;
@@ -29,6 +39,8 @@ class ExerciseFilters {
       typy.length +
       styles.length +
       muscles.length +
+      conditions.length +
+      positions.length +
       (tylkoUlubione ? 1 : 0);
   ExerciseFilters copyWith({
     Set<String>? partie,
@@ -37,6 +49,8 @@ class ExerciseFilters {
     Set<String>? typy,
     Set<String>? styles,
     Set<String>? muscles,
+    Set<String>? conditions,
+    Set<String>? positions,
     bool? tylkoUlubione,
     String? query,
     ExerciseSortBy? sortBy,
@@ -47,6 +61,8 @@ class ExerciseFilters {
     typy: typy ?? this.typy,
     styles: styles ?? this.styles,
     muscles: muscles ?? this.muscles,
+    conditions: conditions ?? this.conditions,
+    positions: positions ?? this.positions,
     tylkoUlubione: tylkoUlubione ?? this.tylkoUlubione,
     query: query ?? this.query,
     sortBy: sortBy ?? this.sortBy,
@@ -60,24 +76,46 @@ class ExerciseFacets {
     required this.equipment,
     required this.levels,
     required this.types,
+    this.conditions = const {},
+    this.positions = const {},
   });
-  final Map<String, int> styles, muscles, equipment, levels, types;
+  final Map<String, int> styles,
+      muscles,
+      equipment,
+      levels,
+      types,
+      conditions,
+      positions;
 }
 
 /// Pure, deterministic filtering; never reads assets or the database.
 class ExerciseFilterEngine {
-  ExerciseFilterEngine(this.metadata, {this.classificationAvailable = true})
-    : _muscleIds = {
-        ..._legacyMuscleIds,
-        for (final tag in metadata.muscles.values)
-          for (final term in [tag.id, tag.label, ...tag.aliases])
-            fold(term.trim()): tag.id,
-      };
+  ExerciseFilterEngine(
+    this.metadata, {
+    this.classificationAvailable = true,
+    bool? executionMetadataAvailable,
+  }) : executionMetadataAvailable =
+           executionMetadataAvailable ?? classificationAvailable,
+       _muscleIds = {
+         ..._legacyMuscleIds,
+         for (final tag in metadata.muscles.values)
+           for (final term in [tag.id, tag.label, ...tag.aliases])
+             fold(term.trim()): tag.id,
+       };
   final ExerciseCatalogMetadata metadata;
   final Map<String, String> _muscleIds;
 
   /// No index has been loaded: preserve choices, but suspend its two filters.
   final bool classificationAvailable;
+  final bool executionMetadataAvailable;
+
+  /// Missing/old dictionaries cannot verify active exclusion criteria.
+  bool executionFiltersVerified(ExerciseFilters filters) =>
+      !filters.hasExecutionFilters ||
+      (executionMetadataAvailable &&
+          filters.conditions.every(metadata.conditions.containsKey) &&
+          (filters.positions.isEmpty ||
+              filters.positions.any(metadata.positions.containsKey)));
 
   // Explicit legacy vocabulary, not lowercasing Polish names into pretend IDs.
   // The first term is also the offline display label. Metadata terms take priority.
@@ -184,6 +222,13 @@ class ExerciseFilterEngine {
 
   bool _matches(Exercise ex, ExerciseFilters filters) {
     final entry = metadata.entryFor(ex.id);
+    if (!executionFiltersVerified(filters) ||
+        !filters.conditions.every(
+          (id) => entry?.conditions.contains(id) ?? false,
+        ) ||
+        !_overlaps(filters.positions, entry?.positions ?? [])) {
+      return false;
+    }
     if (!_overlaps(filters.partie, [
           mapToKategoria(ex.partiaGlowna, wzorzecRuchu: ex.wzorzecRuchu),
         ]) ||
@@ -211,6 +256,16 @@ class ExerciseFilterEngine {
         ...ex.sprzet,
         ex.typ,
         ...?entry?.aliases,
+        for (final id in entry?.conditions ?? <String>[]) ...[
+          id,
+          metadata.conditionLabel(id),
+          ...?metadata.conditions[id]?.aliases,
+        ],
+        for (final id in entry?.positions ?? <String>[]) ...[
+          id,
+          metadata.positionLabel(id),
+          ...?metadata.positions[id]?.aliases,
+        ],
         for (final id in entry?.styles ?? <String>[]) ...[
           id,
           metadata.styleLabel(id),
@@ -256,6 +311,24 @@ class ExerciseFilterEngine {
     }
 
     return ExerciseFacets(
+      // AND refinement: keep current requirements and add X, not skip-own-facet.
+      conditions: {
+        for (final id in {...metadata.conditions.keys, ...filters.conditions})
+          id: all
+              .where(
+                (e) => _matches(
+                  e,
+                  filters.copyWith(conditions: {...filters.conditions, id}),
+                ),
+              )
+              .map((e) => e.id)
+              .toSet()
+              .length,
+      },
+      positions: count(
+        filters.copyWith(positions: {}),
+        (e) => metadata.entryFor(e.id)?.positions ?? [],
+      ),
       styles: count(
         filters.copyWith(styles: {}),
         (e) => metadata.entryFor(e.id)?.styles ?? [],

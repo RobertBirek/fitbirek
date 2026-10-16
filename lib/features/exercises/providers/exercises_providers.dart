@@ -34,10 +34,13 @@ final exerciseFiltersProvider = StateProvider<ExerciseFilters>(
 );
 
 final exerciseFilterEngineProvider = Provider<ExerciseFilterEngine>((ref) {
-  final metadata = ref.watch(exerciseCatalogMetadataProvider).valueOrNull;
+  final source = ref.watch(exerciseCatalogMetadataProvider);
+  final metadata = source.valueOrNull;
   return ExerciseFilterEngine(
     metadata ?? const ExerciseCatalogMetadata(),
     classificationAvailable: metadata != null,
+    executionMetadataAvailable:
+        metadata != null && !source.hasError && !source.isLoading,
   );
 });
 

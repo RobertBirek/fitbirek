@@ -62,7 +62,11 @@ void main() {
       'ALTER TABLE sync_state DROP COLUMN health_replay_enabled',
     );
     await db.customStatement('PRAGMA user_version = 2');
+    await db.customStatement(
+      'ALTER TABLE workout_plans DROP COLUMN structure_json',
+    );
     await db.customStatement('ALTER TABLE sets_log DROP COLUMN side');
+    await db.customStatement('ALTER TABLE personal_records DROP COLUMN side');
     sync.dispose();
     await db.close();
     db = AppDatabase.forTesting(NativeDatabase(file));

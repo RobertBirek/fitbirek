@@ -76,6 +76,7 @@ void main() {
         expect(find.text('Lewa'), findsOneWidget);
         expect(find.text('Prawa'), findsOneWidget);
         expect(find.text('Obie'), findsOneWidget);
+        expect(find.textContaining('nie są obliczane'), findsNothing);
         expect(
           find.text('Powtórzenia'),
           tracking == 'reps' ? findsOneWidget : findsNothing,
@@ -161,34 +162,135 @@ void main() {
     });
   }
 
-  test(
-    'sided sets never create unsided personal records; last set is side-specific',
-    () async {
-      final db = AppDatabase.forTesting(NativeDatabase.memory());
-      final container = ProviderContainer(
-        overrides: [appDatabaseProvider.overrideWithValue(db)],
-      );
-      addTearDown(() async {
-        container.dispose();
-        await db.close();
-      });
-      final notifier = container.read(activeWorkoutProvider.notifier);
-      await notifier.startSession();
-      for (final side in ['left', 'right', 'both']) {
-        expect(
+  for (final timed in [false, true]) {
+    testWidgets(
+      'UI shows ${timed ? "seconds" : "kg and reps"} delta only for selected side',
+      (tester) async {
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        final container = ProviderContainer(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            exerciseCatalogMetadataProvider.overrideWith(
+              (ref) async => ExerciseCatalogMetadata(
+                exercises: {
+                  'custom': ExerciseCatalogEntry(
+                    tracking: timed ? 'time' : 'reps',
+                    unilateral: true,
+                  ),
+                },
+              ),
+            ),
+          ],
+        );
+        addTearDown(() async {
+          container.dispose();
+          await db.close();
+        });
+        final notifier = container.read(activeWorkoutProvider.notifier);
+        notifier.addExercise(exercise.copyWith(sprzet: ['Hantle']));
+        await tester.runAsync(() async {
+          await notifier.startSession();
           await notifier.logSet(
             exercise: exercise,
-            weightKg: 20,
-            reps: 10,
-            side: side,
+            weightKg: timed ? null : 20,
+            reps: timed ? null : 10,
+            seconds: timed ? 25 : null,
+            side: 'both',
+          );
+          await notifier.logSet(
+            exercise: exercise,
+            weightKg: timed ? null : 22,
+            reps: timed ? null : 8,
+            seconds: timed ? 30 : null,
+            side: 'both',
+          );
+          await notifier.logSet(
+            exercise: exercise,
+            seconds: 100,
+            side: 'right',
+          );
+        });
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: ActiveSessionPage()),
           ),
-          isFalse,
         );
-      }
-      expect(await db.select(db.personalRecords).get(), isEmpty);
-      final repo = container.read(workoutRepositoryProvider);
-      expect((await repo.getLastSet('custom', side: 'left'))!.side, 'left');
-      expect(await repo.getLastSet('custom'), isNull);
-    },
-  );
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            'Zmiana względem poprzedniej serii • Obie: ${timed ? '+5 s' : '+2 kg • −2 powt.'}',
+          ),
+          findsOneWidget,
+        );
+        await tester.tap(find.text('Prawa'));
+        await tester.pumpAndSettle();
+        expect(find.textContaining('Zmiana względem'), findsNothing);
+      },
+    );
+  }
+
+  test('sided PRs are independent; last set is side-specific', () async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final container = ProviderContainer(
+      overrides: [appDatabaseProvider.overrideWithValue(db)],
+    );
+    addTearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+    final notifier = container.read(activeWorkoutProvider.notifier);
+    await notifier.startSession();
+    expect(
+      await notifier.logSet(exercise: exercise, weightKg: 100, reps: 10),
+      isTrue,
+    );
+    for (final side in ['left', 'right', 'both']) {
+      expect(
+        await notifier.logSet(
+          exercise: exercise,
+          weightKg: 20,
+          reps: 10,
+          side: side,
+        ),
+        isTrue,
+      );
+      expect(
+        await notifier.logSet(
+          exercise: exercise,
+          weightKg: 21,
+          reps: 9,
+          side: side,
+        ),
+        isTrue,
+      );
+      expect(
+        container.read(activeWorkoutProvider).loggedSets.last.comparison,
+        '+1 kg • −1 powt.',
+      );
+    }
+    expect(await db.select(db.personalRecords).get(), hasLength(7));
+    final repo = container.read(workoutRepositoryProvider);
+    expect((await repo.getLastSet('custom', side: 'left'))!.side, 'left');
+    expect((await repo.getLastSet('custom'))!.side, isNull);
+    for (final side in [null, 'left', 'right', 'both']) {
+      expect(
+        await notifier.logSet(exercise: exercise, reps: 10, side: side),
+        isFalse,
+      );
+      expect(
+        await notifier.logSet(exercise: exercise, seconds: 20, side: side),
+        isFalse,
+      );
+      expect(
+        await notifier.logSet(exercise: exercise, seconds: 25, side: side),
+        isFalse,
+      );
+      expect(
+        container.read(activeWorkoutProvider).loggedSets.last.comparison,
+        '+5 s',
+      );
+    }
+    expect(await db.select(db.personalRecords).get(), hasLength(7));
+  });
 }

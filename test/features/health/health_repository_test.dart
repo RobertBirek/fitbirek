@@ -57,8 +57,8 @@ void main() {
 
   tearDown(() async => db.close());
 
-  test('schema keeps the separate healthSamples table at version 8', () {
-    expect(db.schemaVersion, 8);
+  test('schema keeps the separate healthSamples table at version 9', () {
+    expect(db.schemaVersion, 10);
     expect(db.healthSamples.actualTableName, 'health_samples');
   });
 

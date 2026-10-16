@@ -8,9 +8,13 @@ import '../../../../core/widgets/rpe_slider.dart';
 import '../../../../core/widgets/rest_timer_screen.dart';
 import '../../../../core/widgets/isometric_stopwatch.dart';
 import '../../../../core/models/exercise.dart';
+import '../../../../core/utils/set_comparison.dart';
 import '../../../exercises/providers/exercises_providers.dart';
 import '../../../exercises/domain/exercise_catalog_metadata.dart';
 import '../../providers/workout_providers.dart';
+import '../../domain/interval_timer.dart';
+import '../../providers/fixed_load_progression_provider.dart';
+import 'interval_timer_screen.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
 /// ciężar/powtórzenia - plank, wall-sit, dead-hang itp.
@@ -109,6 +113,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   final _secondsController = TextEditingController();
   int _rpe = 7;
   String _selectedSide = 'both';
+  bool _intervalBusy = false;
 
   ExerciseCatalogEntry? get _entry => ref
       .read(exerciseCatalogMetadataProvider)
@@ -125,8 +130,130 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       (!widget.exercise.sprzet.contains('Masa własna') ||
           widget.exercise.sprzet.any(const {'Hantle', 'Sandbag'}.contains));
 
+  FixedLoadRequest get _progressionRequest {
+    final parsed = double.tryParse(_weightController.text.replaceAll(',', '.'));
+    return (
+      exerciseId: widget.exercise.id,
+      side: _side,
+      prescription: widget.exercise.seriexPowtorzenia,
+      tracking: _tracking,
+      usesWeight: _usesWeight,
+      weightKg: _usesWeight && parsed != null && parsed.isFinite
+          ? parsed
+          : null,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _weightController.addListener(_weightChanged);
+  }
+
+  void _weightChanged() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _acceptProgression(
+    FixedLoadRequest request,
+    FixedLoadOffer offer,
+  ) async {
+    bool owns() => mounted && _progressionRequest == request;
+    if (!owns() || !await offer.isCurrent() || !owns()) return;
+    if (!mounted) return;
+    final target = offer.suggestion.target;
+    if (target == null) return;
+    // Only reps are offered until timed configuration is persisted/comparable.
+    final draft = _repsController.text;
+    if (draft.isNotEmpty && draft != '$target') {
+      final replace = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Zastąpić wpisany cel?'),
+          content: Text(
+            'Wpisano: $draft. Propozycja: $target powtórzeń. Seria nie zostanie zapisana.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Zachowaj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Zastąp'),
+            ),
+          ],
+        ),
+      );
+      if (replace != true) return;
+    }
+    if (!owns() ||
+        _repsController.text != draft ||
+        !await offer.isCurrent() ||
+        !owns() ||
+        _repsController.text != draft) {
+      return;
+    }
+    _repsController.text = '$target';
+  }
+
+  Widget _progression() {
+    final request = _progressionRequest;
+    final result = ref.watch(fixedLoadProgressionProvider(request));
+    // Do not keep previous-account/side data during refresh/loading/errors.
+    final offer = result.isLoading || result.hasError
+        ? null
+        : result.asData?.value;
+    if (offer == null) {
+      return const Text(
+        'Możliwy następny cel: brak dostępnej, wiarygodnej historii.',
+      );
+    }
+    final suggestion = offer.suggestion;
+    final last = offer.lastSet;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (last == null)
+          const Text(
+            'Pierwszy raz - bez porównania',
+            style: TextStyle(color: Colors.grey),
+          )
+        else
+          Text(
+            _isIsometric
+                ? 'Ostatnio: ${last.czasSekund ?? '-'} s (RPE ${last.rpe ?? '-'})'
+                : 'Ostatnio: ${last.ciezarKg == null ? '' : '${last.ciezarKg} kg × '}${last.powtorzenia ?? '-'} powt. (RPE ${last.rpe ?? '-'})',
+            style: const TextStyle(color: FitBirekColors.accent),
+          ),
+        const Text(
+          'Możliwy następny cel',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text(suggestion.reason),
+        if (suggestion.target != null) ...[
+          Text(
+            '${suggestion.target} powt. • ${suggestion.weightKg == null ? 'masa własna / bez dodatkowego ciężaru' : '${suggestion.weightKg} kg (bez zmian)'} • ${setSideLabel(request.side)}',
+          ),
+          for (final e in suggestion.evidence)
+            Text(
+              'Trening ${e.endedAt.toLocal().toString().split(' ').first}: minimum ${e.reps} powt., najwyższe RPE ${e.rpe} (sesja ${e.sessionId}).',
+            ),
+          const Text(
+            'To opcja na najbliższą sesję, nie obowiązek. Możesz ją odrzucić. Przyjęcie zmienia tylko pole powtórzeń, nie zapisuje serii.',
+          ),
+          TextButton(
+            onPressed: () => _acceptProgression(request, offer),
+            child: const Text('Przyjmij cel'),
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   void dispose() {
+    _weightController.removeListener(_weightChanged);
     _weightController.dispose();
     _repsController.dispose();
     _secondsController.dispose();
@@ -136,10 +263,15 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   /// Wspólna logika po zalogowaniu serii: powiadomienie o PR + auto-timer przerwy.
   Future<void> _afterLogSet(bool isPr) async {
     if (!mounted) return;
+    final workout = ref.read(activeWorkoutProvider);
+    if (!workout.isActive || workout.loggedSets.isEmpty) return;
+    final saved = workout.loggedSets.last;
     if (isPr) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🎉 Nowy rekord w ${widget.exercise.nazwaPl}!'),
+          content: Text(
+            '🎉 Nowy rekord w ${widget.exercise.nazwaPl} • ${setSideLabel(saved.side)}!',
+          ),
           backgroundColor: FitBirekColors.accent,
         ),
       );
@@ -168,6 +300,56 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
           side: side,
         );
     await _afterLogSet(isPr);
+  }
+
+  Future<void> _startIntervals() async {
+    if (_intervalBusy) return;
+    final notifier = ref.read(activeWorkoutProvider.notifier);
+    final origin = notifier.captureInterval(
+      exercise: widget.exercise,
+      side: _side,
+      rpe: _rpe,
+    );
+    if (origin == null) return;
+    setState(() => _intervalBusy = true);
+    try {
+      final result = await Navigator.of(context).push<List<IntervalRound>>(
+        MaterialPageRoute(
+          builder: (_) => IntervalTimerScreen(
+            label: '${widget.exercise.nazwaPl} • ${setSideLabel(origin.side)}',
+            isValid: () => mounted && notifier.isIntervalCurrent(origin),
+          ),
+        ),
+      );
+      if (!mounted || result == null) return;
+      final saved = await notifier.saveIntervalRounds(
+        origin,
+        result,
+        guard: () => mounted,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            saved
+                ? 'Zapisano wykonane rundy.'
+                : 'Nie zapisano rund: sesja lub konto są nieaktualne.',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Nie udało się zapisać rund. Wyniki nie zostały zapisane.',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _intervalBusy = false);
+    }
   }
 
   Future<void> _logStrengthSet() async {
@@ -254,36 +436,25 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                     setState(() => _selectedSide = value.single),
               ),
               const Text(
-                'Rekordy osobiste nie są obliczane dla serii z wybraną stroną.',
+                'PR i porównania są liczone osobno dla każdej strony. 1RM tylko dla kg + powtórzeń.',
               ),
             ],
-            FutureBuilder(
-              key: ValueKey('${widget.exercise.id}:$_side'),
-              future: ref
-                  .read(workoutRepositoryProvider)
-                  .getLastSet(widget.exercise.id, side: _side),
-              builder: (context, snapshot) {
-                final last = snapshot.data;
-                if (last == null) {
-                  return const Text(
-                    'Pierwszy raz - bez porównania',
-                    style: TextStyle(color: Colors.grey),
-                  );
-                }
-                if (_isIsometric) {
-                  return Text(
-                    'Ostatnio: ${last.czasSekund ?? '-'} s (RPE ${last.rpe ?? '-'})',
-                    style: const TextStyle(color: FitBirekColors.accent),
-                  );
-                }
-                return Text(
-                  'Ostatnio: ${last.ciezarKg == null ? '' : '${last.ciezarKg} kg × '}${last.powtorzenia ?? '-'} powt. (RPE ${last.rpe ?? '-'})',
-                  style: const TextStyle(color: FitBirekColors.accent),
-                );
-              },
-            ),
+            if (loggedForThis.isNotEmpty &&
+                loggedForThis.last.comparison != null)
+              Text(
+                'Zmiana względem poprzedniej serii • ${setSideLabel(_side)}: ${loggedForThis.last.comparison}',
+              ),
+            _progression(),
             const SizedBox(height: 12),
             if (_isIsometric) ...[
+              if (_tracking == 'rounds')
+                PrimaryButton(
+                  label: _intervalBusy
+                      ? 'Interwały w toku…'
+                      : 'Timer interwałów',
+                  icon: Icons.av_timer,
+                  onPressed: _intervalBusy ? null : _startIntervals,
+                ),
               TextField(
                 controller: _secondsController,
                 keyboardType: TextInputType.number,

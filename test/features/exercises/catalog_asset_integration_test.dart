@@ -64,6 +64,88 @@ void main() {
     },
   );
 
+  test('real execution metadata covers exactly all 363 catalog IDs', () {
+    expect(metadata.exercises.keys.toSet(), exercises.map((e) => e.id).toSet());
+    expect(metadata.conditions.keys.toSet(), {
+      'no_jumps',
+      'quiet',
+      'no_kneeling',
+      'no_hand_support',
+      'no_floor',
+      'small_space',
+    });
+    expect(metadata.positions.keys.toSet(), {
+      'standing',
+      'seated',
+      'floor',
+      'hanging',
+      'bench',
+    });
+    for (final item in metadata.exercises.entries) {
+      expect(item.value.positions, isNotEmpty, reason: item.key);
+      expect(
+        item.value.conditions.every(metadata.conditions.containsKey),
+        isTrue,
+        reason: item.key,
+      );
+      expect(
+        item.value.positions.every(metadata.positions.containsKey),
+        isTrue,
+        reason: item.key,
+      );
+    }
+  });
+
+  test('real execution filters and cross-facets match explicit entry tags', () {
+    Set<String> expected(ExerciseFilters filters) => exercises
+        .where((exercise) {
+          final entry = metadata.entryFor(exercise.id)!;
+          return filters.conditions.every(entry.conditions.contains) &&
+              (filters.positions.isEmpty ||
+                  filters.positions.any(entry.positions.contains));
+        })
+        .map((exercise) => exercise.id)
+        .toSet();
+
+    for (final condition in metadata.conditions.keys) {
+      final single = ExerciseFilters(conditions: {condition});
+      expect(expected(single), isNotEmpty, reason: condition);
+      expect(
+        engine.filter(exercises, single).map((e) => e.id).toSet(),
+        expected(single),
+      );
+      for (final position in metadata.positions.keys) {
+        final filters = single.copyWith(positions: {position, 'seated'});
+        expect(engine.executionFiltersVerified(filters), isTrue);
+        expect(
+          engine.filter(exercises, filters).map((e) => e.id).toSet(),
+          expected(filters),
+        );
+        final facets = engine.facets(exercises, filters);
+        for (final next in metadata.conditions.keys) {
+          expect(
+            facets.conditions[next],
+            expected(filters.copyWith(conditions: {condition, next})).length,
+          );
+        }
+        for (final next in metadata.positions.keys) {
+          expect(
+            facets.positions[next] ?? 0,
+            expected(filters.copyWith(positions: {next})).length,
+          );
+        }
+      }
+    }
+    for (final position in metadata.positions.keys) {
+      final filters = ExerciseFilters(positions: {position});
+      expect(expected(filters), isNotEmpty, reason: position);
+      expect(
+        engine.filter(exercises, filters).map((e) => e.id).toSet(),
+        expected(filters),
+      );
+    }
+  });
+
   test(
     'biceps includes primary and supporting work and intersects dumbbells',
     () {

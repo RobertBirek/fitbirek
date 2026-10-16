@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/models/workout_session.dart';
 import '../../../core/sync/sync_models.dart';
+import '../domain/fixed_load_progression.dart';
 
 class WorkoutSessionUnavailable extends StateError {
   WorkoutSessionUnavailable(int id)
@@ -32,10 +33,13 @@ class WorkoutRepository {
   WorkoutRepository(this._db);
   final AppDatabase _db;
 
-  Future<int> startSession() async {
+  Future<int> startSession({bool Function()? guard, String? accountId}) async {
+    _requireGuard(guard);
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
     return _db.transaction(() async {
+      _requireGuard(guard);
+      if (accountId != null) await _requireAccount(accountId, guard);
       final id = await _db.workoutDao.createSession(
         WorkoutSessionsCompanion.insert(
           dataStart: now,
@@ -54,6 +58,8 @@ class WorkoutRepository {
           notatka: null,
         ),
       );
+      _requireGuard(guard);
+      if (accountId != null) await _requireAccount(accountId, guard);
       return id;
     });
   }
@@ -313,6 +319,41 @@ class WorkoutRepository {
   /// w formacie do wyświetlenia jako "auto-progress": "Ostatnio: 15 kg × 8 (RPE 8)"
   Future<SetLogData?> getLastSet(String exerciseId, {String? side}) {
     return _db.workoutDao.getLastSetForExercise(exerciseId, side: side);
+  }
+
+  /// Read only. Keep every set in each ended session so the engine can use the
+  /// weakest result/highest RPE rather than selecting two easy sets.
+  Future<List<ProgressionPerformance>> getProgressionHistory(
+    String exerciseId, {
+    required String? side,
+    required int excludingSessionId,
+  }) async {
+    final sets = _db.setsLog;
+    final sessions = _db.workoutSessions;
+    final query =
+        _db.select(sets).join([
+          innerJoin(sessions, sessions.id.equalsExp(sets.sesjaId)),
+        ])..where(
+          sets.cwiczenieId.equals(exerciseId) &
+              (side == null ? sets.side.isNull() : sets.side.equals(side)) &
+              sets.deletedAtUtc.isNull() &
+              sessions.deletedAtUtc.isNull() &
+              sessions.dataKoniec.isNotNull() &
+              sessions.id.equals(excludingSessionId).not(),
+        );
+    return (await query.get()).map((row) {
+      final set = row.readTable(sets);
+      final session = row.readTable(sessions);
+      return ProgressionPerformance(
+        sessionId: session.id,
+        endedAt: session.dataKoniec!,
+        exerciseId: set.cwiczenieId,
+        side: set.side,
+        weightKg: set.ciezarKg,
+        reps: set.powtorzenia,
+        rpe: set.rpe,
+      );
+    }).toList();
   }
 
   Stream<List<WorkoutSessionData>> watchAllSessions() {

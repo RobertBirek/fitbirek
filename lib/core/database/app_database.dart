@@ -63,11 +63,15 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
+      if (from < 10) {
+        await m.addColumn(workoutPlans, workoutPlans.structureJson);
+      }
+      if (from < 9) await m.addColumn(personalRecords, personalRecords.side);
       if (from < 8) await m.addColumn(setsLog, setsLog.side);
       if (from < 5) await m.createTable(healthSamples);
       if (from < 6) await m.addColumn(syncState, syncState.healthReplayEnabled);

@@ -136,17 +136,24 @@ async def test_advisory_wait_synchronization_cancels_tasks_on_timeout(transactio
 
 
 @pytest.mark.parametrize('side', [None, 'left', 'right', 'both'])
-async def test_workout_side_jsonb_roundtrip(client, account, session, side):
+@pytest.mark.parametrize('entity_type', ['workoutSet', 'personalRecord'])
+async def test_workout_side_jsonb_roundtrip(client, account, session, side, entity_type):
     headers = await authenticate(client, account)
     payload = {
         'sessionSyncId': str(uuid4()), 'cwiczenieId': 'custom',
         'nazwaCwiczeniaPl': 'Test', 'numerSerii': 1, 'czasSekund': 30,
         'timestamp': '2026-10-16T00:00:00Z',
     }
+    if entity_type == 'personalRecord':
+        payload = {
+            'cwiczenieId': 'custom', 'nazwaCwiczeniaPl': 'Test',
+            'ciezarKg': 20.0, 'powtorzenia': 5, 'szacowane1Rm': 23.3333333333,
+            'data': '2026-10-16T00:00:00Z',
+        }
     if side is not None:
         payload['side'] = side
     op = operation(payload=payload)
-    op['entityType'] = 'workoutSet'
+    op['entityType'] = entity_type
     response = await client.post('/api/sync/push', json={'operations': [op]}, headers=headers)
     assert response.status_code == 200
     assert len(response.json()['accepted']) == 1
@@ -157,6 +164,63 @@ async def test_workout_side_jsonb_roundtrip(client, account, session, side):
     # The exact attempted body can be retried, including the absent-side case.
     response = await client.post('/api/sync/push', json={'operations': [op]}, headers=headers)
     assert response.json()['accepted'][0]['duplicate'] is True
+
+
+@pytest.mark.parametrize('structured', [False, True])
+async def test_workout_plan_structure_optional_jsonb_roundtrip(client, account, structured):
+    headers = await authenticate(client, account)
+    payload = {
+        'nazwa': 'Plan jogi', 'cwiczeniaIds': ['cw317'], 'cel': 'mix',
+        'dataUtworzenia': '2026-10-16T00:00:00Z',
+    }
+    if structured:
+        payload['structure'] = {
+            'schemaVersion': 1,
+            'criteria': {'styles': ['yoga'], 'query': '', 'tylkoUlubione': False},
+            'budgetSeconds': 300, 'level': 'Średni', 'equipment': ['Mata'],
+            'blocks': [{'exerciseId': 'cw317', 'section': 'main', 'prescription': {
+                'tracking': 'time', 'sets': 2, 'reps': None, 'workSeconds': 40,
+                'restSeconds': 20, 'transitionSeconds': 15,
+            }}],
+            'warnings': ['Brak rozgrzewki w aktywnej puli.'],
+        }
+    op = operation(payload=payload)
+    op['entityType'] = 'workoutPlan'
+    first = await client.post('/api/sync/push', json={'operations': [op]}, headers=headers)
+    assert first.status_code == 200
+    assert len(first.json()['accepted']) == 1
+    retry = await client.post('/api/sync/push', json={'operations': [op]}, headers=headers)
+    assert retry.json()['accepted'][0]['duplicate'] is True
+    pull = await client.get('/api/sync/pull?cursor=0')
+    record = next(r for r in pull.json()['changes'] if r['entityId'] == op['entityId'])
+    assert record['payload'] == payload
+
+
+@pytest.mark.parametrize('exercise_ids', [['cw317'], []])
+async def test_workout_plan_delete_keeps_legacy_envelope_roundtrip(client, account, exercise_ids):
+    headers = await authenticate(client, account)
+    payload = {
+        'nazwa': 'Plan źródłowy', 'cwiczeniaIds': exercise_ids, 'cel': 'mix',
+        'dataUtworzenia': '2026-10-16T00:00:00Z',
+    }
+    live = operation(payload=payload)
+    live['entityType'] = 'workoutPlan'
+    first = await client.post('/api/sync/push', json={'operations': [live]}, headers=headers)
+    assert len(first.json()['accepted']) == 1
+    deletion = operation(entity_id=live['entityId'], base_version=1, payload=payload, deleted=True)
+    deletion['entityType'] = 'workoutPlan'
+    response = await client.post('/api/sync/push', json={'operations': [deletion]}, headers=headers)
+    assert response.status_code == 200
+    assert len(response.json()['accepted']) == 1
+    retry = await client.post('/api/sync/push', json={'operations': [deletion]}, headers=headers)
+    assert retry.json()['accepted'][0]['duplicate'] is True
+    pull = await client.get('/api/sync/pull?cursor=0')
+    # Pull is an ordered change log, so cursor 0 includes the prior live version.
+    record = next(r for r in pull.json()['changes']
+                  if r['entityId'] == live['entityId'] and r['version'] == 2)
+    assert record['deletedAt'] is not None
+    assert record['payload'] == payload
+    assert 'structure' not in record['payload']
 
 
 async def test_repeated_operation_is_applied_once(client, account, session):

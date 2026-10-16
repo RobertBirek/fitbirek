@@ -17,3 +17,5 @@ Sesje, CSRF, API, Drift, outbox, rekordy synchronizacji i migracje baz danych.
 - Nie edytuj historycznych migracji.
 - Zmiana tabel Drift wymaga migracji, regeneracji i testu istniejącej bazy.
 - Zmiana synchronizowanej encji wymaga klienta, backendu, outboxa, pull/push i testów restore.
+- Planner etap 4: nullable `WorkoutPlans.structureJson` (Drift 10), optional wire
+  `structure` mapa v1; szczegóły i brak backfillu: `structured-planner.md`.

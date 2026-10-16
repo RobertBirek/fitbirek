@@ -9,8 +9,11 @@ class PrsRepository {
   PrsRepository(this._db);
   final AppDatabase _db;
 
-  Future<PersonalRecordData?> getBestForExercise(String exerciseId) {
-    return _db.prsDao.getBestForExercise(exerciseId);
+  Future<PersonalRecordData?> getBestForExercise(
+    String exerciseId, {
+    String? side,
+  }) {
+    return _db.prsDao.getBestForExercise(exerciseId, side: side);
   }
 
   Future<void> savePr({
@@ -18,6 +21,7 @@ class PrsRepository {
     required String exerciseNamePl,
     required double weightKg,
     required int reps,
+    String? side,
   }) async {
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
@@ -26,6 +30,7 @@ class PrsRepository {
       await _db.prsDao.addRecord(
         PersonalRecordsCompanion.insert(
           cwiczenieId: exerciseId,
+          side: Value(side),
           nazwaCwiczeniaPl: exerciseNamePl,
           ciezarKg: weightKg,
           powtorzenia: reps,
@@ -41,6 +46,7 @@ class PrsRepository {
         baseVersion: 0,
         payload: {
           'cwiczenieId': exerciseId,
+          if (side != null) 'side': side,
           'nazwaCwiczeniaPl': exerciseNamePl,
           'ciezarKg': weightKg,
           'powtorzenia': reps,
@@ -53,7 +59,10 @@ class PrsRepository {
 
   Stream<List<PersonalRecordData>> watchAll() => _db.prsDao.watchAll();
 
-  Future<List<PersonalRecordData>> getHistoryForExercise(String exerciseId) {
-    return _db.prsDao.getHistoryForExercise(exerciseId);
+  Future<List<PersonalRecordData>> getHistoryForExercise(
+    String exerciseId, {
+    String? side,
+  }) {
+    return _db.prsDao.getHistoryForExercise(exerciseId, side: side);
   }
 }

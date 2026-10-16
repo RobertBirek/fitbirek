@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import 'sync_models.dart';
+import '../../features/planner/domain/structured_plan.dart';
+import '../../features/planner/data/plan_sync_payload.dart';
 
 /// Maps the wire UUID identity to device-local integer keys. All callers that
 /// apply a page or acknowledgement use a database transaction.
@@ -69,7 +71,13 @@ class SyncStore {
     if (existing != null && (existing['syncVersion'] as int) > v) {
       return;
     }
-    final json = Map<String, dynamic>.from(record['payload'] as Map);
+    // Deleting an existing plan requires only its sync identity. Retain raw
+    // local data even if an older client already stored an invalid structure.
+    final planTombstone =
+        type == SyncEntityType.workoutPlan && record['deletedAt'] != null;
+    final json = planTombstone
+        ? Map<String, dynamic>.from(existing!)
+        : Map<String, dynamic>.from(record['payload'] as Map);
     json.remove('id');
     json.remove('sesjaId');
     json.addAll({
@@ -103,7 +111,18 @@ class SyncStore {
         cascadeDelete = true;
       }
     }
+    if (type == SyncEntityType.workoutPlan && !planTombstone) {
+      final structure = json.remove('structure');
+      if (structure != null) {
+        StructuredPlan.validateJson(
+          structure,
+          exerciseIds: json['cwiczeniaIds'],
+        );
+      }
+      json['structureJson'] = structure == null ? null : jsonEncode(structure);
+    }
     for (final key in ['dostepnySprzet', 'cwiczeniaIds']) {
+      if (planTombstone) continue;
       if (json.containsKey(key)) json[key] = jsonEncode(json[key] as List);
     }
     // Generated parsers validate required fields and types before writing.
@@ -253,7 +272,10 @@ class SyncStore {
     await _forgetDeferred(type, id, snapshot.version);
   }
 
-  Future<void> enqueueAll({bool deleted = false}) async {
+  Future<void> enqueueAll({bool deleted = false}) =>
+      db.transaction(() => _enqueueAll(deleted: deleted));
+
+  Future<void> _enqueueAll({required bool deleted}) async {
     for (final type in SyncEntityType.values) {
       // Restore cannot create/revive server-owned imports or mass-delete them.
       // Explicit sample deletions have their own durable outbox operations.
@@ -278,6 +300,30 @@ class SyncStore {
               json[key] as int,
               isUtc: true,
             ).toIso8601String();
+          }
+        }
+        if (type == SyncEntityType.personalRecord && json['side'] == null) {
+          json.remove('side');
+        }
+        if (type == SyncEntityType.workoutPlan) {
+          final structure = json.remove('structureJson') as String?;
+          if (deleted || tombstone) {
+            await db.syncDao.enqueueDelete(
+              entityType: type,
+              entityId: id,
+              baseVersion: v,
+              payload: workoutPlanDeletePayload(row as WorkoutPlanData),
+              preserveLocal: true,
+            );
+            continue;
+          }
+          if (structure != null) {
+            final value = jsonDecode(structure);
+            StructuredPlan.validateJson(
+              value,
+              exerciseIds: jsonDecode(json['cwiczeniaIds'] as String),
+            );
+            json['structure'] = value;
           }
         }
         if (type == SyncEntityType.workoutSet) {

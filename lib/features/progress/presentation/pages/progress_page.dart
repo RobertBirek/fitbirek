@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/weight_line_chart.dart';
 import '../../../../core/widgets/test_score_chart.dart';
-import '../../prs/providers/prs_providers.dart';
+import '../../prs/presentation/pr_records_list.dart';
 import '../../../health/providers/health_providers.dart';
 import '../../../health/presentation/widgets/health_sample_delete_button.dart';
 import '../../../health/presentation/widgets/health_steps_history.dart';
@@ -16,7 +16,6 @@ class ProgressPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final prsAsync = ref.watch(allPrsProvider);
     final measurementsAsync = ref.watch(mergedWeightsProvider);
     final testResultsAsync = ref.watch(allTestResultsProvider);
 
@@ -98,34 +97,7 @@ class ProgressPage extends ConsumerWidget {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
-            prsAsync.when(
-              data: (list) => list.isEmpty
-                  ? const Text(
-                      'Brak PR - wykonaj pierwszy trening z ciężarem',
-                      style: TextStyle(color: Colors.grey),
-                    )
-                  : Column(
-                      children: list
-                          .take(10)
-                          .map(
-                            (pr) => Card(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                title: Text(pr.nazwaCwiczeniaPl),
-                                subtitle: Text(
-                                  '${pr.ciezarKg} kg × ${pr.powtorzenia} • ${Formatters.date(pr.data)}',
-                                ),
-                                trailing: Text(
-                                  '1RM≈${pr.szacowane1Rm.toStringAsFixed(1)}kg',
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-              loading: () => const CircularProgressIndicator(),
-              error: (e, st) => Text('Błąd: $e'),
-            ),
+            const PrRecordsList(),
             const SizedBox(height: 20),
             Text(
               'Pomiary ciała',

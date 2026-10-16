@@ -10,6 +10,7 @@ class WorkoutPlans extends Table with SyncMetadata {
   // JSON-encoded lista ID ćwiczeń w planie
   TextColumn get cwiczeniaIds => text()();
   TextColumn get cel => text()();
+  TextColumn get structureJson => text().nullable()();
   DateTimeColumn get dataUtworzenia =>
       dateTime().withDefault(currentDateAndTime)();
 }

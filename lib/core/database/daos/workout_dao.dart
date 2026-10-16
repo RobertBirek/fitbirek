@@ -62,7 +62,10 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
     final query = select(setsLog)
       ..where((t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull())
       ..where((t) => side == null ? t.side.isNull() : t.side.equals(side))
-      ..orderBy([(t) => OrderingTerm.desc(t.timestamp)])
+      ..orderBy([
+        (t) => OrderingTerm.desc(t.timestamp),
+        (t) => OrderingTerm.desc(t.id),
+      ])
       ..limit(1);
     final rows = await query.get();
     return rows.isEmpty ? null : rows.first;

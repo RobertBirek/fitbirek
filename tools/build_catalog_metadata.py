@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 
 from catalog_additions import ADDITIONS
+from build_execution_conditions import load_classification
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'assets/data/exercise_catalog_metadata.json'
@@ -409,17 +410,22 @@ def build() -> dict:
             tracking='rounds' if n in ROUNDS else 'time' if n in TIME else 'reps',
             unilateral=n in UNILATERAL)
     for a in ADDITIONS:
+        # Crow gets a second style below; never mutate the curated source list.
         exercises[f'cw{a["number"]:03d}'] = dict(
-            styles=a['style'], primaryMuscles=a['primary'], secondaryMuscles=a['secondary'],
+            styles=list(a['style']), primaryMuscles=a['primary'], secondaryMuscles=a['secondary'],
             aliases=([a['en'], 'worek z piaskiem'] if a['equipment'] == 'Sandbag' else
                      [a['en'], 'ab wheel', 'ab roller'] if a['equipment'] == 'Kółko do brzucha' else [a['en']]),
             tracking=a['tracking'], unilateral=a['unilateral'])
     # Crow/frog stand belongs to both traditions: one record, two styles.
     exercises['cw357']['styles'].append('yoga')
+    execution = load_classification(exercises)
+    for eid, entry in exercises.items():
+        entry.update(execution['exercises'][eid])
     return dict(schemaVersion=1,
                 styles=[dict(id=i, label=l, aliases=a) for i, l, a in STYLES],
                 muscles=[dict(id=i, label=l, aliases=a) for i, l, a in MUSCLES],
-                exercises=exercises)
+                exercises=exercises,
+                conditions=execution['conditions'], positions=execution['positions'])
 
 
 def main():

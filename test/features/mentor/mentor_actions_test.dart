@@ -42,8 +42,11 @@ class _PausedPrs extends PrsRepository {
   final release = Completer<void>();
 
   @override
-  Future<PersonalRecordData?> getBestForExercise(String exerciseId) async {
-    final best = await super.getBestForExercise(exerciseId);
+  Future<PersonalRecordData?> getBestForExercise(
+    String exerciseId, {
+    String? side,
+  }) async {
+    final best = await super.getBestForExercise(exerciseId, side: side);
     entered.complete();
     await release.future;
     return best;

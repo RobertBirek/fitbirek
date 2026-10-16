@@ -23,12 +23,17 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
   }
 
   /// Najlepszy dotychczasowy PR (po szacowanym 1RM) dla danego ćwiczenia.
-  Future<PersonalRecordData?> getBestForExercise(String exerciseId) async {
+  Future<PersonalRecordData?> getBestForExercise(
+    String exerciseId, {
+    String? side,
+  }) async {
     final rows =
         await (select(personalRecords)
               ..where(
                 (t) =>
-                    t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull(),
+                    t.cwiczenieId.equals(exerciseId) &
+                    t.deletedAtUtc.isNull() &
+                    (side == null ? t.side.isNull() : t.side.equals(side)),
               )
               ..orderBy([(t) => OrderingTerm.desc(t.szacowane1Rm)])
               ..limit(1))
@@ -36,10 +41,16 @@ class PrsDao extends DatabaseAccessor<AppDatabase> with _$PrsDaoMixin {
     return rows.isEmpty ? null : rows.first;
   }
 
-  Future<List<PersonalRecordData>> getHistoryForExercise(String exerciseId) {
+  Future<List<PersonalRecordData>> getHistoryForExercise(
+    String exerciseId, {
+    String? side,
+  }) {
     return (select(personalRecords)
           ..where(
-            (t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull(),
+            (t) =>
+                t.cwiczenieId.equals(exerciseId) &
+                t.deletedAtUtc.isNull() &
+                (side == null ? t.side.isNull() : t.side.equals(side)),
           )
           ..orderBy([
             (t) => OrderingTerm.desc(t.data),

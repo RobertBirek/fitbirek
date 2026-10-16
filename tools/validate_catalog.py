@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 
 import xlsx_to_json as converter
+from build_execution_conditions import validate_classification
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / 'assets/data/exercise_catalog_metadata.json'
@@ -38,7 +39,7 @@ def string_list(value, label, nonempty=False):
 
 
 def validate_metadata(data, meta):
-    require(set(meta) == {'schemaVersion', 'styles', 'muscles', 'exercises'}, 'Metadata keys')
+    require(set(meta) == {'schemaVersion', 'styles', 'muscles', 'exercises', 'conditions', 'positions'}, 'Metadata keys')
     require(type(meta['schemaVersion']) is int and meta['schemaVersion'] == 1, 'schemaVersion')
     registries = {}
     for key in ('styles', 'muscles'):
@@ -57,7 +58,7 @@ def validate_metadata(data, meta):
     require(not {'cardio', 'mobility', 'coordination', 'full_body'} & registries['muscles'], 'Non-anatomical muscle')
     require(set(meta['exercises']) == {e['id'] for e in data}, 'Metadata ID coverage')
     for eid, m in meta['exercises'].items():
-        require(set(m) == {'styles', 'primaryMuscles', 'secondaryMuscles', 'aliases', 'tracking', 'unilateral'}, f'{eid}: keys')
+        require(set(m) == {'styles', 'primaryMuscles', 'secondaryMuscles', 'aliases', 'tracking', 'unilateral', 'conditions', 'positions'}, f'{eid}: keys')
         for key in ('styles', 'primaryMuscles', 'secondaryMuscles', 'aliases'):
             string_list(m[key], f'{eid}: {key}', nonempty=key in ('styles', 'primaryMuscles'))
         require(set(m['styles']) <= registries['styles'], f'{eid}: unknown style')
@@ -65,6 +66,10 @@ def validate_metadata(data, meta):
         require(not set(m['primaryMuscles']) & set(m['secondaryMuscles']), f'{eid}: overlapping muscle roles')
         require(m['tracking'] in ('reps', 'time', 'rounds'), f'{eid}: tracking')
         require(type(m['unilateral']) is bool, f'{eid}: unilateral must be boolean')
+    validate_classification(dict(
+        schemaVersion=meta['schemaVersion'], conditions=meta['conditions'], positions=meta['positions'],
+        exercises={eid: {k: m[k] for k in ('conditions', 'positions')}
+                   for eid, m in meta['exercises'].items()}), {e['id'] for e in data})
 
 
 def validate_sources(data, sources):
