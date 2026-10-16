@@ -3,8 +3,11 @@
 ## Stan
 
 **363 ćwiczenia i363 ilustracje**, w tym47 nowych cw317–cw363.
-Rozszerzenie przygotowano do wydania **1.12.0+25**; stan produkcyjny i dowody
-wdrożenia zostaną zapisane w raporcie wydania po kontroli publicznej.
+Rozszerzenie przygotowano do wydania **1.12.0+25** i wypchnięto na main.
+**Wdrożenie wstrzymane przed backupem/promocją**: automatyczna retencja
+usunęłaby najstarszy istniejący backup, wbrew zakazowi czyszczenia.
+Produkcja pozostaje1.11.0+24 z316 ćwiczeniami. Dowody i pozostałe kroki:
+[raport wydania](releases/2026-10-16-web-1.12.0-25.md).
 
 ## Katalog i sprzęt
 
