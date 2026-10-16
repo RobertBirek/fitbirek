@@ -6,6 +6,16 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.11.0+24] — 2026-10-16
+
+### Added
+- Dodano 112 ilustracji szczegółów ćwiczeń `cw139`–`cw250` z Partii 28–46:
+  ćwiczenia nóg i pośladków, stabilizację tułowia, brzuch, kondycję,
+  skakankę, bieżnię oraz rozgrzewkę i mobilność. Wszystkie 316 ćwiczeń
+  w katalogu ma teraz ilustracje.
+
+---
+
 ## [1.10.0+23] — 2026-10-15
 
 ### Added

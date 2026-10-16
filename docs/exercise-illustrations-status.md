@@ -2,9 +2,10 @@
 
 Stan na 2026-10-15, produkcyjna wersja webowa 1.10.0+23.
 
-Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają 204 wydane ilustracje.
-Nie ma lokalnie zintegrowanych, niewydanych ilustracji.
-112 ćwiczeń pozostaje bez ilustracji.
+Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają komplet 316 ilustracji:
+204 wydane oraz 112 lokalnie zintegrowanych, niewydanych (`cw139–cw250`).
+Nie ma ćwiczeń bez ilustracji. Zakończono autonomiczne domknięcie cw157–cw250;
+szczegóły: [rejestr wykonania](superpowers/specs/2026-10-15-exercise-illustrations-completion-results.md).
 
 Partie 07–27 (`cw013–cw138`) wydano wspólnie w wersji webowej `1.10.0+23`.
 Wszystkie 126 nowych ilustracji oraz 78 wcześniejszych zweryfikowano publicznie.
@@ -161,6 +162,118 @@ liczby kadrów i historia generacji pozostają aktualne.
 | cw136 | Wchodzenie na ławkę z uniesieniem kolana i hantlami | 3 | Lokalnie zintegrowane; niewydane; trzy pionowe kolumny, prawa noga podporowa, lewe kolano drive. |
 | cw137 | Przysiad na jednej nodze z drugą wyprostowaną w przód | 2 | Lokalnie zintegrowane; niewydane; prawa noga podporowa, lewa prosta i wolna, ramiona w przód. |
 | cw138 | Przysiad na jednej nodze z drugą wyprostowaną w przód z podparciem | 2 | Lokalnie zintegrowane; niewydane; prawy pistol z asystą gumy z wysoką kotwą przed ciałem. |
+| cw139 | Przysiad łyżwiarski | 2 | Lokalnie zintegrowane; niewydane; prawa noga podporowa, lewa zgięta z tyłu i wolna. |
+| cw140 | Przysiad na palcach z odchyleniem tułowia w tył i podparciem | 2 | Lokalnie zintegrowane; niewydane; oba przodostopia na podłodze, pięty w górze, asysta dłonią na słupku. |
+| cw141 | Siad przy ścianie | 1 | Lokalnie zintegrowane; niewydane; plecy podparte, kolana około 90°, ręce bez kontaktu z udami. |
+| cw142 | Siad przy ścianie z hantlem | 1 | Lokalnie zintegrowane; niewydane; jeden pionowy hantel oburącz przy klatce. |
+| cw143 | Przysiad kozacki z hantlem | 3 | Lokalnie zintegrowane; niewydane; stały szeroki rozstaw, prawa → środek → lewa, jeden hantel goblet. |
+| cw144 | Przysiad ze skokiem | 3 | Lokalnie zintegrowane; niewydane; trzy pionowe kolumny, przysiad → lot → ugięte lądowanie. |
+| cw145 | Przysiad ze skokiem i obrotem o 180° | 3 | Lokalnie zintegrowane; niewydane; trzy kolumny, zmiana kierunku w locie i ugięte lądowanie. |
+| cw146 | Wyskoki na skrzynię lub ławkę | 4 | Lokalnie zintegrowane; niewydane; siatka 2×2, przysiad → lot → ugięte lądowanie na ławce → wyprost. |
+| cw147 | Skok w dal z miejsca | 3 | Lokalnie zintegrowane; niewydane; trzy poziome pasy, postęp względem stałych szwów podłogi. |
+| cw148 | Rumuński martwy ciąg z hantlami (na nogi) | 2 | Lokalnie zintegrowane; niewydane; identyczna kopia cw063, bez nowej generacji. |
+| cw149 | Rumuński martwy ciąg z hantlami na jednej nodze | 2 | Lokalnie zintegrowane; niewydane; prawa noga podporowa, lewa wolna w tył, dwa hantle. |
+| cw150 | Martwy ciąg z hantlami na prostych nogach | 2 | Lokalnie zintegrowane; niewydane; głęboki hinge, prawie proste niezablokowane kolana, hantle blisko kostek/podłoża. |
+| cw151 | Martwy ciąg z hantlem w szerokim rozkroku | 2 | Lokalnie zintegrowane; niewydane; jeden pionowy hantel oburącz za górną głowicę, długie ramiona. |
+| cw152 | Skłony tułowia z gumą i cofnięciem bioder | 2 | Lokalnie zintegrowane; niewydane; zamknięta guma pod obiema stopami i na górnych plecach u nasady karku. |
+| cw153 | Opad tułowia w klęku z zablokowanymi stopami i pomocą rąk | 3 | Lokalnie zintegrowane; niewydane; kostki pod niską poprzeczką ławki, opad z kolan i końcowa pomoc dłoni. |
+| cw154 | Most biodrowy | 2 | Lokalnie zintegrowane; niewydane; głowa, barki i stopy podparte na podłodze. |
+| cw155 | Most biodrowy z hantlem | 2 | Lokalnie zintegrowane; niewydane; jeden hantel na biodrach stabilizowany obiema dłońmi. |
+| cw156 | Hip thrust z hantlem | 2 | Lokalnie zintegrowane; niewydane; górne plecy na ławce, hantel na biodrach, kontrolowana głowa i szyja. |
+| cw157 | Hip thrust jednonóż | 2 | Lokalnie zintegrowane; niewydane; prawa podpora, lewa noga w powietrzu. |
+| cw158 | Unoszenie bioder w leżeniu ze złączonymi podeszwami stóp | 2 | Lokalnie zintegrowane; niewydane; frog pump. |
+| cw159 | Unoszenie ugiętej nogi w tył w klęku podpartym | 2 | Lokalnie zintegrowane; niewydane. |
+| cw160 | Odwodzenie ugiętej nogi w bok w klęku podpartym z gumą | 2 | Lokalnie zintegrowane; niewydane; guma nad kolanami. |
+| cw161 | Rozwieranie kolan w leżeniu bokiem z gumą | 2 | Lokalnie zintegrowane; niewydane; stopy razem. |
+| cw162 | Chód w półprzysiadzie z gumą | 3 | Lokalnie zintegrowane; niewydane; cykl kroku w bok. |
+| cw163 | Wspięcia na palce w staniu | 2 | Lokalnie zintegrowane; niewydane. |
+| cw164 | Wspięcia na palce na jednej nodze z hantlem | 2 | Lokalnie zintegrowane; niewydane; podpora i hantel po prawej. |
+| cw165 | Wspięcia na palce na krawędzi ławki z hantlami | 2 | Lokalnie zintegrowane; niewydane; pięty poza krawędzią. |
+| cw166 | Wspięcia na palce w siadzie z hantlami | 2 | Lokalnie zintegrowane; niewydane. |
+| cw167 | Wspięcia na palce w opadzie tułowia | 2 | Lokalnie zintegrowane; niewydane; dłonie na ławce. |
+| cw168 | Unoszenie przodostopia w oparciu plecami o ścianę | 2 | Lokalnie zintegrowane; niewydane; pięty na podłodze. |
+| cw169 | Deska na przedramionach | 1 | Lokalnie zintegrowane; niewydane. |
+| cw170 | Deska na prostych ramionach | 1 | Lokalnie zintegrowane; niewydane. |
+| cw171 | Deska bokiem | 1 | Lokalnie zintegrowane; niewydane. |
+| cw172 | Deska bokiem z opuszczaniem i unoszeniem bioder | 2 | Lokalnie zintegrowane; niewydane. |
+| cw173 | Deska bokiem z unoszeniem nogi | 2 | Lokalnie zintegrowane; niewydane. |
+| cw174 | Deska z dotykaniem przeciwnego barku | 2 | Lokalnie zintegrowane; niewydane. |
+| cw175 | Przejścia z deski na przedramionach do podporu na dłoniach | 3 | Lokalnie zintegrowane; niewydane. |
+| cw176 | Wiosłowanie hantlami w podporze przodem (stabilizacja tułowia) | 2 | Lokalnie zintegrowane; niewydane. |
+| cw177 | Deska z unoszeniem nogi | 2 | Lokalnie zintegrowane; niewydane. |
+| cw178 | Deska kopenhaska z nogą na ławce | 1 | Lokalnie zintegrowane; niewydane; podparcie przy kolanie. |
+| cw179 | Martwy robak | 2 | Lokalnie zintegrowane; niewydane. |
+| cw180 | Martwy robak z hantlem | 2 | Lokalnie zintegrowane; niewydane. |
+| cw181 | Prostowanie przeciwnej ręki i nogi w klęku podpartym | 2 | Lokalnie zintegrowane; niewydane. |
+| cw182 | Prostowanie przeciwnej ręki i nogi z przyciąganiem łokcia do kolana w klęku podpartym | 1 | Lokalnie zintegrowane; niewydane. |
+| cw183 | Utrzymanie pozycji łódki w leżeniu na plecach | 1 | Lokalnie zintegrowane; niewydane. |
+| cw184 | Kołysanie w pozycji łódki na plecach | 2 | Lokalnie zintegrowane; niewydane. |
+| cw185 | Utrzymanie pozycji łódki w leżeniu na brzuchu | 1 | Lokalnie zintegrowane; niewydane. |
+| cw186 | Pełne brzuszki | 2 | Lokalnie zintegrowane; niewydane. |
+| cw187 | Pełne brzuszki z hantlem na klatce piersiowej | 2 | Lokalnie zintegrowane; niewydane. |
+| cw188 | Spięcia brzucha | 2 | Lokalnie zintegrowane; niewydane. |
+| cw189 | Odwrotne spięcia brzucha | 2 | Lokalnie zintegrowane; niewydane. |
+| cw190 | Scyzoryki | 2 | Lokalnie zintegrowane; niewydane. |
+| cw191 | Sięganie dłońmi do uniesionych stóp w leżeniu | 2 | Lokalnie zintegrowane; niewydane. |
+| cw192 | Spięcia brzucha ze skrętem i naprzemienną pracą nóg | 1 | Lokalnie zintegrowane; niewydane. |
+| cw193 | Skręty tułowia w siadzie bez obciążenia | 3 | Lokalnie zintegrowane; niewydane. |
+| cw194 | Skręty tułowia w siadzie z hantlem | 2 | Lokalnie zintegrowane; niewydane. |
+| cw195 | Rąbanie drewna z hantlem po przekątnej | 2 | Lokalnie zintegrowane; niewydane. |
+| cw196 | Wyciskanie Pallofa z gumą | 2 | Lokalnie zintegrowane; niewydane. |
+| cw197 | Wyciskanie Pallofa z gumą i rotacją tułowia | 2 | Lokalnie zintegrowane; niewydane. |
+| cw198 | Skłony boczne z hantlem w staniu | 2 | Lokalnie zintegrowane; niewydane. |
+| cw199 | Unoszenie kolan w zwisie na drążku | 2 | Lokalnie zintegrowane; niewydane. |
+| cw200 | Unoszenie prostych nóg w zwisie na drążku | 2 | Lokalnie zintegrowane; niewydane. |
+| cw201 | Przenoszenie uniesionych nóg na boki w zwisie na drążku | 3 | Lokalnie zintegrowane; niewydane. |
+| cw202 | Unoszenie stóp do drążka w zwisie | 2 | Lokalnie zintegrowane; niewydane. |
+| cw203 | Utrzymanie podporu z prostymi nogami uniesionymi do poziomu | 1 | Lokalnie zintegrowane; niewydane; niskie poręcze. |
+| cw204 | Unoszenie i opuszczanie prostego ciała w oparciu na barkach na ławce | 2 | Lokalnie zintegrowane; niewydane. |
+| cw205 | Przetaczanie hantli sześciokątnych w przód w klęku | 2 | Lokalnie zintegrowane; niewydane. |
+| cw206 | Chód farmera z hantlami (stabilizacja tułowia) | 2 | Lokalnie zintegrowane; niewydane; reuse cw119. |
+| cw207 | Chód z hantlem w jednej ręce | 1 | Lokalnie zintegrowane; niewydane. |
+| cw208 | Bieg w podporze (na brzuch) | 2 | Lokalnie zintegrowane; niewydane. |
+| cw209 | Burpee klasyczny | 4 | Lokalnie zintegrowane; niewydane. |
+| cw210 | Burpee z pompką | 4 | Lokalnie zintegrowane; niewydane. |
+| cw211 | Burpee z podskokiem | 4 | Lokalnie zintegrowane; niewydane; reuse cw209. |
+| cw212 | Burpee bez pompki i wyskoku | 4 | Lokalnie zintegrowane; niewydane. |
+| cw213 | Pajacyki | 2 | Lokalnie zintegrowane; niewydane. |
+| cw214 | Wyskoki z przysiadu do pozycji gwiazdy | 3 | Lokalnie zintegrowane; niewydane. |
+| cw215 | Bieg w miejscu z wysokim unoszeniem kolan | 1 | Lokalnie zintegrowane; niewydane. |
+| cw216 | Bieg w miejscu z uderzaniem piętami o pośladki | 1 | Lokalnie zintegrowane; niewydane. |
+| cw217 | Bieg w podporze | 2 | Lokalnie zintegrowane; niewydane; reuse cw208. |
+| cw218 | Bieg w podporze z kolanami do przeciwnych łokci | 2 | Lokalnie zintegrowane; niewydane. |
+| cw219 | Wyrzuty nóg w tył do podporu z przysiadu | 4 | Lokalnie zintegrowane; niewydane; reuse cw212. |
+| cw220 | Skoki łyżwiarskie | 3 | Lokalnie zintegrowane; niewydane. |
+| cw221 | Wyskoki z przyciąganiem kolan do klatki piersiowej | 3 | Lokalnie zintegrowane; niewydane. |
+| cw222 | Skok w dal z miejsca z powrotem truchtem | 4 | Lokalnie zintegrowane; niewydane. |
+| cw223 | Chód niedźwiedzia | 1 | Lokalnie zintegrowane; niewydane. |
+| cw224 | Chód kraba | 1 | Lokalnie zintegrowane; niewydane. |
+| cw225 | Skakanka — podskoki obunóż | 2 | Lokalnie zintegrowane; niewydane. |
+| cw226 | Skakanka — krok bokserski | 1 | Lokalnie zintegrowane; niewydane. |
+| cw227 | Skakanka — wysokie unoszenie kolan | 1 | Lokalnie zintegrowane; niewydane. |
+| cw228 | Skakanka — podskoki na jednej nodze | 1 | Lokalnie zintegrowane; niewydane. |
+| cw229 | Skakanka — podskoki na boki | 2 | Lokalnie zintegrowane; niewydane. |
+| cw230 | Skakanka — podskoki w przód i w tył | 2 | Lokalnie zintegrowane; niewydane. |
+| cw231 | Skakanka — podwójny obrót linki w podskoku | 1 | Lokalnie zintegrowane; niewydane; liczba obrotów w opisie. |
+| cw232 | Skakanka — podskoki ze skrzyżowaniem ramion | 1 | Lokalnie zintegrowane; niewydane. |
+| cw233 | Skakanka — podwójny obrót linki ze skrzyżowaniem ramion | 1 | Lokalnie zintegrowane; niewydane; liczba obrotów w opisie. |
+| cw234 | Bieżnia — spokojny bieg w drugiej strefie tętna | 1 | Lokalnie zintegrowane; niewydane. |
+| cw235 | Bieżnia — marsz 12-3-30 (nachylenie 12%, 3 mile/h, 30 min) | 1 | Lokalnie zintegrowane; niewydane. |
+| cw236 | Bieżnia — interwały: 30 sekund sprintu i 90 sekund truchtu | 2 | Lokalnie zintegrowane; niewydane. |
+| cw237 | Bieżnia — sprinty pod górę (nachylenie 5–7%) | 1 | Lokalnie zintegrowane; niewydane. |
+| cw238 | Bieżnia — piramida tempa | 2 | Lokalnie zintegrowane; niewydane; reuse cw236. |
+| cw239 | Bieżnia — bieg tempowy | 1 | Lokalnie zintegrowane; niewydane; reuse cw234. |
+| cw240 | Bieżnia — długi, spokojny bieg | 1 | Lokalnie zintegrowane; niewydane; reuse cw234. |
+| cw241 | Bieżnia — spacer regeneracyjny | 1 | Lokalnie zintegrowane; niewydane. |
+| cw242 | Krążenia ramion | 3 | Lokalnie zintegrowane; niewydane. |
+| cw243 | Wymachy nogi w przód i w tył | 2 | Lokalnie zintegrowane; niewydane. |
+| cw244 | Wymachy nogi na boki | 2 | Lokalnie zintegrowane; niewydane. |
+| cw245 | Krążenia bioder | 3 | Lokalnie zintegrowane; niewydane. |
+| cw246 | Wykroki chodzone z rotacją tułowia bez obciążenia | 1 | Lokalnie zintegrowane; niewydane. |
+| cw247 | Gąsienica | 3 | Lokalnie zintegrowane; niewydane. |
+| cw248 | Rozciąganie w wykroku z rotacją tułowia | 1 | Lokalnie zintegrowane; niewydane. |
+| cw249 | Przyciąganie stopy do zewnętrznej strony dłoni w podporze | 2 | Lokalnie zintegrowane; niewydane. |
+| cw250 | Koci grzbiet i wygięcie pleców w klęku podpartym | 2 | Lokalnie zintegrowane; niewydane. |
 | cw251 | Pozycja kobry | 2 | Wydane w 1.4.9+16. |
 | cw252 | Pozycja dziecka | 2 | Wydane w 1.4.9+16. |
 | cw253 | Pies z głową w dół | 2 | Wydane w 1.4.9+16. |
@@ -1008,6 +1121,159 @@ Log: `/root/.local/share/opencode/tool-output/tool_13fdee8cf001Q6giiBpQ5Nxs6j`.
 Rejestr, oczekiwania testu i pliki obejmują 204 ID, fallback cw139.
 Partie 07–27 obejmują 126 niewydanych ilustracji; 112 ćwiczeń bez grafiki.
 Produkcja pozostaje `1.9.0+22`.
+
+## Dwudziesta ósma partia
+
+Zakres dwudziestej ósmej partii obejmuje `cw139–cw144`: sześć lokalnie
+zintegrowanych, niewydanych WebP 512×512. Kadry: 2/2/1/1/3/3. Skater i sissy
+mają po dwa poziome pasy, oba wall sits pojedyncze kadry utrzymania,
+cossack trzy poziome pasy, jump squat trzy pionowe kolumny. Wszystkie źródła nowe.
+
+Skater pokazuje prawą pełną stopę jako jedyną podporę i lewą nogę zgiętą
+z tyłu, bez podparcia stopą lub kolanem. Korekta pogłębiła dolną pozycję.
+W sissy squat użytkownik zatwierdził interpretację niejasnego „jednego palca”:
+oba przodostopia podparte, pięty uniesione, prawa dłoń na stałym słupku.
+Celowe odchylenie w tył z wydłużoną linią kolana–biodra–głowa nie jest
+błędem postawy tego ćwiczenia. Pierwsza próba miała kadry obok siebie;
+korekta przywróciła poziome pasy i spójny chwyt na słupku.
+
+Oba wall sits mają plecy/miednicę podparte o ścianę, uda około poziomu,
+kolana nad kostkami i pełne stopy na podłodze. Cw141 ma ramiona skrzyżowane
+przed klatką bez nacisku na uda, cw142 jeden hantel oburącz przy klatce,
+zgodnie z wybranym wariantem katalogowym. Bez fikcyjnej fazy ruchu/timera.
+
+Cossack pokazuje stały szeroki rozstaw pięt i przejście prawa–środek–lewa
+z jednym hantlem goblet. Palce wolnej prostej nogi mogą unosić się przy
+podpartej pięcie; pełna stopa nogi roboczej pozostaje podparta. W jump squat
+środkowa scena ma obie stopy w powietrzu, cień i widoczny prześwit przy
+stałej podłodze; finał to lądowanie na ugiętych biodrach/kolanach.
+Statyczna grafika nie mierzy siły lądowania, czasu utrzymania lub tempa.
+
+Zaakceptowane źródła: correction-01 dla cw139/cw140, trial-01 dla cw141–cw144.
+Źródła i podglądy 512 px odczytywano przed kolejnymi żądaniami; finalne
+WebP po konwersji. Kontrole zgodność→jakość były bezpośrednie, bez niezależnych
+subagentów po wcześniejszym limicie. Katalog i wszystkie wydane assety zachowano.
+
+Odczytano 8 rekordów success z odrębnymi request_id, bez ponownego liczenia
+response_received: 6 źródeł i 2 korekty, bez błędów HTTP. Suma szacunków
+upper_bound_no_cache wynosi 0,185311 USD, nie jest rozliczeniem dostawcy.
+
+Pełna weryfikacja `fit-web:batch-28-verified`: 366 testów zaliczonych,
+0 problemów analizy, formatowanie dwóch zmienionych Dartów bez zmian.
+Log: `/root/.local/share/opencode/tool-output/tool_1403c7499001LSNHSVAKUtKzGj`.
+Rejestr, oczekiwania testu i pliki obejmują 210 ID, fallback cw145.
+204 ilustracje pozostają wydane w 1.10.0+23 lub wcześniej; sześć Partii 28
+pozostaje lokalnych niewydanych. 106 ćwiczeń bez grafiki. Produkcja 1.10.0+23.
+
+## Dwudziesta dziewiąta partia
+
+Zakres dwudziestej dziewiątej partii obejmuje `cw145–cw150`: sześć lokalnie
+zintegrowanych, niewydanych WebP 512×512. Kadry: 3/4/3/2/2/2. Cw145 ma
+trzy pionowe kolumny, cw146 siatkę 2×2, cw147 trzy poziome pasy, cw149 dwa
+poziome pasy, cw148/cw150 dwa kadry obok siebie.
+
+Skok180° pokazuje przygotowanie ku prawej, lot przodem do kamery i ugięte
+lądowanie ku lewej; zmienia się orientacja ciała, nie kamera. Box jump ma
+cztery fazy z końcowym wyprostem na ławce. Pierwsze ujęcie i korekta zmieniały
+położenie/perspektywę podestu; nowe boczne ujęcie uprościło jego geometrię.
+Wyrównano je lokalnie w `/tmp/opencode/cw146-approved-aligned.png`: wszystkie
+cztery pełne sceny skalowane jednakowo do 85%, następnie przesunięte w siatce.
+Nie deformowano ciała/sprzętu ani nie skalowano osobno faz. Tożsamość RGB
+czterech regionów z jednakowo przeskalowanymi wycinkami źródła potwierdzono.
+Operacja bez dodatkowego żądania API; obie pełne stopy na siedzisku w fazach3/4.
+
+Broad jump pokazuje postęp w przód względem podłogi: przygotowanie po lewej,
+lot w środku, ugięte lądowanie po prawej. Czas/siła/dystans nie są mierzone
+przez statyczną ilustrację. Cw148 to zatwierdzona identyczna kopia cw063;
+ponownie odczytano grafikę i technikę, cmp potwierdził identyczność bajtów,
+zero nowych żądań dla tego ID. Katalogowe ID/nazwy/teksty zachowano.
+
+Single-leg RDL ma prawą stopę jako jedyną podporę i dwa ciężary wzdłuż nogi,
+lewą nogę w tył jako przeciwwagę i kontrolowaną miednicę. W stiff-leg deadlift
+dwie korekty pogłębiły zawias biodrowy przy zachowaniu prawie prostych,
+niezablokowanych kolan i neutralnego grzbietu; ciężary blisko kostek/podłoża,
+bez wymuszania kontaktu z ziemią przez squat lub wydłużanie ramion.
+
+Zaakceptowane źródła: trial-01 dla cw145/cw147/cw149, new-01 z lokalnym
+wyrównaniem dla cw146, cw063.webp dla cw148, correction-02 dla cw150.
+Źródła/podglądy512px odczytywano przed kolejnymi żądaniami; lokalny wynik
+cw146 i finalne6WebP również odczytano. Przeglądy zgodność→jakość bezpośrednie,
+bez niezależnych subagentów po wcześniejszym limicie. Partię28 zachowano.
+
+Odczytano 9 rekordów success z różnymi request_id, bez ponownego liczenia
+response_received: 6 źródeł/nowych kompozycji i 3 korekty, bez błędów HTTP.
+Suma szacunków upper_bound_no_cache wynosi 0,209028 USD, nie jest rozliczeniem
+dostawcy. Reusecw148 nie wymagał żądania API.
+
+Pełna weryfikacja `fit-web:batch-29-verified`: 366 testów zaliczonych,
+0 problemów analizy, formatowanie dwóch zmienionych Dartów bez zmian.
+Log: `/root/.local/share/opencode/tool-output/tool_14077ebf1001w93VqBt67qAkA8`.
+Rejestr, oczekiwania testu i pliki obejmują 216 ID, fallback cw151.
+204 ilustracje wydane; 12 z Partii 28–29 lokalnych niewydanych; 100 ćwiczeń
+bez grafiki. Produkcja pozostaje 1.10.0+23.
+
+## Trzydziesta partia
+
+Zakres `cw151–cw156`: sześć nowych ilustracji, kadry 2/2/3/2/2/2.
+Cw151 ma kadry obok siebie, pozostałe poziome pasy. Sumo pokazuje niski
+chwyt górnej głowicy jednego hantla i długie ramiona. W cw152 zamknięta
+guma biegnie pod obiema stopami i na górnych plecach u nasady karku,
+zgodnie z zatwierdzoną interpretacją katalogowego „za karkiem”.
+
+Nordic pokazuje klęk, opad z kolan i kontakt dłoni z podłożem; correction-01
+poprawiła faktyczną blokadę obu kostek pod niską poprzeczką i wysoki klęk.
+Mosty cw154/cw155 mają głowę i barki na podłodze; cw155 jeden hantel
+na biodrach. Cw156 odróżnia kontakt górnych pleców z ławką; correction-01
+poprawiła ustawienie głowy/szyi przy zachowaniu hantla i podpór.
+
+Zaakceptowane źródła: trial-01 dla cw151/cw152/cw154/cw155 oraz
+correction-01 dla cw153/cw156, w odpowiednich katalogach `/tmp/opencode`.
+Źródła i podglądy 512px odczytano przed kolejnymi żądaniami; odczytano
+również sześć finalnych WebP 512×512. Przeglądy zgodność→jakość były
+bezpośrednie, bez niezależnego review po wcześniejszym limicie subagentów.
+
+Osiem sukcesów z unikalnymi request_id: sześć prób bazowych i dwie korekty,
+bez błędów HTTP. Suma `upper_bound_no_cache`: **0,180536 USD** — szacunek,
+nie rozliczenie dostawcy. Nie doliczano ponownie `response_received`.
+Szczegóły kosztów i źródeł w specyfikacji Partii 30.
+
+Pełna weryfikacja `fit-web:batch-30-verified`: 366 testów zaliczonych,
+0 problemów analizy, kontrola wersji poprawna; formatowanie dwóch Dartów
+bez zmian. Log: `/root/.local/share/opencode/tool-output/tool_140af9415001mYSMk7BeqJFhUg`.
+Rejestr, test, pliki i tabela obejmują 222 ID, fallback cw157.
+Stan: 222 lokalne / 204 wydane / 18 niewydanych z Partii 28–30 /
+94 brakujące / 316 ćwiczeń. Produkcja pozostaje 1.10.0+23.
+
+## Domknięcie katalogu — Partie 31–46
+
+Na podstawie zgody użytkownika uzupełniono autonomicznie wszystkie pozostałe
+94 pozycje `cw157–cw250`. Stan końcowy: **316 lokalnych / 204 wydane /
+112 niewydanych / 0 brakujących / 316 ćwiczeń**. Zapisano dokładne prompty,
+źródła, korekty i ledgery; sceny sprawdzano bezpośrednio w źródle1024 i przy512px.
+Szczegóły scen, adaptacji i reuse w
+[rejestrze wykonania](superpowers/specs/2026-10-15-exercise-illustrations-completion-results.md).
+
+87 pozycji ma nowe źródła, 7 wykorzystuje zgodne wcześniejsze obrazy:
+cw206←cw119, cw211←cw209, cw217←cw208, cw219←cw212,
+cw238←cw236 i cw239/cw240←cw234. Parametry tempa, tętna, czasu lub liczby
+obrotów linki pozostają w opisach; nie dodawano fikcyjnych timerów i napisów.
+W cw215/cw216 pozostawiono jeden pełny kadr przez lokalne kadrowanie i
+rozszerzenie tła; w cw220 lokalne odbicie ostatniej frontalnej fazy pokazuje
+przeciwną podporę. Bez deformacji anatomii. Bezpośrednie kontrole nie stanowią
+niezależnego review.
+
+Odczyt115 ledgerów: 115 sukcesów z unikalnymi request_id, bez błędów HTTP
+i nierozstrzygniętych żądań. Łączny szacunek `upper_bound_no_cache`:
+**2,549335 USD**, nie rozliczenie dostawcy. Response_received nie liczono drugi raz.
+
+Weryfikacja `fit-web:illustrations-complete`: **366 testów zaliczonych**,
+analiza bez problemów, kontrola wersji poprawna. Test rejestru dodatkowo
+porównuje wszystkie ID bezpośrednio z katalogiem; wszystkie316 obrazów
+dekodowane512×512. Fallback testowany na nieznanym cw317.
+Po korekcie samego formatowania testu check dwóch Dartów:0zmian.
+Log pełnej weryfikacji:
+`/root/.local/share/opencode/tool-output/tool_141d83e80001biO0U9xvWXpFpL`.
+Produkcja pozostaje1.10.0+23; gotowy komplet lokalny oczekuje osobnego wydania.
 
 ## Obowiązujące zasady
 
