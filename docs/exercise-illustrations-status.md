@@ -1,10 +1,13 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-15, produkcyjna wersja webowa 1.10.0+23.
+Stan na 2026-10-16, produkcyjna wersja webowa 1.11.0+24.
 
-Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają komplet 316 ilustracji:
-204 wydane oraz 112 lokalnie zintegrowanych, niewydanych (`cw139–cw250`).
-Nie ma ćwiczeń bez ilustracji. Zakończono autonomiczne domknięcie cw157–cw250;
+Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają komplet 316 wydanych
+ilustracji. Nie ma ćwiczeń bez ilustracji ani lokalnych niewydanych assetów.
+Partie 28–46 (`cw139–cw250`, 112 ilustracji) wydano w `1.11.0+24`.
+Wszystkie 316 obrazów zweryfikowano publicznie; dowody:
+[wydanie 1.11.0+24](releases/2026-10-16-web-1.11.0-24.md).
+Zakończono autonomiczne domknięcie cw157–cw250;
 szczegóły: [rejestr wykonania](superpowers/specs/2026-10-15-exercise-illustrations-completion-results.md).
 
 Partie 07–27 (`cw013–cw138`) wydano wspólnie w wersji webowej `1.10.0+23`.
@@ -16,10 +19,11 @@ oraz zachowuje wszystkie 66 wcześniej wydanych ilustracji, w tym sześć z Part
 
 ## Ilustracje — rejestr i historyczny status integracji
 
-**Aktualny status cw013–cw138: wydane w 1.10.0+23.** Zachowane poniżej
-oznaczenia „lokalnie zintegrowane; niewydane” oraz opisy Partii 07–27
-dokumentują stan w chwili ukończenia poszczególnych pakietów. Wspólne wydanie
-opisane powyżej zastępuje te historyczne oznaczenia publikacji; warianty,
+**Aktualny status cw013–cw138: wydane w 1.10.0+23.**
+**Aktualny status cw139–cw250: wydane w 1.11.0+24.** Zachowane poniżej
+oznaczenia „lokalnie zintegrowane; niewydane” oraz opisy Partii 07–46
+dokumentują stan w chwili ukończenia poszczególnych pakietów. Wydania
+opisane powyżej zastępują te historyczne oznaczenia publikacji; warianty,
 liczby kadrów i historia generacji pozostają aktualne.
 
 | ID | Ćwiczenie | Kadry | Status |
