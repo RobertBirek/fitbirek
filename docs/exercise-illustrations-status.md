@@ -2,8 +2,9 @@
 
 Stan na 2026-10-16, produkcyjna wersja webowa 1.11.0+24.
 
-Katalog obejmuje 316 ćwiczeń. Rejestr i assety zawierają komplet 316 wydanych
-ilustracji. Nie ma ćwiczeń bez ilustracji ani lokalnych niewydanych assetów.
+Lokalny katalog obejmuje 363 ćwiczenia i 363 ilustracje:316 wydanych oraz
+47 nowych, lokalnych niewydanych (`cw317–cw363`). Nie ma ćwiczeń bez ilustracji.
+Źródła rozszerzenia i funkcje: [raport](catalog-expansion-2026-10-16.md).
 Partie 28–46 (`cw139–cw250`, 112 ilustracji) wydano w `1.11.0+24`.
 Wszystkie 316 obrazów zweryfikowano publicznie; dowody:
 [wydanie 1.11.0+24](releases/2026-10-16-web-1.11.0-24.md).
@@ -344,6 +345,53 @@ liczby kadrów i historia generacji pozostają aktualne.
 | cw314 | Przysiad z wyciskaniem hantli nad głowę | 3 | Wydane w 1.7.0+20. |
 | cw315 | Burpee z podciąganiem na drążku | 4 | Wydane w 1.7.0+20. |
 | cw316 | Chód farmera naprzemiennie z chodem z hantlem w jednej ręce | 3 | Wydane w 1.7.0+20. |
+| cw317 | Martwy ciąg z sandbagiem za uchwyty | 2 | Lokalnie zintegrowane; niewydane. |
+| cw318 | Przysiad z sandbagiem trzymanym z przodu | 2 | Lokalnie zintegrowane; niewydane. |
+| cw319 | Przysiad z sandbagiem objętym pionowo | 2 | Lokalnie zintegrowane; niewydane. |
+| cw320 | Przysiad z sandbagiem na jednym barku | 2 | Lokalnie zintegrowane; niewydane. |
+| cw321 | Skłon biodrowy z sandbagiem przed klatką | 2 | Lokalnie zintegrowane; niewydane. |
+| cw322 | Wiosłowanie sandbagiem w opadzie | 2 | Lokalnie zintegrowane; niewydane. |
+| cw323 | Dynamiczne podciągnięcie sandbaga do klatki | 3 | Lokalnie zintegrowane; niewydane. |
+| cw324 | Zarzut sandbaga na przedramiona | 3 | Lokalnie zintegrowane; niewydane. |
+| cw325 | Wyciskanie sandbaga nad głowę | 2 | Lokalnie zintegrowane; niewydane. |
+| cw326 | Zarzut i wyciskanie sandbaga | 3 | Lokalnie zintegrowane; niewydane. |
+| cw327 | Zakrok z przeniesieniem sandbaga przy przedniej nodze | 1 | Lokalnie zintegrowane; niewydane. |
+| cw328 | Przenoszenie sandbaga ruchem szuflowania | 2 | Lokalnie zintegrowane; niewydane. |
+| cw329 | Obwodzenie sandbaga wokół tułowia w klęku | 3 | Lokalnie zintegrowane; niewydane. |
+| cw330 | Przeciąganie sandbaga pod tułowiem w desce | 1 | Lokalnie zintegrowane; niewydane. |
+| cw331 | Most biodrowy z napięciem sandbaga nad klatką | 2 | Lokalnie zintegrowane; niewydane. |
+| cw332 | Wyciskanie sandbaga łukiem w półklęku | 3 | Lokalnie zintegrowane; niewydane. |
+| cw333 | Przetaczanie kółka w przód z kolan | 2 | Lokalnie zintegrowane; niewydane. |
+| cw334 | Przetaczanie kółka po skosie z kolan | 2 | Lokalnie zintegrowane; niewydane. |
+| cw335 | Deska z dłońmi na kółku | 1 | Lokalnie zintegrowane; niewydane. |
+| cw336 | Wojownik I | 1 | Lokalnie zintegrowane; niewydane. |
+| cw337 | Wojownik II | 1 | Lokalnie zintegrowane; niewydane. |
+| cw338 | Wojownik III | 1 | Lokalnie zintegrowane; niewydane. |
+| cw339 | Pozycja trójkąta | 1 | Lokalnie zintegrowane; niewydane. |
+| cw340 | Pozycja rozciągniętego kąta bocznego | 1 | Lokalnie zintegrowane; niewydane. |
+| cw341 | Pozycja półksiężyca w staniu | 1 | Lokalnie zintegrowane; niewydane. |
+| cw342 | Pozycja drzewa | 1 | Lokalnie zintegrowane; niewydane. |
+| cw343 | Pozycja orła w staniu | 1 | Lokalnie zintegrowane; niewydane. |
+| cw344 | Pozycja krzesła bez podparcia | 1 | Lokalnie zintegrowane; niewydane. |
+| cw345 | Pozycja wielbłąda | 1 | Lokalnie zintegrowane; niewydane. |
+| cw346 | Pozycja łuku | 1 | Lokalnie zintegrowane; niewydane. |
+| cw347 | Pozycja łodzi w siadzie | 1 | Lokalnie zintegrowane; niewydane. |
+| cw348 | Skręt mędrca w siadzie na podłodze | 1 | Lokalnie zintegrowane; niewydane. |
+| cw349 | Pozycja bramy w klęku | 1 | Lokalnie zintegrowane; niewydane. |
+| cw350 | Skłon w przód w szerokim rozkroku | 1 | Lokalnie zintegrowane; niewydane. |
+| cw351 | Pozycja szczęśliwego dziecka | 1 | Lokalnie zintegrowane; niewydane. |
+| cw352 | Przemieszczanie bokiem w przysiadzie na rękach | 3 | Lokalnie zintegrowane; niewydane. |
+| cw353 | Przemieszczanie żabki z podparciem rąk | 3 | Lokalnie zintegrowane; niewydane. |
+| cw354 | Przysiad krewetki z chwytem tylnej stopy | 2 | Lokalnie zintegrowane; niewydane. |
+| cw355 | Przerzut bokiem na obie ręce | 1 | Lokalnie zintegrowane; niewydane. |
+| cw356 | Most trójpunktowy z sięganiem | 1 | Lokalnie zintegrowane; niewydane. |
+| cw357 | Podpór żaby na ugiętych ramionach | 1 | Lokalnie zintegrowane; niewydane. |
+| cw358 | Unoszenie prostej nogi w siadzie z kompresją | 2 | Lokalnie zintegrowane; niewydane. |
+| cw359 | Utrzymanie podporu tyłem z ugiętymi nogami | 1 | Lokalnie zintegrowane; niewydane. |
+| cw360 | Tai chi — zbieranie wiśni w siadzie | 2 | Lokalnie zintegrowane; niewydane. |
+| cw361 | Tai chi — wiosłowanie łodzią w siadzie | 2 | Lokalnie zintegrowane; niewydane. |
+| cw362 | Tai chi — żółw pływający w oceanie w siadzie | 3 | Lokalnie zintegrowane; niewydane. |
+| cw363 | Tai chi — otwieranie drzwi podeszwą w siadzie | 2 | Lokalnie zintegrowane; niewydane. |
 
 `assets/exercises/`, `illustratedExerciseIds` i testy ilustracji są wspólnym
 rejestrem tych trzech zasobów. Każdy nowy plik WebP wymaga wpisu w rejestrze,
@@ -1278,6 +1326,26 @@ Po korekcie samego formatowania testu check dwóch Dartów:0zmian.
 Log pełnej weryfikacji:
 `/root/.local/share/opencode/tool-output/tool_141d83e80001biO0U9xvWXpFpL`.
 Produkcja pozostaje1.10.0+23; gotowy komplet lokalny oczekuje osobnego wydania.
+
+## Rozszerzenie katalogu — cw317–cw363
+
+47 nowych źródeł:16sandbag,3kółko,16joga,8kalistenika,4tai chi siedzące.
+Nie zmieniano dotychczasowych316 ćwiczeń i ich ilustracji. Wszystkie nowe
+obrazy512×512 odczytano jako źródło1024 i podgląd512 przed następnym żądaniem;
+finalneWebP quality90/strip są identyczne z odczytanymi podglądami.
+Przegląd obrazów bezpośredni; niezależny review dotyczył kodu, nie grafiki.
+
+Źródła w /tmp/opencode/cwNNN-trial-01 poza:
+cw320/cw349/cw355/cw357/cw361=correction-01; cw327=new-01.
+Korekty: pojedynczy bark320; worek poza przednim kolanem327 (dwie korekty
+odrzucone, nowe pełne ujęcie po ocenie kompozycji); klęk zamiast siadu349;
+pełna sylwetka w jednym kadrze355; zgięte łokcie357; pełna dłoń361.
+Prompty dokładne w /tmp/opencode/cwNNN-PRÓBA-prompt.txt, PNG i ledger.jsonl
+w odpowiadających katalogach.55 sukcesów/unikalnychrequest_id:47 prób
+bazowych,7korekt,1nowa kompozycja, bez błędów lub niepewności.
+Suma upper_bound_no_cache: **1,219730 USD**, szacunek nie rozliczenie;
+liczono tylko success, bez ponownego liczenia response_received.
+Produkcja pozostaje1.11.0+24 z316 ilustracjami, lokalnie363/316/47/0/363.
 
 ## Obowiązujące zasady
 

@@ -151,6 +151,7 @@ class WorkoutRepository {
     int? reps,
     int? seconds,
     int? rpe,
+    String? side,
   }) async {
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
@@ -159,6 +160,7 @@ class WorkoutRepository {
       if (session == null || session.deletedAtUtc != null) {
         throw WorkoutSessionUnavailable(sessionId);
       }
+      validateSet(reps: reps, seconds: seconds, weightKg: weightKg, side: side);
       final id = await _db.workoutDao.addSet(
         SetsLogCompanion.insert(
           sesjaId: sessionId,
@@ -168,6 +170,7 @@ class WorkoutRepository {
           ciezarKg: Value(weightKg),
           powtorzenia: Value(reps),
           czasSekund: Value(seconds),
+          side: Value(side),
           rpe: Value(rpe),
           timestamp: Value(now),
           syncId: Value(syncId),
@@ -186,6 +189,7 @@ class WorkoutRepository {
           'ciezarKg': weightKg,
           'powtorzenia': reps,
           'czasSekund': seconds,
+          if (side != null) 'side': side,
           'rpe': rpe,
           'timestamp': now.toIso8601String(),
         },
@@ -217,6 +221,7 @@ class WorkoutRepository {
       if (existing != null) {
         return IdempotentSetWrite(existing, alreadyExists: true);
       }
+      validateSet(reps: reps, weightKg: weightKg);
       final session = await _db.workoutDao.getSession(sessionId);
       _requireGuard(guard);
       if (session == null ||
@@ -306,8 +311,8 @@ class WorkoutRepository {
 
   /// Zwraca opis ostatniej wykonanej serii dla danego ćwiczenia
   /// w formacie do wyświetlenia jako "auto-progress": "Ostatnio: 15 kg × 8 (RPE 8)"
-  Future<SetLogData?> getLastSet(String exerciseId) {
-    return _db.workoutDao.getLastSetForExercise(exerciseId);
+  Future<SetLogData?> getLastSet(String exerciseId, {String? side}) {
+    return _db.workoutDao.getLastSetForExercise(exerciseId, side: side);
   }
 
   Stream<List<WorkoutSessionData>> watchAllSessions() {
@@ -355,11 +360,29 @@ class WorkoutRepository {
               ciezarKg: s.ciezarKg,
               powtorzenia: s.powtorzenia,
               czasSekund: s.czasSekund,
+              side: s.side,
               rpe: s.rpe,
               timestamp: s.timestamp,
             ),
           )
           .toList(),
     );
+  }
+
+  static void validateSet({
+    int? reps,
+    int? seconds,
+    double? weightKg,
+    String? side,
+  }) {
+    if ((reps == null && seconds == null) ||
+        (reps != null && reps <= 0) ||
+        (seconds != null && seconds <= 0) ||
+        (weightKg != null && (!weightKg.isFinite || weightKg < 0)) ||
+        (side != null && !const {'left', 'right', 'both'}.contains(side))) {
+      throw ArgumentError(
+        'Seria wymaga dodatnich powtórzeń lub czasu i poprawnej strony.',
+      );
+    }
   }
 }

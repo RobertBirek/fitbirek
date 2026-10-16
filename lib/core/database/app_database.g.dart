@@ -2385,6 +2385,17 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _sideMeta = const VerificationMeta('side');
+  @override
+  late final GeneratedColumn<String> side = GeneratedColumn<String>(
+    'side',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NULL CHECK (side IS NULL OR side IN (\'left\', \'right\', \'both\'))',
+  );
   static const VerificationMeta _rpeMeta = const VerificationMeta('rpe');
   @override
   late final GeneratedColumn<int> rpe = GeneratedColumn<int>(
@@ -2420,6 +2431,7 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
     ciezarKg,
     powtorzenia,
     czasSekund,
+    side,
     rpe,
     timestamp,
   ];
@@ -2530,6 +2542,12 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
         czasSekund.isAcceptableOrUnknown(data['czas_sekund']!, _czasSekundMeta),
       );
     }
+    if (data.containsKey('side')) {
+      context.handle(
+        _sideMeta,
+        side.isAcceptableOrUnknown(data['side']!, _sideMeta),
+      );
+    }
     if (data.containsKey('rpe')) {
       context.handle(
         _rpeMeta,
@@ -2599,6 +2617,10 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
         DriftSqlType.int,
         data['${effectivePrefix}czas_sekund'],
       ),
+      side: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}side'],
+      ),
       rpe: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}rpe'],
@@ -2629,6 +2651,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
   final double? ciezarKg;
   final int? powtorzenia;
   final int? czasSekund;
+  final String? side;
   final int? rpe;
   final DateTime timestamp;
   const SetLogData({
@@ -2644,6 +2667,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     this.ciezarKg,
     this.powtorzenia,
     this.czasSekund,
+    this.side,
     this.rpe,
     required this.timestamp,
   });
@@ -2669,6 +2693,9 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     }
     if (!nullToAbsent || czasSekund != null) {
       map['czas_sekund'] = Variable<int>(czasSekund);
+    }
+    if (!nullToAbsent || side != null) {
+      map['side'] = Variable<String>(side);
     }
     if (!nullToAbsent || rpe != null) {
       map['rpe'] = Variable<int>(rpe);
@@ -2699,6 +2726,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
       czasSekund: czasSekund == null && nullToAbsent
           ? const Value.absent()
           : Value(czasSekund),
+      side: side == null && nullToAbsent ? const Value.absent() : Value(side),
       rpe: rpe == null && nullToAbsent ? const Value.absent() : Value(rpe),
       timestamp: Value(timestamp),
     );
@@ -2722,6 +2750,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
       ciezarKg: serializer.fromJson<double?>(json['ciezarKg']),
       powtorzenia: serializer.fromJson<int?>(json['powtorzenia']),
       czasSekund: serializer.fromJson<int?>(json['czasSekund']),
+      side: serializer.fromJson<String?>(json['side']),
       rpe: serializer.fromJson<int?>(json['rpe']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
     );
@@ -2742,6 +2771,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
       'ciezarKg': serializer.toJson<double?>(ciezarKg),
       'powtorzenia': serializer.toJson<int?>(powtorzenia),
       'czasSekund': serializer.toJson<int?>(czasSekund),
+      'side': serializer.toJson<String?>(side),
       'rpe': serializer.toJson<int?>(rpe),
       'timestamp': serializer.toJson<DateTime>(timestamp),
     };
@@ -2760,6 +2790,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     Value<double?> ciezarKg = const Value.absent(),
     Value<int?> powtorzenia = const Value.absent(),
     Value<int?> czasSekund = const Value.absent(),
+    Value<String?> side = const Value.absent(),
     Value<int?> rpe = const Value.absent(),
     DateTime? timestamp,
   }) => SetLogData(
@@ -2775,6 +2806,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     ciezarKg: ciezarKg.present ? ciezarKg.value : this.ciezarKg,
     powtorzenia: powtorzenia.present ? powtorzenia.value : this.powtorzenia,
     czasSekund: czasSekund.present ? czasSekund.value : this.czasSekund,
+    side: side.present ? side.value : this.side,
     rpe: rpe.present ? rpe.value : this.rpe,
     timestamp: timestamp ?? this.timestamp,
   );
@@ -2808,6 +2840,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
       czasSekund: data.czasSekund.present
           ? data.czasSekund.value
           : this.czasSekund,
+      side: data.side.present ? data.side.value : this.side,
       rpe: data.rpe.present ? data.rpe.value : this.rpe,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
     );
@@ -2828,6 +2861,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
           ..write('ciezarKg: $ciezarKg, ')
           ..write('powtorzenia: $powtorzenia, ')
           ..write('czasSekund: $czasSekund, ')
+          ..write('side: $side, ')
           ..write('rpe: $rpe, ')
           ..write('timestamp: $timestamp')
           ..write(')'))
@@ -2848,6 +2882,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     ciezarKg,
     powtorzenia,
     czasSekund,
+    side,
     rpe,
     timestamp,
   );
@@ -2867,6 +2902,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
           other.ciezarKg == this.ciezarKg &&
           other.powtorzenia == this.powtorzenia &&
           other.czasSekund == this.czasSekund &&
+          other.side == this.side &&
           other.rpe == this.rpe &&
           other.timestamp == this.timestamp);
 }
@@ -2884,6 +2920,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
   final Value<double?> ciezarKg;
   final Value<int?> powtorzenia;
   final Value<int?> czasSekund;
+  final Value<String?> side;
   final Value<int?> rpe;
   final Value<DateTime> timestamp;
   const SetsLogCompanion({
@@ -2899,6 +2936,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     this.ciezarKg = const Value.absent(),
     this.powtorzenia = const Value.absent(),
     this.czasSekund = const Value.absent(),
+    this.side = const Value.absent(),
     this.rpe = const Value.absent(),
     this.timestamp = const Value.absent(),
   });
@@ -2915,6 +2953,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     this.ciezarKg = const Value.absent(),
     this.powtorzenia = const Value.absent(),
     this.czasSekund = const Value.absent(),
+    this.side = const Value.absent(),
     this.rpe = const Value.absent(),
     this.timestamp = const Value.absent(),
   }) : sesjaId = Value(sesjaId),
@@ -2934,6 +2973,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     Expression<double>? ciezarKg,
     Expression<int>? powtorzenia,
     Expression<int>? czasSekund,
+    Expression<String>? side,
     Expression<int>? rpe,
     Expression<DateTime>? timestamp,
   }) {
@@ -2950,6 +2990,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
       if (ciezarKg != null) 'ciezar_kg': ciezarKg,
       if (powtorzenia != null) 'powtorzenia': powtorzenia,
       if (czasSekund != null) 'czas_sekund': czasSekund,
+      if (side != null) 'side': side,
       if (rpe != null) 'rpe': rpe,
       if (timestamp != null) 'timestamp': timestamp,
     });
@@ -2968,6 +3009,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     Value<double?>? ciezarKg,
     Value<int?>? powtorzenia,
     Value<int?>? czasSekund,
+    Value<String?>? side,
     Value<int?>? rpe,
     Value<DateTime>? timestamp,
   }) {
@@ -2984,6 +3026,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
       ciezarKg: ciezarKg ?? this.ciezarKg,
       powtorzenia: powtorzenia ?? this.powtorzenia,
       czasSekund: czasSekund ?? this.czasSekund,
+      side: side ?? this.side,
       rpe: rpe ?? this.rpe,
       timestamp: timestamp ?? this.timestamp,
     );
@@ -3028,6 +3071,9 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     if (czasSekund.present) {
       map['czas_sekund'] = Variable<int>(czasSekund.value);
     }
+    if (side.present) {
+      map['side'] = Variable<String>(side.value);
+    }
     if (rpe.present) {
       map['rpe'] = Variable<int>(rpe.value);
     }
@@ -3052,6 +3098,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
           ..write('ciezarKg: $ciezarKg, ')
           ..write('powtorzenia: $powtorzenia, ')
           ..write('czasSekund: $czasSekund, ')
+          ..write('side: $side, ')
           ..write('rpe: $rpe, ')
           ..write('timestamp: $timestamp')
           ..write(')'))
@@ -10520,6 +10567,7 @@ typedef $$SetsLogTableCreateCompanionBuilder =
       Value<double?> ciezarKg,
       Value<int?> powtorzenia,
       Value<int?> czasSekund,
+      Value<String?> side,
       Value<int?> rpe,
       Value<DateTime> timestamp,
     });
@@ -10537,6 +10585,7 @@ typedef $$SetsLogTableUpdateCompanionBuilder =
       Value<double?> ciezarKg,
       Value<int?> powtorzenia,
       Value<int?> czasSekund,
+      Value<String?> side,
       Value<int?> rpe,
       Value<DateTime> timestamp,
     });
@@ -10626,6 +10675,11 @@ class $$SetsLogTableFilterComposer
 
   ColumnFilters<int> get czasSekund => $composableBuilder(
     column: $table.czasSekund,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get side => $composableBuilder(
+    column: $table.side,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10727,6 +10781,11 @@ class $$SetsLogTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get side => $composableBuilder(
+    column: $table.side,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get rpe => $composableBuilder(
     column: $table.rpe,
     builder: (column) => ColumnOrderings(column),
@@ -10819,6 +10878,9 @@ class $$SetsLogTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get side =>
+      $composableBuilder(column: $table.side, builder: (column) => column);
+
   GeneratedColumn<int> get rpe =>
       $composableBuilder(column: $table.rpe, builder: (column) => column);
 
@@ -10889,6 +10951,7 @@ class $$SetsLogTableTableManager
                 Value<double?> ciezarKg = const Value.absent(),
                 Value<int?> powtorzenia = const Value.absent(),
                 Value<int?> czasSekund = const Value.absent(),
+                Value<String?> side = const Value.absent(),
                 Value<int?> rpe = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
               }) => SetsLogCompanion(
@@ -10904,6 +10967,7 @@ class $$SetsLogTableTableManager
                 ciezarKg: ciezarKg,
                 powtorzenia: powtorzenia,
                 czasSekund: czasSekund,
+                side: side,
                 rpe: rpe,
                 timestamp: timestamp,
               ),
@@ -10921,6 +10985,7 @@ class $$SetsLogTableTableManager
                 Value<double?> ciezarKg = const Value.absent(),
                 Value<int?> powtorzenia = const Value.absent(),
                 Value<int?> czasSekund = const Value.absent(),
+                Value<String?> side = const Value.absent(),
                 Value<int?> rpe = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
               }) => SetsLogCompanion.insert(
@@ -10936,6 +11001,7 @@ class $$SetsLogTableTableManager
                 ciezarKg: ciezarKg,
                 powtorzenia: powtorzenia,
                 czasSekund: czasSekund,
+                side: side,
                 rpe: rpe,
                 timestamp: timestamp,
               ),

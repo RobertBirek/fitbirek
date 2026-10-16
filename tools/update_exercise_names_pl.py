@@ -58,12 +58,12 @@ def main():
     args = parser.parse_args()
     names = json.loads(MAPPING_PATH.read_text(encoding="utf-8"),
                        object_pairs_hook=unique_pairs)
-    expected_ids = {f"cw{i:03d}" for i in range(1, 317)}
-    require(set(names) == expected_ids, "Mapping must contain exactly cw001–cw316")
     require(all(isinstance(n, str) and n.strip() == n and n and
                 not n.startswith("=") for n in names.values()), "Invalid target name")
     baseline = json.loads(converter.OUTPUT_PATH.read_text(encoding="utf-8"))
     before = converter.convert()
+    expected_ids = {e['id'] for e in before}
+    require(set(names) == expected_ids, "Mapping IDs must exactly match workbook IDs")
     require(before == baseline, "Baseline export differs from XLSX; refusing to write")
     require({e["id"] for e in before} == expected_ids, "Unexpected source IDs")
     expected = [dict(entry, nazwaPl=names[entry["id"]]) for entry in before]

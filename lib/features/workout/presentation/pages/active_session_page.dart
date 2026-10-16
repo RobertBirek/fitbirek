@@ -8,6 +8,8 @@ import '../../../../core/widgets/rpe_slider.dart';
 import '../../../../core/widgets/rest_timer_screen.dart';
 import '../../../../core/widgets/isometric_stopwatch.dart';
 import '../../../../core/models/exercise.dart';
+import '../../../exercises/providers/exercises_providers.dart';
+import '../../../exercises/domain/exercise_catalog_metadata.dart';
 import '../../providers/workout_providers.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
@@ -15,7 +17,7 @@ import '../../providers/workout_providers.dart';
 ///
 /// Wartość 'Izometria' (nie 'Izometryczne') zgodna z realną bazą 316
 /// ćwiczeń (Excel BAZA_GLOWNA, kolumna Typ) od [0.8.0].
-const _typyIzometryczne = {'Izometria'};
+const _typyIzometryczne = {'Izometria', 'time'};
 
 /// Aktywna sesja treningowa: wybór ćwiczeń, logowanie serii, timer przerw.
 class ActiveSessionPage extends ConsumerStatefulWidget {
@@ -79,7 +81,10 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
                       itemCount: active.selectedExercises.length,
                       itemBuilder: (context, i) {
                         final ex = active.selectedExercises[i];
-                        return _ExerciseLogCard(exercise: ex);
+                        return _ExerciseLogCard(
+                          key: ValueKey(ex.id),
+                          exercise: ex,
+                        );
                       },
                     ),
             ),
@@ -91,7 +96,7 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
 }
 
 class _ExerciseLogCard extends ConsumerStatefulWidget {
-  const _ExerciseLogCard({required this.exercise});
+  const _ExerciseLogCard({super.key, required this.exercise});
   final Exercise exercise;
 
   @override
@@ -101,14 +106,30 @@ class _ExerciseLogCard extends ConsumerStatefulWidget {
 class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   final _weightController = TextEditingController();
   final _repsController = TextEditingController();
+  final _secondsController = TextEditingController();
   int _rpe = 7;
+  String _selectedSide = 'both';
 
-  bool get _isIsometric => _typyIzometryczne.contains(widget.exercise.typ);
+  ExerciseCatalogEntry? get _entry => ref
+      .read(exerciseCatalogMetadataProvider)
+      .asData
+      ?.value
+      .entryFor(widget.exercise.id);
+  String get _tracking =>
+      _entry?.tracking ??
+      (_typyIzometryczne.contains(widget.exercise.typ) ? 'time' : 'reps');
+  bool get _isIsometric => _tracking != 'reps';
+  String? get _side => _entry?.unilateral == true ? _selectedSide : null;
+  bool get _usesWeight =>
+      !_isIsometric &&
+      (!widget.exercise.sprzet.contains('Masa własna') ||
+          widget.exercise.sprzet.any(const {'Hantle', 'Sandbag'}.contains));
 
   @override
   void dispose() {
     _weightController.dispose();
     _repsController.dispose();
+    _secondsController.dispose();
     super.dispose();
   }
 
@@ -132,6 +153,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   }
 
   Future<void> _startIsometricStopwatch() async {
+    final side = _side;
     final seconds = await showIsometricStopwatch(
       context,
       label: widget.exercise.nazwaPl,
@@ -139,13 +161,28 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     if (seconds == null || seconds <= 0) return;
     final isPr = await ref
         .read(activeWorkoutProvider.notifier)
-        .logSet(exercise: widget.exercise, seconds: seconds, rpe: _rpe);
+        .logSet(
+          exercise: widget.exercise,
+          seconds: seconds,
+          rpe: _rpe,
+          side: side,
+        );
     await _afterLogSet(isPr);
   }
 
   Future<void> _logStrengthSet() async {
-    final weight = double.tryParse(_weightController.text);
+    final weight = _usesWeight
+        ? double.tryParse(_weightController.text.replaceAll(',', '.'))
+        : null;
     final reps = int.tryParse(_repsController.text);
+    if (reps == null ||
+        reps <= 0 ||
+        (_usesWeight &&
+            _weightController.text.isNotEmpty &&
+            (weight == null || !weight.isFinite || weight < 0))) {
+      _invalidSet();
+      return;
+    }
     final isPr = await ref
         .read(activeWorkoutProvider.notifier)
         .logSet(
@@ -153,16 +190,44 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
           weightKg: weight,
           reps: reps,
           rpe: _rpe,
+          side: _side,
+        );
+    await _afterLogSet(isPr);
+  }
+
+  void _invalidSet() => ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        'Podaj dodatnią liczbę powtórzeń lub sekund; ciężar musi być nieujemny.',
+      ),
+    ),
+  );
+
+  Future<void> _logTimedSet() async {
+    final seconds = int.tryParse(_secondsController.text);
+    if (seconds == null || seconds <= 0) {
+      _invalidSet();
+      return;
+    }
+    final isPr = await ref
+        .read(activeWorkoutProvider.notifier)
+        .logSet(
+          exercise: widget.exercise,
+          seconds: seconds,
+          rpe: _rpe,
+          side: _side,
         );
     await _afterLogSet(isPr);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Loading/error/missing metadata intentionally falls back to the legacy type.
+    ref.watch(exerciseCatalogMetadataProvider);
     final loggedForThis = ref
         .watch(activeWorkoutProvider)
         .loggedSets
-        .where((s) => s.exerciseId == widget.exercise.id)
+        .where((s) => s.exerciseId == widget.exercise.id && s.side == _side)
         .toList();
 
     return Card(
@@ -177,10 +242,26 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 4),
+            if (_entry?.unilateral == true) ...[
+              SegmentedButton<String>(
+                segments: const [
+                  ButtonSegment(value: 'left', label: Text('Lewa')),
+                  ButtonSegment(value: 'right', label: Text('Prawa')),
+                  ButtonSegment(value: 'both', label: Text('Obie')),
+                ],
+                selected: {_selectedSide},
+                onSelectionChanged: (value) =>
+                    setState(() => _selectedSide = value.single),
+              ),
+              const Text(
+                'Rekordy osobiste nie są obliczane dla serii z wybraną stroną.',
+              ),
+            ],
             FutureBuilder(
+              key: ValueKey('${widget.exercise.id}:$_side'),
               future: ref
                   .read(workoutRepositoryProvider)
-                  .getLastSet(widget.exercise.id),
+                  .getLastSet(widget.exercise.id, side: _side),
               builder: (context, snapshot) {
                 final last = snapshot.data;
                 if (last == null) {
@@ -196,13 +277,29 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                   );
                 }
                 return Text(
-                  'Ostatnio: ${last.ciezarKg ?? '-'} kg × ${last.powtorzenia ?? '-'} (RPE ${last.rpe ?? '-'})',
+                  'Ostatnio: ${last.ciezarKg == null ? '' : '${last.ciezarKg} kg × '}${last.powtorzenia ?? '-'} powt. (RPE ${last.rpe ?? '-'})',
                   style: const TextStyle(color: FitBirekColors.accent),
                 );
               },
             ),
             const SizedBox(height: 12),
             if (_isIsometric) ...[
+              TextField(
+                controller: _secondsController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: _tracking == 'rounds'
+                      ? 'Czas pracy rundy (s)'
+                      : 'Czas (s)',
+                ),
+              ),
+              PrimaryButton(
+                label: _tracking == 'rounds'
+                    ? 'Zapisz rundę (${loggedForThis.length})'
+                    : 'Zapisz czas (${loggedForThis.length})',
+                icon: Icons.check,
+                onPressed: _logTimedSet,
+              ),
               RpeSlider(
                 value: _rpe,
                 onChanged: (v) => setState(() => _rpe = v),
@@ -216,16 +313,17 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             ] else ...[
               Row(
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _weightController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Ciężar (kg)',
+                  if (_usesWeight)
+                    Expanded(
+                      child: TextField(
+                        controller: _weightController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Ciężar (kg)',
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
+                  if (_usesWeight) const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
                       controller: _repsController,

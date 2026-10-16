@@ -22,6 +22,7 @@ class ActiveSetEntry {
     this.weightKg,
     this.reps,
     this.seconds,
+    this.side,
     this.rpe,
     this.isNewPr = false,
   });
@@ -32,6 +33,7 @@ class ActiveSetEntry {
   final double? weightKg;
   final int? reps;
   final int? seconds;
+  final String? side;
   final int? rpe;
   final bool isNewPr;
 }
@@ -127,6 +129,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     int? reps,
     int? seconds,
     int? rpe,
+    String? side,
   }) async {
     if (state.sessionId == null) return false;
     final sessionId = state.sessionId!;
@@ -147,10 +150,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           weightKg: weightKg,
           reps: reps,
           seconds: seconds,
+          side: side,
           rpe: rpe,
         );
 
-        if (weightKg != null && reps != null && weightKg > 0 && reps > 0) {
+        // PR storage has no side dimension: never compare left/right/both
+        // results with each other or with legacy unclassified sets.
+        if (side == null &&
+            weightKg != null &&
+            reps != null &&
+            weightKg > 0 &&
+            reps > 0) {
           final prsRepo = _ref.read(prsRepositoryProvider);
           final best = await prsRepo.getBestForExercise(exercise.id);
           isNewPr = PrDetector.isNewRecord(
@@ -184,6 +194,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           weightKg: weightKg,
           reps: reps,
           seconds: seconds,
+          side: side,
           rpe: rpe,
           isNewPr: isNewPr,
         ),
@@ -364,6 +375,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                   weightKg: s.ciezarKg,
                   reps: s.powtorzenia,
                   seconds: s.czasSekund,
+                  side: s.side,
                   rpe: s.rpe,
                 ),
               )

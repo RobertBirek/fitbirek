@@ -326,6 +326,53 @@ void main() {
     'cw314',
     'cw315',
     'cw316',
+    'cw317',
+    'cw318',
+    'cw319',
+    'cw320',
+    'cw321',
+    'cw322',
+    'cw323',
+    'cw324',
+    'cw325',
+    'cw326',
+    'cw327',
+    'cw328',
+    'cw329',
+    'cw330',
+    'cw331',
+    'cw332',
+    'cw333',
+    'cw334',
+    'cw335',
+    'cw336',
+    'cw337',
+    'cw338',
+    'cw339',
+    'cw340',
+    'cw341',
+    'cw342',
+    'cw343',
+    'cw344',
+    'cw345',
+    'cw346',
+    'cw347',
+    'cw348',
+    'cw349',
+    'cw350',
+    'cw351',
+    'cw352',
+    'cw353',
+    'cw354',
+    'cw355',
+    'cw356',
+    'cw357',
+    'cw358',
+    'cw359',
+    'cw360',
+    'cw361',
+    'cw362',
+    'cw363',
   };
 
   test('registry contains exactly the illustration assets in the catalog', () {
@@ -376,7 +423,7 @@ void main() {
   });
 
   test('returns no illustration for an unknown exercise', () {
-    expect(exerciseIllustrationAsset('cw317'), isNull);
+    expect(exerciseIllustrationAsset('cw364'), isNull);
   });
 
   test('maps cw265 to its illustration asset', () {

@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'workout_session.freezed.dart';
@@ -15,6 +17,7 @@ class SetLog with _$SetLog {
     double? ciezarKg,
     int? powtorzenia,
     int? czasSekund, // dla planku, wall sit itd.
+    @JsonKey(includeIfNull: false) String? side,
     int? rpe,
     required DateTime timestamp,
   }) = _SetLog;

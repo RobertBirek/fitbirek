@@ -13,7 +13,8 @@ Zastępuje syntetyczną bazę wygenerowaną przez scripts/generate_exercises.py.
 WEJŚCIE:  tools/source_data/baza_cwiczen_316.xlsx, zakładka BAZA_GLOWNA
           (jedyna istotna z 12 zakładek - pozostałe to podziały tematyczne
           i README, nieużywane przy imporcie)
-WYJŚCIE:  assets/data/exercises.json (316 pozycji, id w formacie cwNNN)
+WYJŚCIE:  assets/data/exercises.json (co najmniej 316 pozycji, id cwNNN)
+           Rozszerzenia dopisywane od cw317; chroniony cały prefiks cw001–cw316.
 
 Kluczowe decyzje projektowe (patrz CHANGELOG.md [0.8.0] po uzasadnienie):
 
@@ -61,19 +62,22 @@ Użycie:
 from __future__ import annotations
 
 import json
+import hashlib
 import sys
 from pathlib import Path
 
 try:
     import openpyxl
 except ImportError:
-    print("BŁĄD: brak biblioteki openpyxl. Zainstaluj: pip install openpyxl")
+    print("BŁĄD: brak openpyxl. Użyj izolowanego venv i tools/requirements-catalog.lock")
     sys.exit(1)
 
 ROOT = Path(__file__).resolve().parent.parent
 XLSX_PATH = ROOT / "tools" / "source_data" / "baza_cwiczen_316.xlsx"
 OUTPUT_PATH = ROOT / "assets" / "data" / "exercises.json"
 SHEET_NAME = "BAZA_GLOWNA"
+LEGACY_COUNT = 316  # minimum protected prefix, not the current catalog size
+LEGACY_SHA256 = "cdd6d425b3272d931aaecca0b9df91c262908ef91819668ef36cd6760194d408"
 
 EXPECTED_HEADER = [
     "ID",
@@ -116,6 +120,8 @@ VALID_SPRZET = {
     "Skakanka",
     "Krzesło",
     "Ręcznik",
+    "Sandbag",
+    "Kółko do brzucha",
 }
 
 # Rozszerzony enum typów - 1:1 z wartościami z Excela (musi być zgodny z
@@ -179,7 +185,7 @@ def convert() -> list[dict]:
     if not XLSX_PATH.exists():
         raise FileNotFoundError(f"Nie znaleziono pliku źródłowego: {XLSX_PATH}")
 
-    wb = openpyxl.load_workbook(XLSX_PATH, data_only=True)
+    wb = openpyxl.load_workbook(XLSX_PATH, data_only=False)
     if SHEET_NAME not in wb.sheetnames:
         raise ValueError(f"Zakładka {SHEET_NAME!r} nie istnieje. Dostępne: {wb.sheetnames}")
     ws = wb[SHEET_NAME]
@@ -193,19 +199,23 @@ def convert() -> list[dict]:
     idx = {h: i for i, h in enumerate(header)}
 
     rows = list(ws.iter_rows(min_row=2, values_only=True))
+    wb.close()
     # Odfiltruj ewentualne całkowicie puste wiersze na końcu zakresu.
-    rows = [r for r in rows if r[idx["ID"]] is not None]
+    rows = [r for r in rows if any(v is not None for v in r)]
 
     result: list[dict] = []
     seen_ids: set[int] = set()
 
     for r in rows:
         excel_id = r[idx["ID"]]
-        if not isinstance(excel_id, int):
+        if type(excel_id) is not int or not 1 <= excel_id <= 999:
             raise ValueError(f"ID musi być liczbą całkowitą, otrzymano: {excel_id!r}")
         if excel_id in seen_ids:
             raise ValueError(f"Zduplikowane ID w Excelu: {excel_id}")
         seen_ids.add(excel_id)
+        for name, value in zip(header[1:], r[1:]):
+            if not isinstance(value, str) or not value.strip() or value.startswith('='):
+                raise ValueError(f"Puste lub niepoprawne pole {name} (ID={excel_id})")
 
         typ = r[idx["Typ"]]
         poziom = r[idx["Poziom"]]
@@ -238,8 +248,10 @@ def convert() -> list[dict]:
     result.sort(key=lambda e: e["id"])
 
     # --- Walidacje końcowe całego zbioru ---
-    if len(result) != 316:
-        raise ValueError(f"Oczekiwano 316 pozycji, otrzymano {len(result)}")
+    if not set(range(1, LEGACY_COUNT + 1)) <= seen_ids:
+        raise ValueError("Brak chronionego ID cw001–cw316")
+    if seen_ids != set(range(1, max(seen_ids) + 1)):
+        raise ValueError("ID muszą być ciągłe; nowe ID dopisuj na końcu")
 
     ids = [e["id"] for e in result]
     if len(set(ids)) != len(ids):
@@ -249,6 +261,10 @@ def convert() -> list[dict]:
     for eid in ids:
         if not re.match(r"^cw\d{3}$", eid):
             raise ValueError(f"Nieprawidłowy format id: {eid}")
+
+    legacy = json.dumps(result[:LEGACY_COUNT], ensure_ascii=False, sort_keys=True).encode()
+    if hashlib.sha256(legacy).hexdigest() != LEGACY_SHA256:
+        raise ValueError("Chronione rekordy cw001–cw316 zostały zmienione")
 
     return result
 

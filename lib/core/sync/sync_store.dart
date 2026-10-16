@@ -281,6 +281,9 @@ class SyncStore {
           }
         }
         if (type == SyncEntityType.workoutSet) {
+          // Optional wire field: legacy sets stay unclassified. This only
+          // constructs new operations; never rewrites attempted payloads.
+          if (json['side'] == null) json.remove('side');
           final session = await db.workoutDao.getSession(
             json.remove('sesjaId') as int,
           );

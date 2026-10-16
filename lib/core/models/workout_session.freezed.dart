@@ -30,6 +30,8 @@ mixin _$SetLog {
   int? get powtorzenia => throw _privateConstructorUsedError;
   int? get czasSekund =>
       throw _privateConstructorUsedError; // dla planku, wall sit itd.
+  @JsonKey(includeIfNull: false)
+  String? get side => throw _privateConstructorUsedError;
   int? get rpe => throw _privateConstructorUsedError;
   DateTime get timestamp => throw _privateConstructorUsedError;
 
@@ -56,6 +58,7 @@ abstract class $SetLogCopyWith<$Res> {
     double? ciezarKg,
     int? powtorzenia,
     int? czasSekund,
+    @JsonKey(includeIfNull: false) String? side,
     int? rpe,
     DateTime timestamp,
   });
@@ -84,6 +87,7 @@ class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
     Object? ciezarKg = freezed,
     Object? powtorzenia = freezed,
     Object? czasSekund = freezed,
+    Object? side = freezed,
     Object? rpe = freezed,
     Object? timestamp = null,
   }) {
@@ -121,6 +125,10 @@ class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
                 ? _value.czasSekund
                 : czasSekund // ignore: cast_nullable_to_non_nullable
                       as int?,
+            side: freezed == side
+                ? _value.side
+                : side // ignore: cast_nullable_to_non_nullable
+                      as String?,
             rpe: freezed == rpe
                 ? _value.rpe
                 : rpe // ignore: cast_nullable_to_non_nullable
@@ -152,6 +160,7 @@ abstract class _$$SetLogImplCopyWith<$Res> implements $SetLogCopyWith<$Res> {
     double? ciezarKg,
     int? powtorzenia,
     int? czasSekund,
+    @JsonKey(includeIfNull: false) String? side,
     int? rpe,
     DateTime timestamp,
   });
@@ -179,6 +188,7 @@ class __$$SetLogImplCopyWithImpl<$Res>
     Object? ciezarKg = freezed,
     Object? powtorzenia = freezed,
     Object? czasSekund = freezed,
+    Object? side = freezed,
     Object? rpe = freezed,
     Object? timestamp = null,
   }) {
@@ -216,6 +226,10 @@ class __$$SetLogImplCopyWithImpl<$Res>
             ? _value.czasSekund
             : czasSekund // ignore: cast_nullable_to_non_nullable
                   as int?,
+        side: freezed == side
+            ? _value.side
+            : side // ignore: cast_nullable_to_non_nullable
+                  as String?,
         rpe: freezed == rpe
             ? _value.rpe
             : rpe // ignore: cast_nullable_to_non_nullable
@@ -241,6 +255,7 @@ class _$SetLogImpl implements _SetLog {
     this.ciezarKg,
     this.powtorzenia,
     this.czasSekund,
+    @JsonKey(includeIfNull: false) this.side,
     this.rpe,
     required this.timestamp,
   });
@@ -266,13 +281,16 @@ class _$SetLogImpl implements _SetLog {
   final int? czasSekund;
   // dla planku, wall sit itd.
   @override
+  @JsonKey(includeIfNull: false)
+  final String? side;
+  @override
   final int? rpe;
   @override
   final DateTime timestamp;
 
   @override
   String toString() {
-    return 'SetLog(id: $id, sesjaId: $sesjaId, cwiczenieId: $cwiczenieId, nazwaCwiczeniaPl: $nazwaCwiczeniaPl, numerSerii: $numerSerii, ciezarKg: $ciezarKg, powtorzenia: $powtorzenia, czasSekund: $czasSekund, rpe: $rpe, timestamp: $timestamp)';
+    return 'SetLog(id: $id, sesjaId: $sesjaId, cwiczenieId: $cwiczenieId, nazwaCwiczeniaPl: $nazwaCwiczeniaPl, numerSerii: $numerSerii, ciezarKg: $ciezarKg, powtorzenia: $powtorzenia, czasSekund: $czasSekund, side: $side, rpe: $rpe, timestamp: $timestamp)';
   }
 
   @override
@@ -294,6 +312,7 @@ class _$SetLogImpl implements _SetLog {
                 other.powtorzenia == powtorzenia) &&
             (identical(other.czasSekund, czasSekund) ||
                 other.czasSekund == czasSekund) &&
+            (identical(other.side, side) || other.side == side) &&
             (identical(other.rpe, rpe) || other.rpe == rpe) &&
             (identical(other.timestamp, timestamp) ||
                 other.timestamp == timestamp));
@@ -311,6 +330,7 @@ class _$SetLogImpl implements _SetLog {
     ciezarKg,
     powtorzenia,
     czasSekund,
+    side,
     rpe,
     timestamp,
   );
@@ -339,6 +359,7 @@ abstract class _SetLog implements SetLog {
     final double? ciezarKg,
     final int? powtorzenia,
     final int? czasSekund,
+    @JsonKey(includeIfNull: false) final String? side,
     final int? rpe,
     required final DateTime timestamp,
   }) = _$SetLogImpl;
@@ -361,6 +382,9 @@ abstract class _SetLog implements SetLog {
   int? get powtorzenia;
   @override
   int? get czasSekund; // dla planku, wall sit itd.
+  @override
+  @JsonKey(includeIfNull: false)
+  String? get side;
   @override
   int? get rpe;
   @override

@@ -6,6 +6,19 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.12.0+25] — 2026-10-16
+
+### Added
+- Rozszerzono katalog do 363 ćwiczeń z kompletem ilustracji: 47 nowych pozycji
+  z sandbagiem, kółkiem do brzucha, jogą, kalisteniką i tai chi siedzącym.
+- Dodano wyszukiwanie PL/EN i filtry stylów, sprzętu oraz mięśni głównych
+  i wspierających, z licznikami i klasyfikacją dostępną offline.
+- Dodano rejestrowanie czasu pracy i stron Lewa/Prawa/Obie, z zachowaniem
+  strony w lokalnej bazie Drift 8, backupie i synchronizacji. Automatyczne PR
+  dla jawnych stron pozostają wyłączone do osobnego rozszerzenia modelu.
+
+---
+
 ## [1.11.0+24] — 2026-10-16
 
 ### Added

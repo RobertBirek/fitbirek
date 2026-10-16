@@ -63,11 +63,12 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
+      if (from < 8) await m.addColumn(setsLog, setsLog.side);
       if (from < 5) await m.createTable(healthSamples);
       if (from < 6) await m.addColumn(syncState, syncState.healthReplayEnabled);
       if (from < 7) await m.addColumn(syncState, syncState.fullCursor);

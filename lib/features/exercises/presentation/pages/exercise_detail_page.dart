@@ -15,6 +15,7 @@ class ExerciseDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allExercises = ref.watch(allExercisesProvider);
+    final catalog = ref.watch(exerciseCatalogMetadataProvider);
 
     return allExercises.when(
       data: (list) {
@@ -25,6 +26,8 @@ class ExerciseDetailPage extends ConsumerWidget {
           );
         }
         final illustrationAsset = exerciseIllustrationAsset(ex.id);
+        final metadata = catalog.valueOrNull;
+        final entry = metadata?.entryFor(ex.id);
         return Scaffold(
           appBar: AppBar(
             title: Text(ex.nazwaPl),
@@ -64,6 +67,27 @@ class ExerciseDetailPage extends ConsumerWidget {
                   ),
                 ],
                 const SizedBox(height: 16),
+                if (catalog.isLoading) const LinearProgressIndicator(),
+                if (catalog.hasError)
+                  const Text(
+                    'Klasyfikacja niedostępna — pokazano dane podstawowe.',
+                  ),
+                if (entry != null) ...[
+                  _section(
+                    'Mięśnie główne',
+                    entry.primaryMuscles.map(metadata!.muscleLabel).join(', '),
+                  ),
+                  _section(
+                    'Mięśnie wspierające',
+                    entry.secondaryMuscles.map(metadata.muscleLabel).join(', '),
+                  ),
+                ] else ...[
+                  _section('Partia główna (dane podstawowe)', ex.partiaGlowna),
+                  _section(
+                    'Partie wspierające (dane podstawowe)',
+                    ex.partieWspierajace.join(', '),
+                  ),
+                ],
                 _section('Seria x powtórzenia', ex.seriexPowtorzenia),
                 _section('Tempo', ex.tempo),
                 _section('Sprzęt', ex.sprzet.join(', ')),

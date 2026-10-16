@@ -10698,5 +10698,1623 @@
     "regresja": "Krótsze sekcje 15 sek",
     "zrodlo": "Athlean-X",
     "ulubione": false
+  },
+  {
+    "id": "cw317",
+    "nazwaPl": "Martwy ciąg z sandbagiem za uchwyty",
+    "nazwaEn": "Sandbag deadlift",
+    "partiaGlowna": "Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Plecy",
+      "Brzuch",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Ustaw worek blisko goleni i chwyć symetryczne uchwyty",
+      "Cofnij biodra, napnij brzuch i wstań, prowadząc worek blisko nóg",
+      "Odstaw go przez zgięcie bioder bez garbienia",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Szarpanie z podłogi",
+      "Zaokrąglanie lędźwi",
+      "Odchylanie się w końcowej pozycji"
+    ],
+    "progresja": "Zwiększ ciężar dopiero po serii równych powtórzeń",
+    "regresja": "Zmniejsz wypełnienie i ćwicz krótsze serie",
+    "zrodlo": "https://ultimatesandbagtraining.com/the-ultimate-sandbag-deadlift-challenge/",
+    "ulubione": false
+  },
+  {
+    "id": "cw318",
+    "nazwaPl": "Przysiad z sandbagiem trzymanym z przodu",
+    "nazwaEn": "Sandbag front hold squat",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Biceps"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Oprzyj worek poziomo przed klatką na przedramionach",
+      "Zejdź między biodra, utrzymując całe stopy na podłożu",
+      "Wstań bez wypychania żeber do przodu",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Zapadanie kolan do środka",
+      "Opadanie łokci i tułowia",
+      "Odrywanie pięt"
+    ],
+    "progresja": "Wydłuż pauzę na dole bez utraty ustawienia",
+    "regresja": "Płytszy przysiad z lżejszym workiem",
+    "zrodlo": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw319",
+    "nazwaPl": "Przysiad z sandbagiem objętym pionowo",
+    "nazwaEn": "Sandbag bear hug squat",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Przywodziciele uda"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Obejmij pionowo ustawiony worek, przyciągając go do tułowia",
+      "Usiądź między biodra i prowadź kolana w kierunku palców",
+      "Utrzymuj spokojny wydech podczas wstawania",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Worek odsunięty od ciała",
+      "Garbienie górnych pleców",
+      "Wstrzymywanie oddechu przez całą serię"
+    ],
+    "progresja": "Stopniowo pogłębiaj przysiad z zachowaniem stabilnych stóp",
+    "regresja": "Lżejszy worek i mniejsza głębokość",
+    "zrodlo": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw320",
+    "nazwaPl": "Przysiad z sandbagiem na jednym barku",
+    "nazwaEn": "Sandbag shoulder squat",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Barki"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Ułóż worek na jednym barku i asekuruj dłońmi",
+      "Wykonaj przysiad z tułowiem pośrodku między stopami",
+      "Po serii bezpiecznie odłóż worek i zmień bark",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Przechylanie tułowia pod ciężarem",
+      "Zsuwanie worka na szyję",
+      "Skręt kolan"
+    ],
+    "progresja": "Dodaj pauzę na dole przy równym rozłożeniu nacisku stóp",
+    "regresja": "Mniejszy ciężar lub przysiad z workiem z przodu",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw321",
+    "nazwaPl": "Skłon biodrowy z sandbagiem przed klatką",
+    "nazwaEn": "Sandbag front loaded good morning",
+    "partiaGlowna": "Tył uda, Pośladki",
+    "partieWspierajace": [
+      "Plecy",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Trzymaj worek przy klatce na przedramionach",
+      "Z miękkimi kolanami cofnij biodra, wydłużając tył ud",
+      "Wróć przez wyprost bioder bez odchylania lędźwi",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Zamiana ruchu w przysiad",
+      "Zaokrąglanie grzbietu",
+      "Odsuwanie worka od klatki"
+    ],
+    "progresja": "Wydłuż fazę opuszczania do trzech sekund",
+    "regresja": "Lżejszy worek i krótszy skłon",
+    "zrodlo": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw322",
+    "nazwaPl": "Wiosłowanie sandbagiem w opadzie",
+    "nazwaEn": "Sandbag bent-over row",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": [
+      "Biceps",
+      "Barki",
+      "Brzuch",
+      "Tył uda",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Chwyć parę uchwytów i cofnij biodra do stabilnego opadu",
+      "Przyciągnij worek ku górnej części brzucha, nie unosząc tułowia",
+      "Opuść go powoli, zachowując długą szyję",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Podrzucanie ciężaru tułowiem",
+      "Unoszenie barków do uszu",
+      "Zgarbione lędźwie"
+    ],
+    "progresja": "Dodaj sekundę zatrzymania przy brzuchu",
+    "regresja": "Zmniejsz ciężar i skróć serię",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw323",
+    "nazwaPl": "Dynamiczne podciągnięcie sandbaga do klatki",
+    "nazwaEn": "Sandbag high pull",
+    "partiaGlowna": "Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Plecy",
+      "Barki",
+      "Brzuch",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Rozpocznij z workiem przed goleniami w zgięciu bioder",
+      "Wyprostuj biodra dynamicznie i poprowadź łokcie w górę, nie ciągnąc samymi rękami",
+      "Kontroluj powrót worka blisko ciała",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Szarpnięcie lędźwiami",
+      "Ruch ramion przed wyprostem bioder",
+      "Worek daleko od ciała"
+    ],
+    "progresja": "Przejdź do zarzutu po opanowaniu powtarzalnego toru",
+    "regresja": "Lżejszy worek i spokojny martwy ciąg",
+    "zrodlo": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw324",
+    "nazwaPl": "Zarzut sandbaga na przedramiona",
+    "nazwaEn": "Sandbag clean to fists",
+    "partiaGlowna": "Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Plecy",
+      "Biceps",
+      "Brzuch",
+      "Barki"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Chwyć równoległe uchwyty i ustaw worek przy goleniach",
+      "Nadaj mu pęd biodrami i szybko podprowadź łokcie pod worek",
+      "Przyjmij ciężar na przedramionach bez uderzenia w klatkę",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Ciągnięcie wyłącznie bicepsem",
+      "Uderzanie workiem o nadgarstki",
+      "Przeprost pleców przy chwycie"
+    ],
+    "progresja": "Po stabilnym przyjęciu dodaj osobne wyciskanie",
+    "regresja": "Ćwicz high pull z mniejszym wypełnieniem",
+    "zrodlo": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw325",
+    "nazwaPl": "Wyciskanie sandbaga nad głowę",
+    "nazwaEn": "Sandbag overhead press",
+    "partiaGlowna": "Barki, Triceps",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Zarzuć lekki worek raz i ustabilizuj go przed klatką",
+      "Wyciśnij pionowo bez wybicia z nóg i bez wypychania żeber",
+      "Opuść do pozycji wyjściowej, nie odginając nadgarstków",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Przeprost lędźwi",
+      "Nierówny chwyt",
+      "Opuszczanie worka na głowę"
+    ],
+    "progresja": "Wydłuż kontrolowane opuszczanie",
+    "regresja": "Zmniejsz wypełnienie lub ogranicz zakres do bezbolesnego",
+    "zrodlo": "https://ultimatesandbagtraining.com/9-ultimate-sandbag-exercises-that-make-functional-strength-better/",
+    "ulubione": false
+  },
+  {
+    "id": "cw326",
+    "nazwaPl": "Zarzut i wyciskanie sandbaga",
+    "nazwaEn": "Sandbag clean and press",
+    "partiaGlowna": "Pośladki, Tył uda, Barki, Triceps",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Przód uda"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "W każdym powtórzeniu rozpocznij workiem przy goleniach",
+      "Zarzuć z bioder, ustabilizuj tułów i dopiero wtedy wyciśnij",
+      "Opuść do klatki, następnie bezpiecznie na podłoże",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Wyciskanie przed ustabilizowaniem zarzutu",
+      "Wyginanie pleców",
+      "Niekontrolowany upadek worka"
+    ],
+    "progresja": "Łącz powtórzenia bez utraty jakości przyjęcia",
+    "regresja": "Trenuj oddzielnie lżejszy zarzut i wyciskanie",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw327",
+    "nazwaPl": "Zakrok z przeniesieniem sandbaga przy przedniej nodze",
+    "nazwaEn": "Sandbag MAX lunge",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Tył uda",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Trzymaj worek za uchwyty przed biodrami",
+      "Cofnij jedną nogę, prowadząc worek na zewnątrz kolana nogi przedniej",
+      "Wróć naciskiem przedniej stopy, kontrolując obrót tułowia",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Skręcanie obciążonego kolana",
+      "Zbyt obszerny zamach",
+      "Utrata równowagi przy powrocie"
+    ],
+    "progresja": "Łącz kolejne powtórzenia płynnie, nie zwiększając zamachu",
+    "regresja": "Zakrok bez rotacji z lżejszym workiem",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw328",
+    "nazwaPl": "Przenoszenie sandbaga ruchem szuflowania",
+    "nazwaEn": "Sandbag shoveling",
+    "partiaGlowna": "Pośladki, Brzuch",
+    "partieWspierajace": [
+      "Tył uda",
+      "Plecy",
+      "Barki",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Trzymaj worek za uchwyty przed sobą i obróć stopy wraz z biodrami w bok",
+      "Cofnij biodro, prowadząc worek przy zewnętrznej stronie kolana",
+      "Wyprostuj biodro i przenieś ciężar ku drugiej stronie bez skręcania samych lędźwi",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Stopy przyklejone podczas obrotu",
+      "Skręt tylko w pasie",
+      "Utrata kontroli hamowania"
+    ],
+    "progresja": "Zwiększ płynność przejścia między stronami",
+    "regresja": "Lżejszy worek i mały, powolny łuk",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw329",
+    "nazwaPl": "Obwodzenie sandbaga wokół tułowia w klęku",
+    "nazwaEn": "Sandbag around the world",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Barki",
+      "Plecy",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Uklęknij wysoko, napinając lekko pośladki",
+      "Przeprowadź lekki worek wokół górnej części tułowia jak przy zakładaniu kurtki",
+      "Utrzymuj miednicę nad kolanami i wróć tą samą kontrolowaną drogą",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Siadanie na piętach",
+      "Przeprost lędźwi",
+      "Zbyt ciężki worek przy głowie"
+    ],
+    "progresja": "Wydłuż czas płynnego ruchu bez zwiększania ciężaru",
+    "regresja": "Mały łuk z bardzo lekkim workiem",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw330",
+    "nazwaPl": "Przeciąganie sandbaga pod tułowiem w desce",
+    "nazwaEn": "Sandbag plank lateral drag",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Barki",
+      "Plecy",
+      "Pośladki",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Ustaw szeroko stopy w podporze, a lekki worek obok dłoni",
+      "Sięgnij przeciwną ręką po uchwyt i wolno przeciągnij worek pod klatką",
+      "Utrzymuj biodra równolegle do podłogi, potem zmień rękę",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Obracanie miednicy",
+      "Zadzieranie bioder",
+      "Szarpanie ciężaru"
+    ],
+    "progresja": "Zwęż rozstaw stóp dopiero przy pełnej kontroli",
+    "regresja": "Oprzyj kolana i mocno zmniejsz wypełnienie",
+    "zrodlo": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw331",
+    "nazwaPl": "Most biodrowy z napięciem sandbaga nad klatką",
+    "nazwaEn": "Sandbag tension hip bridge",
+    "partiaGlowna": "Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Barki"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Połóż się, ustaw stopy blisko pionu pod kolanami i chwyć zewnętrzne uchwyty lekkiego worka",
+      "Utrzymuj worek nad dolną klatką, delikatnie rozciągając uchwyty na boki",
+      "Unieś biodra naciskiem stóp, nie przenosząc worka na biodra",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Przeprost w lędźwiach",
+      "Luźny chwyt nad klatką",
+      "Rozjeżdżanie kolan"
+    ],
+    "progresja": "Dodaj pauzę u góry przy stałym napięciu uchwytów",
+    "regresja": "Lżejszy worek i niższe uniesienie bioder",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw332",
+    "nazwaPl": "Wyciskanie sandbaga łukiem w półklęku",
+    "nazwaEn": "Sandbag half-kneeling arc press",
+    "partiaGlowna": "Barki, Triceps",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Przyjmij stabilny półklęk i ułóż lekki worek przy jednym barku",
+      "Oburącz wyciśnij go łukiem ponad głową i powoli opuść ku drugiemu barkowi",
+      "Oprzyj ciężar na nogach, nie pochylając tułowia na boki",
+      "Sprawdź uchwyty i zamknięcia wkładów, nie rzucaj workiem",
+      "Dobierz ciężar do techniki — posiadane 20 kg nie jest obciążeniem obowiązkowym"
+    ],
+    "czesteBledy": [
+      "Zbyt niski łuk nad głową",
+      "Kołysanie miednicą",
+      "Za duży ciężar"
+    ],
+    "progresja": "Wydłuż opuszczanie po drugiej stronie",
+    "regresja": "Bardzo lekki worek i stabilny klęk obunóż",
+    "zrodlo": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw333",
+    "nazwaPl": "Przetaczanie kółka w przód z kolan",
+    "nazwaEn": "Kneeling ab wheel rollout",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Plecy",
+      "Barki",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Kółko do brzucha"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Oprzyj kolana na macie i chwyć oba uchwyty",
+      "Podwiń lekko miednicę i przetaczaj kółko po prostej tylko tak daleko, jak utrzymujesz napięty brzuch",
+      "Wróć bez siadania biodrami na pięty, kółko nie pomaga w powrocie"
+    ],
+    "czesteBledy": [
+      "Opadanie lędźwi",
+      "Wyjazd poza kontrolowany zakres",
+      "Szarpanie ramionami"
+    ],
+    "progresja": "Najpierw wydłużaj zakres, rollout ze stania dopiero jako zaawansowany cel po pełnej kontroli z kolan",
+    "regresja": "Krótki zakres ograniczony ścianą, bez uderzania kółkiem",
+    "zrodlo": "https://theworkoutdigest.com/ab-wheel-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw334",
+    "nazwaPl": "Przetaczanie kółka po skosie z kolan",
+    "nazwaEn": "Kneeling ab wheel V rollout",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Plecy",
+      "Barki",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Kółko do brzucha"
+    ],
+    "typ": "Siła",
+    "poziom": "Zaawansowany",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z klęku skieruj kółko lekko po skosie w lewo, trzymając oba uchwyty",
+      "Utrzymuj długi tułów bez zapadania lędźwi",
+      "Wróć do środka i wykonaj osobne powtórzenie w prawo, nie próbuj ostro skręcać podwójnej rolki pod obciążeniem"
+    ],
+    "czesteBledy": [
+      "Skręt samych lędźwi",
+      "Nagła zmiana kierunku w końcu ruchu",
+      "Zbyt daleki wyjazd"
+    ],
+    "progresja": "Stopniowo wydłuż tor po skosie bez pogłębiania skrętu",
+    "regresja": "Bardzo krótki skos lub rollout po prostej",
+    "zrodlo": "https://theworkoutdigest.com/ab-wheel-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw335",
+    "nazwaPl": "Deska z dłońmi na kółku",
+    "nazwaEn": "Ab wheel plank",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Barki",
+      "Klatka piersiowa",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Kółko do brzucha"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Chwyć oba uchwyty i ustaw barki nad osią kółka",
+      "Wyprostuj nogi do podporu na palcach, napnij brzuch i pośladki",
+      "Utrzymuj rolkę nieruchomo i oddychaj, nie odkładaj stóp na kółko"
+    ],
+    "czesteBledy": [
+      "Odjeżdżanie rolki",
+      "Zapadanie bioder",
+      "Wstrzymanie oddechu"
+    ],
+    "progresja": "Wydłuż utrzymanie przy niezmienionym ustawieniu",
+    "regresja": "Podeprzyj kolana na macie",
+    "zrodlo": "https://barbend.com/ab-wheel-workouts/",
+    "ulubione": false
+  },
+  {
+    "id": "cw336",
+    "nazwaPl": "Wojownik I",
+    "nazwaEn": "Warrior I — Virabhadrasana I",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Łydki",
+      "Zginacze bioder",
+      "Brzuch",
+      "Barki",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Ustaw jedną nogę z przodu, a tylną stopę lekko skośnie",
+      "Zegnij przednie kolano w kierunku palców i unieś ramiona",
+      "Wydłuż tułów bez wymuszania ustawienia bioder",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Kolano zapadające do środka",
+      "Przeprost lędźwi",
+      "Zbyt wąskie ustawienie stóp"
+    ],
+    "progresja": "Wydłuż utrzymanie bez utraty oddechu",
+    "regresja": "Skróć wykrok i trzymaj dłonie na biodrach",
+    "zrodlo": "https://www.yogajournal.com/poses/warrior-i-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw337",
+    "nazwaPl": "Wojownik II",
+    "nazwaEn": "Warrior II — Virabhadrasana II",
+    "partiaGlowna": "Przód uda, Pośladki, Przywodziciele uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Barki",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Stań w rozkroku i skieruj przednią stopę na zewnątrz",
+      "Ugnij jej kolano, utrzymując tułów pionowo",
+      "Wyciągnij ramiona w przeciwnych kierunkach i spójrz nad przednią dłonią",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Opieranie tułowia na przedniej nodze",
+      "Zapadanie kolana",
+      "Unoszenie barków"
+    ],
+    "progresja": "Nieco pogłębiaj ugięcie przy stabilnych stopach",
+    "regresja": "Mniejsze ugięcie i dłonie na biodrach",
+    "zrodlo": "https://www.yogajournal.com/poses/warrior-ii-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw338",
+    "nazwaPl": "Wojownik III",
+    "nazwaEn": "Warrior III — Virabhadrasana III",
+    "partiaGlowna": "Pośladki, Tył uda, Przód uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Barki",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Przenieś ciężar na jedną stopę i pochyl długi tułów",
+      "Wyciągnij drugą nogę w tył, utrzymując oba biodra skierowane ku podłodze",
+      "Sięgnij ramionami przed siebie bez przeprostu kolana podporowego",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Otwieranie miednicy w bok",
+      "Zapadanie lędźwi",
+      "Blokowanie kolana"
+    ],
+    "progresja": "Wydłuż utrzymanie w poziomie",
+    "regresja": "Oprzyj dłonie o ścianę i unieś nogę niżej",
+    "zrodlo": "https://www.yogajournal.com/poses/warrior-iii-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw339",
+    "nazwaPl": "Pozycja trójkąta",
+    "nazwaEn": "Extended Triangle — Utthita Trikonasana",
+    "partiaGlowna": "Tył uda, Przywodziciele uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy",
+      "Barki",
+      "Przód uda"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "W szerokim rozkroku skieruj jedną stopę na zewnątrz",
+      "Wydłuż tułów nad tą nogą i oprzyj dłoń na goleni, nie na kolanie",
+      "Otwórz klatkę i unieś drugą rękę bez skręcania szyi na siłę",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zapadanie dolnego boku tułowia",
+      "Nacisk na kolano",
+      "Dążenie dłonią do podłogi kosztem pleców"
+    ],
+    "progresja": "Zmniejsz podparcie dłonią przy zachowaniu długości boków",
+    "regresja": "Dłoń wyżej na goleni i wzrok w dół",
+    "zrodlo": "https://www.yogajournal.com/poses/extended-triangle-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw340",
+    "nazwaPl": "Pozycja rozciągniętego kąta bocznego",
+    "nazwaEn": "Extended Side Angle — Utthita Parsvakonasana",
+    "partiaGlowna": "Przód uda, Pośladki, Przywodziciele uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Barki",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z szerokiego rozkroku zegnij przednie kolano i oprzyj przedramię na udzie",
+      "Wydłuż drugi bok od tylnej pięty do ręki sięgającej nad uchem",
+      "Otwórz klatkę bez naciskania całym ciężarem na udo",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zapadanie kolana",
+      "Garbienie klatki",
+      "Zawieszanie ciężaru na przedramieniu"
+    ],
+    "progresja": "Sięgnij dolną dłonią niżej bez utraty osi kolana",
+    "regresja": "Mniejsze ugięcie nogi i górna dłoń na biodrze",
+    "zrodlo": "https://www.yogajournal.com/poses/extended-side-angle-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw341",
+    "nazwaPl": "Pozycja półksiężyca w staniu",
+    "nazwaEn": "Half Moon — Ardha Chandrasana",
+    "partiaGlowna": "Pośladki, Przód uda",
+    "partieWspierajace": [
+      "Tył uda",
+      "Brzuch",
+      "Barki",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z przeniesienia ciężaru na jedną nogę ustaw dłoń przed stopą",
+      "Unieś drugą nogę do tyłu i otwórz miednicę w bok",
+      "Wydłuż tułów i unieś wolną rękę, stabilizując kolano podporowe",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Blokowanie kolana",
+      "Opadanie tułowia",
+      "Wymuszanie spojrzenia w górę"
+    ],
+    "progresja": "Stopniowo odciążaj podpierającą dłoń",
+    "regresja": "Oprzyj plecy i uniesioną piętę o ścianę",
+    "zrodlo": "https://www.yogajournal.com/poses/half-moon-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw342",
+    "nazwaPl": "Pozycja drzewa",
+    "nazwaEn": "Tree — Vrksasana",
+    "partiaGlowna": "Pośladki, Przód uda, Łydki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Przywodziciele uda"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Stań na jednej nodze i przyłóż drugą stopę do łydki lub uda, omijając kolano",
+      "Utrzymaj miednicę przodem i spójrz na nieruchomy punkt",
+      "Złącz dłonie przed klatką bez wypychania biodra w bok",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Nacisk stopy na staw kolanowy",
+      "Skręt miednicy",
+      "Przeprost kolana podporowego"
+    ],
+    "progresja": "Unieś ramiona przy zachowaniu równowagi",
+    "regresja": "Palce uniesionej nogi pozostaw na podłodze",
+    "zrodlo": "https://www.yogajournal.com/poses/tree-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw343",
+    "nazwaPl": "Pozycja orła w staniu",
+    "nazwaEn": "Eagle — Garudasana",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Barki",
+      "Plecy",
+      "Brzuch",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Lekko ugnij nogę podporową i skrzyżuj nad nią drugie udo",
+      "Skrzyżuj ramiona przed klatką i unieś łokcie w bezbolesnym zakresie",
+      "Utrzymuj tułów pionowo, nie wymuszając owinięcia stopy",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Skręcanie bolącego kolana",
+      "Zapadanie klatki",
+      "Wymuszanie splotu dłoni"
+    ],
+    "progresja": "Stopniowo odciąż stopę pomocniczą",
+    "regresja": "Oprzyj palce wolnej nogi o podłoże i obejmij ramiona dłońmi",
+    "zrodlo": "https://www.yogajournal.com/poses/eagle-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw344",
+    "nazwaPl": "Pozycja krzesła bez podparcia",
+    "nazwaEn": "Chair — Utkatasana",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Barki",
+      "Plecy",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Stań ze stopami razem lub na szerokość bioder",
+      "Cofnij biodra i ugnij kolana jak do siedzenia, nie używając krzesła",
+      "Unieś ramiona tylko na tyle, by zachować spokojne ustawienie żeber",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Przeprost pleców przy unoszeniu rąk",
+      "Odrywanie pięt",
+      "Zapadanie kolan"
+    ],
+    "progresja": "Stopniowo wydłuż utrzymanie",
+    "regresja": "Płytsze ugięcie z dłońmi na biodrach",
+    "zrodlo": "https://www.yogajournal.com/poses/chair-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw345",
+    "nazwaPl": "Pozycja wielbłąda",
+    "nazwaEn": "Camel — Ustrasana",
+    "partiaGlowna": "Plecy, Pośladki",
+    "partieWspierajace": [
+      "Zginacze bioder",
+      "Przód uda",
+      "Klatka piersiowa",
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Uklęknij z biodrami nad kolanami i podeprzyj dłońmi tył miednicy",
+      "Unieś mostek, a następnie delikatnie otwórz górę tułowia w tył",
+      "Do pięt sięgaj dopiero bez ucisku w lędźwiach i szyi",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zapadanie lędźwi",
+      "Odrzucanie głowy",
+      "Cofanie bioder za kolana"
+    ],
+    "progresja": "Sięgaj do pięt dopiero po opanowaniu podpartej wersji",
+    "regresja": "Dłonie pozostają na miednicy, minimalne odchylenie",
+    "zrodlo": "https://www.yogajournal.com/poses/camel-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw346",
+    "nazwaPl": "Pozycja łuku",
+    "nazwaEn": "Bow — Dhanurasana",
+    "partiaGlowna": "Plecy, Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Przód uda",
+      "Zginacze bioder",
+      "Klatka piersiowa",
+      "Barki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Leżąc na brzuchu, ugnij kolana i chwyć kostki obiema dłońmi",
+      "Naciśnij goleniami w tył, unosząc klatkę i ewentualnie uda",
+      "Zachowaj oddech i szyję jako przedłużenie pleców",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Rozjeżdżanie kolan",
+      "Ciągnięcie stóp samymi rękami",
+      "Bolesny ucisk lędźwi"
+    ],
+    "progresja": "Wydłuż łagodne utrzymanie, nie zwiększając wygięcia na siłę",
+    "regresja": "Mniejsze uniesienie, a przy bólu pomiń pozycję",
+    "zrodlo": "https://www.yogajournal.com/poses/bow-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw347",
+    "nazwaPl": "Pozycja łodzi w siadzie",
+    "nazwaEn": "Boat — Paripurna Navasana",
+    "partiaGlowna": "Brzuch, Zginacze bioder",
+    "partieWspierajace": [
+      "Przód uda",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź na guzach kulszowych i unieś mostek",
+      "Odchyl długi tułów, po czym unieś stopy bez opadania na kość krzyżową",
+      "Utrzymaj równowagę z rękami przed sobą i stopniowo prostuj kolana",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zaokrąglanie lędźwi",
+      "Wysuwanie brody",
+      "Prostowanie nóg kosztem pleców"
+    ],
+    "progresja": "Stopniowo wyprostuj obie nogi",
+    "regresja": "Ugnij kolana i przytrzymaj uda",
+    "zrodlo": "https://www.yogajournal.com/poses/boat-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw348",
+    "nazwaPl": "Skręt mędrca w siadzie na podłodze",
+    "nazwaEn": "Half Lord of the Fishes — Ardha Matsyendrasana",
+    "partiaGlowna": "Plecy, Brzuch",
+    "partieWspierajace": [
+      "Pośladki",
+      "Barki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź i przełóż stopę jednej nogi za przeciwne kolano",
+      "Wydłuż kręgosłup na wdechu i łagodnie obróć tułów ku uniesionemu kolanu",
+      "Dłoń za plecami tylko podpiera, nie wymusza skrętu",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Szarpanie łokciem o kolano",
+      "Zapadanie pleców",
+      "Skręt szyją zamiast tułowiem"
+    ],
+    "progresja": "Wydłuż utrzymanie przy równych guzach kulszowych",
+    "regresja": "Pozostaw dolną nogę prostą i obejmij kolano zamiast zapierać łokieć",
+    "zrodlo": "https://www.yogajournal.com/poses/half-lord-of-the-fishes-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw349",
+    "nazwaPl": "Pozycja bramy w klęku",
+    "nazwaEn": "Gate — Parighasana",
+    "partiaGlowna": "Brzuch, Przywodziciele uda",
+    "partieWspierajace": [
+      "Plecy",
+      "Barki",
+      "Tył uda"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z klęku wyprostuj jedną nogę w bok, pozostawiając drugie biodro nad kolanem",
+      "Oprzyj dłoń na wyprostowanej nodze i wydłuż przeciwną rękę nad głową",
+      "Wykonaj łagodny skłon boczny bez obracania klatki ku podłodze",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zgniatanie dolnego boku",
+      "Opieranie dłoni na kolanie",
+      "Ból kolana klęczącego"
+    ],
+    "progresja": "Wydłuż sięganie ręką bez pogłębiania skłonu na siłę",
+    "regresja": "Mniejszy skłon i dłoń wyżej na udzie",
+    "zrodlo": "https://www.yogajournal.com/poses/gate-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw350",
+    "nazwaPl": "Skłon w przód w szerokim rozkroku",
+    "nazwaEn": "Wide-Legged Forward Bend — Prasarita Padottanasana",
+    "partiaGlowna": "Tył uda, Przywodziciele uda",
+    "partieWspierajace": [
+      "Łydki",
+      "Plecy",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Stań w stabilnym rozkroku i połóż dłonie na biodrach",
+      "Pochyl się z bioder, wydłużając plecy i podpierając dłonie na podłodze tylko jeśli sięgasz swobodnie",
+      "Wyjdź powoli, bez obciążania głowy",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Przeprost kolan",
+      "Dociskanie głowy do podłoża",
+      "Zbyt szybkie wstawanie"
+    ],
+    "progresja": "Stopniowo pogłębiaj skłon przy długich plecach",
+    "regresja": "Ugnij kolana i zatrzymaj skłon wyżej z dłońmi na udach",
+    "zrodlo": "https://www.yogajournal.com/poses/wide-legged-forward-bend/",
+    "ulubione": false
+  },
+  {
+    "id": "cw351",
+    "nazwaPl": "Pozycja szczęśliwego dziecka",
+    "nazwaEn": "Happy Baby — Ananda Balasana",
+    "partiaGlowna": "Przywodziciele uda, Pośladki",
+    "partieWspierajace": [
+      "Tył uda",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach i przyciągnij kolana szerzej niż tułów",
+      "Chwyć zewnętrzne krawędzie stóp lub łydki, kierując podeszwy ku górze",
+      "Pozostaw głowę i kość krzyżową na podłożu, nie ciągnąc nóg na siłę",
+      "Oddychaj swobodnie, wyjdź z pozycji przy bólu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Odrywanie głowy",
+      "Szarpanie stóp",
+      "Ból pachwin"
+    ],
+    "progresja": "Wydłuż spokojne utrzymanie bez mocniejszego ciągnięcia",
+    "regresja": "Chwyć uda zamiast stóp",
+    "zrodlo": "https://www.yogajournal.com/poses/happy-baby-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw352",
+    "nazwaPl": "Przemieszczanie bokiem w przysiadzie na rękach",
+    "nazwaEn": "GMB Monkey",
+    "partiaGlowna": "Barki, Brzuch",
+    "partieWspierajace": [
+      "Pośladki",
+      "Przód uda",
+      "Przywodziciele uda",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 rundy x 30 sek pracy na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z przysiadu postaw obie dłonie z jednej strony stóp",
+      "Przenieś ciężar na ręce i przenieś stopy bokiem za dłońmi",
+      "Pozostań blisko podłoża i ćwicz oba kierunki osobno",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Wyrzucanie nóg daleko za siebie",
+      "Upadanie na dłonie",
+      "Zbyt głęboki bolesny przysiad"
+    ],
+    "progresja": "Wydłuż odcinek ruchu bocznego",
+    "regresja": "Płytszy przysiad i małe przestawienie stóp",
+    "zrodlo": "https://gmb.io/monkey/",
+    "ulubione": false
+  },
+  {
+    "id": "cw353",
+    "nazwaPl": "Przemieszczanie żabki z podparciem rąk",
+    "nazwaEn": "GMB Frogger",
+    "partiaGlowna": "Barki, Brzuch",
+    "partieWspierajace": [
+      "Pośladki",
+      "Przód uda",
+      "Plecy",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 rundy x 30 sek pracy",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z przysiadu sięgnij dłońmi przed siebie",
+      "Przenieś ciężar na ręce i unieś biodra, po czym dostaw stopy ku dłoniom",
+      "Wyląduj miękko w przysiadzie, nie wykonując wyskoku pionowego",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Odbijanie wyłącznie z nóg",
+      "Twarde lądowanie",
+      "Przeciążenie nadgarstków"
+    ],
+    "progresja": "Wydłuż płynny odcinek przy zachowaniu miękkich lądowań",
+    "regresja": "Mały ruch z płytszego przysiadu",
+    "zrodlo": "https://gmb.io/frogger/",
+    "ulubione": false
+  },
+  {
+    "id": "cw354",
+    "nazwaPl": "Przysiad krewetki z chwytem tylnej stopy",
+    "nazwaEn": "Shrimp squat",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Stań na jednej nodze i chwyć stopę drugiej za sobą",
+      "Uginaj nogę podporową, prowadząc tylne kolano ku podłodze",
+      "Wstań naciskiem całej przedniej stopy bez puszczania tylnej stopy",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Opadanie na tylne kolano",
+      "Zapadanie kolana podporowego",
+      "Odrywanie pięty"
+    ],
+    "progresja": "Stopniowo obniżaj tylne kolano przy zachowaniu kontroli",
+    "regresja": "Płytsze zejście i lekki kontakt wolnej dłoni ze ścianą",
+    "zrodlo": "https://gmb.io/shrimp-squats/",
+    "ulubione": false
+  },
+  {
+    "id": "cw355",
+    "nazwaPl": "Przerzut bokiem na obie ręce",
+    "nazwaEn": "Cartwheel",
+    "partiaGlowna": "Barki, Triceps",
+    "partieWspierajace": [
+      "Brzuch",
+      "Pośladki",
+      "Przywodziciele uda",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Zapewnij wolny, nieślizgający odcinek podłoża i rozpocznij z wykroku",
+      "Postaw kolejno dłoń po stronie nogi prowadzącej i drugą dłoń, przenosząc nogi bokiem",
+      "Wyląduj kolejno stopami, zaczynając od niskiej wersji bez pionu",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Rzut ciała bez kontroli",
+      "Krzyżowanie nóg przy lądowaniu",
+      "Próba w ciasnym otoczeniu"
+    ],
+    "progresja": "Stopniowo prostuj nogi i zbliżaj tor do jednej linii",
+    "regresja": "Niskie przejście po łuku, bez unoszenia bioder nad głowę",
+    "zrodlo": "https://gmb.io/cartwheel/",
+    "ulubione": false
+  },
+  {
+    "id": "cw356",
+    "nazwaPl": "Most trójpunktowy z sięganiem",
+    "nazwaEn": "Three-point bridge",
+    "partiaGlowna": "Pośladki, Plecy, Barki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Tył uda",
+      "Klatka piersiowa"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z wygodnego przysiadu oprzyj jedną dłoń za biodrem",
+      "Naciśnij piętami i unieś biodra, stabilizując bark ręki podporowej",
+      "Sięgnij drugą ręką w tył z łagodnym otwarciem klatki, potem wróć",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Zapadanie barku podporowego",
+      "Skręt wyłącznie w lędźwiach",
+      "Ruch przez ból"
+    ],
+    "progresja": "Wydłuż sięganie przy stabilnej dłoni",
+    "regresja": "Podpór na dwóch dłoniach i niższe biodra",
+    "zrodlo": "https://gmb.io/three-point-bridge/",
+    "ulubione": false
+  },
+  {
+    "id": "cw357",
+    "nazwaPl": "Podpór żaby na ugiętych ramionach",
+    "nazwaEn": "Crow / frog stand",
+    "partiaGlowna": "Barki, Brzuch",
+    "partieWspierajace": [
+      "Triceps",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Z przysiadu oprzyj dłonie na szerokość barków i ugnij łokcie",
+      "Oprzyj kolana na górze ramion, powoli przenosząc ciężar na dłonie",
+      "Unieś stopy tylko przy kontroli, patrząc nieco przed dłonie i zostawiając bezpieczne miejsce przed głową",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Wskakiwanie na dłonie",
+      "Wstrzymanie oddechu",
+      "Zapadanie nadgarstków"
+    ],
+    "progresja": "Wydłuż krótkie udane utrzymania",
+    "regresja": "Palce stóp pozostają na podłodze, bez obciążania głowy",
+    "zrodlo": "https://gmb.io/crow-pose/",
+    "ulubione": false
+  },
+  {
+    "id": "cw358",
+    "nazwaPl": "Unoszenie prostej nogi w siadzie z kompresją",
+    "nazwaEn": "Seated single-leg compression raise",
+    "partiaGlowna": "Zginacze bioder, Brzuch",
+    "partieWspierajace": [
+      "Przód uda"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Ruch złożony",
+    "seriexPowtorzenia": "3 x 6-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź z jedną nogą prostą, a drugie udo przyciągnij rękami do tułowia",
+      "Bez odchylania pleców unieś piętę prostej nogi kilka centymetrów",
+      "Opuść kontrolowanie i wykonaj osobną serię na drugą stronę",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Odchylanie tułowia",
+      "Odbijanie pięty",
+      "Zginanie unoszonego kolana"
+    ],
+    "progresja": "Wydłuż zatrzymanie nogi nad podłogą",
+    "regresja": "Mniejsza wysokość unoszenia i krótsza seria",
+    "zrodlo": "https://gmb.io/l-sit/",
+    "ulubione": false
+  },
+  {
+    "id": "cw359",
+    "nazwaPl": "Utrzymanie podporu tyłem z ugiętymi nogami",
+    "nazwaEn": "Supine tabletop hold",
+    "partiaGlowna": "Pośladki, Barki, Tył uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Triceps",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Izometria",
+    "seriexPowtorzenia": "2 x 20-30 sek",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź z ugiętymi nogami i oprzyj dłonie za biodrami",
+      "Naciśnij stopami oraz dłońmi i unieś biodra do wygodnej wysokości",
+      "Utrzymuj otwartą klatkę bez marszu, z szyją w przedłużeniu tułowia",
+      "Przy bólu nadgarstków lub innych stawów przerwij próbę"
+    ],
+    "czesteBledy": [
+      "Zapadanie barków",
+      "Odrzucanie głowy",
+      "Zbyt duży przeprost lędźwi"
+    ],
+    "progresja": "Wydłuż stabilne utrzymanie",
+    "regresja": "Niższe biodra i krótsze utrzymanie",
+    "zrodlo": "https://gmb.io/three-point-bridge/",
+    "ulubione": false
+  },
+  {
+    "id": "cw360",
+    "nazwaPl": "Tai chi — zbieranie wiśni w siadzie",
+    "nazwaEn": "Picking Cherries (seated)",
+    "partiaGlowna": "Barki",
+    "partieWspierajace": [
+      "Plecy",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Flow",
+    "seriexPowtorzenia": "2 x 8-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź na stabilnym krześle bez kółek, stopy oprzyj na podłodze",
+      "Sięgaj jedną dłonią po wyobrażoną wiśnię nad głową, potem przed sobą i w bok",
+      "Wracaj dłonią bez szarpania i zmieniaj rękę, nie odrywając pośladków od siedziska",
+      "Oddychaj naturalnie i wykonuj ruch powoli, bez bólu ani naprężania"
+    ],
+    "czesteBledy": [
+      "Unoszenie barku do ucha",
+      "Przechylanie się poza stabilną podstawę"
+    ],
+    "progresja": "Płynnie łącz kierunki sięgania w bezbolesnym zakresie",
+    "regresja": "Sięgaj niżej i bliżej tułowia",
+    "zrodlo": "https://www.taichiexercises.co.uk/wp-content/uploads/2020/05/Exercises-Seated.pdf",
+    "ulubione": false
+  },
+  {
+    "id": "cw361",
+    "nazwaPl": "Tai chi — wiosłowanie łodzią w siadzie",
+    "nazwaEn": "Rowing a Boat (seated)",
+    "partiaGlowna": "Plecy, Brzuch",
+    "partieWspierajace": [
+      "Barki"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Flow",
+    "seriexPowtorzenia": "2 x 8-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź na stabilnym krześle bez kółek, stopy oprzyj na podłodze",
+      "Łagodnie przenoś tułów w przód i w tył z bioder",
+      "Dodaj oburącz krążenie ramion jak przy prowadzeniu wioseł po bokach łodzi, utrzymując stopy nieruchomo",
+      "Oddychaj naturalnie i wykonuj ruch powoli, bez bólu ani naprężania"
+    ],
+    "czesteBledy": [
+      "Gwałtowne bujanie",
+      "Zaokrąglanie samych lędźwi",
+      "Utrata kontaktu stóp z podłożem"
+    ],
+    "progresja": "Łącz ruch ramion i tułowia coraz płynniej",
+    "regresja": "Małe wychylenia z dłońmi bliżej ud",
+    "zrodlo": "https://www.taichiexercises.co.uk/wp-content/uploads/2020/05/Exercises-Seated.pdf",
+    "ulubione": false
+  },
+  {
+    "id": "cw362",
+    "nazwaPl": "Tai chi — żółw pływający w oceanie w siadzie",
+    "nazwaEn": "Turtle Swims in the Ocean (seated)",
+    "partiaGlowna": "Barki, Plecy",
+    "partieWspierajace": [
+      "Brzuch",
+      "Klatka piersiowa"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Flow",
+    "seriexPowtorzenia": "2 x 8-10",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź na stabilnym krześle bez kółek, stopy oprzyj na podłodze",
+      "Przy łagodnym pochyleniu wykonaj ramionami ruch podobny do pływania żabką",
+      "Przy powrocie prowadź ramiona szerokim łukiem jak w stylu motylkowym, bez odrzucania pleców",
+      "Zmień kierunek krążenia w kolejnej krótkiej serii",
+      "Oddychaj naturalnie i wykonuj ruch powoli, bez bólu ani naprężania"
+    ],
+    "czesteBledy": [
+      "Forsowanie barków za plecy",
+      "Szarpanie tułowiem",
+      "Zatrzymywanie oddechu"
+    ],
+    "progresja": "Łącz oba kierunki przy jednakowo spokojnym tempie",
+    "regresja": "Małe łuki ramion bez wychylania tułowia",
+    "zrodlo": "https://www.taichiexercises.co.uk/wp-content/uploads/2020/05/Exercises-Seated.pdf",
+    "ulubione": false
+  },
+  {
+    "id": "cw363",
+    "nazwaPl": "Tai chi — otwieranie drzwi podeszwą w siadzie",
+    "nazwaEn": "Kick with Sole (seated)",
+    "partiaGlowna": "Przód uda",
+    "partieWspierajace": [
+      "Zginacze bioder",
+      "Brzuch",
+      "Przód goleni"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Flow",
+    "seriexPowtorzenia": "2 x 8-10 na stronę",
+    "tempo": "Wolno i kontrolowanie, fazy dynamiczne bez szarpania",
+    "kluczoweWskazowki": [
+      "Usiądź na stabilnym krześle bez kółek, stopy oprzyj na podłodze",
+      "Powoli wyprostuj jedną nogę przed sobą",
+      "Skieruj podeszwę w przód jak przy łagodnym otwieraniu drzwi piętą, nie kopiąc gwałtownie",
+      "Cofnij stopę na podłogę i zmień nogę",
+      "Oddychaj naturalnie i wykonuj ruch powoli, bez bólu ani naprężania"
+    ],
+    "czesteBledy": [
+      "Gwałtowny wyprost kolana",
+      "Odchylanie pleców",
+      "Unoszenie całego uda wysoko"
+    ],
+    "progresja": "Wydłuż spokojny wyprost bez blokowania kolana",
+    "regresja": "Prostuj kolano tylko częściowo, pięta blisko podłogi",
+    "zrodlo": "https://www.taichiexercises.co.uk/wp-content/uploads/2020/05/Exercises-Seated.pdf",
+    "ulubione": false
   }
 ]

@@ -135,6 +135,30 @@ async def test_advisory_wait_synchronization_cancels_tasks_on_timeout(transactio
             await asyncio.gather(blocked_task, return_exceptions=True)
 
 
+@pytest.mark.parametrize('side', [None, 'left', 'right', 'both'])
+async def test_workout_side_jsonb_roundtrip(client, account, session, side):
+    headers = await authenticate(client, account)
+    payload = {
+        'sessionSyncId': str(uuid4()), 'cwiczenieId': 'custom',
+        'nazwaCwiczeniaPl': 'Test', 'numerSerii': 1, 'czasSekund': 30,
+        'timestamp': '2026-10-16T00:00:00Z',
+    }
+    if side is not None:
+        payload['side'] = side
+    op = operation(payload=payload)
+    op['entityType'] = 'workoutSet'
+    response = await client.post('/api/sync/push', json={'operations': [op]}, headers=headers)
+    assert response.status_code == 200
+    assert len(response.json()['accepted']) == 1
+    response = await client.get('/api/sync/pull?cursor=0')
+    assert response.status_code == 200
+    record = next(r for r in response.json()['changes'] if r['entityId'] == op['entityId'])
+    assert record['payload'] == payload
+    # The exact attempted body can be retried, including the absent-side case.
+    response = await client.post('/api/sync/push', json={'operations': [op]}, headers=headers)
+    assert response.json()['accepted'][0]['duplicate'] is True
+
+
 async def test_repeated_operation_is_applied_once(client, account, session):
     csrf_headers = await authenticate(client, account)
     body = {"operations": [operation()]}

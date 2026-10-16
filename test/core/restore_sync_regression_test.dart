@@ -123,6 +123,7 @@ void main() {
         exerciseId: 'cw001',
         exerciseNamePl: 'Test',
         setNumber: 1,
+        reps: 5,
       );
       final old = (await db.workoutDao.getSession(id))!;
       final backup = BackupService(db);

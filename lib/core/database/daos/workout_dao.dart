@@ -55,9 +55,13 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
   }
 
   /// Zwraca ostatnią wykonaną serię dla danego ćwiczenia (do auto-progress).
-  Future<SetLogData?> getLastSetForExercise(String exerciseId) async {
+  Future<SetLogData?> getLastSetForExercise(
+    String exerciseId, {
+    String? side,
+  }) async {
     final query = select(setsLog)
       ..where((t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull())
+      ..where((t) => side == null ? t.side.isNull() : t.side.equals(side))
       ..orderBy([(t) => OrderingTerm.desc(t.timestamp)])
       ..limit(1);
     final rows = await query.get();

@@ -1,0 +1,339 @@
+{
+  "reviewedOn": "2026-10-16",
+  "method": "Read publisher text; original Polish descriptions; conservative equipment adaptation, no copied prose. Source validates movement, not individualized load or medical suitability.",
+  "equipment": {
+    "Sandbag": {
+      "url": "https://bushido-sport.pl/product-pol-11-SANDBAG-BUSHIDO-SAND-BAG-CROSSTRAINING-FITNESS-35-KG.html",
+      "verified": "7 handles, 3 removable filler bags, maximum recommended 35 kg; user-owned 20 kg is context only, never a prescription. DVRT bag shapes differ: use a lighter fill and secure handles; no throws."
+    },
+    "Kółko do brzucha": {
+      "url": "https://www.sport-shop.pl/walek-kolko-podwojne-do-cwiczen-mata-pod-kolana-gymtek-podwojne-mata-czarne-p-170878.html",
+      "verified": "Double wheel, two side handles, knee mat; no foot straps or assisted return listed. Both hands stay on handles; no feet-on-wheel or single-arm exercises."
+    }
+  },
+  "contextOnly": [
+    {
+      "url": "https://news.va.gov/107780/live-whole-health-134-seated-tai-chi-moves/",
+      "verified": "18-minute seated Tai Chi session by Lori Enloe; article supports accessibility context, not a textual movement-by-movement attribution."
+    }
+  ],
+  "sources": {
+    "dvrt10": {
+      "url": "https://ultimatesandbagtraining.com/10-ultimate-sandbag-exercises-that-are-musts/",
+      "verifiedSections": "DVRT: Shoulder Squat; Clean and Press; MAX Lunge; Bent Rows; Shoveling; Around the Worlds; Plank Lateral Drag; Hip Bridges; Arc Press"
+    },
+    "dvrttop": {
+      "url": "https://ultimatesandbagtraining.com/top-10-ultimate-sandbag-training-exercises/",
+      "verifiedSections": "DVRT: Front Hold Squats; High Pull; Front Hold Good Mornings; Bent-Over Row; Clean and Press; Lateral Bag Drag"
+    },
+    "dvrtpress": {
+      "url": "https://ultimatesandbagtraining.com/9-ultimate-sandbag-exercises-that-make-functional-strength-better/",
+      "verifiedSections": "DVRT: overhead press, clean once then press, row and deadlift hinge variations"
+    },
+    "dvrtdeadlift": {
+      "url": "https://ultimatesandbagtraining.com/the-ultimate-sandbag-deadlift-challenge/",
+      "verifiedSections": "DVRT: foundational handle-grip sandbag deadlift"
+    },
+    "wheel": {
+      "url": "https://theworkoutdigest.com/ab-wheel-exercises/",
+      "verifiedSections": "Kneeling rollouts; kneeling V rollouts; standing progression. Excluded single-arm: source requires a central handle."
+    },
+    "wheelplank": {
+      "url": "https://barbend.com/ab-wheel-workouts/",
+      "verifiedSections": "Ab Wheel Plank; kneeling rollout. Excluded all foot-strapped movements."
+    },
+    "monkey": {
+      "url": "https://gmb.io/monkey/",
+      "verifiedSections": "Basic Monkey setup and variations"
+    },
+    "frogger": {
+      "url": "https://gmb.io/frogger/",
+      "verifiedSections": "Basic Frogger; Floating Table Top preparation"
+    },
+    "shrimp": {
+      "url": "https://gmb.io/shrimp-squats/",
+      "verifiedSections": "Shrimp squat vs pistol: knee/ankle control, rear leg position"
+    },
+    "cartwheel": {
+      "url": "https://gmb.io/cartwheel/",
+      "verifiedSections": "Three cartwheel progressions, hand/foot order and safe low entry"
+    },
+    "bridge": {
+      "url": "https://gmb.io/three-point-bridge/",
+      "verifiedSections": "Three Point Bridge; Supine Tabletop preparation"
+    },
+    "crow": {
+      "url": "https://gmb.io/crow-pose/",
+      "verifiedSections": "Crow/frog stand: bent-arm hand balance, scaling and wrist safety"
+    },
+    "compression": {
+      "url": "https://gmb.io/l-sit/",
+      "verifiedSections": "Build the Compression Strength: seated single-leg raises, other thigh hugged"
+    },
+    "seated": {
+      "url": "https://www.taichiexercises.co.uk/wp-content/uploads/2020/05/Exercises-Seated.pdf",
+      "verifiedSections": "Arm: Picking Cherries; Trunk: Rowing a Boat, Turtle Swims in the Ocean; Leg: Kick with Sole"
+    },
+    "yj-warrior-i-pose": {
+      "url": "https://www.yogajournal.com/poses/warrior-i-pose/",
+      "verifiedSections": "Yoga Journal: Warrior I — Virabhadrasana I — setup, variations, beginner tips"
+    },
+    "yj-warrior-ii-pose": {
+      "url": "https://www.yogajournal.com/poses/warrior-ii-pose/",
+      "verifiedSections": "Yoga Journal: Warrior II — Virabhadrasana II — setup, variations, beginner tips"
+    },
+    "yj-warrior-iii-pose": {
+      "url": "https://www.yogajournal.com/poses/warrior-iii-pose/",
+      "verifiedSections": "Yoga Journal: Warrior III — Virabhadrasana III — setup, variations, beginner tips"
+    },
+    "yj-extended-triangle-pose": {
+      "url": "https://www.yogajournal.com/poses/extended-triangle-pose/",
+      "verifiedSections": "Yoga Journal: Extended Triangle — Utthita Trikonasana — setup, variations, beginner tips"
+    },
+    "yj-extended-side-angle-pose": {
+      "url": "https://www.yogajournal.com/poses/extended-side-angle-pose/",
+      "verifiedSections": "Yoga Journal: Extended Side Angle — Utthita Parsvakonasana — setup, variations, beginner tips"
+    },
+    "yj-half-moon-pose": {
+      "url": "https://www.yogajournal.com/poses/half-moon-pose/",
+      "verifiedSections": "Yoga Journal: Half Moon — Ardha Chandrasana — setup, variations, beginner tips"
+    },
+    "yj-tree-pose": {
+      "url": "https://www.yogajournal.com/poses/tree-pose/",
+      "verifiedSections": "Yoga Journal: Tree — Vrksasana — setup, variations, beginner tips"
+    },
+    "yj-eagle-pose": {
+      "url": "https://www.yogajournal.com/poses/eagle-pose/",
+      "verifiedSections": "Yoga Journal: Eagle — Garudasana — setup, variations, beginner tips"
+    },
+    "yj-chair-pose": {
+      "url": "https://www.yogajournal.com/poses/chair-pose/",
+      "verifiedSections": "Yoga Journal: Chair — Utkatasana — setup, variations, beginner tips"
+    },
+    "yj-camel-pose": {
+      "url": "https://www.yogajournal.com/poses/camel-pose/",
+      "verifiedSections": "Yoga Journal: Camel — Ustrasana — setup, variations, beginner tips"
+    },
+    "yj-bow-pose": {
+      "url": "https://www.yogajournal.com/poses/bow-pose/",
+      "verifiedSections": "Yoga Journal: Bow — Dhanurasana — setup, variations, beginner tips"
+    },
+    "yj-boat-pose": {
+      "url": "https://www.yogajournal.com/poses/boat-pose/",
+      "verifiedSections": "Yoga Journal: Boat — Paripurna Navasana — setup, variations, beginner tips"
+    },
+    "yj-half-lord-of-the-fishes-pose": {
+      "url": "https://www.yogajournal.com/poses/half-lord-of-the-fishes-pose/",
+      "verifiedSections": "Yoga Journal: Half Lord of the Fishes — Ardha Matsyendrasana — setup, variations, beginner tips"
+    },
+    "yj-gate-pose": {
+      "url": "https://www.yogajournal.com/poses/gate-pose/",
+      "verifiedSections": "Yoga Journal: Gate — Parighasana — setup, variations, beginner tips"
+    },
+    "yj-wide-legged-forward-bend": {
+      "url": "https://www.yogajournal.com/poses/wide-legged-forward-bend/",
+      "verifiedSections": "Yoga Journal: Wide-Legged Forward Bend — Prasarita Padottanasana — setup, variations, beginner tips"
+    },
+    "yj-happy-baby-pose": {
+      "url": "https://www.yogajournal.com/poses/happy-baby-pose/",
+      "verifiedSections": "Yoga Journal: Happy Baby — Ananda Balasana — setup, variations, beginner tips"
+    }
+  },
+  "exercises": {
+    "cw317": {
+      "source": "dvrtdeadlift",
+      "movement": "Sandbag deadlift"
+    },
+    "cw318": {
+      "source": "dvrttop",
+      "movement": "Sandbag front hold squat"
+    },
+    "cw319": {
+      "source": "dvrttop",
+      "movement": "Sandbag bear hug squat"
+    },
+    "cw320": {
+      "source": "dvrt10",
+      "movement": "Sandbag shoulder squat"
+    },
+    "cw321": {
+      "source": "dvrttop",
+      "movement": "Sandbag front loaded good morning"
+    },
+    "cw322": {
+      "source": "dvrt10",
+      "movement": "Sandbag bent-over row"
+    },
+    "cw323": {
+      "source": "dvrttop",
+      "movement": "Sandbag high pull"
+    },
+    "cw324": {
+      "source": "dvrttop",
+      "movement": "Sandbag clean to fists"
+    },
+    "cw325": {
+      "source": "dvrtpress",
+      "movement": "Sandbag overhead press"
+    },
+    "cw326": {
+      "source": "dvrt10",
+      "movement": "Sandbag clean and press"
+    },
+    "cw327": {
+      "source": "dvrt10",
+      "movement": "Sandbag MAX lunge"
+    },
+    "cw328": {
+      "source": "dvrt10",
+      "movement": "Sandbag shoveling"
+    },
+    "cw329": {
+      "source": "dvrt10",
+      "movement": "Sandbag around the world"
+    },
+    "cw330": {
+      "source": "dvrttop",
+      "movement": "Sandbag plank lateral drag"
+    },
+    "cw331": {
+      "source": "dvrt10",
+      "movement": "Sandbag tension hip bridge"
+    },
+    "cw332": {
+      "source": "dvrt10",
+      "movement": "Sandbag half-kneeling arc press"
+    },
+    "cw333": {
+      "source": "wheel",
+      "movement": "Kneeling ab wheel rollout"
+    },
+    "cw334": {
+      "source": "wheel",
+      "movement": "Kneeling ab wheel V rollout"
+    },
+    "cw335": {
+      "source": "wheelplank",
+      "movement": "Ab wheel plank"
+    },
+    "cw336": {
+      "source": "yj-warrior-i-pose",
+      "movement": "Warrior I — Virabhadrasana I"
+    },
+    "cw337": {
+      "source": "yj-warrior-ii-pose",
+      "movement": "Warrior II — Virabhadrasana II"
+    },
+    "cw338": {
+      "source": "yj-warrior-iii-pose",
+      "movement": "Warrior III — Virabhadrasana III"
+    },
+    "cw339": {
+      "source": "yj-extended-triangle-pose",
+      "movement": "Extended Triangle — Utthita Trikonasana"
+    },
+    "cw340": {
+      "source": "yj-extended-side-angle-pose",
+      "movement": "Extended Side Angle — Utthita Parsvakonasana"
+    },
+    "cw341": {
+      "source": "yj-half-moon-pose",
+      "movement": "Half Moon — Ardha Chandrasana"
+    },
+    "cw342": {
+      "source": "yj-tree-pose",
+      "movement": "Tree — Vrksasana"
+    },
+    "cw343": {
+      "source": "yj-eagle-pose",
+      "movement": "Eagle — Garudasana"
+    },
+    "cw344": {
+      "source": "yj-chair-pose",
+      "movement": "Chair — Utkatasana"
+    },
+    "cw345": {
+      "source": "yj-camel-pose",
+      "movement": "Camel — Ustrasana"
+    },
+    "cw346": {
+      "source": "yj-bow-pose",
+      "movement": "Bow — Dhanurasana"
+    },
+    "cw347": {
+      "source": "yj-boat-pose",
+      "movement": "Boat — Paripurna Navasana"
+    },
+    "cw348": {
+      "source": "yj-half-lord-of-the-fishes-pose",
+      "movement": "Half Lord of the Fishes — Ardha Matsyendrasana"
+    },
+    "cw349": {
+      "source": "yj-gate-pose",
+      "movement": "Gate — Parighasana"
+    },
+    "cw350": {
+      "source": "yj-wide-legged-forward-bend",
+      "movement": "Wide-Legged Forward Bend — Prasarita Padottanasana"
+    },
+    "cw351": {
+      "source": "yj-happy-baby-pose",
+      "movement": "Happy Baby — Ananda Balasana"
+    },
+    "cw352": {
+      "source": "monkey",
+      "movement": "GMB Monkey"
+    },
+    "cw353": {
+      "source": "frogger",
+      "movement": "GMB Frogger"
+    },
+    "cw354": {
+      "source": "shrimp",
+      "movement": "Shrimp squat"
+    },
+    "cw355": {
+      "source": "cartwheel",
+      "movement": "Cartwheel"
+    },
+    "cw356": {
+      "source": "bridge",
+      "movement": "Three-point bridge"
+    },
+    "cw357": {
+      "source": "crow",
+      "movement": "Crow / frog stand"
+    },
+    "cw358": {
+      "source": "compression",
+      "movement": "Seated single-leg compression raise"
+    },
+    "cw359": {
+      "source": "bridge",
+      "movement": "Supine tabletop hold"
+    },
+    "cw360": {
+      "source": "seated",
+      "movement": "Picking Cherries (seated)"
+    },
+    "cw361": {
+      "source": "seated",
+      "movement": "Rowing a Boat (seated)"
+    },
+    "cw362": {
+      "source": "seated",
+      "movement": "Turtle Swims in the Ocean (seated)"
+    },
+    "cw363": {
+      "source": "seated",
+      "movement": "Kick with Sole (seated)"
+    }
+  },
+  "excluded": [
+    "Ab wheel: partial/wall-limited rollout is regression, standing rollout is advanced progression, not extra IDs. Foot straps/auto-return/single central handle are unavailable.",
+    "Yoga bridge duplicates cw154; locust duplicates cw185. Existing bear crawl cw223, crab walk cw224, L-sit cw203, dead bug cw179, inchworm cw247 are not re-added.",
+    "No speculative Animal Rx variants inferred from a list of names; 8 documented calisthenics movements instead of 15.",
+    "Seated opening/clouds already cw282–289; preserve cw283/cw285 despite similarity. No extra opening/cloud variants.",
+    "No karate."
+  ]
+}

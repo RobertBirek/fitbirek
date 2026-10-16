@@ -33,7 +33,9 @@ class SessionSummaryPage extends ConsumerWidget {
                 child: ListTile(
                   title: Text('${s.nazwaCwiczeniaPl} - seria ${s.numerSerii}'),
                   subtitle: Text(
-                    '${s.ciezarKg ?? '-'} kg × ${s.powtorzenia ?? '-'} (RPE ${s.rpe ?? '-'}) • ${Formatters.time(s.timestamp)}',
+                    '${s.side == null ? '' : '${const {'left': 'Lewa', 'right': 'Prawa', 'both': 'Obie'}[s.side]} • '}'
+                    '${s.czasSekund != null ? '${s.czasSekund} s' : '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg × '}${s.powtorzenia ?? '-'} powt.'}'
+                    ' (RPE ${s.rpe ?? '-'}) • ${Formatters.time(s.timestamp)}',
                   ),
                 ),
               );

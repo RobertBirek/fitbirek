@@ -102,12 +102,15 @@ void main() {
         };
         old.dispose();
         var db = AppDatabase.forTesting(NativeDatabase(file));
-        expect(db.schemaVersion, 7);
+        expect(db.schemaVersion, 8);
         for (final t in tables) {
           final after = (await db.customSelect('SELECT * FROM $t').get()).map((
             r,
           ) {
             final fields = {...r.data}..remove('full_cursor');
+            if (t == 'sets_log') {
+              expect(fields.remove('side'), isNull);
+            }
             if (version < 6) fields.remove('health_replay_enabled');
             return fields;
           }).toList();

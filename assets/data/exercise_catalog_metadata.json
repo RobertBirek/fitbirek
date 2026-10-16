@@ -1,0 +1,6066 @@
+{
+  "schemaVersion": 1,
+  "styles": [
+    {
+      "id": "yoga",
+      "label": "Joga",
+      "aliases": [
+        "yoga"
+      ]
+    },
+    {
+      "id": "tai_chi",
+      "label": "Tai chi",
+      "aliases": [
+        "taichi",
+        "tai-chi"
+      ]
+    },
+    {
+      "id": "calisthenics",
+      "label": "Kalistenika",
+      "aliases": [
+        "calisthenics",
+        "street workout"
+      ]
+    },
+    {
+      "id": "strength",
+      "label": "Trening siłowy",
+      "aliases": [
+        "strength",
+        "oporowy"
+      ]
+    },
+    {
+      "id": "conditioning",
+      "label": "Trening kondycyjny",
+      "aliases": [
+        "cardio",
+        "kondycja"
+      ]
+    },
+    {
+      "id": "mobility_recovery",
+      "label": "Mobilność i regeneracja",
+      "aliases": [
+        "mobility",
+        "rozciąganie",
+        "regeneracja"
+      ]
+    }
+  ],
+  "muscles": [
+    {
+      "id": "biceps",
+      "label": "Biceps",
+      "aliases": [
+        "dwugłowy ramienia"
+      ]
+    },
+    {
+      "id": "triceps",
+      "label": "Triceps",
+      "aliases": [
+        "trójgłowy ramienia"
+      ]
+    },
+    {
+      "id": "chest",
+      "label": "Klatka piersiowa",
+      "aliases": [
+        "piersiowe",
+        "pectoralis"
+      ]
+    },
+    {
+      "id": "back",
+      "label": "Plecy",
+      "aliases": [
+        "latissimus dorsi",
+        "najszerszy grzbietu",
+        "trapezy",
+        "romboidy",
+        "prostowniki grzbietu"
+      ]
+    },
+    {
+      "id": "shoulders",
+      "label": "Barki",
+      "aliases": [
+        "naramienne",
+        "deltoids"
+      ]
+    },
+    {
+      "id": "abs",
+      "label": "Brzuch",
+      "aliases": [
+        "core",
+        "skośne brzucha",
+        "poprzeczny brzucha"
+      ]
+    },
+    {
+      "id": "glutes",
+      "label": "Pośladki",
+      "aliases": [
+        "gluteus",
+        "pośladkowe",
+        "odwodziciele bioder"
+      ]
+    },
+    {
+      "id": "quadriceps",
+      "label": "Przód uda",
+      "aliases": [
+        "kwadryceps",
+        "czworogłowy uda"
+      ]
+    },
+    {
+      "id": "hamstrings",
+      "label": "Tył uda",
+      "aliases": [
+        "dwugłowy uda",
+        "kulszowo-goleniowe"
+      ]
+    },
+    {
+      "id": "adductors",
+      "label": "Przywodziciele uda",
+      "aliases": [
+        "adduktory",
+        "wewnętrzna strona uda"
+      ]
+    },
+    {
+      "id": "calves",
+      "label": "Łydki",
+      "aliases": [
+        "gastrocnemius",
+        "soleus",
+        "trójgłowy łydki"
+      ]
+    },
+    {
+      "id": "forearms",
+      "label": "Przedramiona",
+      "aliases": [
+        "chwyt",
+        "grip",
+        "zginacze nadgarstka",
+        "prostowniki nadgarstka"
+      ]
+    },
+    {
+      "id": "hip_flexors",
+      "label": "Zginacze bioder",
+      "aliases": [
+        "iliopsoas",
+        "biodrowo-lędźwiowy"
+      ]
+    },
+    {
+      "id": "brachialis",
+      "label": "Mięsień ramienny",
+      "aliases": [
+        "brachialis",
+        "ramienny"
+      ]
+    },
+    {
+      "id": "rotator_cuff",
+      "label": "Stożek rotatorów barku",
+      "aliases": [
+        "rotatory barku",
+        "infraspinatus",
+        "subscapularis",
+        "supraspinatus"
+      ]
+    },
+    {
+      "id": "serratus",
+      "label": "Mięsień zębaty przedni",
+      "aliases": [
+        "serratus anterior"
+      ]
+    },
+    {
+      "id": "tibialis_anterior",
+      "label": "Przód goleni",
+      "aliases": [
+        "piszczelowy przedni",
+        "tibialis anterior"
+      ]
+    },
+    {
+      "id": "neck",
+      "label": "Mięśnie szyi",
+      "aliases": [
+        "zginacze szyi"
+      ]
+    },
+    {
+      "id": "diaphragm",
+      "label": "Przepona",
+      "aliases": [
+        "diaphragm"
+      ]
+    },
+    {
+      "id": "feet",
+      "label": "Mięśnie stóp",
+      "aliases": [
+        "stopy"
+      ]
+    },
+    {
+      "id": "quadratus_lumborum",
+      "label": "Mięsień czworoboczny lędźwi",
+      "aliases": [
+        "QL",
+        "quadratus lumborum"
+      ]
+    }
+  ],
+  "exercises": {
+    "cw001": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw002": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw003": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw004": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw005": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw006": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw007": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw008": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw009": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw010": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw011": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw012": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw013": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw014": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw015": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw016": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw017": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw018": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw019": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "serratus"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw020": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw021": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw022": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw023": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw024": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw025": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw026": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "serratus",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw027": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw028": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw029": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw030": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "triceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw031": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw032": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "biceps",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw033": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw034": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw035": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw036": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw037": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors",
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw038": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw039": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "abs",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw040": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw041": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "abs",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw042": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw043": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "back",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw044": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw045": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw046": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw047": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw048": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw049": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "chest",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw050": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw051": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw052": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw053": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw054": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw055": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "back"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw056": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw057": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw058": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "rotator_cuff"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw059": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw060": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw061": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "rotator_cuff"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw062": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw063": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw064": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw065": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "chest",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw066": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs",
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw067": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "rotator_cuff"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw068": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw069": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "quadriceps",
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw070": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw071": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves",
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw072": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw073": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw074": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw075": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw076": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw077": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "rotator_cuff"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw078": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw079": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw080": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "rotator_cuff",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw081": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw082": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw083": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw084": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw085": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "rotator_cuff",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw086": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "rotator_cuff",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw087": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "rotator_cuff"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw088": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "rotator_cuff"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw089": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "rotator_cuff",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw090": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "rotator_cuff"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw091": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "rotator_cuff"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw092": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "rotator_cuff"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw093": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw094": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps",
+        "brachialis"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw095": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw096": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw097": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps",
+        "forearms"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw098": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw099": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "brachialis"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw100": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms",
+        "brachialis"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw101": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw102": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw103": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw104": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw105": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw106": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw107": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw108": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw109": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw110": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw111": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw112": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw113": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw114": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw115": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw116": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw117": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw118": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw119": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "quadriceps",
+        "glutes",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw120": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw121": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "forearms",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw122": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw123": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw124": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw125": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw126": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw127": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "chest",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw128": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw129": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw130": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw131": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw132": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw133": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "adductors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw134": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw135": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw136": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw137": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw138": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw139": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "adductors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw140": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw141": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw142": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw143": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw144": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw145": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw146": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw147": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw148": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw149": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw150": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw151": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "adductors",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw152": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw153": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw154": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw155": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw156": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw157": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw158": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "adductors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw159": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw160": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw161": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw162": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw163": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw164": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw165": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw166": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw167": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw168": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "tibialis_anterior"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw169": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw170": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "chest",
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw171": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw172": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw173": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw174": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw175": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw176": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw177": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw178": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw179": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw180": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw181": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw182": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw183": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw184": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw185": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw186": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw187": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw188": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw189": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw190": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw191": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw192": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw193": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw194": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw195": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw196": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw197": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw198": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "quadratus_lumborum"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw199": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw200": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw201": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw202": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw203": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "shoulders",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw204": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "glutes",
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw205": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw206": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw207": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw208": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "quadriceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw209": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders",
+        "triceps",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw210": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "chest",
+        "triceps",
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw211": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "chest",
+        "shoulders",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw212": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw213": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw214": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw215": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves",
+        "quadriceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw216": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw217": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw218": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw219": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw220": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw221": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw222": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw223": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw224": {
+      "styles": [
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw225": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "forearms"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw226": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw227": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw228": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw229": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw230": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw231": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw232": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw233": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "forearms",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw234": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "hamstrings",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw235": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "calves",
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw236": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "hamstrings",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    "cw237": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    "cw238": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "hamstrings",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw239": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "hamstrings",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw240": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "hamstrings",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw241": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw242": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw243": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw244": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "adductors",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw245": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw246": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw247": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw248": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "glutes",
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw249": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "adductors"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw250": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw251": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw252": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw253": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes",
+        "back",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw254": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back",
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw255": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw256": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "adductors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw257": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw258": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw259": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "adductors",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "quadriceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw260": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "quadriceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw261": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw262": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw263": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw264": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw265": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw266": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw267": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw268": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw269": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "neck"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw270": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "neck"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw271": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw272": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw273": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw274": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "forearms"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw275": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "calves",
+        "tibialis_anterior"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw276": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "tibialis_anterior"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw277": {
+      "styles": [
+        "calisthenics",
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "adductors",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "quadriceps"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw278": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "chest"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw279": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw280": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw281": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "quadriceps",
+        "glutes",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "back",
+        "chest",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    "cw282": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "diaphragm"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw283": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw284": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw285": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw286": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw287": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw288": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw289": {
+      "styles": [
+        "mobility_recovery",
+        "tai_chi"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [
+        "taichi siedzące"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw290": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw291": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw292": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw293": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw294": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "quadratus_lumborum",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw295": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "neck"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw296": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw297": {
+      "styles": [
+        "mobility_recovery",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "back",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "rotator_cuff"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw298": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "calves",
+        "tibialis_anterior"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw299": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw300": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "diaphragm"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    "cw301": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "diaphragm"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw302": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "abs",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw303": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "chest",
+        "back",
+        "quadriceps",
+        "glutes",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw304": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "shoulders",
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw305": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "quadriceps",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw306": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "quadriceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw307": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw308": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "shoulders",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw309": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "biceps",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw310": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "back",
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "triceps",
+        "shoulders"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw311": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw312": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw313": {
+      "styles": [
+        "strength",
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "chest",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "quadriceps",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    "cw314": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw315": {
+      "styles": [
+        "strength",
+        "calisthenics",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "chest",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "biceps",
+        "triceps"
+      ],
+      "aliases": [],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw316": {
+      "styles": [
+        "strength",
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "forearms",
+        "abs",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "calves"
+      ],
+      "aliases": [],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw317": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "abs",
+        "forearms"
+      ],
+      "aliases": [
+        "Sandbag deadlift",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw318": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "biceps"
+      ],
+      "aliases": [
+        "Sandbag front hold squat",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw319": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "adductors"
+      ],
+      "aliases": [
+        "Sandbag bear hug squat",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw320": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "shoulders"
+      ],
+      "aliases": [
+        "Sandbag shoulder squat",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw321": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "abs"
+      ],
+      "aliases": [
+        "Sandbag front loaded good morning",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw322": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "shoulders",
+        "abs",
+        "hamstrings",
+        "forearms"
+      ],
+      "aliases": [
+        "Sandbag bent-over row",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw323": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "shoulders",
+        "abs",
+        "forearms"
+      ],
+      "aliases": [
+        "Sandbag high pull",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw324": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "biceps",
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [
+        "Sandbag clean to fists",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw325": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "glutes"
+      ],
+      "aliases": [
+        "Sandbag overhead press",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw326": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "shoulders",
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "quadriceps"
+      ],
+      "aliases": [
+        "Sandbag clean and press",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw327": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hamstrings",
+        "back"
+      ],
+      "aliases": [
+        "Sandbag MAX lunge",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw328": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "back",
+        "shoulders",
+        "forearms"
+      ],
+      "aliases": [
+        "Sandbag shoveling",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw329": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "back",
+        "forearms"
+      ],
+      "aliases": [
+        "Sandbag around the world",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw330": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "back",
+        "glutes",
+        "forearms"
+      ],
+      "aliases": [
+        "Sandbag plank lateral drag",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw331": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "shoulders"
+      ],
+      "aliases": [
+        "Sandbag tension hip bridge",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw332": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "glutes"
+      ],
+      "aliases": [
+        "Sandbag half-kneeling arc press",
+        "worek z piaskiem"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw333": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "shoulders",
+        "glutes"
+      ],
+      "aliases": [
+        "Kneeling ab wheel rollout",
+        "ab wheel",
+        "ab roller"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw334": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "shoulders",
+        "glutes"
+      ],
+      "aliases": [
+        "Kneeling ab wheel V rollout",
+        "ab wheel",
+        "ab roller"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw335": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "chest",
+        "glutes"
+      ],
+      "aliases": [
+        "Ab wheel plank",
+        "ab wheel",
+        "ab roller"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw336": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "hip_flexors",
+        "abs",
+        "shoulders",
+        "back"
+      ],
+      "aliases": [
+        "Warrior I — Virabhadrasana I"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw337": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders",
+        "calves"
+      ],
+      "aliases": [
+        "Warrior II — Virabhadrasana II"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw338": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings",
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "shoulders",
+        "calves"
+      ],
+      "aliases": [
+        "Warrior III — Virabhadrasana III"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw339": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back",
+        "shoulders",
+        "quadriceps"
+      ],
+      "aliases": [
+        "Extended Triangle — Utthita Trikonasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw340": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders",
+        "back"
+      ],
+      "aliases": [
+        "Extended Side Angle — Utthita Parsvakonasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw341": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs",
+        "shoulders",
+        "calves"
+      ],
+      "aliases": [
+        "Half Moon — Ardha Chandrasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw342": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "quadriceps",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "adductors"
+      ],
+      "aliases": [
+        "Tree — Vrksasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw343": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "back",
+        "abs",
+        "calves"
+      ],
+      "aliases": [
+        "Eagle — Garudasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw344": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders",
+        "back",
+        "calves"
+      ],
+      "aliases": [
+        "Chair — Utkatasana"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw345": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "back",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors",
+        "quadriceps",
+        "chest",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Camel — Ustrasana"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw346": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "back",
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "hip_flexors",
+        "chest",
+        "shoulders"
+      ],
+      "aliases": [
+        "Bow — Dhanurasana"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw347": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "back"
+      ],
+      "aliases": [
+        "Boat — Paripurna Navasana"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw348": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "back",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "shoulders"
+      ],
+      "aliases": [
+        "Half Lord of the Fishes — Ardha Matsyendrasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw349": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "shoulders",
+        "hamstrings"
+      ],
+      "aliases": [
+        "Gate — Parighasana"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    "cw350": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "back",
+        "abs"
+      ],
+      "aliases": [
+        "Wide-Legged Forward Bend — Prasarita Padottanasana"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw351": {
+      "styles": [
+        "yoga",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "adductors",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "back"
+      ],
+      "aliases": [
+        "Happy Baby — Ananda Balasana"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw352": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "quadriceps",
+        "adductors",
+        "back"
+      ],
+      "aliases": [
+        "GMB Monkey"
+      ],
+      "tracking": "rounds",
+      "unilateral": true
+    },
+    "cw353": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "quadriceps",
+        "back",
+        "calves"
+      ],
+      "aliases": [
+        "GMB Frogger"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    "cw354": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [
+        "Shrimp squat"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw355": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "glutes",
+        "adductors",
+        "forearms"
+      ],
+      "aliases": [
+        "Cartwheel"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw356": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "back",
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "hamstrings",
+        "chest"
+      ],
+      "aliases": [
+        "Three-point bridge"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw357": {
+      "styles": [
+        "calisthenics",
+        "yoga"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "forearms"
+      ],
+      "aliases": [
+        "Crow / frog stand"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw358": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "quadriceps"
+      ],
+      "aliases": [
+        "Seated single-leg compression raise"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw359": {
+      "styles": [
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "shoulders",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "triceps",
+        "back"
+      ],
+      "aliases": [
+        "Supine tabletop hold"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    "cw360": {
+      "styles": [
+        "tai_chi",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "abs"
+      ],
+      "aliases": [
+        "Picking Cherries (seated)"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    "cw361": {
+      "styles": [
+        "tai_chi",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "back",
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders"
+      ],
+      "aliases": [
+        "Rowing a Boat (seated)"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw362": {
+      "styles": [
+        "tai_chi",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "shoulders",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "chest"
+      ],
+      "aliases": [
+        "Turtle Swims in the Ocean (seated)"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    "cw363": {
+      "styles": [
+        "tai_chi",
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors",
+        "abs",
+        "tibialis_anterior"
+      ],
+      "aliases": [
+        "Kick with Sole (seated)"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    }
+  }
+}

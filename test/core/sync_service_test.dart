@@ -733,6 +733,7 @@ void main() {
       exerciseId: 'cw001',
       exerciseNamePl: 'Test',
       setNumber: 1,
+      reps: 5,
     );
     await repo.finishSession(id, DateTime.now());
     await (db.update(db.syncOutbox)

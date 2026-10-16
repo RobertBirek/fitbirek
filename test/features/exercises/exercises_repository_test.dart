@@ -10,6 +10,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:fitbirek_training/app/constants.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/utils/partia_kategoria.dart';
 import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
@@ -20,6 +21,18 @@ void main() {
 
   late AppDatabase db;
   late ExercisesRepository repo;
+  const legacyCount = 316;
+  final legacyIds = {
+    for (var i = 1; i <= legacyCount; i++) 'cw${i.toString().padLeft(3, '0')}',
+  };
+  late List<Map<String, dynamic>> data;
+
+  setUpAll(() {
+    data =
+        (jsonDecode(File('assets/data/exercises.json').readAsStringSync())
+                as List)
+            .cast<Map<String, dynamic>>();
+  });
 
   setUp(() {
     db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -30,7 +43,7 @@ void main() {
 
   group('syncFromAssets - import przyrostowy', () {
     test(
-      'aktualizuje tylko nazwaPl, gdy wszystkie 316 ID już istnieją',
+      'aktualizuje tylko nazwaPl, gdy wszystkie ID aktualnego katalogu już istnieją',
       () async {
         await repo.syncFromAssets();
         final catalog = await db.exercisesDao.getAll();
@@ -70,7 +83,7 @@ void main() {
         await repo.syncFromAssets();
 
         final after = await db.exercisesDao.getAll();
-        expect(after, hasLength(316));
+        expect(after, hasLength(data.length));
         expect(
           {for (final row in after) row.id: row},
           {
@@ -82,6 +95,133 @@ void main() {
         expect(await db.select(db.syncOutbox).get(), outbox);
         expect((await repo.getById('cw001'))!.ulubione, isTrue);
         expect((await repo.getById('cw002'))!.ulubione, isFalse);
+      },
+    );
+
+    test(
+      'po rozszerzeniu dopisuje nowe ID do starego prefiksu 316 bez zmiany pól, historii i ulubionych',
+      () async {
+        // Stan urządzenia sprzed rozszerzenia: nigdy nie importowano nowych ID.
+        // Fixture pochodzi z prawdziwego assetu, nie z pełnego importu i DELETE.
+        final legacy = data.where((e) => legacyIds.contains(e['id'])).toList();
+        expect(legacy, hasLength(legacyCount));
+        for (final e in legacy) {
+          await db
+              .into(db.exercises)
+              .insert(
+                ExercisesCompanion.insert(
+                  id: e['id'] as String,
+                  nazwaPl: e['nazwaPl'] as String,
+                  nazwaEn: e['nazwaEn'] as String,
+                  partiaGlowna: e['partiaGlowna'] as String,
+                  partieWspierajace: jsonEncode(e['partieWspierajace']),
+                  sprzet: jsonEncode(e['sprzet']),
+                  typ: e['typ'] as String,
+                  poziom: e['poziom'] as String,
+                  wzorzecRuchu: e['wzorzecRuchu'] as String,
+                  seriexPowtorzenia: e['seriexPowtorzenia'] as String,
+                  tempo: e['tempo'] as String,
+                  kluczoweWskazowki: jsonEncode(e['kluczoweWskazowki']),
+                  czesteBledy: jsonEncode(e['czesteBledy']),
+                  progresja: e['progresja'] as String,
+                  regresja: e['regresja'] as String,
+                  zrodlo: e['zrodlo'] as String,
+                ),
+              );
+        }
+        // Lokalne pola niebędące nazwą PL również nie mogą zostać odświeżone.
+        await (db.update(
+          db.exercises,
+        )..where((t) => t.id.equals('cw001'))).write(
+          const ExercisesCompanion(
+            nazwaEn: Value('Local English push-up'),
+            tempo: Value('4-2-1-0'),
+            zrodlo: Value('Lokalna notatka o źródle'),
+          ),
+        );
+        await repo.toggleFavorite('cw001', true);
+        await repo.toggleFavorite('cw316', true);
+        await repo.toggleFavorite('cw002', true);
+        await repo.toggleFavorite('cw002', false);
+
+        final startedAt = DateTime.utc(2026, 10, 1, 10);
+        final sessionId = await db
+            .into(db.workoutSessions)
+            .insert(
+              WorkoutSessionsCompanion.insert(
+                dataStart: startedAt,
+                dataKoniec: Value(startedAt.add(const Duration(minutes: 20))),
+                czasTrwaniaSekund: const Value(1200),
+                notatka: const Value('Historia sprzed rozszerzenia katalogu'),
+                syncVersion: const Value(7),
+              ),
+            );
+        for (final id in ['cw001', 'cw316']) {
+          await db
+              .into(db.setsLog)
+              .insert(
+                SetsLogCompanion.insert(
+                  sesjaId: sessionId,
+                  cwiczenieId: id,
+                  nazwaCwiczeniaPl: 'Historyczna nazwa $id',
+                  numerSerii: 1,
+                  ciezarKg: const Value(12.5),
+                  powtorzenia: const Value(8),
+                  rpe: const Value(7),
+                  timestamp: Value(startedAt.add(const Duration(minutes: 5))),
+                  // Stara historia bez side zachowuje swoje dotychczasowe znaczenie.
+                  syncVersion: const Value(4),
+                ),
+              );
+        }
+        final before = await db.exercisesDao.getAll();
+        expect(before.map((e) => e.id).toSet(), legacyIds);
+        expect(await repo.getById('cw317'), isNull);
+        final sessions = await db.select(db.workoutSessions).get();
+        final sets = await db.select(db.setsLog).get();
+        final favorites = await db.select(db.exerciseFavorites).get();
+        final outbox = await db.select(db.syncOutbox).get();
+
+        await repo.syncFromAssets();
+
+        final after = await db.exercisesDao.getAll();
+        expect(after, hasLength(data.length));
+        expect(
+          after.map((e) => e.id).toSet(),
+          data.map((e) => e['id']).toSet(),
+        );
+        expect(
+          {
+            for (final row in after.where((e) => legacyIds.contains(e.id)))
+              row.id: row,
+          },
+          {for (final row in before) row.id: row},
+        );
+        final additions = data.where((e) => !legacyIds.contains(e['id']));
+        expect(additions, isNotEmpty);
+        for (final e in additions) {
+          final imported = await repo.getById(e['id'] as String);
+          expect(imported, isNotNull, reason: e['id'] as String);
+          expect(imported!.toJson(), e, reason: e['id'] as String);
+        }
+        expect(await db.select(db.workoutSessions).get(), sessions);
+        expect(await db.select(db.setsLog).get(), sets);
+        expect(await db.select(db.exerciseFavorites).get(), favorites);
+        expect(await db.select(db.syncOutbox).get(), outbox);
+        expect((await repo.getById('cw001'))!.ulubione, isTrue);
+        expect((await repo.getById('cw316'))!.ulubione, isTrue);
+        expect((await repo.getById('cw002'))!.ulubione, isFalse);
+
+        final changes =
+            (await db.customSelect('SELECT total_changes() AS n').getSingle())
+                .read<int>('n');
+        await repo.syncFromAssets();
+        expect(await db.exercisesDao.getAll(), after);
+        expect(
+          (await db.customSelect('SELECT total_changes() AS n').getSingle())
+              .read<int>('n'),
+          changes,
+        );
       },
     );
 
@@ -103,7 +243,7 @@ void main() {
 
         await repo.syncFromAssets();
 
-        expect(await db.exercisesDao.count(), 317);
+        expect(await db.exercisesDao.count(), data.length + 1);
         expect(await repo.getById('cw316'), isNotNull);
         expect(
           (await db.exercisesDao.getByIdWithFavorite(original.id))!.$1,
@@ -170,11 +310,11 @@ void main() {
       },
     );
 
-    test('wgrywa całą bazę (316 ćwiczeń) przy pustej tabeli', () async {
+    test('wgrywa cały aktualny asset przy pustej tabeli', () async {
       await repo.syncFromAssets();
 
       final count = await db.exercisesDao.count();
-      expect(count, 316);
+      expect(count, data.length);
     });
 
     test(
@@ -184,7 +324,7 @@ void main() {
         await repo.syncFromAssets();
 
         final count = await db.exercisesDao.count();
-        expect(count, 316);
+        expect(count, data.length);
       },
     );
 
@@ -195,7 +335,7 @@ void main() {
         await repo.toggleFavorite('cw001', true);
         await repo.syncFromAssets();
 
-        expect(await db.exercisesDao.count(), 316);
+        expect(await db.exercisesDao.count(), data.length);
         expect((await repo.getById('cw001'))!.ulubione, isTrue);
 
         final favorite = (await db.select(db.exerciseFavorites).get()).single;
@@ -205,12 +345,12 @@ void main() {
     );
 
     test(
-      'watchAll po synchronizacji zwraca 316 ćwiczeń z poprawnym mapowaniem list',
+      'watchAll po synchronizacji zwraca cały aktualny katalog z poprawnym mapowaniem list',
       () async {
         await repo.syncFromAssets();
 
         final all = await repo.watchAll().first;
-        expect(all, hasLength(316));
+        expect(all, hasLength(data.length));
 
         final pompki = all.firstWhere((e) => e.id == 'cw001');
         expect(pompki.sprzet, contains('Masa własna'));
@@ -236,20 +376,18 @@ void main() {
   });
 
   group('assets/data/exercises.json - walidacja statyczna pliku danych', () {
-    late List<dynamic> data;
-
-    setUpAll(() {
-      final file = File('assets/data/exercises.json');
-      data = jsonDecode(file.readAsStringSync()) as List<dynamic>;
-    });
-
-    test('zawiera dokładnie 316 pozycji', () {
-      expect(data, hasLength(316));
+    test('zachowuje stary prefiks 316 ID i zawiera jego rozszerzenie', () {
+      expect(data.length, greaterThan(legacyCount));
+      expect(data.take(legacyCount).map((e) => e['id']).toSet(), legacyIds);
     });
 
     test('wszystkie id są unikalne i mają format cwNNN', () {
       final ids = data.map((e) => e['id'] as String).toList();
       expect(ids.toSet(), hasLength(ids.length));
+      expect(ids, [
+        for (var i = 1; i <= data.length; i++)
+          'cw${i.toString().padLeft(3, '0')}',
+      ]);
       for (final id in ids) {
         expect(RegExp(r'^cw\d{3}$').hasMatch(id), isTrue, reason: id);
       }
@@ -292,17 +430,7 @@ void main() {
     });
 
     test('sprzęt jest zawsze podzbiorem znanych opcji sprzętu', () {
-      const validSprzet = {
-        'Masa własna',
-        'Hantle',
-        'Ławeczka',
-        'Drążek',
-        'Gumy oporowe',
-        'Bieżnia',
-        'Skakanka',
-        'Krzesło',
-        'Ręcznik',
-      };
+      final validSprzet = AppConstants.dostepnySprzetOpcje.toSet();
       for (final e in data) {
         final sprzet = List<String>.from(e['sprzet'] as List);
         for (final s in sprzet) {

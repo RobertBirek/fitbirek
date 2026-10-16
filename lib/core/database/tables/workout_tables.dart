@@ -24,6 +24,9 @@ class SetsLog extends Table with SyncMetadata {
   RealColumn get ciezarKg => real().nullable()();
   IntColumn get powtorzenia => integer().nullable()();
   IntColumn get czasSekund => integer().nullable()();
+  TextColumn get side => text().nullable().customConstraint(
+    "NULL CHECK (side IS NULL OR side IN ('left', 'right', 'both'))",
+  )();
   IntColumn get rpe => integer().nullable()();
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
 }
