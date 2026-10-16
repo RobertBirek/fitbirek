@@ -2,11 +2,12 @@
 
 ## Stan
 
-**363 ćwiczenia i363 ilustracje**, w tym47 nowych cw317–cw363.
-Rozszerzenie przygotowano do wydania **1.12.0+25** i wypchnięto na main.
-**Wdrożenie wstrzymane przed backupem/promocją**: automatyczna retencja
-usunęłaby najstarszy istniejący backup, wbrew zakazowi czyszczenia.
-Produkcja pozostaje1.11.0+24 z316 ćwiczeniami. Dowody i pozostałe kroki:
+**363 ćwiczenia i363 ilustracje publicznie wydane w1.12.0+25**, w tym47
+nowych cw317–cw363; **0 brakujących,0 niewydanych assetów**.
+Wdrożono wyłącznie web2026-10-16 o13:51:33 UTC; kontrola publiczna zakończona
+o13:52:11 UTC. Wcześniejsze wstrzymanie wyjaśniono: standardowa retencja35
+pozostaje dozwolona i niezmieniona; zakaz dotyczy ręcznego usuwania.
+Dowody backupu, rollbacku, wdrożenia i publicznych363 SHA:
 [raport wydania](releases/2026-10-16-web-1.12.0-25.md).
 
 ## Katalog i sprzęt
@@ -93,7 +94,8 @@ nie response_received drugi raz. Szacunek upper_bound_no_cache:
   Przegląd grafiki był bezpośredni, nie niezależny.
 
 Nie zmieniano zależności, wersji Flutter/Dart, istniejących obrazów ani ID.
-Nie wykonywano zmian infrastruktury lub produkcyjnych danych.
+Na etapie implementacji nie wykonywano zmian infrastruktury lub produkcyjnych
+danych. Późniejsze wydanie weba i standardowy backup opisuje raport wydania.
 
 ## Weryfikacja wydaniowa 1.12.0+25
 

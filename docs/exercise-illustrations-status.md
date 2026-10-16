@@ -1,9 +1,11 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-16, produkcyjna wersja webowa 1.11.0+24.
+Stan na 2026-10-16, produkcyjna wersja webowa 1.12.0+25.
 
-Lokalny katalog obejmuje 363 ćwiczenia i 363 ilustracje:316 wydanych oraz
-47 nowych, lokalnych niewydanych (`cw317–cw363`). Nie ma ćwiczeń bez ilustracji.
+Katalog obejmuje **363 ćwiczenia i363 publicznie wydane ilustracje**:
+**0 brakujących i0 niewydanych**. Nowe47 (`cw317–cw363`) wydano w1.12.0+25.
+Wszystkie363 WebP zweryfikowano publicznie (HTTP/type/cache/SHA-256):
+[wydanie1.12.0+25](releases/2026-10-16-web-1.12.0-25.md).
 Źródła rozszerzenia i funkcje: [raport](catalog-expansion-2026-10-16.md).
 Partie 28–46 (`cw139–cw250`, 112 ilustracji) wydano w `1.11.0+24`.
 Wszystkie 316 obrazów zweryfikowano publicznie; dowody:
@@ -20,6 +22,8 @@ oraz zachowuje wszystkie 66 wcześniej wydanych ilustracji, w tym sześć z Part
 
 ## Ilustracje — rejestr i historyczny status integracji
 
+**Aktualny status cw317–cw363: wydane w 1.12.0+25.**
+Poniższe opisy lokalnej integracji rozszerzenia zachowują historię przed wydaniem.
 **Aktualny status cw013–cw138: wydane w 1.10.0+23.**
 **Aktualny status cw139–cw250: wydane w 1.11.0+24.** Zachowane poniżej
 oznaczenia „lokalnie zintegrowane; niewydane” oraz opisy Partii 07–46

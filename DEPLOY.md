@@ -3,6 +3,11 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
+Web **1.12.0+25 deployed 2026-10-16 13:51:33 UTC**:363 exercises and363
+publicly verified illustrations, offline filters and set tracking (local Drift8).
+Web-only update; API/PostgreSQL/push-sender unchanged, no Alembic migration.
+Standard backup retention35 remained unchanged. Evidence and rollback:
+[release report](docs/releases/2026-10-16-web-1.12.0-25.md).
 Mentor **1.2.0+4 deployed 2026-09-15 07:37:51 Europe/Warsaw (05:37:51 UTC)**,
 Alembic **0009**. This deploy enables configuration and local encryption only:
 no provider credentials, both consent defaults false, no provider calls.
