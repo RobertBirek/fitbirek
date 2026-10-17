@@ -1,4 +1,5 @@
 import asyncio
+from copy import deepcopy
 import json
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -814,3 +815,203 @@ async def test_pull_watermark_ceiling_never_skips_interleaved_commit(account, se
     monkeypatch.setattr(session, "scalars", original_scalars)
     next_page = await sync_service.pull_changes(session, account.id, response.cursor, include_health=include_health)
     assert [change.cursor for change in next_page.changes] == [inserted[0].cursor]
+
+
+EXTENSION_CASES = [
+    ("profile", {"filterPresets": {"version": 1, "entries": [{
+        "id": str(uuid4()), "name": "Mata", "filters": {"equipment": ["Mata"]},
+        "createdAtUtc": "2026-10-16T00:00:00Z", "updatedAtUtc": "2026-10-16T00:00:00Z",
+    }]}, "exerciseVariants": {"version": 1, "entries": [{
+        "id": str(uuid4()), "exerciseId": "cw317", "name": "Wolno", "tempo": "3-1-3",
+        "createdAtUtc": "2026-10-16T00:00:00Z", "updatedAtUtc": "2026-10-16T00:00:00Z",
+    }]}}),
+    ("workoutSession", {"guidance": {"schemaVersion": 1, "progress": {"block": 2}}}),
+    ("workoutSet", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
+    ("personalRecord", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
+]
+
+
+def extension_operation(entity_type, **kwargs):
+    return PushOperation.model_validate({**operation(**kwargs), "entityType": entity_type})
+
+
+@pytest.mark.parametrize("entity_type,extras", EXTENSION_CASES)
+async def test_extension_omission_preserves_only_known_keys_and_original_retry(
+    client, account, session, entity_type, extras,
+):
+    headers = await authenticate(client, account)
+    live = {**operation(payload={"name": "old", "unrelated": 123, **extras}), "entityType": entity_type}
+    old = {**operation(entity_id=live["entityId"], base_version=1,
+                       payload={"name": "finished"}), "entityType": entity_type}
+    original = deepcopy(old)
+    for op in (live, old):
+        response = await client.post("/api/sync/push", json={"operations": [op]}, headers=headers)
+        assert response.status_code == 200
+        assert response.json()["conflicts"] == []
+    ack = response.json()["accepted"][0]
+    expected = {"name": "finished", **extras}
+    pull = (await client.get("/api/sync/pull?cursor=0")).json()
+    assert [c["entityType"] for c in pull["changes"]] == [entity_type, entity_type]
+    assert pull["changes"][-1]["payload"] == expected
+    record = await session.scalar(select(SyncRecord).where(SyncRecord.entity_type == entity_type))
+    assert record.payload == expected
+    stored = await session.scalar(select(SyncOperation).where(
+        SyncOperation.operation_id == PushOperation.model_validate(old).operation_id))
+    assert stored.request_digest == sync_service.request_digest(PushOperation.model_validate(original))
+    later = {**old, "operationId": str(uuid4()), "baseVersion": 2,
+             "payload": {"name": "later", **{key: None for key in extras}}}
+    assert (await client.post("/api/sync/push", json={"operations": [later]}, headers=headers)).json()["conflicts"] == []
+    replay = await client.post("/api/sync/push", json={"operations": [old]}, headers=headers)
+    assert replay.json() == {"accepted": [{**ack, "duplicate": True}], "conflicts": []}
+    changed_retry = {**old, "payload": expected}
+    reuse = await client.post("/api/sync/push", json={"operations": [changed_retry]}, headers=headers)
+    assert reuse.json()["conflicts"] == [{"operationId": old["operationId"], "kind": "operationReuse"}]
+    changes = (await client.get("/api/sync/pull?cursor=0")).json()["changes"]
+    assert len(changes) == 3
+    assert changes[-1]["payload"] == later["payload"]
+    stale = {**old, "operationId": str(uuid4())}
+    conflict = await client.post("/api/sync/push", json={"operations": [stale]}, headers=headers)
+    assert conflict.json()["accepted"] == []
+    authoritative = conflict.json()["conflicts"][0]["record"]
+    assert authoritative["version"] == 3
+    assert authoritative["payload"] == later["payload"]
+    assert old == original
+
+
+@pytest.mark.parametrize("entity_type,extras", EXTENSION_CASES)
+async def test_extension_independent_omission_null_and_per_write_snapshot(account, session, entity_type, extras):
+    initial = extension_operation(entity_type, payload={"name": "first", **extras})
+    await sync_service.push_operations(session, account.id, [initial])
+    first_key = next(iter(extras))
+    second = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1,
+                                 payload={"name": "second", first_key: None})
+    third = extension_operation(entity_type, entity_id=initial.entity_id, base_version=2,
+                                payload={"name": "third"})
+    original = second.model_dump(mode="json")
+    digest = sync_service.request_digest(second)
+    result = await sync_service.push_operations(session, account.id, [second, second, third])
+    assert result.conflicts == []
+    assert [a.version for a in result.accepted] == [2, 2, 3]
+    assert [a.duplicate for a in result.accepted] == [False, True, False]
+    kept = {**extras, first_key: None}
+    changes = (await sync_service.pull_changes(session, account.id, 0)).changes
+    assert [c.payload for c in changes] == [initial.payload, {"name": "second", **kept}, {"name": "third", **kept}]
+    assert second.model_dump(mode="json") == original
+    assert sync_service.request_digest(second) == digest
+
+
+@pytest.mark.parametrize("entity_type,extras", EXTENSION_CASES)
+async def test_extension_delete_and_revival_do_not_copy_tombstone_extras(account, session, entity_type, extras):
+    initial = extension_operation(entity_type, payload={"name": "first", **extras})
+    await sync_service.push_operations(session, account.id, [initial])
+    deletion = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1,
+                                   payload={"name": "deleted"}, deleted=True)
+    assert (await sync_service.push_operations(session, account.id, [deletion])).conflicts == []
+    # Even tombstones explicitly containing extensions must not supply them to a revival.
+    tombstone = extension_operation(entity_type, entity_id=initial.entity_id, base_version=2,
+                                    payload={"name": "tombstone", **extras}, deleted=True)
+    revival = extension_operation(entity_type, entity_id=initial.entity_id, base_version=3,
+                                  payload={"name": "revived"})
+    assert (await sync_service.push_operations(session, account.id, [tombstone, revival])).conflicts == []
+    changes = (await sync_service.pull_changes(session, account.id, 0)).changes
+    assert changes[1].payload == deletion.payload
+    assert changes[1].deleted_at is not None
+    assert changes[-1].payload == revival.payload
+    assert changes[-1].deleted_at is None
+
+
+async def test_extension_conflict_returns_committed_snapshot_and_rolls_back_planned_merge(account, session):
+    user_id = account.id
+    extras = EXTENSION_CASES[0][1]
+    initial = extension_operation("profile", payload={"name": "committed", **extras})
+    await sync_service.push_operations(session, user_id, [initial])
+    planned = extension_operation("profile", entity_id=initial.entity_id, base_version=1, payload={"name": "planned"})
+    stale = extension_operation("profile", entity_id=initial.entity_id, base_version=1, payload={"name": "stale"})
+    result = await sync_service.push_operations(session, user_id, [planned, stale])
+    assert result.accepted == []
+    assert result.conflicts[0].record.version == 1
+    assert result.conflicts[0].record.payload == initial.payload
+    assert len((await sync_service.pull_changes(session, user_id, 0)).changes) == 1
+    assert await session.scalar(select(func.count()).select_from(SyncOperation)) == 1
+    record = await session.scalar(select(SyncRecord))
+    assert record.version == 1
+    assert record.payload == initial.payload
+    assert (await sync_service.push_operations(session, user_id, [planned])).conflicts == []
+    assert (await sync_service.pull_changes(session, user_id, 0)).changes[-1].payload == {"name": "planned", **extras}
+
+
+async def test_extension_merge_is_account_scoped_and_new_records_have_no_defaults(account, session):
+    other = User(email=f"other-{uuid4()}@example.com", password_hash="unused")
+    session.add(other)
+    await session.commit()
+    other_id = other.id
+    initial = extension_operation("profile", payload={"name": "private", **EXTENSION_CASES[0][1]})
+    await sync_service.push_operations(session, account.id, [initial])
+    old = extension_operation("profile", entity_id=initial.entity_id, payload={"name": "other"})
+    result = await sync_service.push_operations(session, other_id, [old])
+    assert result.conflicts == []
+    other_changes = (await sync_service.pull_changes(session, other_id, 0)).changes
+    assert [c.payload for c in other_changes] == [{"name": "other"}]
+    assert [c.payload for c in (await sync_service.pull_changes(session, account.id, 0)).changes] == [initial.payload]
+
+
+@pytest.mark.parametrize("entity_type,extras", EXTENSION_CASES)
+async def test_extension_present_value_replaces_whole_value_without_semantic_validation(account, session, entity_type, extras):
+    initial = extension_operation(entity_type, payload={"name": "first", **extras})
+    await sync_service.push_operations(session, account.id, [initial])
+    # Future client-owned schemas are not deep-merged or constrained to v1.
+    replacement = {key: {"futureSchema": [True, None, 2.5]} for key in extras}
+    update = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1,
+                                 payload={"name": "second", **replacement})
+    assert (await sync_service.push_operations(session, account.id, [update])).conflicts == []
+    assert (await sync_service.pull_changes(session, account.id, 0)).changes[-1].payload == update.payload
+
+
+@pytest.mark.parametrize("entity_type", ["profile", "workoutSession", "workoutSet", "personalRecord", "mood"])
+async def test_extension_new_record_baseline_and_keys_are_type_scoped(account, session, entity_type):
+    baseline = extension_operation(entity_type, payload={"name": "baseline"})
+    assert (await sync_service.push_operations(session, account.id, [baseline])).conflicts == []
+    assert (await sync_service.pull_changes(session, account.id, 0)).changes[-1].payload == baseline.payload
+    foreign_keys = {"filterPresets", "exerciseVariants", "guidance", "variantId", "variantLabel"} - set(
+        {"profile": ("filterPresets", "exerciseVariants"), "workoutSession": ("guidance",),
+         "workoutSet": ("variantId", "variantLabel"), "personalRecord": ("variantId", "variantLabel")}.get(entity_type, ())
+    )
+    with_foreign = extension_operation(entity_type, entity_id=baseline.entity_id, base_version=1,
+                                      payload={"name": "foreign", **{k: "not preserved" for k in foreign_keys}})
+    omitted = extension_operation(entity_type, entity_id=baseline.entity_id, base_version=2,
+                                 payload={"name": "omitted"})
+    assert (await sync_service.push_operations(session, account.id, [with_foreign, omitted])).conflicts == []
+    assert (await sync_service.pull_changes(session, account.id, 0)).changes[-1].payload == omitted.payload
+
+
+async def test_extension_commit_failure_rolls_back_snapshot_history_and_digest(account, session, monkeypatch):
+    user_id = account.id
+    initial = extension_operation("profile", payload={"name": "first", **EXTENSION_CASES[0][1]})
+    await sync_service.push_operations(session, user_id, [initial])
+    update = extension_operation("profile", entity_id=initial.entity_id, base_version=1, payload={"name": "second"})
+    original = update.model_dump(mode="json")
+    async def fail_commit():
+        raise RuntimeError("injected commit failure")
+    with monkeypatch.context() as patch:
+        patch.setattr(session, "commit", fail_commit)
+        with pytest.raises(RuntimeError, match="injected commit failure"):
+            await sync_service.push_operations(session, user_id, [update])
+    assert update.model_dump(mode="json") == original
+    record = await session.scalar(select(SyncRecord))
+    assert record.version == 1
+    assert record.payload == initial.payload
+    assert await session.scalar(select(func.count()).select_from(SyncOperation)) == 1
+    assert len((await sync_service.pull_changes(session, user_id, 0)).changes) == 1
+    assert (await sync_service.push_operations(session, user_id, [update])).conflicts == []
+
+
+@pytest.mark.parametrize("key", ["filterPresets", "exerciseVariants", "guidance", "variantId", "variantLabel"])
+async def test_extension_values_do_not_bypass_finite_json_validation(client, account, key):
+    headers = await authenticate(client, account)
+    invalid = {**operation(payload={key: {"entries": [{"value": float("inf")}]}}),
+               "entityType": "profile" if key in ("filterPresets", "exerciseVariants") else
+               "workoutSession" if key == "guidance" else "workoutSet"}
+    response = await client.post("/api/sync/push", content=json.dumps({"operations": [invalid]}),
+                                 headers={**headers, "Content-Type": "application/json"})
+    assert response.status_code == 422
+    assert (await client.get("/api/sync/pull?cursor=0")).json() == {"cursor": 0, "changes": []}

@@ -7,6 +7,7 @@ import '../../auth/providers/auth_providers.dart';
 import '../../exercises/domain/exercise_filter_engine.dart';
 import '../../workout/providers/workout_providers.dart';
 import '../domain/structured_plan.dart';
+import '../../workout/domain/workout_guidance.dart';
 
 /// One-time entry snapshot, never a frozen catalog ID list.
 final plannerEntryCriteriaProvider = StateProvider<ExerciseFilters?>(
@@ -80,21 +81,25 @@ class PlannerWorkflow {
         ),
   );
 
-  Future<void> start(List<Exercise> exercises) => _write((db, guard) async {
-    if (exercises.isEmpty ||
-        ref.read(activeWorkoutProvider).isActive ||
-        ref.read(activeWorkoutProvider).selectedExercises.isNotEmpty) {
-      throw StateError('Najpierw zakończ lub odrzuć bieżący trening.');
-    }
-    final notifier = ref.read(activeWorkoutProvider.notifier);
-    await notifier.startSession();
-    if (!guard() || !ref.read(activeWorkoutProvider).isActive) {
-      throw StateError('Start anulowany.');
-    }
-    for (final e in exercises) {
-      notifier.addExercise(e);
-    }
-  });
+  Future<void> start(List<Exercise> exercises, {StructuredPlan? plan}) =>
+      _write((db, guard) async {
+        if (exercises.isEmpty ||
+            ref.read(activeWorkoutProvider).isActive ||
+            ref.read(activeWorkoutProvider).selectedExercises.isNotEmpty) {
+          throw StateError('Najpierw zakończ lub odrzuć bieżący trening.');
+        }
+        final notifier = ref.read(activeWorkoutProvider.notifier);
+        await notifier.startSession(
+          guidance: plan == null ? null : WorkoutGuidance.start(plan),
+        );
+        if (!guard() || !ref.read(activeWorkoutProvider).isActive) {
+          throw StateError('Start anulowany.');
+        }
+        for (final e in exercises) {
+          notifier.addExercise(e);
+        }
+        notifier.updateDraft({});
+      });
 }
 
 final plannerRepositoryProvider = Provider<PlannerRepository>((ref) {

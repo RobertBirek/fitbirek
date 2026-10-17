@@ -6,6 +6,7 @@ class ProgressionPerformance {
     required this.exerciseId,
     required this.endedAt,
     this.side,
+    this.variantId,
     this.weightKg,
     this.reps,
     this.rpe,
@@ -13,6 +14,7 @@ class ProgressionPerformance {
   final int sessionId;
   final String exerciseId;
   final String? side;
+  final String? variantId;
   final DateTime endedAt;
   final double? weightKg;
   final int? reps, rpe;
@@ -40,6 +42,7 @@ class FixedLoadSuggestion {
 FixedLoadSuggestion proposeFixedLoad({
   required String exerciseId,
   required String? side,
+  String? variantId,
   required String prescription,
   required String tracking,
   required bool usesWeight,
@@ -87,6 +90,7 @@ FixedLoadSuggestion proposeFixedLoad({
   for (final row in history) {
     if (row.exerciseId != exerciseId ||
         row.side != side ||
+        row.variantId != variantId ||
         (row.reps ?? 0) <= 0) {
       continue;
     }

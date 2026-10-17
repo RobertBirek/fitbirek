@@ -32,9 +32,9 @@ void main() {
   });
 
   test(
-    'real offline index covers all 363 exercises with known classifications',
+    'real offline index covers all 369 exercises with known classifications',
     () {
-      expect(exercises, hasLength(363));
+      expect(exercises, hasLength(369));
       for (final exercise in exercises) {
         final entry = metadata.entryFor(exercise.id);
         expect(entry, isNotNull, reason: exercise.id);
@@ -64,7 +64,7 @@ void main() {
     },
   );
 
-  test('real execution metadata covers exactly all 363 catalog IDs', () {
+  test('real execution metadata covers exactly all catalog IDs', () {
     expect(metadata.exercises.keys.toSet(), exercises.map((e) => e.id).toSet());
     expect(metadata.conditions.keys.toSet(), {
       'no_jumps',
@@ -194,5 +194,29 @@ void main() {
       engine.filter(exercises, const ExerciseFilters(query: 'kolko brzucha')),
       hasLength(3),
     );
+  });
+
+  test('spine collection includes exactly 13 existing and 6 new exercises', () {
+    final selected = engine.filter(
+      exercises,
+      const ExerciseFilters(styles: {'spine'}),
+    );
+    expect(selected, hasLength(19));
+    expect(selected.map((e) => e.id).toSet(), {
+      'cw154',
+      'cw169',
+      'cw171',
+      'cw179',
+      'cw181',
+      'cw250',
+      'cw252',
+      'cw266',
+      'cw267',
+      'cw268',
+      'cw290',
+      'cw291',
+      'cw294',
+      for (var n = 364; n <= 369; n++) 'cw$n',
+    });
   });
 }

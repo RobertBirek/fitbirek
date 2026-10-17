@@ -9,7 +9,7 @@ import '../exercises/catalog_filter_test.dart' show exercise;
 
 void main() {
   test(
-    'real 363 catalog: yoga and regeneration stay inside engine pool at every budget',
+    'real catalog: yoga and regeneration stay inside engine pool at every budget',
     () {
       final catalog =
           (jsonDecode(File('assets/data/exercises.json').readAsStringSync())
@@ -24,8 +24,8 @@ void main() {
             )
             as Map<String, dynamic>,
       );
-      expect(catalog, hasLength(363));
-      expect(md.exercises, hasLength(363));
+      expect(catalog, hasLength(369));
+      expect(md.exercises, hasLength(catalog.length));
       final engine = ExerciseFilterEngine(md);
       for (final criteria in [
         const ExerciseFilters(styles: {'yoga'}),

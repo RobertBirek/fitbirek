@@ -4,8 +4,11 @@ Stan na 2026-10-16, produkcyjna wersja webowa 1.13.0+26.
 Wszystkie363 ilustracje zachowano bez zmian i ponownie sprawdzono publicznie;
 [aktualne dowody](releases/2026-10-16-web-1.13.0-26.md).
 
-Katalog obejmuje **363 ćwiczenia i363 publicznie wydane ilustracje**:
-**0 brakujących i0 niewydanych**. Nowe47 (`cw317–cw363`) wydano w1.12.0+25.
+Katalog lokalny obejmuje **369 ćwiczeń i 369 ilustracji**:
+**363 publicznie wydane, 6 lokalnych niewydanych, 0 brakujących**.
+Nowe `cw364–cw369` są wyłącznie lokalnie zintegrowane, bez publikacji;
+[przegląd, źródła i koszt](spine-illustrations-2026-10-16.md).
+Poprzednie47 (`cw317–cw363`) wydano w1.12.0+25.
 Wszystkie363 WebP zweryfikowano publicznie (HTTP/type/cache/SHA-256):
 [wydanie1.12.0+25](releases/2026-10-16-web-1.12.0-25.md).
 Źródła rozszerzenia i funkcje: [raport](catalog-expansion-2026-10-16.md).
@@ -35,6 +38,12 @@ liczby kadrów i historia generacji pozostają aktualne.
 
 | ID | Ćwiczenie | Kadry | Status |
 |---|---|---:|---|
+| cw364 | Przetaczanie miednicy w leżeniu na plecach | 2 | Lokalnie zintegrowane; niewydane. Biodra pozostają na podłożu. |
+| cw365 | Łagodne napięcie brzucha w leżeniu z normalnym oddechem | 1 | Lokalnie zintegrowane; niewydane. Oddech pozostaje instrukcją tekstową. |
+| cw366 | Kołysanie ugiętych kolan w leżeniu na plecach | 3 | Lokalnie zintegrowane; niewydane. Stałe barki, stopy przy podłożu. |
+| cw367 | Otwarta książka — obrót klatki w leżeniu bokiem | 2 | Lokalnie zintegrowane; niewydane. Kolana razem na podłożu. |
+| cw368 | Przyciąganie jednego kolana do klatki w leżeniu | 1 | Lokalnie zintegrowane; niewydane. Druga noga ugięta, stopa oparta. |
+| cw369 | Cofanie bioder do ściany bez obciążenia | 2 | Lokalnie zintegrowane; niewydane. Zawias biodrowy, kontakt ze ścianą. |
 | cw001 | Pompki klasyczne | 2 | Wydane w 1.9.0+22. |
 | cw002 | Pompki wąskie (diamentowe) | 2 | Wydane w 1.9.0+22. |
 | cw003 | Pompki szerokie | 2 | Wydane w 1.9.0+22. |

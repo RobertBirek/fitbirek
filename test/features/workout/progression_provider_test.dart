@@ -34,11 +34,13 @@ class DelayedHistory extends WorkoutRepository {
   Future<List<ProgressionPerformance>> getProgressionHistory(
     String id, {
     required String? side,
+    String? variantId,
     required int excludingSessionId,
   }) async {
     final rows = await super.getProgressionHistory(
       id,
       side: side,
+      variantId: variantId,
       excludingSessionId: excludingSessionId,
     );
     if (!entered.isCompleted) entered.complete();

@@ -20,6 +20,68 @@ class WorkoutHomePage extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
+            if (!active.isActive) ...[
+              for (final draft
+                  in ref.watch(pendingWorkoutDraftsProvider).valueOrNull ?? [])
+                ListTile(
+                  title: const Text('Niedokończony trening'),
+                  trailing: TextButton(
+                    child: const Text('Kontynuuj'),
+                    onPressed: () async {
+                      final choice = await showDialog<String>(
+                        context: context,
+                        builder: (c) => AlertDialog(
+                          title: const Text('Wznowić trening?'),
+                          content: const Text(
+                            'Czas poza aplikacją nie zostanie zaliczony jako praca. Niepotwierdzone serie pozostają szkicem.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(c, 'resume'),
+                              child: const Text('Wznów'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(c, 'restart'),
+                              child: const Text('Start odcinka od nowa'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(c, 'finish'),
+                              child: const Text('Zakończ'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (choice == null) return;
+                      final notifier = ref.read(activeWorkoutProvider.notifier);
+                      if (choice == 'finish') {
+                        final id = await notifier.finishPendingSession(
+                          draft.sessionSyncId,
+                        );
+                        if (context.mounted && id != null) {
+                          context.go('/workout/summary/$id');
+                        }
+                        return;
+                      }
+                      final resumed = await notifier.resumeSession(
+                        draft.sessionSyncId,
+                        restartSegment: choice == 'restart',
+                      );
+                      if (!context.mounted) return;
+                      if (!resumed) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Nie można wznowić: sesja, konto lub szkic są nieaktualne.',
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      context.go('/workout/session');
+                    },
+                  ),
+                ),
+            ],
             Padding(
               padding: const EdgeInsets.all(16),
               child: PrimaryButton(

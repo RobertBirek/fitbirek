@@ -1,5 +1,9 @@
 # Katalog ćwiczeń — rozszerzenie 2026-10-16
 
+> Poniżej opis historycznej pierwszej ekspansji do 363 wpisów. Druga ekspansja
+> dodaje cw364–cw369 i siódmy styl `spine`, zachowując cały prefiks i stare
+> style: aktualny wynik **369 ćwiczeń** opisano w [SPINE_EXPANSION.md](SPINE_EXPANSION.md).
+
 > Addytywny etap 5 rozszerza poniższy historyczny kontrakt sidecara (nadal
 > schemaVersion=1) o rejestry i listy `conditions`/`positions` dla wszystkich
 > 363 ID. Aktualne definicje, źródło decyzji i polecenia:

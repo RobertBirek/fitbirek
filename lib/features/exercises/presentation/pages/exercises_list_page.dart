@@ -392,7 +392,7 @@ class _PresetsDialogState extends ConsumerState<_PresetsDialog> {
                 )
               else ...[
                 const Text(
-                  'Zestawy są zapisane tylko na tym urządzeniu, dla bieżącego konta.',
+                  'Zestawy są dostępne offline dla bieżącego konta i synchronizowane po zalogowaniu.',
                 ),
                 TextField(
                   key: const Key('preset-name'),

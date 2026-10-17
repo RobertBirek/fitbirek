@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:drift/native.dart';
+import '../../core/database/legacy_schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -61,7 +62,12 @@ void main() {
       await db.customStatement(
         'ALTER TABLE workout_plans DROP COLUMN structure_json',
       );
+      await removeV12Columns(db);
       await db.customStatement('PRAGMA user_version = 9');
+      await db.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN guidance_json',
+      );
+      await db.customStatement('DROP TABLE workout_drafts');
       await db.close();
       db = AppDatabase.forTesting(NativeDatabase.opened(raw));
       addTearDown(db.close);
@@ -73,7 +79,7 @@ void main() {
         (await db.customSelect('SELECT * FROM sync_outbox').getSingle()).data,
         before,
       );
-      expect(db.schemaVersion, 10);
+      expect(db.schemaVersion, 12);
     },
   );
   test(

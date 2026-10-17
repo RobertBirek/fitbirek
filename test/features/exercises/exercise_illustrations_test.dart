@@ -373,6 +373,12 @@ void main() {
     'cw361',
     'cw362',
     'cw363',
+    'cw364',
+    'cw365',
+    'cw366',
+    'cw367',
+    'cw368',
+    'cw369',
   };
 
   test('registry contains exactly the illustration assets in the catalog', () {
@@ -423,7 +429,7 @@ void main() {
   });
 
   test('returns no illustration for an unknown exercise', () {
-    expect(exerciseIllustrationAsset('cw364'), isNull);
+    expect(exerciseIllustrationAsset('cw370'), isNull);
   });
 
   test('maps cw265 to its illustration asset', () {

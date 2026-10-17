@@ -33,8 +33,22 @@ class DelayedFinishRepository extends WorkoutRepository {
   final written = Completer<void>();
   final release = Completer<void>();
   @override
-  Future<void> finishSession(int id, DateTime start) async {
-    await super.finishSession(id, start);
+  Future<void> finishSession(
+    int id,
+    DateTime start, {
+    String? expectedSyncId,
+    bool Function()? guard,
+    String? note,
+    String? accountId,
+  }) async {
+    await super.finishSession(
+      id,
+      start,
+      expectedSyncId: expectedSyncId,
+      guard: guard,
+      note: note,
+      accountId: accountId,
+    );
     written.complete();
     await release.future;
   }

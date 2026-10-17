@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 
 from catalog_additions import ADDITIONS
+from spine_additions import ADDITIONS as SPINE_ADDITIONS, EXISTING_SPINE, SPINE_STYLE
 from build_execution_conditions import load_classification
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,7 @@ STYLES = [
     ('strength', 'Trening siłowy', ['strength', 'oporowy']),
     ('conditioning', 'Trening kondycyjny', ['cardio', 'kondycja']),
     ('mobility_recovery', 'Mobilność i regeneracja', ['mobility', 'rozciąganie', 'regeneracja']),
+    SPINE_STYLE,
 ]
 MUSCLES = [
     ('biceps', 'Biceps', ['dwugłowy ramienia']),
@@ -409,7 +411,7 @@ def build() -> dict:
             aliases=['taichi siedzące'] if 282 <= n <= 289 else [],
             tracking='rounds' if n in ROUNDS else 'time' if n in TIME else 'reps',
             unilateral=n in UNILATERAL)
-    for a in ADDITIONS:
+    for a in ADDITIONS + SPINE_ADDITIONS:
         # Crow gets a second style below; never mutate the curated source list.
         exercises[f'cw{a["number"]:03d}'] = dict(
             styles=list(a['style']), primaryMuscles=a['primary'], secondaryMuscles=a['secondary'],
@@ -418,6 +420,8 @@ def build() -> dict:
             tracking=a['tracking'], unilateral=a['unilateral'])
     # Crow/frog stand belongs to both traditions: one record, two styles.
     exercises['cw357']['styles'].append('yoga')
+    for n in sorted(EXISTING_SPINE):
+        exercises[f'cw{n:03d}']['styles'].append('spine')
     execution = load_classification(exercises)
     for eid, entry in exercises.items():
         entry.update(execution['exercises'][eid])

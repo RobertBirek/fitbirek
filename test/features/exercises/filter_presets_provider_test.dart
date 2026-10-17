@@ -10,6 +10,8 @@ import 'package:fitbirek_training/features/auth/providers/auth_providers.dart';
 import 'package:fitbirek_training/features/exercises/data/filter_presets_repository.dart';
 import 'package:fitbirek_training/features/exercises/providers/filter_presets_providers.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+import 'package:fitbirek_training/features/onboarding/providers/user_profile_provider.dart';
+import 'package:fitbirek_training/core/models/user_profile.dart';
 
 Future<void> flush() async {
   for (var i = 0; i < 15; i++) {
@@ -47,6 +49,14 @@ void main() {
           SyncStateCompanion.insert(accountId: 'opaque', deviceId: 'device'),
         );
     await flush();
+    await UserProfileRepository(db).saveProfile(
+      imie: 'Offline',
+      wiek: 40,
+      wzrostCm: 180,
+      wagaKg: 80,
+      cel: CelTreningowy.mix,
+      dostepnySprzet: [],
+    );
     await c
         .read(filterPresetsProvider.notifier)
         .save('Offline', const ExerciseFilters(query: 'dom'));

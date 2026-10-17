@@ -1,5 +1,9 @@
 # Warunki wykonania — etap 5, przegląd 2026-10-16
 
+> Historyczny etap obejmował 363 wpisy. Druga ekspansja dopisała 6 jawnych
+> decyzji, bez zmiany żadnej starej: aktualnie **369 wpisów**. Szczegóły,
+> odtworzenie i testy: [SPINE_EXPANSION.md](SPINE_EXPANSION.md).
+
 ## Kontrakt dla klienta
 
 Addytywne rozszerzenie **schemaVersion: 1**, bez zmiany ID, ćwiczeń ani

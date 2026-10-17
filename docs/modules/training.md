@@ -15,6 +15,8 @@ Katalog ćwiczeń, planowanie, aktywna sesja, serie, podsumowanie i rekordy osob
 - Generator z filtrów: `docs/modules/structured-planner.md` (struktura, czas, sync i testy)
 - Warunki wykonania i pozycje: `docs/modules/exercise-execution-filters.md` (AND/OR, fasety, brak weryfikacji)
 - Progresja stałego ciężaru: `docs/modules/fixed-load-progression.md` (read-only, RPE, guard konta i szkic celu)
+- Własne warianty / filtry w chmurze: `docs/modules/user-variants-cloud.md`
+  (Drift12, profile collections, exact exercise+side+variant UUID, CAS i restore).
 
 ## Granice
 

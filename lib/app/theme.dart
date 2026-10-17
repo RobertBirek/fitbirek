@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Kolory marki FitBirek - pomarańczowy akcent, grafitowe tło dark.
 class FitBirekColors {
@@ -69,8 +68,8 @@ class FitBirekTheme {
         surface: FitBirekColors.darkSurface,
       ),
       scaffoldBackgroundColor: FitBirekColors.darkBackground,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
-      fontFamily: GoogleFonts.inter().fontFamily,
+      textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Inter'),
+      fontFamily: 'Inter',
     );
 
     return base.copyWith(
@@ -79,7 +78,8 @@ class FitBirekTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: const TextStyle(
+          fontFamily: 'Inter',
           fontSize: 22,
           fontWeight: FontWeight.w700,
           color: Colors.white,
@@ -172,8 +172,8 @@ class FitBirekTheme {
         seedColor: FitBirekColors.accent,
         brightness: Brightness.light,
       ),
-      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),
-      fontFamily: GoogleFonts.inter().fontFamily,
+      textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Inter'),
+      fontFamily: 'Inter',
     );
 
     return base.copyWith(
@@ -181,7 +181,8 @@ class FitBirekTheme {
         elevation: 0,
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: const TextStyle(
+          fontFamily: 'Inter',
           fontSize: 22,
           fontWeight: FontWeight.w700,
         ),

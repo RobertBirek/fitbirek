@@ -45,8 +45,13 @@ class _PausedPrs extends PrsRepository {
   Future<PersonalRecordData?> getBestForExercise(
     String exerciseId, {
     String? side,
+    String? variantId,
   }) async {
-    final best = await super.getBestForExercise(exerciseId, side: side);
+    final best = await super.getBestForExercise(
+      exerciseId,
+      side: side,
+      variantId: variantId,
+    );
     entered.complete();
     await release.future;
     return best;

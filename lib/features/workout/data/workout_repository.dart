@@ -1,9 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:convert';
 import '../../../core/database/app_database.dart';
 import '../../../core/models/workout_session.dart';
 import '../../../core/sync/sync_models.dart';
 import '../domain/fixed_load_progression.dart';
+import '../domain/workout_guidance.dart';
+import '../domain/workout_draft_write.dart';
+import '../../exercises/data/exercise_variants_repository.dart';
 
 class WorkoutSessionUnavailable extends StateError {
   WorkoutSessionUnavailable(int id)
@@ -33,7 +37,11 @@ class WorkoutRepository {
   WorkoutRepository(this._db);
   final AppDatabase _db;
 
-  Future<int> startSession({bool Function()? guard, String? accountId}) async {
+  Future<int> startSession({
+    bool Function()? guard,
+    String? accountId,
+    WorkoutGuidance? guidance,
+  }) async {
     _requireGuard(guard);
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
@@ -45,6 +53,9 @@ class WorkoutRepository {
           dataStart: now,
           syncId: Value(syncId),
           updatedAtUtc: Value(now),
+          guidanceJson: Value(
+            guidance == null ? null : jsonEncode(guidance.toJson()),
+          ),
         ),
       );
       await _db.syncDao.enqueueUpsert(
@@ -56,6 +67,7 @@ class WorkoutRepository {
           dataKoniec: null,
           czasTrwaniaSekund: 0,
           notatka: null,
+          guidance: guidance,
         ),
       );
       _requireGuard(guard);
@@ -118,12 +130,26 @@ class WorkoutRepository {
     });
   }
 
-  Future<void> finishSession(int sessionId, DateTime start) async {
+  Future<void> finishSession(
+    int sessionId,
+    DateTime start, {
+    String? expectedSyncId,
+    bool Function()? guard,
+    String? note,
+    String? accountId,
+  }) async {
     final now = DateTime.now().toUtc();
     final duration = now.difference(start).inSeconds;
     await _db.transaction(() async {
+      _requireGuard(guard);
+      if (accountId != null) await _requireAccount(accountId, guard);
       final session = await _db.workoutDao.getSession(sessionId);
-      if (session == null || session.deletedAtUtc != null) {
+      _requireGuard(guard);
+      if (session == null ||
+          session.deletedAtUtc != null ||
+          (expectedSyncId != null &&
+              (session.dataKoniec != null ||
+                  session.syncId != expectedSyncId))) {
         throw WorkoutSessionUnavailable(sessionId);
       }
       await _db.workoutDao.updateSession(
@@ -132,6 +158,7 @@ class WorkoutRepository {
           dataKoniec: Value(now),
           czasTrwaniaSekund: Value(duration),
           updatedAtUtc: Value(now),
+          notatka: Value(note ?? session.notatka),
         ),
       );
       await _db.syncDao.enqueueUpsert(
@@ -142,9 +169,15 @@ class WorkoutRepository {
           dataStart: session.dataStart,
           dataKoniec: now,
           czasTrwaniaSekund: duration,
-          notatka: session.notatka,
+          notatka: note ?? session.notatka,
+          guidance: WorkoutGuidance.tryRead(session.guidanceJson),
         ),
       );
+      await (_db.delete(
+        _db.workoutDrafts,
+      )..where((d) => d.sessionSyncId.equals(session.syncId))).go();
+      if (accountId != null) await _requireAccount(accountId, guard);
+      _requireGuard(guard);
     });
   }
 
@@ -158,12 +191,29 @@ class WorkoutRepository {
     int? seconds,
     int? rpe,
     String? side,
+    String? variantId,
+    String? variantLabel,
+    String? accountId,
+    bool Function()? guard,
+    int? guidanceSlot,
+    String? expectedSyncId,
   }) async {
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
     return _db.transaction(() async {
+      _requireGuard(guard);
+      if (accountId != null) await _requireAccount(accountId, guard);
+      final label = await ExerciseVariantsRepository.requireLive(
+        _db,
+        exerciseId,
+        variantId,
+        accountId: accountId,
+      );
       final session = await _db.workoutDao.getSession(sessionId);
-      if (session == null || session.deletedAtUtc != null) {
+      if (session == null ||
+          session.deletedAtUtc != null ||
+          session.dataKoniec != null ||
+          (expectedSyncId != null && session.syncId != expectedSyncId)) {
         throw WorkoutSessionUnavailable(sessionId);
       }
       validateSet(reps: reps, seconds: seconds, weightKg: weightKg, side: side);
@@ -177,6 +227,8 @@ class WorkoutRepository {
           powtorzenia: Value(reps),
           czasSekund: Value(seconds),
           side: Value(side),
+          variantId: Value(variantId),
+          variantLabel: Value(label),
           rpe: Value(rpe),
           timestamp: Value(now),
           syncId: Value(syncId),
@@ -196,10 +248,24 @@ class WorkoutRepository {
           'powtorzenia': reps,
           'czasSekund': seconds,
           if (side != null) 'side': side,
+          if (variantId != null) 'variantId': variantId,
+          if (variantId != null) 'variantLabel': label,
           'rpe': rpe,
           'timestamp': now.toIso8601String(),
         },
       );
+      if (guidanceSlot != null) {
+        final guidance = WorkoutGuidance.tryRead(session.guidanceJson);
+        if (guidance == null ||
+            guidance.exerciseAt(guidanceSlot) != exerciseId) {
+          throw StateError(
+            'Prowadzenie zmieniło się. Otwórz bieżący blok ponownie.',
+          );
+        }
+        await _writeGuidance(session, guidance.link(guidanceSlot, syncId));
+      }
+      _requireGuard(guard);
+      if (accountId != null) await _requireAccount(accountId, guard);
       return id;
     });
   }
@@ -308,17 +374,253 @@ class WorkoutRepository {
     required DateTime? dataKoniec,
     required int czasTrwaniaSekund,
     required String? notatka,
+    WorkoutGuidance? guidance,
   }) => {
     'dataStart': dataStart.toUtc().toIso8601String(),
     'dataKoniec': dataKoniec?.toUtc().toIso8601String(),
     'czasTrwaniaSekund': czasTrwaniaSekund,
     'notatka': notatka,
+    if (guidance != null) 'guidance': guidance.toJson(),
   };
+
+  Future<void> _writeGuidance(
+    WorkoutSessionData session,
+    WorkoutGuidance guidance,
+  ) async {
+    final checked = WorkoutGuidance.validateJson(guidance.toJson());
+    await _db.workoutDao.updateSession(
+      session.id,
+      WorkoutSessionsCompanion(
+        guidanceJson: Value(jsonEncode(checked.toJson())),
+        updatedAtUtc: Value(DateTime.now().toUtc()),
+      ),
+    );
+    await _db.syncDao.enqueueUpsert(
+      entityType: SyncEntityType.workoutSession,
+      entityId: session.syncId,
+      baseVersion: session.syncVersion,
+      payload: _sessionPayload(
+        dataStart: session.dataStart,
+        dataKoniec: session.dataKoniec,
+        czasTrwaniaSekund: session.czasTrwaniaSekund,
+        notatka: session.notatka,
+        guidance: checked,
+      ),
+    );
+  }
+
+  Future<void> guidanceEvent({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required bool Function() guard,
+    required int slot,
+    String? replacement,
+  }) => _db.transaction(() async {
+    await _requireAccount(accountId, guard);
+    final session = await _db.workoutDao.getSession(sessionId);
+    _requireGuard(guard);
+    if (session == null ||
+        session.syncId != sessionSyncId ||
+        session.dataKoniec != null ||
+        session.deletedAtUtc != null) {
+      throw WorkoutSessionUnavailable(sessionId);
+    }
+    final g = WorkoutGuidance.tryRead(session.guidanceJson);
+    if (g == null) throw const FormatException('Prowadzenie niedostępne');
+    await _writeGuidance(
+      session,
+      replacement == null ? g.skip(slot) : g.replace(slot, replacement),
+    );
+    await _requireAccount(accountId, guard);
+  });
+
+  Future<Map<String, Object?>> saveDraft({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required Map<String, Object?> payload,
+    required bool Function() guard,
+  }) => _db.transaction(() async {
+    await _requireAccount(accountId, guard);
+    final session = await _db.workoutDao.getSession(sessionId);
+    _requireGuard(guard);
+    if (session == null ||
+        session.syncId != sessionSyncId ||
+        session.deletedAtUtc != null ||
+        session.dataKoniec != null) {
+      throw WorkoutSessionUnavailable(sessionId);
+    }
+    final current = await readDraft(accountId, sessionSyncId);
+    _requireGuard(guard);
+    if (draftRevision(payload) != draftRevision(current)) {
+      throw WorkoutDraftConflict(revisionOnly: true);
+    }
+    final guidance = WorkoutGuidance.tryRead(session.guidanceJson);
+    final signature = guidance == null ? null : jsonEncode(guidance.toJson());
+    if (payload['guidanceSignature'] != signature) {
+      throw WorkoutSessionUnavailable(sessionId);
+    }
+    // Revision check and row mutation share SQLite's transaction. An old full
+    // writer delayed outside this transaction cannot restore consumed work.
+    final versions = checkpointVersions(current);
+    final epochs = checkpointEpochs(current);
+    final checked = validateWorkoutDraft(payload);
+    for (final key in changedCheckpointKeys(sessionSyncId, current, checked)) {
+      if ((checkpointEpochs(checked)[key] ?? 0) != (epochs[key] ?? 0) ||
+          (checkpointVersions(checked)[key] ?? 0) != (versions[key] ?? 0)) {
+        throw WorkoutDraftConflict();
+      }
+      versions[key] = (versions[key] ?? 0) + 1;
+    }
+    final next = validateWorkoutDraft({
+      ...payload,
+      'draftRevision': draftRevision(current) + 1,
+      'checkpointEpochs': checkpointEpochs(current),
+      'checkpointVersions': versions,
+    });
+    final raw = jsonEncode(next);
+    await _db
+        .into(_db.workoutDrafts)
+        .insertOnConflictUpdate(
+          WorkoutDraftsCompanion.insert(
+            accountId: accountId,
+            sessionSyncId: sessionSyncId,
+            payloadJson: raw,
+          ),
+        );
+    await _requireAccount(accountId, guard);
+    return next;
+  });
+
+  Future<Map<String, Object?>?> readDraft(
+    String accountId,
+    String sessionSyncId,
+  ) async {
+    final row =
+        await (_db.select(_db.workoutDrafts)..where(
+              (d) =>
+                  d.accountId.equals(accountId) &
+                  d.sessionSyncId.equals(sessionSyncId),
+            ))
+            .getSingleOrNull();
+    return row == null
+        ? null
+        : validateWorkoutDraft(jsonDecode(row.payloadJson));
+  }
+
+  /// Called inside the batch transaction. It clears just this checkpoint in the
+  /// LATEST row and advances a durable, per-checkpoint consume-once epoch.
+  Future<Map<String, Object?>> consumeDraftCheckpoint({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required String key,
+    required int expectedEpoch,
+    required int expectedVersion,
+    required bool extra,
+    required String exerciseId,
+    required Map<String, Object?> fallbackPayload,
+    required bool Function() guard,
+  }) => _db.transaction(() async {
+    await _requireAccount(accountId, guard);
+    final session = await _db.workoutDao.getSession(sessionId);
+    _requireGuard(guard);
+    if (session == null ||
+        session.syncId != sessionSyncId ||
+        session.dataKoniec != null ||
+        session.deletedAtUtc != null) {
+      throw WorkoutSessionUnavailable(sessionId);
+    }
+    final current = await readDraft(accountId, sessionSyncId);
+    _requireGuard(guard);
+    final epochs = checkpointEpochs(current);
+    if ((epochs[key] ?? 0) != expectedEpoch) throw WorkoutDraftConflict();
+    final versions = checkpointVersions(current);
+    if ((versions[key] ?? 0) != expectedVersion) throw WorkoutDraftConflict();
+    final next = Map<String, Object?>.from(
+      jsonDecode(jsonEncode(current ?? fallbackPayload)) as Map,
+    );
+    final fields = Map<String, Object?>.from(next['fields'] as Map);
+    if (extra) {
+      final forms = Map<String, Object?>.from(
+        fields['extraForms'] as Map? ?? {},
+      );
+      final fallbackForms =
+          (fallbackPayload['fields'] as Map)['extraForms'] as Map? ?? {};
+      final form = Map<String, Object?>.from(
+        (forms[key] ?? fallbackForms[key] ?? {}) as Map,
+      );
+      form.addAll({'timer': null, 'timerBinding': null});
+      forms[key] = form;
+      fields['extraForms'] = forms;
+      next['selectedIds'] = {
+        ...(next['selectedIds'] as List).cast<String>(),
+        exerciseId,
+      }.toList();
+    } else {
+      fields.addAll({'timer': null, 'timerBinding': null});
+    }
+    epochs[key] = expectedEpoch + 1;
+    versions[key] = expectedVersion + 1;
+    next.addAll({
+      'fields': fields,
+      'draftRevision': draftRevision(current) + 1,
+      'checkpointEpochs': epochs,
+      'checkpointVersions': versions,
+      'guidanceSignature': session.guidanceJson == null
+          ? null
+          : jsonEncode(
+              WorkoutGuidance.validateJson(
+                jsonDecode(session.guidanceJson!),
+              ).toJson(),
+            ),
+    });
+    await _db
+        .into(_db.workoutDrafts)
+        .insertOnConflictUpdate(
+          WorkoutDraftsCompanion.insert(
+            accountId: accountId,
+            sessionSyncId: sessionSyncId,
+            payloadJson: jsonEncode(validateWorkoutDraft(next)),
+          ),
+        );
+    await _requireAccount(accountId, guard);
+    return next;
+  });
+
+  Future<List<WorkoutDraftData>> pendingDrafts(String accountId) async {
+    final binding = await _db.syncDao.readState();
+    if (binding?.accountId != accountId || binding?.offlineAccess != true) {
+      return [];
+    }
+    final drafts = await (_db.select(
+      _db.workoutDrafts,
+    )..where((d) => d.accountId.equals(accountId))).get();
+    final result = <WorkoutDraftData>[];
+    for (final draft in drafts) {
+      final session = await _sessionBySyncId(draft.sessionSyncId);
+      if (session != null &&
+          session.deletedAtUtc == null &&
+          session.dataKoniec == null) {
+        result.add(draft);
+      }
+    }
+    return result;
+  }
 
   /// Zwraca opis ostatniej wykonanej serii dla danego ćwiczenia
   /// w formacie do wyświetlenia jako "auto-progress": "Ostatnio: 15 kg × 8 (RPE 8)"
-  Future<SetLogData?> getLastSet(String exerciseId, {String? side}) {
-    return _db.workoutDao.getLastSetForExercise(exerciseId, side: side);
+  Future<SetLogData?> getLastSet(
+    String exerciseId, {
+    String? side,
+    String? variantId,
+  }) {
+    return _db.workoutDao.getLastSetForExercise(
+      exerciseId,
+      side: side,
+      variantId: variantId,
+    );
   }
 
   /// Read only. Keep every set in each ended session so the engine can use the
@@ -326,6 +628,7 @@ class WorkoutRepository {
   Future<List<ProgressionPerformance>> getProgressionHistory(
     String exerciseId, {
     required String? side,
+    String? variantId,
     required int excludingSessionId,
   }) async {
     final sets = _db.setsLog;
@@ -336,6 +639,9 @@ class WorkoutRepository {
         ])..where(
           sets.cwiczenieId.equals(exerciseId) &
               (side == null ? sets.side.isNull() : sets.side.equals(side)) &
+              (variantId == null
+                  ? sets.variantId.isNull()
+                  : sets.variantId.equals(variantId)) &
               sets.deletedAtUtc.isNull() &
               sessions.deletedAtUtc.isNull() &
               sessions.dataKoniec.isNotNull() &
@@ -349,6 +655,7 @@ class WorkoutRepository {
         endedAt: session.dataKoniec!,
         exerciseId: set.cwiczenieId,
         side: set.side,
+        variantId: set.variantId,
         weightKg: set.ciezarKg,
         reps: set.powtorzenia,
         rpe: set.rpe,
@@ -371,8 +678,16 @@ class WorkoutRepository {
     return _db.workoutDao.getSetsForSession(sessionId);
   }
 
-  Future<List<SetLogData>> getAllSetsForExercise(String exerciseId) {
-    return _db.workoutDao.getAllSetsForExercise(exerciseId);
+  Future<List<SetLogData>> getAllSetsForExercise(
+    String exerciseId, {
+    String? side,
+    String? variantId,
+  }) {
+    return _db.workoutDao.getAllSetsForExercise(
+      exerciseId,
+      side: side,
+      variantId: variantId,
+    );
   }
 
   /// Includes soft-deleted rows so callers can safely recognize an old action.
@@ -402,6 +717,8 @@ class WorkoutRepository {
               powtorzenia: s.powtorzenia,
               czasSekund: s.czasSekund,
               side: s.side,
+              variantId: s.variantId,
+              variantLabel: s.variantLabel,
               rpe: s.rpe,
               timestamp: s.timestamp,
             ),

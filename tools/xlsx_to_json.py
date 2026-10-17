@@ -66,6 +66,8 @@ import hashlib
 import sys
 from pathlib import Path
 
+from spine_additions import PREFIX_COUNT, PREFIX_SHA256
+
 try:
     import openpyxl
 except ImportError:
@@ -265,6 +267,10 @@ def convert() -> list[dict]:
     legacy = json.dumps(result[:LEGACY_COUNT], ensure_ascii=False, sort_keys=True).encode()
     if hashlib.sha256(legacy).hexdigest() != LEGACY_SHA256:
         raise ValueError("Chronione rekordy cw001–cw316 zostały zmienione")
+
+    prefix = json.dumps(result[:PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
+    if hashlib.sha256(prefix).hexdigest() != PREFIX_SHA256:
+        raise ValueError("Chronione rekordy cw001–cw363 zostały zmienione")
 
     return result
 

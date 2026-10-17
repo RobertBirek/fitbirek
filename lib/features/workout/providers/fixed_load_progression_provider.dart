@@ -49,7 +49,15 @@ class FixedLoadOffer {
 }
 
 final fixedLoadProgressionProvider = FutureProvider.autoDispose
-    .family<FixedLoadOffer?, FixedLoadRequest>((ref, request) async {
+    .family<FixedLoadOffer?, FixedLoadRequest>(
+      (ref, request) => ref.watch(
+        variantFixedLoadProgressionProvider((request, null)).future,
+      ),
+    );
+
+final variantFixedLoadProgressionProvider = FutureProvider.autoDispose
+    .family<FixedLoadOffer?, (FixedLoadRequest, String?)>((ref, scope) async {
+      final request = scope.$1, variantId = scope.$2;
       ref.watch(_authorityRevision);
       final origin = ref.watch(
         activeWorkoutProvider.select(
@@ -129,17 +137,20 @@ final fixedLoadProgressionProvider = FutureProvider.autoDispose
       final history = await repo.getProgressionHistory(
         request.exerciseId,
         side: request.side,
+        variantId: variantId,
         excludingSessionId: origin.$1!,
       );
       if (!owns()) return null;
       final lastSet = await repo.getLastSet(
         request.exerciseId,
         side: request.side,
+        variantId: variantId,
       );
       if (!await current()) return null;
       final suggestion = proposeFixedLoad(
         exerciseId: request.exerciseId,
         side: request.side,
+        variantId: variantId,
         prescription: request.prescription,
         tracking: request.tracking,
         usesWeight: request.usesWeight,

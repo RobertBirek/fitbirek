@@ -58,10 +58,16 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
   Future<SetLogData?> getLastSetForExercise(
     String exerciseId, {
     String? side,
+    String? variantId,
   }) async {
     final query = select(setsLog)
       ..where((t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull())
       ..where((t) => side == null ? t.side.isNull() : t.side.equals(side))
+      ..where(
+        (t) => variantId == null
+            ? t.variantId.isNull()
+            : t.variantId.equals(variantId),
+      )
       ..orderBy([
         (t) => OrderingTerm.desc(t.timestamp),
         (t) => OrderingTerm.desc(t.id),
@@ -72,9 +78,19 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
   }
 
   /// Zwraca wszystkie serie danego ćwiczenia (do wykrywania PR).
-  Future<List<SetLogData>> getAllSetsForExercise(String exerciseId) {
+  Future<List<SetLogData>> getAllSetsForExercise(
+    String exerciseId, {
+    String? side,
+    String? variantId,
+  }) {
     return (select(setsLog)..where(
-          (t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull(),
+          (t) =>
+              t.cwiczenieId.equals(exerciseId) &
+              t.deletedAtUtc.isNull() &
+              (side == null ? t.side.isNull() : t.side.equals(side)) &
+              (variantId == null
+                  ? t.variantId.isNull()
+                  : t.variantId.equals(variantId)),
         ))
         .get();
   }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drift/native.dart';
+import 'database/legacy_schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/sync/sync_models.dart';
@@ -340,7 +341,12 @@ void main() {
       await db.customStatement(
         'ALTER TABLE sync_state DROP COLUMN health_replay_enabled',
       );
+      await removeV12Columns(db);
       await db.customStatement('PRAGMA user_version = 3');
+      await db.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN guidance_json',
+      );
+      await db.customStatement('DROP TABLE workout_drafts');
       await db.customStatement(
         'ALTER TABLE workout_plans DROP COLUMN structure_json',
       );

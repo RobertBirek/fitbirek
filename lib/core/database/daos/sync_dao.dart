@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../sync/sync_models.dart';
+import '../../sync/user_collections.dart';
 import '../app_database.dart';
 import '../tables/sync_tables.dart';
 
@@ -58,11 +59,24 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
     if (entityType == SyncEntityType.healthSample) {
       throw StateError('Health imports are server-owned');
     }
+    final snapshot = Map<String, dynamic>.from(
+      jsonDecode(jsonEncode(payload)) as Map,
+    );
+    if (entityType == SyncEntityType.profile) {
+      for (final key in UserCollections.keys) {
+        if (snapshot[key] != null) UserCollections.validate(key, snapshot[key]);
+      }
+    }
+    if (entityType == SyncEntityType.workoutSet ||
+        entityType == SyncEntityType.personalRecord) {
+      UserCollections.validateVariantPair(Map<String, dynamic>.from(snapshot));
+      if (snapshot['variantId'] == null) snapshot.remove('variantLabel');
+    }
     return _enqueue(
       entityType: entityType,
       entityId: entityId,
       baseVersion: baseVersion,
-      payload: payload,
+      payload: snapshot,
       deleted: false,
       preserveLocal: preserveLocal,
     );
@@ -93,6 +107,31 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
     required Map<String, Object?> payload,
     required bool deleted,
   }) async {
+    // Work on a new snapshot only. Previously attempted operations are inputs,
+    // never mutation targets, including when an explicit restore clear survives
+    // a later ordinary profile save that omits nullable raw extension columns.
+    payload = Map<String, Object?>.from(payload);
+    if (entityType == SyncEntityType.profile && !deleted) {
+      final seen = <String>{
+        for (final key in UserCollections.keys)
+          if (payload.containsKey(key)) key,
+      };
+      final pending = await attachedDatabase
+          .customSelect(
+            'SELECT payload_json FROM sync_outbox WHERE entity_type = ? AND entity_id = ? AND deleted = 0 ORDER BY rowid DESC',
+            variables: [Variable(entityType.wireName), Variable(entityId)],
+          )
+          .get();
+      for (final row in pending) {
+        final old = jsonDecode(row.read<String>('payload_json')) as Map;
+        for (final key in UserCollections.keys) {
+          if (!seen.contains(key) && old.containsKey(key)) {
+            seen.add(key);
+            if (old[key] == null) payload[key] = null;
+          }
+        }
+      }
+    }
     final previous =
         await (select(syncOutbox)..where(
               (o) =>

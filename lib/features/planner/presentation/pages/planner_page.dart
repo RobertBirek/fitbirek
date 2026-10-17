@@ -9,6 +9,7 @@ import '../../../exercises/domain/filter_preset.dart';
 import '../../../exercises/providers/exercises_providers.dart';
 import '../../../onboarding/providers/user_profile_provider.dart';
 import '../../domain/structured_plan.dart';
+import '../../domain/plan_explanation.dart';
 import '../../providers/planner_providers.dart';
 
 class PlannerPage extends ConsumerStatefulWidget {
@@ -121,7 +122,10 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
       }
       final workflow = ref.read(plannerWorkflowProvider);
       if (start) {
-        await workflow.start(plan.exerciseIds.map((id) => pool[id]!).toList());
+        await workflow.start(
+          plan.exerciseIds.map((id) => pool[id]!).toList(),
+          plan: plan,
+        );
         if (mounted &&
             ref.read(cachedAuthWriteAuthorityProvider).epoch == epoch) {
           context.push('/workout/session');
@@ -146,6 +150,8 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
     final labels = [
       ...f.styles.map(engine.metadata.styleLabel),
       ...f.muscles.map(engine.muscleLabel),
+      ...f.conditions.map(engine.metadata.conditionLabel),
+      ...f.positions.map(engine.metadata.positionLabel),
       ...f.sprzet,
       ...f.partie,
       ...f.typy,
@@ -351,34 +357,122 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
           '• praca ${p.workSeconds} s/serię • przerwa ${p.restSeconds} s • przejście ${p.transitionSeconds} s '
           '• razem ${p.totalSeconds} s',
         ),
-        trailing: IconButton(
-          tooltip: 'Wymień ćwiczenie',
-          icon: const Icon(Icons.swap_horiz),
-          onPressed: profile == null || _busy
-              ? null
-              : () {
-                  try {
-                    _pool(profile, _plan!.criteria);
-                    final replacement = StructuredPlanGenerator.replace(
-                      plan: _plan!,
-                      index: index,
-                      allExercises: ref.read(allExercisesProvider).requireValue,
-                      engine: ref.read(exerciseFilterEngineProvider),
-                      equipment: profile.dostepnySprzet,
-                      level: _level,
-                    );
-                    if (replacement == null) {
-                      throw StateError(
-                        'Brak zamiennika w tej samej puli, sekcji i metryce czasu.',
-                      );
-                    }
-                    _preview(replacement);
-                  } catch (e) {
-                    setState(() => _message = '$e');
-                  }
-                },
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              tooltip: 'Dlaczego to ćwiczenie?',
+              icon: const Icon(Icons.info_outline),
+              onPressed: _busy
+                  ? null
+                  : () => showDialog<void>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Dlaczego to ćwiczenie?'),
+                        content: SingleChildScrollView(
+                          child: Text(
+                            PlanExplanation.forBlock(
+                              plan: _plan!,
+                              index: index,
+                              allExercises: all.values.toList(),
+                              equipment: profile?.dostepnySprzet,
+                              engine: ref.read(exerciseFilterEngineProvider),
+                            ).join('\n\n'),
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Zamknij'),
+                          ),
+                        ],
+                      ),
+                    ),
+            ),
+            IconButton(
+              tooltip: 'Wymień ćwiczenie',
+              icon: const Icon(Icons.swap_horiz),
+              onPressed: profile == null || _busy
+                  ? null
+                  : () => _replace(index, profile),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Future<void> _replace(int index, UserProfile profile) async {
+    final plan = _plan!;
+    final epoch = ref.read(cachedAuthWriteAuthorityProvider).epoch;
+    try {
+      if (_previewEpoch != epoch) {
+        throw StateError('Konto zmieniło się. Otwórz planner ponownie.');
+      }
+      _pool(profile, plan.criteria);
+      final catalog = ref.read(allExercisesProvider).requireValue;
+      final engine = ref.read(exerciseFilterEngineProvider);
+      final replacement = StructuredPlanGenerator.replace(
+        plan: plan,
+        index: index,
+        allExercises: catalog,
+        engine: engine,
+        equipment: profile.dostepnySprzet,
+        level: _level,
+      );
+      if (replacement == null) {
+        throw StateError(
+          'Brak zamiennika w tej samej puli, sekcji i metryce czasu.',
+        );
+      }
+      final names = {for (final e in catalog) e.id: e.nazwaPl};
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(
+            'Zamień ${names[plan.blocks[index].exerciseId] ?? plan.blocks[index].exerciseId} na ${names[replacement.blocks[index].exerciseId]}?',
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              PlanExplanation.forReplacement(
+                plan: plan,
+                replacement: replacement,
+                index: index,
+                allExercises: catalog,
+                engine: engine,
+                equipment: profile.dostepnySprzet,
+              ).join('\n\n'),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Zamień'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+      // The explanation must still describe exactly the data accepted by the
+      // user. A changed catalog/profile/account requires a fresh proposal.
+      if (!identical(_plan, plan) ||
+          ref.read(cachedAuthWriteAuthorityProvider).epoch != epoch ||
+          !identical(
+            ref.read(userProfileStreamProvider).valueOrNull,
+            profile,
+          ) ||
+          !identical(ref.read(allExercisesProvider).valueOrNull, catalog) ||
+          !identical(ref.read(exerciseFilterEngineProvider), engine)) {
+        throw StateError('Dane zmieniły się. Ponów wybór zamiennika.');
+      }
+      _pool(profile, plan.criteria);
+      _preview(replacement);
+    } catch (e) {
+      if (mounted) setState(() => _message = '$e');
+    }
   }
 }

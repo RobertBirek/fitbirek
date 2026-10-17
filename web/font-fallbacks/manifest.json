@@ -1,0 +1,28 @@
+{
+  "flutterVersion": "3.35.4",
+  "flutterCommit": "d693b4b9dbac2acd4477aea4555ca6dcbea44ba2",
+  "upstreamBaseUrl": "https://fonts.gstatic.com/s/",
+  "fonts": [
+    {"family":"Noto Sans","path":"notosans/v37/o-0mIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A99Y41P6zHtY.woff2","bytes":199616,"sha256":"62a7417925f89dc84917c38d96b7b2e68092106dc3832c7a48129030322e73d8","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Roboto","path":"roboto/v32/KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2","bytes":63464,"sha256":"35b02ca266b79eb4996590f15817425a1ce9ebf48f84471843233ff614656bf2","license":"Apache-2.0-Roboto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 0","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.0.woff2","bytes":709292,"sha256":"928e12b560823ba9fe0de01abbdbf35c40fb4c4f27700d4b27b884240df84e1a","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 1","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.1.woff2","bytes":14864,"sha256":"3d6dc79812ee744ecdd79edfec5615e453e6fee42a235cc1694ff029f9fbe2f3","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 2","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.2.woff2","bytes":61760,"sha256":"c62ab44e5774c86279e001e15df0d4c67cdd518bdc7366dc47f1b59c0f5cf041","license":"OFL-Noto.txt","sampleCodePoints":["U+26A0"]},
+    {"family":"Noto Color Emoji 3","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.3.woff2","bytes":156812,"sha256":"51f31d10bc2be987f091db1d4fd355403b94bd082a0bde87eb7cffcdffdd0865","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 4","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.4.woff2","bytes":97452,"sha256":"23e92d2e456d91ea146de276706d651f2172488df30abe65e5e5cc451023c787","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 5","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.5.woff2","bytes":116364,"sha256":"54c838d33459c44173e7301f6ee1ceb5c5246d059878c3e4d4e45bae09e36b30","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 6","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.6.woff2","bytes":120752,"sha256":"1880e91255718a7d7b4587a5525bc46b2e37b32d788850f09cc1bdf2ffd74851","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Color Emoji 7","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.7.woff2","bytes":205180,"sha256":"ff36706720fd0d853059b1025d7d0928fa71d9eba8fd2a4afe86191fc3657eef","license":"OFL-Noto.txt","sampleCodePoints":["U+1F525"]},
+    {"family":"Noto Color Emoji 8","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.8.woff2","bytes":347976,"sha256":"ee9007c489ff2b25249350c44325bfe91830870d4c89addd8ccf363321064242","license":"OFL-Noto.txt","sampleCodePoints":["U+1F3CB","U+1F9D8"]},
+    {"family":"Noto Color Emoji 9","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.9.woff2","bytes":131420,"sha256":"2c6df98bda8729b0df325c2218482d6d4772f44e78694663778e023d4d9acc7a","license":"OFL-Noto.txt","sampleCodePoints":["U+1F4AA","U+1F525","U+1F600"]},
+    {"family":"Noto Color Emoji 10","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.10.woff2","bytes":46960,"sha256":"203659edb0aed836ac36ce7659bc30cd706b4fbc2d73624ceb803bc218ccdd44","license":"OFL-Noto.txt","sampleCodePoints":["U+1F525"]},
+    {"family":"Noto Color Emoji 11","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.11.woff2","bytes":5664,"sha256":"385e562ebc59d03f50366b7ba80fe833bd22ca4e0fa3ccfd6c93f681e20d3477","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Sans Symbols 2 0","path":"notosanssymbols2/v24/I_uyMoGduATTei9eI8daxVHDyfisHr71-jrBWXPM4Q.woff2","bytes":5620,"sha256":"5824d50a6e4eca33bc2aca4fc61ceca9dd518bfe7d4b8c75adad3a8064d0d3a1","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Sans Symbols 2 1","path":"notosanssymbols2/v24/I_uyMoGduATTei9eI8daxVHDyfisHr71-ujgfE71.woff2","bytes":12748,"sha256":"2eb49cfc40ca8a57d17e621471a4a2d583f7602676f583459f1dfc733fb94e1d","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Sans Symbols 2 2","path":"notosanssymbols2/v24/I_uyMoGduATTei9eI8daxVHDyfisHr71-gTBWXPM4Q.woff2","bytes":3576,"sha256":"b0d885dae11e7fb260ce06cb94af4b7c865acbaf692b7f80eb23b0fb3d68153c","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Sans Symbols 2 3","path":"notosanssymbols2/v24/I_uyMoGduATTei9eI8daxVHDyfisHr71-vrgfE71.woff2","bytes":382716,"sha256":"c90fbe98152bbb119a7e521a048c6aa6fc367879d6e3dae6db5a17582de25ead","license":"OFL-Noto.txt","sampleCodePoints":["U+25BE","U+2713","U+26A0","U+1F3CB"]},
+    {"family":"Noto Sans Symbols 2 4","path":"notosanssymbols2/v24/I_uyMoGduATTei9eI8daxVHDyfisHr71-prgfE71.woff2","bytes":10124,"sha256":"97f469061805041dfda672e164eca7384f01e74ea1362a3aa91cf993be9a1579","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Sans Symbols 2 5","path":"notosanssymbols2/v24/I_uyMoGduATTei9eI8daxVHDyfisHr71-pTgfA.woff2","bytes":15824,"sha256":"076185b66a4070d41cc0e52cdad03c00b30084a7438d3e52f2a47cf5e2d1eb01","license":"OFL-Noto.txt","sampleCodePoints":[]},
+    {"family":"Noto Sans Symbols","path":"notosanssymbols/v43/rP2up3q65FkAtHfwd-eIS2brbDN6gxP34F9jRRCe4W3gfQ8gb_VFRkzrbQ.woff2","bytes":69116,"sha256":"08202e258ea583254c036cff46a7077bb5af4f82c41a6c0a6775f6e44d99f1aa","license":"OFL-Noto.txt","sampleCodePoints":["U+2192"]}
+  ]
+}

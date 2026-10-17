@@ -233,7 +233,76 @@ class StructuredPlanGenerator {
     return PlanSection.main; // yoga, recovery, mobility are valid main work
   }
 
-  static PlanPrescription? _prescription(
+  // Only complete, unambiguous dose strings. Never inspect tempo/instructions.
+  // Range lower bounds are intentional; these are catalog starting doses,
+  // not personal rehabilitation recommendations. No exercise-ID/style policy.
+  static final _dosePattern = RegExp(
+    r'^(\d+)(?:\s*-\s*(\d+))?\s*x\s*(\d+)(?:\s*-\s*(\d+))?\s*(sek\.?|sec\.?|s|min\.?|powt\.?|powtorzen)?\s*(na strone)?$',
+  );
+  static final _maxExactInteger = BigInt.parse('9007199254740991');
+
+  static PlanPrescription? _catalogPrescription(
+    String raw, {
+    required String tracking,
+    required bool unilateral,
+    required PlanSection section,
+  }) {
+    var text = ExerciseFilterEngine.fold(
+      raw,
+    ).trim().replaceAll('×', 'x').replaceAll('–', '-');
+    final explicitSets = text.contains('x');
+    if (!explicitSets) {
+      text = '1 x $text'; // standalone time only, never bare reps
+    }
+    final match = _dosePattern.firstMatch(text);
+    if (match == null) return null;
+    BigInt? lower(String lo, String? hi) {
+      final a = BigInt.tryParse(lo), b = BigInt.tryParse(hi ?? lo);
+      if (a == null ||
+          b == null ||
+          a <= BigInt.zero ||
+          b < a ||
+          b > _maxExactInteger) {
+        return null;
+      }
+      return a;
+    }
+
+    final sets = lower(match[1]!, match[2]);
+    final amount = lower(match[3]!, match[4]);
+    final unit = match[5]?.replaceAll('.', '');
+    final time = const {'s', 'sek', 'sec', 'min'}.contains(unit);
+    if (sets == null ||
+        amount == null ||
+        (match[6] != null && !unilateral) ||
+        (time ? tracking != 'time' : tracking != 'reps') ||
+        (!explicitSets && !time)) {
+      return null;
+    }
+    final work =
+        amount *
+        BigInt.from(time ? (unit == 'min' ? 60 : 1) : 3) *
+        BigInt.from(unilateral ? 2 : 1);
+    final rest = section == PlanSection.main ? 30 : 0;
+    final total =
+        sets * work + (sets - BigInt.one) * BigInt.from(rest) + BigInt.from(15);
+    // Serialization/arithmetic guard shared by VM and Web, not a medical cap.
+    if (total > _maxExactInteger) return null;
+    return PlanPrescription(
+      tracking: tracking,
+      sets: sets.toInt(),
+      reps: time ? null : amount.toInt(),
+      workSeconds: work.toInt(),
+      restSeconds: rest,
+      transitionSeconds: 15,
+    );
+  }
+
+  static String _fallbackWarning(String id) =>
+      '$id: Nie rozpoznano jednoznacznej dawki katalogowej zgodnej z metadanymi; '
+      'zastosowana domyślna dawka generatora; czas pozostaje ESTYMOWANY, nie pomiar ani indywidualna rehabilitacja.';
+
+  static ({PlanPrescription value, bool fallback})? _prescription(
     Exercise e,
     ExerciseFilterEngine engine,
     PlanSection section,
@@ -242,16 +311,26 @@ class StructuredPlanGenerator {
     if (entry == null) {
       return null; // Never invent the tracking of custom/unknown entries.
     }
+    final catalogDose = _catalogPrescription(
+      e.seriexPowtorzenia,
+      tracking: entry.tracking,
+      unilateral: entry.unilateral,
+      section: section,
+    );
+    if (catalogDose != null) return (value: catalogDose, fallback: false);
     final main = section == PlanSection.main;
     final reps = entry.tracking == 'reps' ? (main ? 10 : 6) : null;
     final work = reps == null ? (main ? 40 : 30) : reps * 3;
-    return PlanPrescription(
-      tracking: entry.tracking,
-      sets: main ? 3 : 1,
-      reps: reps,
-      workSeconds: work * (entry.unilateral ? 2 : 1),
-      restSeconds: main ? 30 : 0,
-      transitionSeconds: 15,
+    return (
+      value: PlanPrescription(
+        tracking: entry.tracking,
+        sets: main ? 3 : 1,
+        reps: reps,
+        workSeconds: work * (entry.unilateral ? 2 : 1),
+        restSeconds: main ? 30 : 0,
+        transitionSeconds: 15,
+      ),
+      fallback: true,
     );
   }
 
@@ -315,8 +394,10 @@ class StructuredPlanGenerator {
             engine.musclesFor(e).difference(muscles).isEmpty) {
           continue;
         }
-        final p = _prescription(e, engine, section);
-        if (p == null || p.totalSeconds > remaining) continue;
+        final dose = _prescription(e, engine, section);
+        if (dose == null || dose.value.totalSeconds > remaining) continue;
+        final p = dose.value;
+        if (dose.fallback) warnings.add(_fallbackWarning(e.id));
         blocks.add(
           PlanBlock(exerciseId: e.id, section: section, prescription: p),
         );
@@ -375,7 +456,8 @@ class StructuredPlanGenerator {
       if (entry == null || entry.tracking != old.prescription.tracking) {
         continue;
       }
-      final p = _prescription(e, engine, old.section)!;
+      final dose = _prescription(e, engine, old.section)!;
+      final p = dose.value;
       if (p.totalSeconds != old.prescription.totalSeconds) continue;
       final blocks = [...plan.blocks];
       blocks[index] = PlanBlock(
@@ -389,7 +471,10 @@ class StructuredPlanGenerator {
         level: plan.level,
         equipment: plan.equipment,
         blocks: blocks,
-        warnings: plan.warnings,
+        warnings: [
+          ...plan.warnings.where((w) => w != _fallbackWarning(old.exerciseId)),
+          if (dose.fallback) _fallbackWarning(e.id),
+        ],
       );
     }
     return null;

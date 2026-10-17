@@ -1,0 +1,32 @@
+{
+  "evidenceSource": "guided-acceptance-20261017/15-before-reload-db.json + fake-api-state.json; session 269886bf-7d18-45ba-93c0-7ab847e78fb4",
+  "accountId": "a1000000-0000-4000-8000-000000000001",
+  "profile": {
+    "entityType": "profile", "entityId": "a1000000-0000-4000-8000-000000000002", "version": 2,
+    "payload": {"imie": "Browser FAKE", "wiek": 35, "wzrostCm": 180.0, "wagaKg": 80.0, "cel": "mix",
+      "dostepnySprzet": ["Mata", "Hantle", "Sandbag", "Drążek", "Gumy", "Masa własna", "Krzesło", "Gumy oporowe", "Ławeczka"],
+      "onboardingZakonczony": true, "dataUtworzenia": 1792198800000},
+    "updatedAt": "2026-10-17T01:30:00.000Z", "deletedAt": null, "changeCursor": 2
+  },
+  "guidance": {
+    "schemaVersion": 1,
+    "plan": {
+      "schemaVersion": 1,
+      "criteria": {"styles": ["spine"], "muscles": [], "conditions": [], "positions": [], "sprzet": [], "typy": [], "partie": [], "poziomy": [], "tylkoUlubione": false, "query": "", "sortBy": "alfabetycznie"},
+      "budgetSeconds": 2700, "level": "Średni",
+      "equipment": ["Mata", "Hantle", "Sandbag", "Drążek", "Gumy", "Masa własna", "Krzesło", "Gumy oporowe", "Ławeczka"],
+      "blocks": [
+        {"exerciseId": "cw250", "section": "warmup", "prescription": {"tracking": "reps", "sets": 1, "reps": 6, "workSeconds": 18, "restSeconds": 0, "transitionSeconds": 15}},
+        {"exerciseId": "cw154", "section": "main", "prescription": {"tracking": "reps", "sets": 3, "reps": 10, "workSeconds": 30, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw294", "section": "main", "prescription": {"tracking": "time", "sets": 3, "reps": null, "workSeconds": 80, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw367", "section": "main", "prescription": {"tracking": "reps", "sets": 3, "reps": 10, "workSeconds": 60, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw169", "section": "main", "prescription": {"tracking": "time", "sets": 3, "reps": null, "workSeconds": 40, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw179", "section": "main", "prescription": {"tracking": "reps", "sets": 3, "reps": 10, "workSeconds": 60, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw181", "section": "main", "prescription": {"tracking": "reps", "sets": 3, "reps": 10, "workSeconds": 60, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw290", "section": "main", "prescription": {"tracking": "time", "sets": 3, "reps": null, "workSeconds": 80, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw364", "section": "main", "prescription": {"tracking": "reps", "sets": 3, "reps": 10, "workSeconds": 30, "restSeconds": 30, "transitionSeconds": 15}},
+        {"exerciseId": "cw252", "section": "cooldown", "prescription": {"tracking": "time", "sets": 1, "reps": null, "workSeconds": 30, "restSeconds": 0, "transitionSeconds": 15}}
+      ], "warnings": []
+    }, "events": []
+  }
+}

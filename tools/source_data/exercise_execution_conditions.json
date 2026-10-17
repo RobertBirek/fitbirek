@@ -4411,6 +4411,79 @@
       "positions": [
         "seated"
       ]
+    },
+    "cw364": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw365": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw366": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw367": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw368": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw369": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
     }
   }
 }

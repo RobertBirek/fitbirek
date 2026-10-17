@@ -6,6 +6,31 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.14.0+27] — 2026-10-17
+
+### Added
+- Prowadzony trening z trwałym checkpointem i wznowieniem po ponownym otwarciu
+  aplikacji; zapis faktycznych serii nadal wymaga jawnego zatwierdzenia.
+- Podsumowanie planu względem wykonania, powody doboru ćwiczeń oraz cele
+  z katalogowych zaleceń z widocznym źródłem, bez dopisywania wykonanych serii.
+- Własne warianty ćwiczeń ze stabilnym UUID; historia, PR i progresja rozdzielone
+  według ćwiczenia, strony i wariantu. Definicje wariantów i zestawy filtrów
+  działają offline i synchronizują się w profilu po zalogowaniu.
+- Katalog 369 ćwiczeń, w tym 19 pozycji dla kręgosłupa, oraz sześć nowych
+  ilustracji `cw364`–`cw369`.
+- Lokalne fonty Inter oraz mirror fontów zastępczych Roboto/Noto: bez zewnętrznych
+  żądań fontów w zweryfikowanym scenariuszu przeglądarkowym.
+
+### Fixed
+- Poprawiono opis zapisanych filtrów: zestawy nie są już wyłącznie lokalne.
+
+### Known Issues
+- Flutter 3.35.4 nadal zgłasza ostrzeżenie pokrycia U+FE0F (VS16), mimo poprawnego
+  renderowania zweryfikowanej próbki emoji. Lokalny mirror nie obejmuje całego
+  Unicode; nie wyciszono diagnostyki ani nie zmieniono silnika.
+
+---
+
 ## [1.13.0+26] — 2026-10-16
 
 ### Added

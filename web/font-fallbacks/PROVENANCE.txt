@@ -1,0 +1,70 @@
+Local Web engine font mirror for Flutter 3.35.4. Downloaded 2026-10-17.
+Flutter tag commit: d693b4b9dbac2acd4477aea4555ca6dcbea44ba2
+
+Authoritative Noto family/path mapping:
+https://raw.githubusercontent.com/flutter/flutter/d693b4b9dbac2acd4477aea4555ca6dcbea44ba2/engine/src/flutter/lib/web_ui/lib/src/engine/font_fallback_data.dart
+Mapping source SHA-256:
+943175bcbce99ea2655d021008fa75dbcced31e5ee207203bada3d133e46e887
+
+Authoritative Roboto path and fontFallbackBaseUrl usage:
+https://github.com/flutter/flutter/blob/d693b4b9dbac2acd4477aea4555ca6dcbea44ba2/engine/src/flutter/lib/web_ui/lib/src/engine/canvaskit/fonts.dart
+https://github.com/flutter/flutter/blob/d693b4b9dbac2acd4477aea4555ca6dcbea44ba2/engine/src/flutter/lib/web_ui/lib/src/engine/configuration.dart
+
+manifest.json records exact engine family names, relative paths, lengths,
+SHA-256, and license references. The source URL for EACH font is:
+  https://fonts.gstatic.com/s/ + its manifest path
+All 21 WOFF2 files were downloaded from that official Google Fonts HTTPS
+endpoint and preserved byte-for-byte. No conversion, renaming, or subsetting.
+Included: Roboto v32; Noto Sans Symbols v43; all 6 engine Noto Sans Symbols 2
+v24 shards; all 12 engine Noto Color Emoji v32 shards; Noto Sans v37 required
+by real note-entry fallback. Not all 724 Noto fonts.
+
+License sources (pinned repository snapshots):
+Noto Sans, SIL Open Font License 1.1:
+https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosans/OFL.txt
+Downloaded name table: Copyright 2022 The Noto Project Authors
+(https://github.com/notofonts/latin-greek-cyrillic), SIL Open Font License 1.1.
+OFL-Noto.txt retains this copyright and the full license terms.
+Exact engine Noto Sans v37 file: 199616 bytes, SHA-256
+62a7417925f89dc84917c38d96b7b2e68092106dc3832c7a48129030322e73d8.
+It contains Polish Latin glyphs and U+200D ZERO WIDTH JOINER; it is not an
+extra emoji shard. Its original WOFF2 was decoded and inspected with TTFont.
+
+Roboto, Apache License 2.0:
+https://raw.githubusercontent.com/googlefonts/roboto-2/38062f4b4a0be4346d07a928408da21602545e9e/LICENSE
+The downloaded Roboto name table explicitly says Apache License, Version 2.0,
+and Copyright 2011 Google Inc. All Rights Reserved. Full license and this
+copyright are retained in Apache-2.0-Roboto.txt.
+
+Noto Sans Symbols and Symbols 2, SIL Open Font License 1.1:
+https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssymbols/OFL.txt
+https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssymbols2/OFL.txt
+Downloaded name tables: Copyright 2022 The Noto Project Authors
+(https://github.com/notofonts/symbols).
+
+Noto Color Emoji, SIL Open Font License 1.1:
+https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notocoloremoji/OFL.txt
+Upstream OFL copyright: Copyright 2021 Google Inc. All Rights Reserved.
+Downloaded font copyright: Copyright 2022 Google Inc.
+OFL-Noto.txt includes the full OFL terms and all of these notices.
+
+Reproduce: use manifest.json upstreamBaseUrl + path, download each font over
+HTTPS, and verify SHA-256 before accepting any replacement. From repo root:
+  sha256sum -c web/font-fallbacks/SHA256SUMS
+Do not regenerate URLs with the current Google Fonts CSS API or use latest:
+the pinned engine requests specific versioned paths, not arbitrary full fonts.
+
+sampleCodePoints in manifest.json was independently read from the actual
+WOFF2 cmap with fontTools 4.67.0 + Brotli 1.2.0 in a temporary audit venv.
+Sample: U+25BE, U+2192, U+2713, U+26A0, U+1F4AA, U+1F3CB, U+1F9D8,
+U+1F525, U+1F600. It is a sample, not a full repertoire or a shaping test.
+The Flutter tests bind the audited metadata to bytes with SHA-256; they do
+not decompress WOFF2 or claim to validate emoji shaping in a VM widget test.
+No audit dependency is added to the Flutter application or Docker toolchain.
+
+Serving: web/flutter_bootstrap.js sets fontFallbackBaseUrl to the local
+font-fallbacks/ directory relative to document.baseURI. The engine continues
+to choose fallback fonts normally. Unknown scripts outside this bounded
+mirror may still request absent local paths (404/retry); no errors are hidden
+and no Unicode/emoji text is stripped. Broader Unicode needs more fonts.
+Keep the license/provenance files with the mirror when distributing it.

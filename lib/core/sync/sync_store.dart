@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import '../database/app_database.dart';
 import 'sync_models.dart';
+import 'user_collections.dart';
+import 'profile_payload.dart';
 import '../../features/planner/domain/structured_plan.dart';
 import '../../features/planner/data/plan_sync_payload.dart';
+import '../../features/workout/domain/workout_guidance.dart';
 
 /// Maps the wire UUID identity to device-local integer keys. All callers that
 /// apply a page or acknowledgement use a database transaction.
@@ -37,7 +40,13 @@ class SyncStore {
     return Map<String, dynamic>.from(mapped.toJson() as Map);
   }
 
-  Future<void> version(SyncEntityType type, String id, int version) async {
+  Future<void> version(
+    SyncEntityType type,
+    String id,
+    int version, {
+    bool rebasePending = true,
+  }) async {
+    final acknowledgedVersion = version;
     final t = table(type);
     final current = await row(type, id);
     final known = current?['syncVersion'] as int? ?? 0;
@@ -52,6 +61,14 @@ class SyncStore {
     );
     // Only unsent requests can change. Attempted requests are immutable until
     // their exact outcome is known (including across process restarts).
+    if (!rebasePending) return;
+    var pendingBase = version;
+    if (type == SyncEntityType.profile) {
+      final deferred = await _deferred(type, id);
+      if (deferred != null && acknowledgedVersion < deferred.version) {
+        pendingBase = deferred.version - 1;
+      }
+    }
     await (db.update(db.syncOutbox)..where(
           (o) =>
               o.entityType.equals(type.wireName) &
@@ -59,7 +76,7 @@ class SyncStore {
               o.attempted.equals(false) &
               (preventUndelete ? o.deleted.equals(true) : const Constant(true)),
         ))
-        .write(SyncOutboxCompanion(baseVersion: Value(version)));
+        .write(SyncOutboxCompanion(baseVersion: Value(pendingBase)));
   }
 
   Future<void> apply(Map<String, dynamic> record) async {
@@ -97,6 +114,31 @@ class SyncStore {
           (type == SyncEntityType.profile ? 1 : max.read<int>('next'));
     }
     var cascadeDelete = false;
+    if (type == SyncEntityType.profile) {
+      for (final key in UserCollections.keys) {
+        final column = '${key}Json';
+        if (!json.containsKey(key)) {
+          json[column] = existing?[column];
+        } else {
+          final value = json.remove(key);
+          if (value != null && record['deletedAt'] == null) {
+            try {
+              UserCollections.validate(key, value);
+            } on FormatException {
+              // Quarantine below, without clearing a valid sibling collection.
+            }
+          }
+          // Quarantine each invalid collection separately. Defensive repository
+          // readers report it; ordinary profile/history and cursor remain usable.
+          json[column] = value == null ? null : jsonEncode(value);
+        }
+      }
+    }
+    if ((type == SyncEntityType.workoutSet ||
+            type == SyncEntityType.personalRecord) &&
+        record['deletedAt'] == null) {
+      UserCollections.validateVariantPair(json);
+    }
     if (type == SyncEntityType.workoutSet) {
       final session = await row(
         SyncEntityType.workoutSession,
@@ -120,6 +162,20 @@ class SyncStore {
         );
       }
       json['structureJson'] = structure == null ? null : jsonEncode(structure);
+    }
+    if (type == SyncEntityType.workoutSession) {
+      final guidance = json.remove('guidance');
+      if (record['deletedAt'] == null && guidance != null) {
+        try {
+          WorkoutGuidance.validateJson(guidance);
+        } on FormatException {
+          // Quarantine the original JSON in this row, not the entire pull page.
+          // Defensive readers expose an explicit guidance error while legacy
+          // session/set history and the cursor remain usable. New writes and
+          // restore still require full validation; no silent legacy conversion.
+        }
+      }
+      json['guidanceJson'] = guidance == null ? null : jsonEncode(guidance);
     }
     for (final key in ['dostepnySprzet', 'cwiczeniaIds']) {
       if (planTombstone) continue;
@@ -168,7 +224,9 @@ class SyncStore {
           WorkoutSessionsCompanion(deletedAtUtc: Value(data.deletedAtUtc)),
         );
       }
-      await version(type, id, v);
+      // Force the final queued profile edit through CAS too: rebasing it here
+      // would silently overwrite remote collection entries before their merge.
+      await version(type, id, v, rebasePending: type != SyncEntityType.profile);
       return;
     }
     if (cascadeDelete) {
@@ -272,10 +330,25 @@ class SyncStore {
     await _forgetDeferred(type, id, snapshot.version);
   }
 
-  Future<void> enqueueAll({bool deleted = false}) =>
-      db.transaction(() => _enqueueAll(deleted: deleted));
+  Future<void> enqueueAll({
+    bool deleted = false,
+    Set<String> profileCollectionClears = const {},
+  }) => db.transaction(
+    () => _enqueueAll(
+      deleted: deleted,
+      profileCollectionClears: profileCollectionClears,
+    ),
+  );
 
-  Future<void> _enqueueAll({required bool deleted}) async {
+  Future<void> _enqueueAll({
+    required bool deleted,
+    required Set<String> profileCollectionClears,
+  }) async {
+    if (profileCollectionClears.any(
+      (key) => !UserCollections.keys.contains(key),
+    )) {
+      throw ArgumentError('Unknown profile collection clear');
+    }
     for (final type in SyncEntityType.values) {
       // Restore cannot create/revive server-owned imports or mass-delete them.
       // Explicit sample deletions have their own durable outbox operations.
@@ -284,7 +357,7 @@ class SyncStore {
       for (final dynamic row in rows) {
         final json = Map<String, dynamic>.from(row.toJson() as Map);
         final id = json.remove('syncId') as String;
-        final v = json.remove('syncVersion') as int;
+        var v = json.remove('syncVersion') as int;
         final tombstone = json.remove('deletedAtUtc') != null;
         json.remove('updatedAtUtc');
         json.remove('id');
@@ -305,6 +378,28 @@ class SyncStore {
         if (type == SyncEntityType.personalRecord && json['side'] == null) {
           json.remove('side');
         }
+        if (type == SyncEntityType.profile) {
+          if (!deleted && !tombstone) {
+            v = await profileWriteBaseVersion(db, id, v);
+          }
+          UserCollections.columnsToWire(
+            json,
+            validateLive: !deleted && !tombstone,
+          );
+          if (!deleted && !tombstone) {
+            for (final key in profileCollectionClears) {
+              if (!json.containsKey(key)) json[key] = null;
+            }
+          }
+        }
+        if (type == SyncEntityType.workoutSet ||
+            type == SyncEntityType.personalRecord) {
+          if (!deleted && !tombstone) UserCollections.validateVariantPair(json);
+          if (json['variantId'] == null) {
+            json.remove('variantId');
+            json.remove('variantLabel');
+          }
+        }
         if (type == SyncEntityType.workoutPlan) {
           final structure = json.remove('structureJson') as String?;
           if (deleted || tombstone) {
@@ -324,6 +419,13 @@ class SyncStore {
               exerciseIds: jsonDecode(json['cwiczeniaIds'] as String),
             );
             json['structure'] = value;
+          }
+        }
+        if (type == SyncEntityType.workoutSession) {
+          final raw = json.remove('guidanceJson') as String?;
+          if (!deleted && !tombstone && raw != null) {
+            final guidance = WorkoutGuidance.validateJson(jsonDecode(raw));
+            json['guidance'] = guidance.toJson();
           }
         }
         if (type == SyncEntityType.workoutSet) {

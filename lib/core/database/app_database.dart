@@ -32,6 +32,7 @@ part 'app_database.g.dart';
     UserProfiles,
     Exercises,
     WorkoutSessions,
+    WorkoutDrafts,
     SetsLog,
     MoodEntries,
     Measurements,
@@ -63,11 +64,23 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
+      if (from < 12) {
+        await m.addColumn(userProfiles, userProfiles.filterPresetsJson);
+        await m.addColumn(userProfiles, userProfiles.exerciseVariantsJson);
+        await m.addColumn(setsLog, setsLog.variantId);
+        await m.addColumn(setsLog, setsLog.variantLabel);
+        await m.addColumn(personalRecords, personalRecords.variantId);
+        await m.addColumn(personalRecords, personalRecords.variantLabel);
+      }
+      if (from < 11) {
+        await m.addColumn(workoutSessions, workoutSessions.guidanceJson);
+        await m.createTable(workoutDrafts);
+      }
       if (from < 10) {
         await m.addColumn(workoutPlans, workoutPlans.structureJson);
       }

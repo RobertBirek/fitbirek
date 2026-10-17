@@ -15,6 +15,12 @@ import '../../providers/workout_providers.dart';
 import '../../domain/interval_timer.dart';
 import '../../providers/fixed_load_progression_provider.dart';
 import 'interval_timer_screen.dart';
+import '../../../planner/domain/structured_plan.dart';
+import '../../../exercises/presentation/exercise_illustrations.dart';
+import '../../../exercises/providers/exercise_variants_providers.dart';
+import '../../../exercises/providers/filter_presets_providers.dart';
+import '../../../exercises/presentation/widgets/own_variants.dart';
+import '../../../auth/providers/auth_providers.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
 /// ciężar/powtórzenia - plank, wall-sit, dead-hang itp.
@@ -54,8 +60,40 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
         actions: [
           TextButton(
             onPressed: () async {
-              await ref.read(activeWorkoutProvider.notifier).finishSession();
-              if (context.mounted) context.go('/workout');
+              final id = active.sessionId;
+              final note = TextEditingController();
+              final finish = await showDialog<bool>(
+                context: context,
+                builder: (c) => AlertDialog(
+                  title: const Text('Zakończyć trening?'),
+                  content: TextField(
+                    controller: note,
+                    maxLength: 500,
+                    decoration: const InputDecoration(
+                      labelText: 'Krótka notatka (opcjonalna)',
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(c, false),
+                      child: const Text('Wróć'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(c, true),
+                      child: const Text('Zakończ'),
+                    ),
+                  ],
+                ),
+              );
+              final text = note.text;
+              note.dispose();
+              if (finish != true) return;
+              await ref
+                  .read(activeWorkoutProvider.notifier)
+                  .finishSession(note: text);
+              if (context.mounted) {
+                context.go(id == null ? '/workout' : '/workout/summary/$id');
+              }
             },
             child: const Text('Zakończ'),
           ),
@@ -64,6 +102,15 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
       body: SafeArea(
         child: Column(
           children: [
+            if (ref.read(activeWorkoutProvider.notifier).draftSaveError
+                case final String error)
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  error,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: PrimaryButton(
@@ -74,7 +121,9 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
               ),
             ),
             Expanded(
-              child: active.selectedExercises.isEmpty
+              child: active.guidance != null
+                  ? _guided(context, active)
+                  : active.selectedExercises.isEmpty
                   ? const Center(
                       child: Text(
                         'Wybierz ćwiczenia, aby zacząć logować serie',
@@ -97,11 +146,173 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
       ),
     );
   }
+
+  Widget _guided(BuildContext context, ActiveWorkoutState active) {
+    final g = active.guidance!, slot = active.currentSlot;
+    final block = g.plan.blocks[slot],
+        target = g.plan.blocks[slot].prescription;
+    final catalog =
+        ref.watch(allExercisesProvider).valueOrNull ?? active.selectedExercises;
+    final exercise = catalog
+        .where((e) => e.id == g.exerciseAt(slot))
+        .firstOrNull;
+    final n = ref.read(activeWorkoutProvider.notifier);
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text(
+          '${block.section.label} • blok ${slot + 1}/${g.plan.blocks.length}',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        Text(
+          'Cel planu: ${target.sets} serii • ${target.reps == null ? '${target.workSeconds} s' : '${target.reps} powt.'} • odpoczynek ${target.restSeconds} s',
+        ),
+        const Text(
+          'Cele są szkicem. Zapis nastąpi dopiero po potwierdzeniu wykonania.',
+        ),
+        if (exercise == null)
+          const Text(
+            'Ćwiczenie niedostępne w aktualnym katalogu — możesz pominąć blok.',
+          )
+        else ...[
+          if (exerciseIllustrationAsset(exercise.id) case final String asset)
+            Image.asset(
+              asset,
+              height: 180,
+              errorBuilder: (_, _, _) => const SizedBox.shrink(),
+            ),
+          if (exercise.kluczoweWskazowki.isNotEmpty)
+            Text(exercise.kluczoweWskazowki.first),
+          _ExerciseLogCard(
+            key: ValueKey('${active.sessionSyncId}:$slot:${exercise.id}'),
+            exercise: exercise,
+            guided: true,
+          ),
+        ],
+        Wrap(
+          spacing: 8,
+          children: [
+            TextButton(
+              onPressed: slot == 0 ? null : () => n.moveGuided(slot - 1),
+              child: const Text('Wstecz'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await n.guidedEvent();
+              },
+              child: const Text('Pomiń'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  final current = StructuredPlan(
+                    criteria: g.plan.criteria,
+                    budgetSeconds: g.plan.budgetSeconds,
+                    equipment: g.plan.equipment,
+                    level: g.plan.level,
+                    warnings: g.plan.warnings,
+                    blocks: List.generate(
+                      g.plan.blocks.length,
+                      (i) => PlanBlock(
+                        exerciseId: g.exerciseAt(i),
+                        section: g.plan.blocks[i].section,
+                        prescription: g.plan.blocks[i].prescription,
+                      ),
+                    ),
+                  );
+                  final replacement = StructuredPlanGenerator.replace(
+                    plan: current,
+                    index: slot,
+                    allExercises: catalog,
+                    engine: ref.read(exerciseFilterEngineProvider),
+                    equipment: g.plan.equipment,
+                    level: g.plan.level,
+                  );
+                  if (replacement == null) {
+                    throw StateError(
+                      'Brak zgodnego zamiennika w aktualnej puli.',
+                    );
+                  }
+                  final id = replacement.blocks[slot].exerciseId;
+                  final yes = await showDialog<bool>(
+                    context: context,
+                    builder: (c) => AlertDialog(
+                      title: const Text('Zamienić ćwiczenie?'),
+                      content: Text(
+                        '${exercise?.nazwaPl ?? block.exerciseId} → ${catalog.firstWhere((e) => e.id == id).nazwaPl}. Oryginalne cele planu pozostaną zachowane.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(c, false),
+                          child: const Text('Anuluj'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(c, true),
+                          child: const Text('Zamień'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (yes == true &&
+                      mounted &&
+                      ref.read(activeWorkoutProvider).sessionSyncId ==
+                          active.sessionSyncId &&
+                      ref.read(activeWorkoutProvider).currentSlot == slot) {
+                    await n.guidedEvent(replacement: id);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('$e')));
+                  }
+                }
+              },
+              child: const Text('Zamień'),
+            ),
+            TextButton(
+              onPressed: slot + 1 >= g.plan.blocks.length
+                  ? null
+                  : () => n.moveGuided(slot + 1),
+              child: const Text('Następny blok'),
+            ),
+          ],
+        ),
+        if (active.selectedExercises.any(
+          (e) => active.isExtraExercise(e.id),
+        )) ...[
+          const Divider(),
+          Text(
+            'Dodatkowe ćwiczenia',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const Text(
+            'Poza planem — zapis nie zmienia celów ani bieżącego bloku.',
+          ),
+          for (final extra in active.selectedExercises.where(
+            (e) => active.isExtraExercise(e.id),
+          ))
+            _ExerciseLogCard(
+              key: ValueKey('extra:${active.sessionSyncId}:${extra.id}'),
+              exercise: extra,
+              extra: true,
+            ),
+        ],
+      ],
+    );
+  }
 }
 
 class _ExerciseLogCard extends ConsumerStatefulWidget {
-  const _ExerciseLogCard({super.key, required this.exercise});
+  const _ExerciseLogCard({
+    super.key,
+    required this.exercise,
+    this.guided = false,
+    this.extra = false,
+  });
   final Exercise exercise;
+  final bool guided;
+  final bool extra;
 
   @override
   ConsumerState<_ExerciseLogCard> createState() => _ExerciseLogCardState();
@@ -114,6 +325,18 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   int _rpe = 7;
   String _selectedSide = 'both';
   bool _intervalBusy = false;
+  bool _loadingForm = false;
+  bool get _durable => widget.guided || widget.extra;
+  Map<String, Object?> get _formDraft => ref
+      .read(activeWorkoutProvider)
+      .exerciseDraft(
+        widget.exercise.id,
+        extra: widget.extra,
+        side: _side,
+        variantId: _variantId,
+      );
+  String? _variantId, _variantLabel;
+  int? _variantEpoch;
 
   ExerciseCatalogEntry? get _entry => ref
       .read(exerciseCatalogMetadataProvider)
@@ -148,17 +371,352 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   void initState() {
     super.initState();
     _weightController.addListener(_weightChanged);
+    _variantEpoch = ref
+        .read(userCollectionsRepositoryProvider)
+        .authority
+        ?.epoch;
+    if (_durable) {
+      final state = ref.read(activeWorkoutProvider);
+      if (widget.extra) {
+        final selection = state.extraSelection(widget.exercise.id);
+        _selectedSide = selection['side'] is String
+            ? selection['side'] as String
+            : 'both';
+        _variantId = selection['variantId'] as String?;
+        _variantLabel = selection['variantLabel'] as String?;
+      }
+      final selectionSide = state.extraSelection(widget.exercise.id)['side'];
+      final draft = widget.extra
+          ? state.exerciseDraft(
+              widget.exercise.id,
+              extra: true,
+              side: selectionSide is String ? selectionSide : null,
+              variantId: _variantId,
+            )
+          : state.draft;
+      final target = widget.guided
+          ? state.guidance!.plan.blocks[state.currentSlot].prescription
+          : null;
+      _repsController.text = '${draft['reps'] ?? target?.reps ?? ''}';
+      _secondsController.text =
+          '${draft['seconds'] ?? (target == null || target.tracking == 'reps' ? '' : target.workSeconds)}';
+      _weightController.text = '${draft['weight'] ?? ''}';
+      _selectedSide = draft['side'] is String
+          ? draft['side'] as String
+          : 'both';
+      _rpe = draft['rpe'] is int ? (draft['rpe'] as int).clamp(1, 10) : 7;
+      _variantId = draft['variantId'] as String?;
+      _variantLabel = draft['variantLabel'] as String?;
+      for (final c in [
+        _weightController,
+        _repsController,
+        _secondsController,
+      ]) {
+        c.addListener(_saveForm);
+      }
+    }
   }
 
+  void _saveForm() {
+    if (!_durable || !mounted || _loadingForm) return;
+    ref
+        .read(activeWorkoutProvider.notifier)
+        .updateExerciseDraft(
+          widget.exercise.id,
+          {
+            'weight': _weightController.text,
+            'reps': _repsController.text,
+            'seconds': _secondsController.text,
+            'side': _side,
+            'rpe': _rpe,
+            'variantId': _variantId,
+            'variantLabel': _variantLabel,
+          },
+          extra: widget.extra,
+          side: _side,
+          variantId: _variantId,
+        );
+  }
+
+  void _clearTimer() => ref
+      .read(activeWorkoutProvider.notifier)
+      .updateExerciseDraft(
+        widget.exercise.id,
+        {'timer': null},
+        extra: widget.extra,
+        side: _side,
+        variantId: _variantId,
+      );
+
   void _weightChanged() {
-    if (mounted) setState(() {});
+    if (mounted && !_loadingForm) setState(() {});
+  }
+
+  void _loadExtraForm({Map<String, dynamic>? definition}) {
+    final draft = _formDraft;
+    definition ??=
+        (ref.read(exerciseVariantsProvider(widget.exercise.id)).valueOrNull ??
+                [])
+            .where((e) => e['id'] == _variantId)
+            .firstOrNull;
+    _loadingForm = true;
+    try {
+      _weightController.text =
+          '${draft['weight'] ?? (_usesWeight && definition?['loadKg'] != null ? definition!['loadKg'] : '')}';
+      _repsController.text = '${draft['reps'] ?? ''}';
+      _secondsController.text = '${draft['seconds'] ?? ''}';
+      _rpe = draft['rpe'] is int ? (draft['rpe'] as int).clamp(1, 10) : 7;
+      _variantLabel =
+          definition?['name'] as String? ?? draft['variantLabel'] as String?;
+    } finally {
+      _loadingForm = false;
+    }
+  }
+
+  Future<void> _selectSide(String side) async {
+    if (side == _selectedSide || _intervalBusy) return;
+    final active = ref.read(activeWorkoutProvider);
+    final authority = ref.read(cachedAuthWriteAuthorityProvider);
+    final epoch = authority.epoch, previousSide = _selectedSide;
+    final variant = _variantId;
+    bool current() =>
+        mounted &&
+        authority.epoch == epoch &&
+        ref.read(activeWorkoutProvider).sessionSyncId == active.sessionSyncId &&
+        ref.read(activeWorkoutProvider).currentSlot == active.currentSlot &&
+        _selectedSide == previousSide &&
+        _variantId == variant;
+    if (_durable && _formDraft['timer'] != null) {
+      final discard = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: const Text('Odrzucić niezapisany timer?'),
+          content: const Text(
+            'Zmiana strony usunie timer i niezapisane rundy poprzedniej strony. Nie zostaną przeniesione ani zaliczone nowej stronie.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Zachowaj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Odrzuć timer'),
+            ),
+          ],
+        ),
+      );
+      if (discard != true || !current()) return;
+      _clearTimer();
+    }
+    if (!current()) return;
+    if (widget.extra) _saveForm(); // old exact key, before changing identity
+    setState(() {
+      _selectedSide = side;
+      if (widget.extra) _loadExtraForm();
+    });
+    _saveForm(); // loaded destination/defaults, never previous controllers
+  }
+
+  bool _validVariant() {
+    if (_variantId == null) return true;
+    if (ref.read(userCollectionsRepositoryProvider).authority?.epoch !=
+        _variantEpoch) {
+      return false;
+    }
+    final values = ref.read(exerciseVariantsProvider(widget.exercise.id));
+    if (!values.isLoading &&
+        !values.hasError &&
+        (values.valueOrNull ?? []).any((e) => e['id'] == _variantId)) {
+      return true;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Wariant niedostępny. Wybierz świadomie wariant bazowy lub inny własny wariant.',
+        ),
+      ),
+    );
+    return false;
+  }
+
+  Widget _variantSelector() {
+    final result = ref.watch(exerciseVariantsProvider(widget.exercise.id));
+    final account = ref.watch(filterPresetsAccountProvider);
+    if (account.isLoading ||
+        account.hasError ||
+        account.valueOrNull == null ||
+        ref.read(userCollectionsRepositoryProvider).authority?.epoch !=
+            _variantEpoch) {
+      return const Text('Wariant: Bazowy');
+    }
+    final items = result.isLoading || result.hasError
+        ? <Map<String, dynamic>>[]
+        : result.valueOrNull ?? [];
+    final known = _variantId == null || items.any((e) => e['id'] == _variantId);
+    final selected = items.where((e) => e['id'] == _variantId).firstOrNull;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Tooltip(
+          message: 'Wariant wykonania',
+          child: InkWell(
+            onTap: _intervalBusy ? null : _chooseVariant,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                'Wariant: ${_variantId == null ? 'Bazowy' : selected?['name'] ?? _variantLabel ?? 'Niedostępny'} ▾',
+              ),
+            ),
+          ),
+        ),
+        if (!known)
+          const Text(
+            'Wariant usunięty lub niedostępny. Zapis zablokowany — wybierz bazowy zamiast automatycznego zastąpienia.',
+          ),
+        if (selected != null) Text(variantDescription(selected)),
+        if (result.hasError)
+          Text('Nie udało się odczytać wariantów: ${result.error}'),
+      ],
+    );
+  }
+
+  Future<void> _chooseVariant() async {
+    final account = ref.read(filterPresetsAccountProvider).valueOrNull;
+    final authority = ref.read(userCollectionsRepositoryProvider).authority;
+    final epoch = authority?.epoch;
+    if (account == null) return;
+    bool current() =>
+        mounted &&
+        authority?.epoch == epoch &&
+        ref.read(filterPresetsAccountProvider).valueOrNull == account;
+    final id = await showDialog<String>(
+      context: context,
+      builder: (c) => Consumer(
+        builder: (c, dialogRef, _) {
+          final binding = dialogRef.watch(filterPresetsAccountProvider);
+          final values = dialogRef.watch(
+            exerciseVariantsProvider(widget.exercise.id),
+          );
+          final visible =
+              !binding.isLoading &&
+              !binding.hasError &&
+              binding.valueOrNull == account &&
+              current();
+          final entries = visible && !values.isLoading && !values.hasError
+              ? values.valueOrNull ?? <Map<String, dynamic>>[]
+              : <Map<String, dynamic>>[];
+          return AlertDialog(
+            title: const Text('Wariant wykonania'),
+            content: !visible
+                ? const Text('Konto zostało zmienione.')
+                : SizedBox(
+                    width: double.maxFinite,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        ListTile(
+                          title: const Text('Bazowy (osobna historia)'),
+                          onTap: () => Navigator.pop(c, ''),
+                        ),
+                        for (final e in entries)
+                          ListTile(
+                            title: Text(e['name'] as String),
+                            subtitle: Text(variantDescription(e)),
+                            onTap: () => Navigator.pop(c, e['id'] as String),
+                          ),
+                      ],
+                    ),
+                  ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(c),
+                child: const Text('Anuluj'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    if (id == null || !current()) return;
+    final values = ref.read(exerciseVariantsProvider(widget.exercise.id));
+    if (values.isLoading || values.hasError) return;
+    await _selectVariant(id.isEmpty ? null : id, values.valueOrNull ?? []);
+  }
+
+  Future<void> _selectVariant(
+    String? id,
+    List<Map<String, dynamic>> items,
+  ) async {
+    if (id == _variantId) return;
+    final selected = items.where((e) => e['id'] == id).firstOrNull;
+    if (id != null && selected == null) return;
+    final account = ref.read(filterPresetsAccountProvider).valueOrNull;
+    final authority = ref.read(userCollectionsRepositoryProvider).authority;
+    final epoch = authority?.epoch;
+    final session = ref.read(activeWorkoutProvider).sessionSyncId;
+    final slot = ref.read(activeWorkoutProvider).currentSlot;
+    bool current() =>
+        mounted &&
+        ref.read(activeWorkoutProvider).sessionSyncId == session &&
+        ref.read(activeWorkoutProvider).currentSlot == slot &&
+        authority?.epoch == epoch &&
+        ref.read(filterPresetsAccountProvider).valueOrNull == account;
+    if (_weightController.text.isNotEmpty ||
+        _repsController.text.isNotEmpty ||
+        _secondsController.text.isNotEmpty ||
+        _formDraft['timer'] != null) {
+      final yes = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: const Text('Zastąpić szkic wariantu?'),
+          content: const Text(
+            'Zmiana wariantu zastąpi domyślne obciążenie i usunie niezapisany timer. Nie zapisze serii ani nie zmieni historii.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Zachowaj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Zastąp'),
+            ),
+          ],
+        ),
+      );
+      if (yes != true || !current()) return;
+    }
+    if (!current()) return;
+    if (id != null &&
+        !(ref.read(exerciseVariantsProvider(widget.exercise.id)).valueOrNull ??
+                [])
+            .any((e) => e['id'] == id)) {
+      return;
+    }
+    if (widget.extra) _saveForm();
+    if (_durable) _clearTimer();
+    setState(() {
+      _variantId = id;
+      _variantLabel = selected?['name'] as String?;
+      if (widget.extra) {
+        _loadExtraForm(definition: selected);
+      } else {
+        _weightController.text = _usesWeight && selected?['loadKg'] != null
+            ? '${selected!['loadKg']}'
+            : '';
+      }
+    });
+    _saveForm();
   }
 
   Future<void> _acceptProgression(
     FixedLoadRequest request,
     FixedLoadOffer offer,
   ) async {
-    bool owns() => mounted && _progressionRequest == request;
+    final variant = _variantId;
+    bool owns() =>
+        mounted && _progressionRequest == request && _variantId == variant;
     if (!owns() || !await offer.isCurrent() || !owns()) return;
     if (!mounted) return;
     final target = offer.suggestion.target;
@@ -199,7 +757,9 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
 
   Widget _progression() {
     final request = _progressionRequest;
-    final result = ref.watch(fixedLoadProgressionProvider(request));
+    final result = _variantId == null
+        ? ref.watch(fixedLoadProgressionProvider(request))
+        : ref.watch(variantFixedLoadProgressionProvider((request, _variantId)));
     // Do not keep previous-account/side data during refresh/loading/errors.
     final offer = result.isLoading || result.hasError
         ? null
@@ -279,36 +839,51 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     setState(() {});
     // Automatyczny timer przerwy po zalogowanej serii - domyślnie 90s,
     // użytkownik może zmienić na 60/120/180s lub własny czas na ekranie timera.
-    if (mounted) {
+    if (mounted && !_durable) {
       await showRestTimer(context, initialSeconds: 90);
     }
   }
 
   Future<void> _startIsometricStopwatch() async {
+    if (!_validVariant()) return;
     final side = _side;
+    final variantId = _variantId, variantLabel = _variantLabel;
+    final notifier = ref.read(activeWorkoutProvider.notifier);
+    final origin = _durable
+        ? notifier.captureInterval(
+            exercise: widget.exercise,
+            side: side,
+            variantId: variantId,
+            variantLabel: variantLabel,
+            extra: widget.extra,
+          )
+        : null;
+    if (_durable && origin == null) return;
     final seconds = await showIsometricStopwatch(
       context,
       label: widget.exercise.nazwaPl,
     );
     if (seconds == null || seconds <= 0) return;
-    final isPr = await ref
-        .read(activeWorkoutProvider.notifier)
-        .logSet(
-          exercise: widget.exercise,
-          seconds: seconds,
-          rpe: _rpe,
-          side: side,
-        );
-    await _afterLogSet(isPr);
+    if (_durable && !notifier.isIntervalCurrent(origin!)) return;
+    await _recordSet(
+      seconds: seconds,
+      side: side,
+      variantId: variantId,
+      variantLabel: variantLabel,
+    );
   }
 
   Future<void> _startIntervals() async {
     if (_intervalBusy) return;
+    if (!_validVariant()) return;
     final notifier = ref.read(activeWorkoutProvider.notifier);
     final origin = notifier.captureInterval(
       exercise: widget.exercise,
       side: _side,
       rpe: _rpe,
+      variantId: _variantId,
+      variantLabel: _variantLabel,
+      extra: widget.extra,
     );
     if (origin == null) return;
     setState(() => _intervalBusy = true);
@@ -318,6 +893,18 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
           builder: (_) => IntervalTimerScreen(
             label: '${widget.exercise.nazwaPl} • ${setSideLabel(origin.side)}',
             isValid: () => mounted && notifier.isIntervalCurrent(origin),
+            checkpoint: _durable && _formDraft['timer'] is Map
+                ? Map<String, dynamic>.from(_formDraft['timer'] as Map)
+                : null,
+            onCheckpoint: !_durable
+                ? null
+                : (checkpoint) {
+                    if (mounted &&
+                        notifier.isIntervalCheckpointCurrent(origin)) {
+                      _saveForm();
+                      notifier.updateIntervalCheckpoint(origin, checkpoint);
+                    }
+                  },
           ),
         ),
       );
@@ -353,6 +940,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   }
 
   Future<void> _logStrengthSet() async {
+    if (!_validVariant()) return;
     final weight = _usesWeight
         ? double.tryParse(_weightController.text.replaceAll(',', '.'))
         : null;
@@ -365,16 +953,13 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       _invalidSet();
       return;
     }
-    final isPr = await ref
-        .read(activeWorkoutProvider.notifier)
-        .logSet(
-          exercise: widget.exercise,
-          weightKg: weight,
-          reps: reps,
-          rpe: _rpe,
-          side: _side,
-        );
-    await _afterLogSet(isPr);
+    await _recordSet(
+      weightKg: weight,
+      reps: reps,
+      side: _side,
+      variantId: _variantId,
+      variantLabel: _variantLabel,
+    );
   }
 
   void _invalidSet() => ScaffoldMessenger.of(context).showSnackBar(
@@ -386,20 +971,52 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   );
 
   Future<void> _logTimedSet() async {
+    if (!_validVariant()) return;
     final seconds = int.tryParse(_secondsController.text);
     if (seconds == null || seconds <= 0) {
       _invalidSet();
       return;
     }
-    final isPr = await ref
-        .read(activeWorkoutProvider.notifier)
-        .logSet(
-          exercise: widget.exercise,
-          seconds: seconds,
-          rpe: _rpe,
-          side: _side,
-        );
-    await _afterLogSet(isPr);
+    await _recordSet(
+      seconds: seconds,
+      side: _side,
+      variantId: _variantId,
+      variantLabel: _variantLabel,
+    );
+  }
+
+  Future<void> _recordSet({
+    double? weightKg,
+    int? reps,
+    int? seconds,
+    String? side,
+    required String? variantId,
+    required String? variantLabel,
+  }) async {
+    try {
+      final isPr = await ref
+          .read(activeWorkoutProvider.notifier)
+          .logSet(
+            exercise: widget.exercise,
+            weightKg: weightKg,
+            reps: reps,
+            seconds: seconds,
+            side: side,
+            rpe: _rpe,
+            variantId: variantId,
+            variantLabel: variantLabel,
+            extra: widget.extra,
+          );
+      await _afterLogSet(isPr);
+    } on StateError catch (error) {
+      // A definition can be removed by pull between the selector and SQLite's
+      // transactional proof. Never fall back to a base set silently.
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$error')));
+      }
+    }
   }
 
   @override
@@ -409,7 +1026,12 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     final loggedForThis = ref
         .watch(activeWorkoutProvider)
         .loggedSets
-        .where((s) => s.exerciseId == widget.exercise.id && s.side == _side)
+        .where(
+          (s) =>
+              s.exerciseId == widget.exercise.id &&
+              s.side == _side &&
+              s.variantId == _variantId,
+        )
         .toList();
 
     return Card(
@@ -424,6 +1046,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 4),
+            _variantSelector(),
             if (_entry?.unilateral == true) ...[
               SegmentedButton<String>(
                 segments: const [
@@ -432,8 +1055,9 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                   ButtonSegment(value: 'both', label: Text('Obie')),
                 ],
                 selected: {_selectedSide},
-                onSelectionChanged: (value) =>
-                    setState(() => _selectedSide = value.single),
+                onSelectionChanged: _intervalBusy
+                    ? null
+                    : (value) => _selectSide(value.single),
               ),
               const Text(
                 'PR i porównania są liczone osobno dla każdej strony. 1RM tylko dla kg + powtórzeń.',
@@ -473,7 +1097,10 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               ),
               RpeSlider(
                 value: _rpe,
-                onChanged: (v) => setState(() => _rpe = v),
+                onChanged: (v) => setState(() {
+                  _rpe = v;
+                  _saveForm();
+                }),
               ),
               const SizedBox(height: 8),
               PrimaryButton(
@@ -509,7 +1136,10 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               const SizedBox(height: 8),
               RpeSlider(
                 value: _rpe,
-                onChanged: (v) => setState(() => _rpe = v),
+                onChanged: (v) => setState(() {
+                  _rpe = v;
+                  _saveForm();
+                }),
               ),
               const SizedBox(height: 8),
               PrimaryButton(

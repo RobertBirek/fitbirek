@@ -70,6 +70,90 @@ class IntervalTimer {
                 Duration.microsecondsPerSecond)
             .ceil();
 
+  Map<String, Object?> checkpoint() => {
+    'schemaVersion': 1,
+    'config': {
+      'preparation': config.preparation,
+      'work': config.work,
+      'rest': config.rest,
+      'rounds': config.rounds,
+    },
+    'phase': phase.name,
+    'round': round,
+    'paused': paused,
+    'elapsedMicros': _elapsed.inMicroseconds,
+    'results': results
+        .map(
+          (r) => {
+            'round': r.round,
+            'seconds': r.seconds,
+            'shortened': r.shortened,
+          },
+        )
+        .toList(),
+  };
+
+  /// A checkpoint contains data, never write authority. Downtime is not work.
+  factory IntervalTimer.restore(
+    Map<String, dynamic> json, {
+    Duration Function()? clock,
+    bool restartSegment = false,
+  }) {
+    try {
+      if (json['schemaVersion'] != 1) {
+        throw const FormatException('Nieobsługiwany timer');
+      }
+      final c = json['config'] as Map;
+      final t = IntervalTimer(
+        IntervalConfig(
+          preparation: c['preparation'] as int,
+          work: c['work'] as int,
+          rest: c['rest'] as int,
+          rounds: c['rounds'] as int,
+        ),
+        clock: clock,
+      );
+      t.phase = IntervalPhase.values.byName(json['phase'] as String);
+      t.round = json['round'] as int;
+      t._elapsed = Duration(microseconds: json['elapsedMicros'] as int);
+      if (json['paused'] is! bool ||
+          t.round < 1 ||
+          t.round > t.config.rounds ||
+          t._elapsed.isNegative ||
+          (!t.terminal && t._elapsed >= Duration(seconds: t._phaseSeconds))) {
+        throw const FormatException('Nieprawidłowy checkpoint');
+      }
+      var previous = 0;
+      for (final r in json['results'] as List) {
+        final round = r['round'] as int, seconds = r['seconds'] as int;
+        final shortened = r['shortened'] as bool;
+        if (round <= previous ||
+            round > t.round ||
+            seconds < 1 ||
+            seconds > t.config.work ||
+            (!shortened && seconds != t.config.work) ||
+            (!t.terminal &&
+                round >= t.round &&
+                t.phase == IntervalPhase.work)) {
+          throw const FormatException('Nieprawidłowa praca w checkpoint');
+        }
+        previous = round;
+        t._results.add(
+          IntervalRound(round: round, seconds: seconds, shortened: shortened),
+        );
+      }
+      t._started = true;
+      if (restartSegment && !t.terminal) t._elapsed = Duration.zero;
+      t.paused = !t.terminal;
+      t._last = t._clock();
+      return t;
+    } on TypeError {
+      throw const FormatException('Nieprawidłowy checkpoint');
+    } on ArgumentError {
+      throw const FormatException('Nieprawidłowy checkpoint');
+    }
+  }
+
   void start() {
     if (_started || terminal) return;
     _started = true;
@@ -126,6 +210,12 @@ class IntervalTimer {
   void pause() {
     update();
     if (!terminal) paused = true;
+  }
+
+  /// Freeze at the last sampled work after an unobserved suspension.
+  void suspendUnobserved() {
+    if (!terminal) paused = true;
+    _last = _clock();
   }
 
   void resume() {

@@ -137,6 +137,42 @@
     "yj-happy-baby-pose": {
       "url": "https://www.yogajournal.com/poses/happy-baby-pose/",
       "verifiedSections": "Yoga Journal: Happy Baby — Ananda Balasana — setup, variations, beginner tips"
+    },
+    "aaos_spine": {
+      "url": "https://orthoinfo.aaos.org/en/recovery/spine-conditioning-program/",
+      "verifiedSections": "5 Knee to Chest; 6 Bird Dog; 7 Plank; 8 Modified Side Plank; 9 Hip Bridge; 10 Abdominal Bracing. Read full text 2026-10-16; AAOS does not explicitly mention breathing in bracing, supplemented by CUH section 5. Do not adopt head rolls or forced end-range instructions.",
+      "publisher": "AAOS OrthoInfo",
+      "publicationVersion": "Live page, no revision date displayed; reviewed Daniel K. Park / Thomas Ward Throckmorton"
+    },
+    "cuh_back": {
+      "url": "https://www.cuh.nhs.uk/patient-information/back-mobility-exercises/",
+      "verifiedSections": "3 Knee rolls: bent knees together, upper trunk still; 5 Core muscle contraction: breathe normally, no arching; 7 Pelvic tilts: backward/forward pelvic rotation in supine. Also 6 Bridging. Read full text 2026-10-16.",
+      "publisher": "Cambridge University Hospitals NHS, Addenbrooke’s physiotherapy team",
+      "publicationVersion": "Approved 16 Jul 2024, version 4"
+    },
+    "nhs_inform_back": {
+      "url": "https://www.nhsinform.scot/illnesses-and-conditions/muscle-bone-and-joints/neck-and-back-problems-and-conditions/exercises-for-back-pain",
+      "verifiedSections": "Single knee hug: supine, other knee towards ceiling, hold a few seconds then release. Pelvic tilts and knee rolls; gradual starting volume 2–3 repetitions; stop for worsening symptoms or new pain. Read full text 2026-10-16.",
+      "publisher": "NHS inform / NHS 24",
+      "publicationVersion": "Live page, no revision date in retrieved full text"
+    },
+    "leeds_open_book": {
+      "url": "https://flipbooks.leedsth.nhs.uk/LN005629.pdf",
+      "verifiedSections": "1 Open book: side lying, arms together in front, top arm opens in arc, eyes follow, knees together on floor, slow return; 5 each side. Clinical leaflet context is not a diagnosis or an indication assigned to catalog users. Floor contact of opening hand is NOT required in our adaptation. Read full PDF 2026-10-16.",
+      "publisher": "Leeds Teaching Hospitals NHS Trust, Emma MacInnes",
+      "publicationVersion": "LN005629, first edition Ver 1.0, publication 08/2024, review 08/2027"
+    },
+    "peakrx_hip_hinge": {
+      "url": "https://www.peakrxtherapy.com/blog/hip-hinging-101",
+      "verifiedSections": "What is a hip hinge; Common faults; Ways to Train / Butt taps: a few inches from wall, soft knees, hips back to tap wall, hands in hip crease, progress by stepping slightly forward. Read full text 2026-10-16; do not reproduce protection or pain-treatment claims.",
+      "publisher": "Dr. Brooke Miller, physical therapist, PeakRx PT & Wellness",
+      "publicationVersion": "10 Feb 2018, live article"
+    },
+    "cuh_thoracic": {
+      "url": "https://www.cuh.nhs.uk/patient-information/thoracic-spine-exercises/",
+      "verifiedSections": "2 Seated extension above chair back; 4 Seated rotation; 5 Quadruped rotation; 6 Cat-cow. Read full text 2026-10-16. Chair extension excluded as too close to existing cw267 supported thoracic extension.",
+      "publisher": "Cambridge University Hospitals NHS, Addenbrooke’s physiotherapy team",
+      "publicationVersion": "16 Jul 2024, version 4"
     }
   },
   "exercises": {
@@ -327,6 +363,30 @@
     "cw363": {
       "source": "seated",
       "movement": "Kick with Sole (seated)"
+    },
+    "cw364": {
+      "source": "cuh_back",
+      "movement": "Supine pelvic tilt"
+    },
+    "cw365": {
+      "source": "aaos_spine",
+      "movement": "Supine abdominal bracing"
+    },
+    "cw366": {
+      "source": "cuh_back",
+      "movement": "Supine bent-knee rolls"
+    },
+    "cw367": {
+      "source": "leeds_open_book",
+      "movement": "Side-lying open book"
+    },
+    "cw368": {
+      "source": "nhs_inform_back",
+      "movement": "Supine single knee to chest"
+    },
+    "cw369": {
+      "source": "peakrx_hip_hinge",
+      "movement": "Bodyweight wall hip hinge"
     }
   },
   "excluded": [

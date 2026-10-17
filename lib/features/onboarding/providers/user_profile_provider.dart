@@ -5,6 +5,7 @@ import '../../../core/database/app_database.dart';
 import '../../../core/models/user_profile.dart';
 import '../../../core/providers/database_provider.dart';
 import '../../../core/sync/sync_models.dart';
+import '../../../core/sync/profile_payload.dart';
 
 class UserProfileRepository {
   UserProfileRepository(this._db);
@@ -75,17 +76,8 @@ class UserProfileRepository {
       await _db.syncDao.enqueueUpsert(
         entityType: SyncEntityType.profile,
         entityId: syncId,
-        baseVersion: syncVersion,
-        payload: {
-          'imie': imie,
-          'wiek': wiek,
-          'wzrostCm': wzrostCm,
-          'wagaKg': wagaKg,
-          'cel': cel.name,
-          'dostepnySprzet': dostepnySprzet,
-          'onboardingZakonczony': onboardingZakonczony,
-          'dataUtworzenia': createdAt.toUtc().toIso8601String(),
-        },
+        baseVersion: await profileWriteBaseVersion(_db, syncId, syncVersion),
+        payload: profilePayload((await _db.userProfileDao.watchProfileOnce())!),
       );
     });
   }

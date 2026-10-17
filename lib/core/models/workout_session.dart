@@ -18,6 +18,8 @@ class SetLog with _$SetLog {
     int? powtorzenia,
     int? czasSekund, // dla planku, wall sit itd.
     @JsonKey(includeIfNull: false) String? side,
+    @JsonKey(includeIfNull: false) String? variantId,
+    @JsonKey(includeIfNull: false) String? variantLabel,
     int? rpe,
     required DateTime timestamp,
   }) = _SetLog;

@@ -19,6 +19,9 @@ void main() {
   }) async {
     final c = ProviderContainer(
       overrides: [
+        filterPresetsRepositoryProvider.overrideWithValue(
+          FilterPresetsRepository(),
+        ),
         filterPresetsAccountProvider.overrideWith(
           (ref) => account ?? Stream.value('opaque-A'),
         ),
@@ -39,6 +42,21 @@ void main() {
     if (catalog == null) await tester.pumpAndSettle();
     return c;
   }
+
+  testWidgets('presets describe offline access and authenticated sync', (
+    tester,
+  ) async {
+    await mount(tester);
+    await tester.tap(find.byTooltip('Zapisane filtry'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text(
+        'Zestawy są dostępne offline dla bieżącego konta i synchronizowane po zalogowaniu.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('tylko na tym urządzeniu'), findsNothing);
+  });
 
   testWidgets('save, validate, overwrite, apply and reset', (tester) async {
     final stream = StreamController<List<Exercise>>();

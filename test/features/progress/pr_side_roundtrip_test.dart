@@ -1,4 +1,5 @@
 import 'package:drift/native.dart';
+import '../../core/database/legacy_schema.dart';
 import 'package:flutter_test/flutter_test.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -29,7 +30,12 @@ void main() {
           .single
           .data;
       await db.customStatement('ALTER TABLE personal_records DROP COLUMN side');
+      await removeV12Columns(db);
       await db.customStatement('PRAGMA user_version = 8');
+      await db.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN guidance_json',
+      );
+      await db.customStatement('DROP TABLE workout_drafts');
       await db.customStatement(
         'ALTER TABLE workout_plans DROP COLUMN structure_json',
       );
@@ -76,7 +82,7 @@ void main() {
         (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
           'user_version',
         ),
-        10,
+        12,
       );
     },
   );

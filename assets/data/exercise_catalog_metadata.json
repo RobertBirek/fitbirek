@@ -48,6 +48,15 @@
         "rozciąganie",
         "regeneracja"
       ]
+    },
+    {
+      "id": "spine",
+      "label": "Kręgosłup — ruch i stabilizacja",
+      "aliases": [
+        "kręgosłup",
+        "kregoslup",
+        "spine"
+      ]
     }
   ],
   "muscles": [
@@ -4131,7 +4140,8 @@
     "cw154": {
       "styles": [
         "strength",
-        "calisthenics"
+        "calisthenics",
+        "spine"
       ],
       "primaryMuscles": [
         "glutes"
@@ -4501,7 +4511,8 @@
     "cw169": {
       "styles": [
         "strength",
-        "calisthenics"
+        "calisthenics",
+        "spine"
       ],
       "primaryMuscles": [
         "abs"
@@ -4553,7 +4564,8 @@
     "cw171": {
       "styles": [
         "strength",
-        "calisthenics"
+        "calisthenics",
+        "spine"
       ],
       "primaryMuscles": [
         "abs"
@@ -4755,7 +4767,8 @@
     "cw179": {
       "styles": [
         "strength",
-        "calisthenics"
+        "calisthenics",
+        "spine"
       ],
       "primaryMuscles": [
         "abs"
@@ -4800,7 +4813,8 @@
     "cw181": {
       "styles": [
         "strength",
-        "calisthenics"
+        "calisthenics",
+        "spine"
       ],
       "primaryMuscles": [
         "abs",
@@ -6540,7 +6554,8 @@
       "styles": [
         "calisthenics",
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -6586,7 +6601,8 @@
     "cw252": {
       "styles": [
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -6933,7 +6949,8 @@
     "cw266": {
       "styles": [
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -6955,7 +6972,8 @@
     },
     "cw267": {
       "styles": [
-        "mobility_recovery"
+        "mobility_recovery",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -6981,7 +6999,8 @@
     "cw268": {
       "styles": [
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -7556,7 +7575,8 @@
     "cw290": {
       "styles": [
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -7582,7 +7602,8 @@
     "cw291": {
       "styles": [
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "back"
@@ -7658,7 +7679,8 @@
     "cw294": {
       "styles": [
         "mobility_recovery",
-        "yoga"
+        "yoga",
+        "spine"
       ],
       "primaryMuscles": [
         "quadratus_lumborum",
@@ -9686,6 +9708,173 @@
       ],
       "positions": [
         "seated"
+      ]
+    },
+    "cw364": {
+      "styles": [
+        "mobility_recovery",
+        "spine"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back"
+      ],
+      "aliases": [
+        "Supine pelvic tilt"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw365": {
+      "styles": [
+        "mobility_recovery",
+        "spine"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Supine abdominal bracing"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw366": {
+      "styles": [
+        "mobility_recovery",
+        "spine"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "glutes"
+      ],
+      "aliases": [
+        "Supine bent-knee rolls"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw367": {
+      "styles": [
+        "mobility_recovery",
+        "spine"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [
+        "Side-lying open book"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw368": {
+      "styles": [
+        "mobility_recovery",
+        "spine"
+      ],
+      "primaryMuscles": [
+        "back",
+        "quadratus_lumborum"
+      ],
+      "secondaryMuscles": [
+        "glutes"
+      ],
+      "aliases": [
+        "Supine single knee to chest"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw369": {
+      "styles": [
+        "mobility_recovery",
+        "spine"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "abs"
+      ],
+      "aliases": [
+        "Bodyweight wall hip hinge"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
       ]
     }
   },

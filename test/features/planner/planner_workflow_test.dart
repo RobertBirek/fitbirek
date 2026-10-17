@@ -15,15 +15,24 @@ import '../workout/pr_cancel_test.dart'
 import '../../core/push_settings_test.dart' show FakePush;
 import '../exercises/catalog_filter_test.dart' show exercise;
 import 'structured_plan_persistence_test.dart' show structure;
+import 'package:fitbirek_training/features/workout/domain/workout_guidance.dart';
 
 class PausedStart extends WorkoutRepository {
   PausedStart(super.db);
   final entered = Completer<void>(), release = Completer<void>();
   @override
-  Future<int> startSession({bool Function()? guard, String? accountId}) async {
+  Future<int> startSession({
+    bool Function()? guard,
+    String? accountId,
+    WorkoutGuidance? guidance,
+  }) async {
     entered.complete();
     await release.future;
-    return super.startSession(guard: guard, accountId: accountId);
+    return super.startSession(
+      guard: guard,
+      accountId: accountId,
+      guidance: guidance,
+    );
   }
 }
 

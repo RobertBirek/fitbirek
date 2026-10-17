@@ -1,14 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 import '../../../core/providers/database_provider.dart';
 import '../data/filter_presets_repository.dart';
 import '../domain/exercise_filter_engine.dart';
 import '../domain/filter_preset.dart';
+import '../data/user_collections_repository.dart';
+import '../../auth/providers/auth_providers.dart';
 
 /// Local durable auth binding only. Do not watch authStateProvider here: its
 /// construction bootstraps an HTTP session even when restoring offline presets.
 final filterPresetsAccountProvider = StreamProvider<String?>((ref) {
   final db = ref.watch(appDatabaseProvider);
-  return db
+  final authority = ref.watch(cachedAuthWriteAuthorityProvider);
+  final controller = StreamController<String?>();
+  String? bound;
+  void publish() {
+    final auth = authority.state;
+    controller.add(
+      auth == null || (auth.isSignedIn && auth.accountId == bound)
+          ? bound
+          : null,
+    );
+  }
+
+  final subscription = db
       .select(db.syncState)
       .watchSingleOrNull()
       .map(
@@ -16,11 +31,31 @@ final filterPresetsAccountProvider = StreamProvider<String?>((ref) {
             ? row.accountId
             : null,
       )
-      .distinct();
+      .distinct()
+      .listen((value) {
+        bound = value;
+        publish();
+      });
+  authority.revision.addListener(publish);
+  ref.onDispose(() {
+    authority.revision.removeListener(publish);
+    subscription.cancel();
+    controller.close();
+  });
+  return controller.stream.distinct();
 });
 
+final userCollectionsRepositoryProvider = Provider<UserCollectionsRepository>(
+  (ref) => UserCollectionsRepository(
+    ref.watch(appDatabaseProvider),
+    authority: ref.watch(cachedAuthWriteAuthorityProvider),
+  ),
+);
+
 final filterPresetsRepositoryProvider = Provider<FilterPresetsRepository>(
-  (ref) => FilterPresetsRepository(),
+  (ref) => FilterPresetsRepository(
+    cloud: ref.watch(userCollectionsRepositoryProvider),
+  ),
 );
 
 final filterPresetsProvider =
@@ -32,10 +67,18 @@ final filterPresetsProvider =
       final account = binding.isLoading || binding.hasError
           ? null
           : binding.valueOrNull;
-      return FilterPresetsController(
+      final controller = FilterPresetsController(
         ref.watch(filterPresetsRepositoryProvider),
         account,
       );
+      final cloud = ref.watch(filterPresetsRepositoryProvider).cloud;
+      if (cloud != null) {
+        final subscription = cloud.db.userProfileDao.watchProfile().listen(
+          (_) => controller.reload(),
+        );
+        ref.onDispose(subscription.cancel);
+      }
+      return controller;
     });
 
 class FilterPresetsController
@@ -47,7 +90,14 @@ class FilterPresetsController
   final FilterPresetsRepository _repository;
   final String? accountId;
   int _revision = 0;
+  int _writes = 0;
   bool get _current => mounted && accountId != null;
+  void reload() {
+    if (_current && _writes == 0) {
+      ++_revision;
+      _load();
+    }
+  }
 
   Future<void> _load() async {
     final revision = _revision;
@@ -74,23 +124,33 @@ class FilterPresetsController
   }) async {
     final account = _account();
     ++_revision;
-    await _repository.save(
-      account,
-      name,
-      filters,
-      overwriteId: overwriteId,
-      isCurrent: () => _current,
-    );
-    if (!_current) throw StateError('Konto zostało zmienione.');
-    await _load();
+    ++_writes;
+    try {
+      await _repository.save(
+        account,
+        name,
+        filters,
+        overwriteId: overwriteId,
+        isCurrent: () => _current,
+      );
+      if (!_current) throw StateError('Konto zostało zmienione.');
+      await _load();
+    } finally {
+      --_writes;
+    }
   }
 
   Future<void> delete(String id) async {
     final account = _account();
     ++_revision;
-    await _repository.delete(account, id, isCurrent: () => _current);
-    if (!_current) throw StateError('Konto zostało zmienione.');
-    await _load();
+    ++_writes;
+    try {
+      await _repository.delete(account, id, isCurrent: () => _current);
+      if (!_current) throw StateError('Konto zostało zmienione.');
+      await _load();
+    } finally {
+      --_writes;
+    }
   }
 
   ExerciseFilters apply(String id) {

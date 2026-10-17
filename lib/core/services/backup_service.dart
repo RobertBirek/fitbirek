@@ -7,6 +7,8 @@ import '../../app/constants.dart';
 import '../database/app_database.dart';
 import 'package:drift/drift.dart';
 import '../sync/sync_store.dart';
+import '../sync/user_collections.dart';
+import '../../features/workout/domain/workout_guidance.dart';
 
 /// Wynik operacji importu - do wyświetlenia użytkownikowi.
 class ImportResult {
@@ -92,7 +94,9 @@ class BackupService {
                     (s) => s.id == r.sesjaId && s.deletedAtUtc == null,
                   ),
             )
-            .map(_withoutSyncMetadata)
+            .map(
+              (s) => {..._withoutSyncMetadata(s), 'archiveSetSyncId': s.syncId},
+            )
             .toList(),
         'moodEntries': moods
             .where((r) => r.deletedAtUtc == null)
@@ -196,12 +200,14 @@ class BackupService {
 
     try {
       await db.transaction(() async {
+        final profileCollectionClears = <String>{};
         final profileBefore = await db.userProfileDao.watchProfileOnce();
         final favoritesBefore = await db.select(db.exerciseFavorites).get();
         await SyncStore(db).enqueueAll(deleted: true);
         // Czyścimy w kolejności odwrotnej do FK (setsLog referencjonuje
         // workoutSessions, więc setsLog najpierw).
         await db.delete(db.setsLog).go();
+        await db.delete(db.workoutDrafts).go();
         // A remote device may have published children not yet pulled. Keep
         // their UUID -> integer parent mappings even after the delete is acked.
         final now = DateTime.now().toUtc();
@@ -222,7 +228,11 @@ class BackupService {
         await db.delete(db.exercises).go();
         await db.delete(db.userProfiles).go();
 
-        counts['profil'] = await _restoreUserProfiles(data['userProfiles']);
+        counts['profil'] = await _restoreUserProfiles(
+          data['userProfiles'],
+          profileBefore,
+          profileCollectionClears,
+        );
         counts['ćwiczenia'] = await _restoreExercises(data['exercises']);
         final restoredSessionIds = await _restoreSessions(
           data['workoutSessions'],
@@ -280,7 +290,9 @@ class BackupService {
             ),
           );
         }
-        await SyncStore(db).enqueueAll();
+        await SyncStore(
+          db,
+        ).enqueueAll(profileCollectionClears: profileCollectionClears);
       });
     } catch (e) {
       return ImportResult(
@@ -333,12 +345,40 @@ class BackupService {
         .toList();
   }
 
-  Future<int> _restoreUserProfiles(dynamic raw) async {
+  Future<int> _restoreUserProfiles(
+    dynamic raw,
+    UserProfileData? previous,
+    Set<String> clearedCollections,
+  ) async {
     if (raw == null) return 0;
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = UserProfileData.fromJson(_withFreshSyncMetadata(item));
+      final json = _withFreshSyncMetadata(item);
+      final old = previous?.toJson();
+      for (final key in UserCollections.keys) {
+        final column = '${key}Json';
+        final stored = old?[column] as String?;
+        final incoming = json[column] as String?;
+        if (!json.containsKey(column)) {
+          json[column] = stored;
+        } else if (incoming == null) {
+          // NULL in the archive is an explicit intent, unlike a legacy missing
+          // key. Carry it into the first wire operation before coalescing.
+          clearedCollections.add(key);
+        } else {
+          final merged = UserCollections.merge(
+            key,
+            stored == null ? null : jsonDecode(stored),
+            jsonDecode(incoming),
+          );
+          json[column] = jsonEncode(merged);
+        }
+        if (json[column] != null) {
+          UserCollections.validate(key, jsonDecode(json[column] as String));
+        }
+      }
+      final row = UserProfileData.fromJson(json);
       await db.into(db.userProfiles).insert(row.toCompanion(true));
       n++;
     }
@@ -377,8 +417,14 @@ class BackupService {
     if (raw == null) return 0;
     final list = raw as List;
     var n = 0;
+    final linkedIds = <String, String>{};
     for (final item in list) {
-      final row = SetLogData.fromJson(_withFreshSyncMetadata(item));
+      final json = _withFreshSyncMetadata(item);
+      UserCollections.validateVariantPair(json);
+      final row = SetLogData.fromJson(json);
+      if (item['archiveSetSyncId'] is String) {
+        linkedIds[item['archiveSetSyncId'] as String] = row.syncId;
+      }
       final parent = sessionIds[row.sesjaId];
       if (parent == null) {
         throw const FormatException('Missing backup session ID');
@@ -389,6 +435,30 @@ class BackupService {
             row.toCompanion(true).copyWith(sesjaId: Value(parent)),
           );
       n++;
+    }
+    for (final id in sessionIds.values) {
+      final session = (await db.workoutDao.getSession(id))!;
+      if (session.guidanceJson == null) continue;
+      final g = WorkoutGuidance.validateJson(jsonDecode(session.guidanceJson!));
+      final events = g.events
+          .map(
+            (event) =>
+                event['type'] == 'performed' &&
+                    linkedIds.containsKey(event['setSyncId'])
+                ? {...event, 'setSyncId': linkedIds[event['setSyncId']]}
+                : event,
+          )
+          .toList();
+      final mapped = WorkoutGuidance.validateJson({
+        ...g.toJson(),
+        'events': events,
+      });
+      await db.workoutDao.updateSession(
+        id,
+        WorkoutSessionsCompanion(
+          guidanceJson: Value(jsonEncode(mapped.toJson())),
+        ),
+      );
     }
     return n;
   }

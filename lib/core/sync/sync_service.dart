@@ -7,6 +7,8 @@ import '../api/api_client.dart';
 import '../database/app_database.dart';
 import 'sync_models.dart';
 import 'sync_store.dart';
+import 'user_collections.dart';
+import 'dart:convert';
 
 abstract class SyncApi {
   Future<Map<String, dynamic>> push(List<SyncOperation> operations);
@@ -192,7 +194,71 @@ class SyncService extends ChangeNotifier {
                 op.entityType == SyncEntityType.workoutSession &&
                 record['deletedAt'] != null &&
                 !op.deleted;
-            if (op.preserveLocal && !later && !deletedSession) {
+            if (op.entityType == SyncEntityType.profile &&
+                !later &&
+                !op.deleted &&
+                record['deletedAt'] == null) {
+              final local = await store.row(op.entityType, op.entityId);
+              final remote = Map<String, dynamic>.from(
+                record['payload'] as Map,
+              );
+              final merged = Map<String, dynamic>.from(remote);
+              var changed = false;
+              for (final key in UserCollections.keys) {
+                final raw = local?['${key}Json'] as String?;
+                if (raw == null &&
+                    op.payload.containsKey(key) &&
+                    op.payload[key] == null) {
+                  merged[key] = null;
+                  if (remote[key] != null) changed = true;
+                  continue;
+                }
+                if (raw == null) continue;
+                final value = UserCollections.merge(
+                  key,
+                  jsonDecode(raw),
+                  remote[key],
+                );
+                merged[key] = value;
+                if (UserCollections.canonical(value) !=
+                    UserCollections.canonical(remote[key])) {
+                  changed = true;
+                }
+              }
+              if (changed || op.preserveLocal) {
+                final payload = changed
+                    ? merged
+                    : <String, dynamic>{
+                        ...op.payload,
+                        // Explicit backup scalar restore keeps its existing policy,
+                        // but must NEVER replay stale collections over merged data.
+                        for (final key in UserCollections.keys)
+                          if (merged.containsKey(key)) key: merged[key],
+                      };
+                // The attempted operation was definitively rejected. Apply the
+                // server's scalar fields AND merged collections before creating
+                // a fresh immutable operation at the authoritative CAS version.
+                await store.apply({...record, 'payload': payload});
+                await db.syncDao.enqueueUpsert(
+                  entityType: op.entityType,
+                  entityId: op.entityId,
+                  baseVersion: record['version'] as int,
+                  payload: payload,
+                  // Once server scalars were chosen, this is a normal merged
+                  // write, not a renewed request to restore older scalars.
+                  preserveLocal: op.preserveLocal && !changed,
+                );
+                await store.reconcile(op.entityType, op.entityId);
+                continue;
+              }
+            }
+            final deletedProfile =
+                op.entityType == SyncEntityType.profile &&
+                record['deletedAt'] != null;
+            if (op.preserveLocal &&
+                !later &&
+                !deletedSession &&
+                !deletedProfile) {
               // This request was definitively rejected, so a fresh operation
               // may carry the explicit restore intent at the observed version.
               if (op.deleted) {

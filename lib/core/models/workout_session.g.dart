@@ -16,6 +16,8 @@ _$SetLogImpl _$$SetLogImplFromJson(Map<String, dynamic> json) => _$SetLogImpl(
   powtorzenia: (json['powtorzenia'] as num?)?.toInt(),
   czasSekund: (json['czasSekund'] as num?)?.toInt(),
   side: json['side'] as String?,
+  variantId: json['variantId'] as String?,
+  variantLabel: json['variantLabel'] as String?,
   rpe: (json['rpe'] as num?)?.toInt(),
   timestamp: DateTime.parse(json['timestamp'] as String),
 );
@@ -31,6 +33,8 @@ Map<String, dynamic> _$$SetLogImplToJson(_$SetLogImpl instance) =>
       'powtorzenia': instance.powtorzenia,
       'czasSekund': instance.czasSekund,
       if (instance.side case final value?) 'side': value,
+      if (instance.variantId case final value?) 'variantId': value,
+      if (instance.variantLabel case final value?) 'variantLabel': value,
       'rpe': instance.rpe,
       'timestamp': instance.timestamp.toIso8601String(),
     };

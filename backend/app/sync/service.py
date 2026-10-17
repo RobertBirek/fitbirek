@@ -25,6 +25,12 @@ from app.sync.schemas import (
 
 pull_limit = 500
 publisher_lock_key = "sync-change-publisher"
+optional_extension_keys = {
+    "profile": ("filterPresets", "exerciseVariants"),
+    "workoutSession": ("guidance",),
+    "workoutSet": ("variantId", "variantLabel"),
+    "personalRecord": ("variantId", "variantLabel"),
+}
 
 
 @dataclass
@@ -46,6 +52,7 @@ class PlannedWrite:
     deleted_at: datetime | None
     updated_at: datetime
     request_digest: str
+    payload: dict
 
 
 def operation_lock_key(user_id: UUID, operation_id: UUID) -> str:
@@ -97,6 +104,17 @@ def copy_planned_record(record: PlannedRecord) -> PlannedRecord:
         updated_at=record.updated_at,
         persisted=record.persisted,
     )
+
+
+def revised_record_payload(operation: PushOperation, record: PlannedRecord) -> dict:
+    # Only the stored snapshot is extended, never the attempted operation used
+    # by request_digest. Explicit null is present and therefore clears a value.
+    payload = deepcopy(operation.payload)
+    if not operation.deleted and record.version > 0 and record.deleted_at is None:
+        for key in optional_extension_keys.get(operation.entity_type, ()):
+            if key not in payload and key in record.payload:
+                payload[key] = deepcopy(record.payload[key])
+    return payload
 
 
 async def push_operations(
@@ -224,8 +242,11 @@ async def push_operations(
             deleted_at = updated_at if operation.deleted else None
             if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE and record.deleted_at is not None:
                 deleted_at = record.deleted_at
+            # All identity/hash, server-ownership and CAS checks above operate
+            # on the original request. Revision remains inside this transaction
+            # and is discarded with the whole batch on any later conflict.
+            record.payload = record.payload if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else revised_record_payload(operation, record)
             record.version += 1
-            record.payload = record.payload if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else operation.payload
             record.deleted_at = deleted_at
             record.updated_at = updated_at
             outcome = AcceptedOperation(
@@ -245,6 +266,7 @@ async def push_operations(
                     deleted_at=deleted_at,
                     updated_at=updated_at,
                     request_digest=planned_digests[operation.operation_id],
+                    payload=deepcopy(record.payload),
                 )
             )
 
@@ -292,7 +314,7 @@ async def push_operations(
                     entity_type=write.operation.entity_type,
                     entity_id=write.operation.entity_id,
                     version=write.version,
-                    payload=records[write.record_key].payload if write.operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else write.operation.payload,
+                    payload=write.payload,
                     deleted_at=write.deleted_at,
                     updated_at=write.updated_at,
                 )

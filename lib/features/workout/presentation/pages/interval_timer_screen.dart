@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../domain/interval_timer.dart';
 
-/// No persistence here: only the explicit save action pops completed work.
+/// Checkpoints contain local data only; only explicit save returns actual work.
 class IntervalTimerScreen extends StatefulWidget {
   const IntervalTimerScreen({
     super.key,
     required this.label,
     this.clock,
     this.isValid,
+    this.checkpoint,
+    this.onCheckpoint,
   });
   final String label;
   final Duration Function()? clock;
   final bool Function()? isValid;
+  final Map<String, dynamic>? checkpoint;
+  final void Function(Map<String, Object?>?)? onCheckpoint;
   @override
   State<IntervalTimerScreen> createState() => _IntervalTimerScreenState();
 }
@@ -30,11 +34,23 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
   bool _signals = false, _returned = false, _allowPop = false;
   bool _invalid = false, _confirming = false;
   bool _foreground = true;
+  DateTime _lastTick = DateTime.now();
+  String? _lastCheckpoint;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (widget.checkpoint != null) {
+      try {
+        _engine = IntervalTimer.restore(
+          widget.checkpoint!,
+          clock: widget.clock,
+        );
+      } on FormatException {
+        _invalid = true;
+      }
+    }
   }
 
   @override
@@ -51,9 +67,14 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _foreground = state == AppLifecycleState.resumed;
+    if (!_foreground && widget.onCheckpoint != null) {
+      _engine?.pause();
+      _persist();
+    }
     _ticker?.cancel();
     _ticker = null;
     if (_foreground) {
+      _lastTick = DateTime.now();
       _refresh(signal: false);
       _schedule();
     }
@@ -109,6 +130,12 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
   void _refresh({bool signal = true}) {
     if (!mounted || _returned) return;
     final engine = _engine;
+    final now = DateTime.now();
+    if (widget.onCheckpoint != null &&
+        now.difference(_lastTick).inSeconds > 3) {
+      engine?.suspendUnobserved();
+    }
+    _lastTick = now;
     final before = engine == null ? '' : '${engine.phase}:${engine.round}';
     if (_checkOrigin()) engine?.update();
     if (signal &&
@@ -121,6 +148,17 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
       _ticker = null;
     }
     setState(() {});
+    _persist();
+  }
+
+  void _persist() {
+    final engine = _engine;
+    if (engine == null || _invalid || _returned) return;
+    final key =
+        '${engine.phase}:${engine.round}:${engine.remainingSeconds}:${engine.paused}';
+    if (key == _lastCheckpoint) return;
+    _lastCheckpoint = key;
+    widget.onCheckpoint?.call(engine.checkpoint());
   }
 
   void _start() {
@@ -140,6 +178,7 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
     )..start();
     setState(() {});
     _schedule();
+    _persist();
   }
 
   void _act(void Function(IntervalTimer) action) {
@@ -175,6 +214,7 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
     _confirming = false;
     if (!mounted || discard != true) return;
     _engine?.cancel();
+    widget.onCheckpoint?.call(null);
     _return(null);
   }
 
@@ -231,8 +271,10 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              const Text(
-                'W tle odliczanie może być wstrzymane przez system. Po powrocie czas jest przeliczany. Brak gwarancji sygnału lub wybudzenia w tle.',
+              Text(
+                widget.onCheckpoint == null
+                    ? 'W tle odliczanie może być wstrzymane przez system. Po powrocie czas jest przeliczany. Brak gwarancji sygnału lub wybudzenia w tle.'
+                    : 'Wyjście w tło wstrzymuje pracę. Po powrocie wybierz Wznów. Czas poza aplikacją nie jest pracą; checkpoint nie zapisuje serii.',
               ),
               if (_invalid)
                 const Text('Sesja lub konto uległy zmianie. Wyniki odrzucono.')

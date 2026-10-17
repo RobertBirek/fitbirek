@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_catalog_metadata
 import validate_catalog
 import build_execution_conditions as execution
+from spine_additions import EXPECTED_COUNT
 
 ROOT = Path(__file__).resolve().parents[2]
 CONDITIONS = {
@@ -31,7 +32,7 @@ class ExecutionConditionsTests(unittest.TestCase):
         self.meta = validate_catalog.load(validate_catalog.METADATA_PATH)
         self.data = validate_catalog.load(ROOT / 'assets/data/exercises.json')
 
-    def test_exact_registries_and_all_363_entries(self):
+    def test_exact_registries_and_all_reviewed_entries(self):
         for key, expected in [('conditions', CONDITIONS), ('positions', POSITIONS)]:
             self.assertIn(key, self.meta)
             self.assertEqual({x['id']: x['label'] for x in self.meta[key]}, expected)
@@ -39,7 +40,7 @@ class ExecutionConditionsTests(unittest.TestCase):
                 self.assertEqual(set(x), {'id', 'label', 'aliases'})
                 self.assertIsInstance(x['aliases'], list)
         self.assertEqual(self.meta['schemaVersion'], 1)
-        self.assertEqual(set(self.meta['exercises']), {f'cw{i:03d}' for i in range(1, 364)})
+        self.assertEqual(set(self.meta['exercises']), {f'cw{i:03d}' for i in range(1, EXPECTED_COUNT + 1)})
         for eid, entry in self.meta['exercises'].items():
             self.assertIn('conditions', entry, eid)
             self.assertIn('positions', entry, eid)
@@ -65,7 +66,11 @@ class ExecutionConditionsTests(unittest.TestCase):
     def test_all_preexisting_metadata_fields_unchanged(self):
         old = {k: copy.deepcopy(v) for k, v in self.meta.items()
                if k not in ('conditions', 'positions')}
+        # Project the historical 363-entry contract, not a new replacement hash.
+        old['styles'] = [x for x in old['styles'] if x['id'] != 'spine']
+        old['exercises'] = {k: v for k, v in old['exercises'].items() if int(k[2:]) <= 363}
         for entry in old['exercises'].values():
+            entry['styles'] = [x for x in entry['styles'] if x != 'spine']
             entry.pop('conditions', None)
             entry.pop('positions', None)
         text = json.dumps(old, ensure_ascii=False, indent=2) + '\n'
@@ -80,7 +85,36 @@ class ExecutionConditionsTests(unittest.TestCase):
             'tools/source_data/exercise_names_pl.json': '162ca330232653344ed2879a7b110b33bf18df00a4ba0e7a95cf537538ebd6e0',
         }
         for path, digest in expected.items():
-            self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), digest, path)
+            # Keep original hashes as an independent historical anchor; compare
+            # current data semantically to that exact baseline (ZIP timestamps
+            # necessarily change when appending workbook rows).
+            raw = subprocess.check_output(['git', 'show', f'6f3eb79:{path}'], cwd=ROOT)
+            self.assertEqual(hashlib.sha256(raw).hexdigest(), digest, path)
+            if path.endswith('.xlsx'):
+                import io
+                import openpyxl
+                from update_exercise_names_pl import workbook_snapshot
+                old_wb = openpyxl.load_workbook(io.BytesIO(raw))
+                new_wb = openpyxl.load_workbook(ROOT / path)
+                old_cells = workbook_snapshot(old_wb)
+                new_cells = workbook_snapshot(new_wb)
+                for sheet, cells in old_cells.items():
+                    for coord, value in cells.items():
+                        self.assertEqual(new_cells[sheet][coord], value, f'{sheet}!{coord}')
+                old_wb.close()
+                new_wb.close()
+            else:
+                old = json.loads(raw)
+                new = validate_catalog.load(ROOT / path)
+                if isinstance(old, list):
+                    self.assertEqual(new[:len(old)], old)
+                else:
+                    # Existing names, source records, exclusions and reviews survive.
+                    for key, value in old.items():
+                        if isinstance(value, dict):
+                            self.assertEqual({k: new[key][k] for k in value}, value)
+                        else:
+                            self.assertEqual(new[key], value)
 
     def test_hand_support_and_knee_contact_are_not_equipment_grip(self):
         entries = self.meta['exercises']
@@ -157,7 +191,7 @@ class ExecutionConditionsTests(unittest.TestCase):
             if kind == 'missing':
                 del bad['exercises']['cw363']
             elif kind == 'extra':
-                bad['exercises']['cw364'] = bad['exercises']['cw363']
+                bad['exercises']['cw999'] = bad['exercises']['cw363']
             else:
                 bad['exercises']['cw001']['guessedFromName'] = True
             with self.subTest(kind=kind), self.assertRaises(ValueError):

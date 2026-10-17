@@ -1,4 +1,5 @@
 import 'package:drift/native.dart';
+import '../../core/database/legacy_schema.dart';
 // Uses Drift's lockfile-pinned driver without changing client dependencies.
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -113,7 +114,12 @@ void main() {
       await old.customStatement(
         'ALTER TABLE personal_records DROP COLUMN side',
       );
+      await removeV12Columns(old);
       await old.customStatement('PRAGMA user_version = 7');
+      await old.customStatement(
+        'ALTER TABLE workout_sessions DROP COLUMN guidance_json',
+      );
+      await old.customStatement('DROP TABLE workout_drafts');
       await old.customStatement(
         'ALTER TABLE workout_plans DROP COLUMN structure_json',
       );
@@ -144,7 +150,7 @@ void main() {
         (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
           'user_version',
         ),
-        10,
+        12,
       );
     },
   );

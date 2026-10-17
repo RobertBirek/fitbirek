@@ -12316,5 +12316,218 @@
     "regresja": "Prostuj kolano tylko częściowo, pięta blisko podłogi",
     "zrodlo": "https://www.taichiexercises.co.uk/wp-content/uploads/2020/05/Exercises-Seated.pdf",
     "ulubione": false
+  },
+  {
+    "id": "cw364",
+    "nazwaPl": "Przetaczanie miednicy w leżeniu na plecach",
+    "nazwaEn": "Supine pelvic tilt",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Plecy"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrola pochylenia miednicy",
+    "seriexPowtorzenia": "1 x 3-5",
+    "tempo": "Wolno, około 2 sek w każdą stronę",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach, ugnij kolana i oprzyj stopy o podłogę",
+      "Rozluźnij barki i połóż dłonie na miednicy",
+      "Łagodnie podwiń miednicę, zmniejszając szczelinę pod lędźwiami",
+      "Następnie pochyl miednicę w przeciwną stronę, tworząc tylko niewielką szczelinę",
+      "Pośladki pozostają na podłożu, oddychaj swobodnie",
+      "Pełne przetoczenie tam i z powrotem to jedno powtórzenie",
+      "Przerwij przy bólu, nasileniu objawów lub drętwieniu i skonsultuj dalszy ruch ze specjalistą"
+    ],
+    "czesteBledy": [
+      "Unoszenie bioder jak w moście",
+      "Wypychanie brzucha i duży przeprost lędźwi",
+      "Zatrzymywanie oddechu"
+    ],
+    "progresja": "Dodaj 1-2 powtórzenia, jeśli ruch pozostaje swobodny, bez zwiększania wygięcia",
+    "regresja": "Wykonuj bardzo mały ruch miednicy i wracaj do wygodnej pozycji",
+    "zrodlo": "https://www.cuh.nhs.uk/patient-information/back-mobility-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw365",
+    "nazwaPl": "Łagodne napięcie brzucha w leżeniu z normalnym oddechem",
+    "nazwaEn": "Supine abdominal bracing",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Stabilizacja tułowia bez ruchu kończyn",
+    "seriexPowtorzenia": "3 x 5 sek",
+    "tempo": "Spokojny oddech przez całe utrzymanie, odpoczynek po każdym napięciu",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach z ugiętymi kolanami, stopami na podłodze i rękami przy tułowiu",
+      "Łagodnie napnij dolną część brzucha, jak przy odsuwaniu go od paska spodni",
+      "Nie unoś głowy ani barków, nie poruszaj nogami i nie wyginaj lędźwi",
+      "Utrzymuj lekkie napięcie przez 5 sek, swobodnie wdychając i wydychając powietrze",
+      "Rozluźnij brzuch całkowicie i odpocznij przed kolejnym napięciem",
+      "Przerwij przy bólu, nasileniu objawów lub drętwieniu i skonsultuj dalszy ruch ze specjalistą"
+    ],
+    "czesteBledy": [
+      "Wstrzymywanie oddechu lub parcie",
+      "Maksymalne wciąganie brzucha",
+      "Unoszenie tułowia jak przy spięciu brzucha"
+    ],
+    "progresja": "Wydłuż lekkie napięcie do 8-10 sek tylko przy swobodnym oddychaniu",
+    "regresja": "Skróć napięcie do 2-3 sek lub zmniejsz jego siłę",
+    "zrodlo": "https://orthoinfo.aaos.org/en/recovery/spine-conditioning-program/",
+    "ulubione": false
+  },
+  {
+    "id": "cw366",
+    "nazwaPl": "Kołysanie ugiętych kolan w leżeniu na plecach",
+    "nazwaEn": "Supine bent-knee rolls",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": [
+      "Brzuch",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Łagodna rotacja tułowia w leżeniu",
+    "seriexPowtorzenia": "1 x 3 na stronę",
+    "tempo": "Powolne opuszczenie i powrót, krótka pauza bez dociskania",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach z kolanami ugiętymi i złączonymi, stopy na podłodze",
+      "Oprzyj ramiona wygodnie obok tułowia, barki pozostają na podłożu",
+      "Przechyl oba kolana razem w wybraną stronę tylko w komfortowym zakresie",
+      "Pozwól stopom lekko przetoczyć się na krawędzie, bez unoszenia nóg w powietrze",
+      "Powoli wróć do środka, oddychając normalnie",
+      "Wyjście w bok i powrót to jedno powtórzenie na tę stronę",
+      "Przerwij przy bólu, nasileniu objawów lub drętwieniu i skonsultuj dalszy ruch ze specjalistą"
+    ],
+    "czesteBledy": [
+      "Odrywanie barków",
+      "Dociskanie kolan do podłogi ręką",
+      "Szybkie przerzucanie nóg"
+    ],
+    "progresja": "Dodaj 1-2 spokojne powtórzenia na stronę bez pogłębiania skrętu na siłę",
+    "regresja": "Zmniejsz wychylenie kolan i wracaj do środka bez pauzy",
+    "zrodlo": "https://www.cuh.nhs.uk/patient-information/back-mobility-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw367",
+    "nazwaPl": "Otwarta książka — obrót klatki w leżeniu bokiem",
+    "nazwaEn": "Side-lying open book",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": [
+      "Klatka piersiowa",
+      "Brzuch",
+      "Barki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Rotacja piersiowa w leżeniu bokiem",
+    "seriexPowtorzenia": "1 x 3-5 na stronę",
+    "tempo": "Wolne otwarcie ramienia i kontrolowany powrót",
+    "kluczoweWskazowki": [
+      "Połóż się na boku z biodrami i kolanami ugiętymi, kolana razem na podłodze",
+      "Wyciągnij obie ręce przed klatkę, dłoń na dłoni, głowę ułóż wygodnie",
+      "Zatocz górnym ramieniem łuk w górę i za siebie, obracając klatkę piersiową",
+      "Wzrok może podążać za dłonią, ale nie wymuszaj skrętu szyi",
+      "Kolana pozostają razem na podłożu, nie próbuj koniecznie dotknąć tylną dłonią podłogi",
+      "Wróć dłonią na dłoń i oddychaj swobodnie, następnie zmień bok",
+      "Przerwij przy bólu, nasileniu objawów lub drętwieniu i skonsultuj dalszy ruch ze specjalistą"
+    ],
+    "czesteBledy": [
+      "Odrywanie górnego kolana i przetaczanie całego ciała",
+      "Dociskanie ramienia do podłogi",
+      "Wymuszanie zakresu barku lub szyi"
+    ],
+    "progresja": "Zwiększ do 5 swobodnych powtórzeń na stronę, bez ciężaru i dociskania",
+    "regresja": "Otwórz ramię tylko częściowo i pozostaw wzrok przed sobą",
+    "zrodlo": "https://flipbooks.leedsth.nhs.uk/LN005629.pdf",
+    "ulubione": false
+  },
+  {
+    "id": "cw368",
+    "nazwaPl": "Przyciąganie jednego kolana do klatki w leżeniu",
+    "nazwaEn": "Supine single knee to chest",
+    "partiaGlowna": "Plecy, Mięsień czworoboczny lędźwi",
+    "partieWspierajace": [
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Zgięcie biodra z łagodnym rozciąganiem pleców",
+    "seriexPowtorzenia": "1 x 3 na stronę",
+    "tempo": "Powolne przyciągnięcie, 2-3 sek pauzy i spokojne odłożenie",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach, ugnij oba kolana i oprzyj stopy na podłodze",
+      "Unieś jedno kolano ku klatce i obejmij nogę dłońmi, bez mocnego nacisku na kolano",
+      "Druga stopa zostaje na podłodze, jej kolano skierowane ku sufitowi",
+      "Przybliż udo tylko do łagodnego uczucia rozciągania, głowa i barki zostają na podłożu",
+      "Oddychaj normalnie przez krótką pauzę, powoli odstaw stopę",
+      "Przyciągnięcie i powrót to jedno powtórzenie na stronę",
+      "Przerwij przy bólu, nasileniu objawów lub drętwieniu i skonsultuj dalszy ruch ze specjalistą"
+    ],
+    "czesteBledy": [
+      "Mocne szarpanie nogi",
+      "Unoszenie głowy do kolana",
+      "Prostowanie drugiej nogi mimo dyskomfortu lędźwi"
+    ],
+    "progresja": "Dodaj 1-2 powtórzenia na stronę bez silniejszego ciągnięcia",
+    "regresja": "Obejmij udo od tyłu i przyciągnij je mniej, druga stopa nadal na podłodze",
+    "zrodlo": "https://www.nhsinform.scot/illnesses-and-conditions/muscle-bone-and-joints/neck-and-back-problems-and-conditions/exercises-for-back-pain",
+    "ulubione": false
+  },
+  {
+    "id": "cw369",
+    "nazwaPl": "Cofanie bioder do ściany bez obciążenia",
+    "nazwaEn": "Bodyweight wall hip hinge",
+    "partiaGlowna": "Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Plecy",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Zawias biodrowy z kontrolą tułowia",
+    "seriexPowtorzenia": "1 x 5",
+    "tempo": "Około 3 sek cofania bioder, lekki dotyk ściany i spokojny powrót",
+    "kluczoweWskazowki": [
+      "Stań tyłem kilka centymetrów od stabilnej ściany, stopy na szerokość bioder",
+      "Lekko ugnij kolana, połóż dłonie w zgięciach bioder",
+      "Cofaj biodra do lekkiego dotknięcia ściany pośladkami, pochylając tułów z bioder",
+      "Zachowaj wygodne ustawienie kręgosłupa i szyi, stopy cały czas na podłodze",
+      "Nie siadaj w przysiad ani nie zaokrąglaj pleców, wróć do stania przez wyprost bioder",
+      "Oddychaj swobodnie, bez dodawania ciężaru i bez wypychania lędźwi w przód",
+      "Przerwij przy bólu, nasileniu objawów lub drętwieniu i skonsultuj dalszy ruch ze specjalistą"
+    ],
+    "czesteBledy": [
+      "Zaokrąglanie pleców zamiast ruchu bioder",
+      "Głęboki przysiad",
+      "Uderzanie pośladkami o ścianę lub odchylanie tułowia po powrocie"
+    ],
+    "progresja": "Odsuń stopy o 2-3 cm od ściany tylko przy zachowaniu kontroli, nadal bez obciążenia",
+    "regresja": "Stań bliżej ściany i skróć cofnięcie bioder",
+    "zrodlo": "https://www.peakrxtherapy.com/blog/hip-hinging-101",
+    "ulubione": false
   }
 ]

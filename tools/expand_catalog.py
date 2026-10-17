@@ -14,6 +14,7 @@ import openpyxl
 
 from build_catalog_metadata import MUSCLES
 from catalog_additions import ADDITIONS, SOURCES
+from spine_additions import SOURCES as SPINE_SOURCES, source_exercises
 import xlsx_to_json as converter
 from update_exercise_names_pl import MAPPING_PATH, workbook_snapshot
 
@@ -36,7 +37,7 @@ def workbook_row(a):
 
 
 def ledger():
-    return {
+    result = {
         'reviewedOn': '2026-10-16',
         'method': 'Read publisher text; original Polish descriptions; conservative equipment adaptation, no copied prose. Source validates movement, not individualized load or medical suitability.',
         'equipment': {
@@ -61,6 +62,9 @@ def ledger():
             'No karate.'
         ],
     }
+    result['sources'].update(SPINE_SOURCES)
+    result['exercises'].update(source_exercises())
+    return result
 
 
 def main():

@@ -7,6 +7,7 @@ import re
 
 import xlsx_to_json as converter
 from build_execution_conditions import validate_classification
+from spine_additions import EXPECTED_COUNT, validate_preservation
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / 'assets/data/exercise_catalog_metadata.json'
@@ -94,11 +95,16 @@ def validate():
     require(converter.convert() == data, 'XLSX export differs')
     legacy = json.dumps(data[:316], ensure_ascii=False, sort_keys=True).encode()
     require(hashlib.sha256(legacy).hexdigest() == LEGACY_SHA256, 'Legacy cw001–cw316 changed')
-    validate_metadata(data, load(METADATA_PATH))
+    require(len(data) == EXPECTED_COUNT, 'Unexpected reviewed catalog count')
+    meta = load(METADATA_PATH)
+    validate_metadata(data, meta)
+    validate_preservation(data, meta)
     validate_sources(data, load(SOURCES_PATH))
     names = load(ROOT / 'tools/source_data/exercise_names_pl.json')
     require(names == {e['id']: e['nazwaPl'] for e in data}, 'Names mapping differs')
-    print(f'Catalog OK: {len(data)} exercises, {len(data) - 316} new; 316 legacy records unchanged; metadata and sources complete')
+    print(f'Catalog OK: {len(data)} exercises; cw001–cw316 legacy and cw001–cw363 baseline unchanged; '
+          f'{len(data) - 316} source-mapped additions, including {len(data) - 363} spine additions; '
+          'metadata and sources complete')
 
 
 if __name__ == '__main__':

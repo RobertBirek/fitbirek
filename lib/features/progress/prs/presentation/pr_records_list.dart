@@ -31,8 +31,11 @@ class PrRecordsList extends ConsumerWidget {
                               key: PageStorageKey((
                                 best.cwiczenieId,
                                 best.side,
+                                best.variantId,
                               )),
-                              title: Text('${best.nazwaCwiczeniaPl} • $side'),
+                              title: Text(
+                                '${best.nazwaCwiczeniaPl} • $side${best.variantId == null ? '' : ' • ${best.variantLabel ?? best.variantId}'}',
+                              ),
                               subtitle: Text(
                                 'Najlepszy: ${best.ciezarKg} kg × ${best.powtorzenia} • 1RM≈${best.szacowane1Rm.toStringAsFixed(1)} kg',
                               ),
@@ -40,7 +43,7 @@ class PrRecordsList extends ConsumerWidget {
                                 for (final pr in history)
                                   ListTile(
                                     title: Text(
-                                      '${pr.ciezarKg} kg × ${pr.powtorzenia} • $side',
+                                      '${pr.ciezarKg} kg × ${pr.powtorzenia} • $side${pr.variantId == null ? '' : ' • ${pr.variantLabel ?? pr.variantId}'}',
                                     ),
                                     subtitle: Text(Formatters.date(pr.data)),
                                     trailing: Text(

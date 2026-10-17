@@ -1,4 +1,9 @@
-# Zapisane filtry ćwiczeń — lokalna architektura
+# Zapisane filtry ćwiczeń — offline i synchronizacja
+
+> Od Drift12 definicje produkcyjnego repozytorium są synchronizowane jako
+> kolekcja w profilu. SharedPreferences poniżej opisuje źródło migracji i
+> adapter testowy, nie docelową trwałość produkcyjną. Kontrakt, limity,
+> tombstone'y, account guardy i CAS: [user-variants-cloud.md](user-variants-cloud.md).
 
 ## Warstwy i API
 
@@ -66,6 +71,7 @@ Apply przypisuje cały obiekt do istniejącego `exerciseFiltersProvider`;
 istniejący listener aktualizuje kontroler query, a chipy/fasety/wyniki obserwują
 ten sam stan i bieżący katalog. Reset kryteriów nie usuwa presetów.
 
-Bez zmian schematu Drift, modeli generowanych, backendu, sync encji, metadanych,
-zależności, wersji i artefaktów Web SQLite. Generator nie jest potrzebny.
+Wersja pierwotna nie zmieniała schematu. Rozszerzenie chmurowe używa Drift12,
+bez nowego typu encji, zależności, metadanych i zmiany Web SQLite; po zmianach
+deklaracji Drift wykonujemy generator.
 Focused testy: `test/features/exercises/filter_presets_{repository,provider,widgets}_test.dart`.
