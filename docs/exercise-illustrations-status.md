@@ -1,12 +1,13 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-16, produkcyjna wersja webowa 1.13.0+26.
-Wszystkie363 ilustracje zachowano bez zmian i ponownie sprawdzono publicznie;
-[aktualne dowody](releases/2026-10-16-web-1.13.0-26.md).
+Stan na 2026-10-17, produkcyjna wersja webowa 1.14.0+27.
+Wszystkie369 ilustracji sprawdzono publicznie (HTTP, MIME i SHA-256),
+w tym sześć nowych; poprzednie363 zachowano bez zmian.
+[Aktualne dowody](releases/2026-10-17-api-web-1.14.0-27.md).
 
 Katalog lokalny obejmuje **369 ćwiczeń i 369 ilustracji**:
-**363 publicznie wydane, 6 lokalnych niewydanych, 0 brakujących**.
-Nowe `cw364–cw369` są wyłącznie lokalnie zintegrowane, bez publikacji;
+**369 publicznie wydanych, 0 lokalnych niewydanych, 0 brakujących**.
+Nowe `cw364–cw369` wydano w1.14.0+27;
 [przegląd, źródła i koszt](spine-illustrations-2026-10-16.md).
 Poprzednie47 (`cw317–cw363`) wydano w1.12.0+25.
 Wszystkie363 WebP zweryfikowano publicznie (HTTP/type/cache/SHA-256):
@@ -27,6 +28,7 @@ oraz zachowuje wszystkie 66 wcześniej wydanych ilustracji, w tym sześć z Part
 
 ## Ilustracje — rejestr i historyczny status integracji
 
+**Aktualny status cw364–cw369: wydane w 1.14.0+27.**
 **Aktualny status cw317–cw363: wydane w 1.12.0+25.**
 Poniższe opisy lokalnej integracji rozszerzenia zachowują historię przed wydaniem.
 **Aktualny status cw013–cw138: wydane w 1.10.0+23.**
@@ -38,12 +40,12 @@ liczby kadrów i historia generacji pozostają aktualne.
 
 | ID | Ćwiczenie | Kadry | Status |
 |---|---|---:|---|
-| cw364 | Przetaczanie miednicy w leżeniu na plecach | 2 | Lokalnie zintegrowane; niewydane. Biodra pozostają na podłożu. |
-| cw365 | Łagodne napięcie brzucha w leżeniu z normalnym oddechem | 1 | Lokalnie zintegrowane; niewydane. Oddech pozostaje instrukcją tekstową. |
-| cw366 | Kołysanie ugiętych kolan w leżeniu na plecach | 3 | Lokalnie zintegrowane; niewydane. Stałe barki, stopy przy podłożu. |
-| cw367 | Otwarta książka — obrót klatki w leżeniu bokiem | 2 | Lokalnie zintegrowane; niewydane. Kolana razem na podłożu. |
-| cw368 | Przyciąganie jednego kolana do klatki w leżeniu | 1 | Lokalnie zintegrowane; niewydane. Druga noga ugięta, stopa oparta. |
-| cw369 | Cofanie bioder do ściany bez obciążenia | 2 | Lokalnie zintegrowane; niewydane. Zawias biodrowy, kontakt ze ścianą. |
+| cw364 | Przetaczanie miednicy w leżeniu na plecach | 2 | Wydane w 1.14.0+27. Biodra pozostają na podłożu. |
+| cw365 | Łagodne napięcie brzucha w leżeniu z normalnym oddechem | 1 | Wydane w 1.14.0+27. Oddech pozostaje instrukcją tekstową. |
+| cw366 | Kołysanie ugiętych kolan w leżeniu na plecach | 3 | Wydane w 1.14.0+27. Stałe barki, stopy przy podłożu. |
+| cw367 | Otwarta książka — obrót klatki w leżeniu bokiem | 2 | Wydane w 1.14.0+27. Kolana razem na podłożu. |
+| cw368 | Przyciąganie jednego kolana do klatki w leżeniu | 1 | Wydane w 1.14.0+27. Druga noga ugięta, stopa oparta. |
+| cw369 | Cofanie bioder do ściany bez obciążenia | 2 | Wydane w 1.14.0+27. Zawias biodrowy, kontakt ze ścianą. |
 | cw001 | Pompki klasyczne | 2 | Wydane w 1.9.0+22. |
 | cw002 | Pompki wąskie (diamentowe) | 2 | Wydane w 1.9.0+22. |
 | cw003 | Pompki szerokie | 2 | Wydane w 1.9.0+22. |

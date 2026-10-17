@@ -3,7 +3,21 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.13.0+26 deployed 2026-10-16 19:56:57 UTC**: six training-workflow
+Current API + web **1.14.0+27 deployed 2026-10-17**, API/sender at
+**09:54:41/42 UTC**, web at **09:54:55 UTC**. Guided training/resume,
+plan-versus-actual summaries, own variants and cloud filter presets, 369 exercises
+and illustrations (19 spine), local Inter and fallback fonts. API omission
+protection deployed before web; sender uses the same new API image. Fresh backup,
+isolated restore and serialized migrate succeeded; Alembic remained **0010**.
+No PostgreSQL/Caddy restart, Compose/network/secret change or domain-writing smoke.
+Public static/health/DB/shared-sites checks passed. Authenticated public smoke
+remains pending: the historical initial-password file no longer matches the
+account, including in the predeploy backup. Do not reset credentials or call this
+a full auth acceptance. Known Flutter VS16 warning remains documented.
+Evidence, image IDs, backup and rollback:
+[release 1.14.0+27](docs/releases/2026-10-17-api-web-1.14.0-27.md).
+
+Previous web **1.13.0+26 deployed 2026-10-16 19:56:57 UTC**: six training-workflow
 improvements, local Drift10,363 illustrations unchanged and publicly reverified.
 Web-only; no API/PostgreSQL/push-sender restart, no Alembic or Compose/Caddy change.
 Standard backup retention35 unchanged. Evidence and rollback:
@@ -18,10 +32,10 @@ Alembic **0009**. This deploy enables configuration and local encryption only:
 no provider credentials, both consent defaults false, no provider calls.
 Hardware/provider acceptance and independent off-host master-key escrow remain
 pending. See [deployment evidence](docs/mentor-deployment-2026-09-15.md).
-Release **1.4.0+7** includes planned Alembic migration **0010** for Mentor
-customization and context consents. It has not been deployed: run the serialized
-migration and post-update checks from the Updates section before describing
-revision `0010` as production state.
+Release **1.4.0+7** introduced Alembic migration **0010** for Mentor customization
+and context consents. Production is already at **0010**, independently verified
+before and after release 1.14.0+27. Historical reports below describe older states;
+continue using serialized migrations and post-update checks for future releases.
 All current runtime Compose commands must include **base + push + mentor**;
 two-file commands in historical sections describe earlier deployments only.
 Apple Zdrowie **1.1.0+3 deployed**, verified on the host at
@@ -78,7 +92,11 @@ python3 /opt/fit/deploy/ops/create-account.py
 Initial account: configured owner account.
 Password file:
 `/docker/fit/secrets/initial-account.txt`, root `0600`, directory `0700`.
-The file contains only the generated password. The wrapper feeds the existing
+The file contains only the generated password. It is a historical bootstrap
+credential, not a guarantee of the current account password: at release 1.14.0+27
+it no longer matched the account. Do not reset it automatically to make smoke
+tests pass; authenticated verification requires current operator credentials.
+The wrapper feeds the existing
 account CLI via stdin and suppresses terminal fallback output. There is no
 public signup. Never print the password into logs or pass it in argv.
 
@@ -191,9 +209,11 @@ Do not override the version with `--build-name`, `--build-number` or version
 checks the committed generated file before regeneration, analysis and web build.
 The web artifact `version.json` must match `AppVersion.name` and `buildNumber`.
 
-Production was built from an approved working tree containing uncommitted
-account/sync implementation. Do not reset or overwrite it; Git SHA alone does
-not identify this release. Review the tree and retain previous images first.
+Historical production builds used an approved working tree with uncommitted
+account/sync implementation. Release 1.14.0+27 instead identifies clean, pushed
+source commit `949cbf5033ea5dcd4f61a40124b5e5c26c9a4fea` and exact API/web
+images in its report. Do not reset or overwrite subsequent local work; review
+the tree and retain previous images before every release.
 
 ```bash
 # In /opt/fit:
@@ -328,7 +348,7 @@ python3 /opt/fit/deploy/ops/check-shared-sites.py after
 ```
 
 Expected for the currently deployed stack: three healthy services, running sender
-with fresh DB heartbeat and explicit migration exit 0 / DB revision `0009`;
+with fresh DB heartbeat and explicit migration exit 0 / DB revision `0010`;
 health `{"status":"ok"}`;
 static/SPA paths 200; Wasm `application/wasm`; workers `Cache-Control: no-cache`;
 valid public TLS chain. Browser verification includes login, offline mood
