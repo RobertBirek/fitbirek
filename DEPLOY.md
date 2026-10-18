@@ -3,7 +3,29 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current API + web **1.14.0+27 deployed 2026-10-17**, API/sender at
+Current API + web **1.15.0+28 deployed 2026-10-18**, API/sender at
+**13:47:06 UTC**, web at **13:47:46 UTC**. Repeat plan/actual workout,
+weekly rhythm with manual completion, read-only trends, verified offline
+preparation and active-session recovery. Local Drift **13**; PostgreSQL
+Alembic remains **0010**. API omission protection for `weeklySchedule` was
+published before web. Backup, isolated restore, serialized migrate, health,
+443 package hashes and shared-sites passed; PostgreSQL/Caddy unchanged.
+Full package: **443 files / 46,814,736 bytes**, content packageId
+`a88407eba4e8fe464d4400a3310892085fdc84f60211807184e2fbaab2abd1b1`.
+
+**Existing PWA update:** if blocked on actual local schema12 / required13,
+close **all** FitBirek windows/tabs, including the blocked new one, and fully
+exit the browser/PWA process; then reopen the **same profile**. Do not clear
+site data, IndexedDB or pending changes. The isolated two-build test passed
+after normal full Chromium exit/reopen with the pending outbox unchanged
+before ACK. Closing only an old tab and pressing Retry is not a verified
+recovery path; Retry is only an optional compatibility check. Physical
+iPhone/Android acceptance remains pending. No production authenticated or
+domain-writing smoke was run; known stale bootstrap credentials were not used.
+Evidence, backup, exact images, caveats and rollback:
+[release 1.15.0+28](docs/releases/2026-10-18-api-web-1.15.0-28.md).
+
+Previous API + web **1.14.0+27 deployed 2026-10-17**, API/sender at
 **09:54:41/42 UTC**, web at **09:54:55 UTC**. Guided training/resume,
 plan-versus-actual summaries, own variants and cloud filter presets, 369 exercises
 and illustrations (19 spine), local Inter and fallback fonts. API omission
@@ -55,6 +77,13 @@ Drift SQLite as its per-device offline store.
   depends on it, so failing checks prevent building a production image.
   **Serving images must use the final `runtime` target (Nginx), not `release`
   (Flutter builder).**
+- The web release stage runs `dart tools/generate_offline_package.dart` after
+  the final Flutter build. It generates a content-addressed static manifest and
+  replaces the output `flutter_service_worker.js` with the verified-package
+  worker; do not serve raw Flutter output without this step. Preserve generator
+  access in `.dockerignore`. Full-package preparation is user-approved, separate
+  from core precache and from authentication/sync readiness. See
+  [offline package](docs/modules/offline-package.md).
 - `backend/Dockerfile`: serving `runtime` target and dedicated `migration`
   target with locked Alembic tooling, migrations and `backend/migrate.py`.
   Migration credentials are read internally, never passed in command arguments.
@@ -210,8 +239,8 @@ checks the committed generated file before regeneration, analysis and web build.
 The web artifact `version.json` must match `AppVersion.name` and `buildNumber`.
 
 Historical production builds used an approved working tree with uncommitted
-account/sync implementation. Release 1.14.0+27 instead identifies clean, pushed
-source commit `949cbf5033ea5dcd4f61a40124b5e5c26c9a4fea` and exact API/web
+account/sync implementation. Release 1.15.0+28 identifies clean, pushed
+source commit `c639d661bf93a34eff97e7a0071207bca16606a6` and exact API/web
 images in its report. Do not reset or overwrite subsequent local work; review
 the tree and retain previous images before every release.
 
