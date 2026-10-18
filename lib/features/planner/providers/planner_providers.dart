@@ -82,24 +82,52 @@ class PlannerWorkflow {
   );
 
   Future<void> start(List<Exercise> exercises, {StructuredPlan? plan}) =>
-      _write((db, guard) async {
-        if (exercises.isEmpty ||
-            ref.read(activeWorkoutProvider).isActive ||
-            ref.read(activeWorkoutProvider).selectedExercises.isNotEmpty) {
-          throw StateError('Najpierw zakończ lub odrzuć bieżący trening.');
-        }
-        final notifier = ref.read(activeWorkoutProvider.notifier);
-        await notifier.startSession(
-          guidance: plan == null ? null : WorkoutGuidance.start(plan),
-        );
-        if (!guard() || !ref.read(activeWorkoutProvider).isActive) {
-          throw StateError('Start anulowany.');
-        }
-        for (final e in exercises) {
-          notifier.addExercise(e);
-        }
-        notifier.updateDraft({});
-      });
+      _write((db, guard) => _start(exercises, guard, plan: plan));
+
+  /// Resolve UUID again inside the guarded transaction. No generator fallback
+  /// or silent dropping of unavailable catalog exercises.
+  Future<void> startSaved(String syncId, List<Exercise> catalog) => _write((
+    db,
+    guard,
+  ) async {
+    final saved = await ref.read(plannerRepositoryProvider).getBySyncId(syncId);
+    if (saved == null || saved.isUnavailable) {
+      throw StateError('Plan jest niedostępny.');
+    }
+    final byId = {for (final e in catalog) e.id: e};
+    if (saved.cwiczeniaIds.any((id) => !byId.containsKey(id))) {
+      throw StateError('Co najmniej jedno ćwiczenie planu jest niedostępne.');
+    }
+    await _start(
+      [for (final id in saved.cwiczeniaIds) byId[id]!],
+      guard,
+      plan: saved.structure,
+    );
+  });
+
+  Future<void> _start(
+    List<Exercise> exercises,
+    bool Function() guard, {
+    StructuredPlan? plan,
+  }) async {
+    if (!guard()) throw StateError('Konto zmieniło się. Start anulowany.');
+    if (exercises.isEmpty ||
+        ref.read(activeWorkoutProvider).isActive ||
+        ref.read(activeWorkoutProvider).selectedExercises.isNotEmpty) {
+      throw StateError('Najpierw zakończ lub odrzuć bieżący trening.');
+    }
+    final notifier = ref.read(activeWorkoutProvider.notifier);
+    await notifier.startSession(
+      guidance: plan == null ? null : WorkoutGuidance.start(plan),
+    );
+    if (!guard() || !ref.read(activeWorkoutProvider).isActive) {
+      throw StateError('Start anulowany.');
+    }
+    for (final e in exercises) {
+      notifier.addExercise(e);
+    }
+    notifier.updateDraft({});
+  }
 }
 
 final plannerRepositoryProvider = Provider<PlannerRepository>((ref) {

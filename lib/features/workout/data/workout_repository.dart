@@ -6,6 +6,7 @@ import '../../../core/models/workout_session.dart';
 import '../../../core/sync/sync_models.dart';
 import '../domain/fixed_load_progression.dart';
 import '../domain/workout_guidance.dart';
+import '../domain/workout_repeat.dart';
 import '../domain/workout_draft_write.dart';
 import '../../exercises/data/exercise_variants_repository.dart';
 
@@ -37,21 +38,156 @@ class WorkoutRepository {
   WorkoutRepository(this._db);
   final AppDatabase _db;
 
+  Future<WorkoutRepeatPreview> previewRepeat(
+    int source,
+    RepeatMode mode,
+  ) => _db.transaction(() async {
+    final row = await _db.workoutDao.getSession(source);
+    final sets = await getSetsForSession(source);
+    sets.sort((a, b) => a.syncId.compareTo(b.syncId));
+    final issues = <String>[];
+    WorkoutRepeat? repeat;
+    if (row == null || row.deletedAtUtc != null || row.dataKoniec == null) {
+      issues.add('Źródło musi być zakończoną, nieusuniętą sesją.');
+    } else {
+      try {
+        if (mode == RepeatMode.original) {
+          final g = WorkoutGuidance.tryRead(row.guidanceJson);
+          if (g == null) {
+            issues.add(
+              'Brak poprawnego oryginalnego snapshotu planu. Wybierz wykonanie.',
+            );
+          } else {
+            repeat = WorkoutRepeat.original(g);
+          }
+        } else {
+          repeat = WorkoutRepeat.execution(sets);
+        }
+      } on FormatException {
+        issues.add(
+          'Historia zawiera nieobsługiwane pomiary. Nie pominięto ich ani nie zmieniono.',
+        );
+      }
+    }
+    if (repeat != null) {
+      if (repeat.targets.isEmpty) {
+        issues.add('Brak potwierdzonych serii do powtórzenia.');
+      }
+      for (var i = 0; i < repeat.targets.length; i++) {
+        final t = repeat.targets[i];
+        final exercise = await (_db.select(
+          _db.exercises,
+        )..where((e) => e.id.equals(t.exerciseId))).getSingleOrNull();
+        if (exercise == null) {
+          issues.add(
+            'Pozycja ${i + 1}: ćwiczenie ${t.exerciseId} niedostępne. Przywróć źródło przed powtórzeniem.',
+          );
+        }
+        try {
+          await ExerciseVariantsRepository.requireLive(
+            _db,
+            t.exerciseId,
+            t.variantId,
+          );
+        } on StateError {
+          issues.add(
+            'Pozycja ${i + 1}: wariant ${t.variantLabel ?? t.variantId} niedostępny. Nie zastąpiono go bazowym.',
+          );
+        }
+      }
+    }
+    return WorkoutRepeatPreview(
+      sourceId: source,
+      sourceSyncId: row?.syncId ?? '',
+      fingerprint: jsonEncode([
+        row?.toJson(),
+        sets.map((s) => s.toJson()).toList(),
+      ]),
+      mode: mode,
+      repeat: repeat,
+      issues: issues,
+    );
+  });
+
+  /// Revalidate source, exact targets and catalog inside the write transaction.
+  /// A repeat creates only session + outbox + local target draft, never sets/PR.
+  Future<WorkoutSessionData> startRepeat({
+    required WorkoutRepeatPreview preview,
+    required String accountId,
+    required String syncId,
+    required bool Function() guard,
+  }) => _db.transaction(() async {
+    await _requireAccount(accountId, guard);
+    final fresh = await previewRepeat(preview.sourceId, preview.mode);
+    _requireGuard(guard);
+    if (!fresh.canStart ||
+        fresh.sourceSyncId != preview.sourceSyncId ||
+        fresh.fingerprint != preview.fingerprint) {
+      throw WorkoutSessionUnavailable(preview.sourceId);
+    }
+    final existing = await _sessionBySyncId(syncId);
+    if (existing != null) {
+      if (existing.deletedAtUtc != null || existing.dataKoniec != null) {
+        throw WorkoutSessionUnavailable(existing.id);
+      }
+      return existing;
+    }
+    final active = await (_db.select(
+      _db.workoutSessions,
+    )..where((s) => s.dataKoniec.isNull() & s.deletedAtUtc.isNull())).get();
+    if (active.isNotEmpty) throw WorkoutSessionUnavailable(active.first.id);
+    final repeat = fresh.repeat!;
+    final guidance = repeat.plan == null
+        ? null
+        : WorkoutGuidance.start(repeat.plan!);
+    final id = await _createSession(
+      accountId: accountId,
+      guard: guard,
+      guidance: guidance,
+      syncId: syncId,
+    );
+    await saveDraft(
+      sessionId: id,
+      sessionSyncId: syncId,
+      accountId: accountId,
+      guard: guard,
+      payload: {
+        'schemaVersion': 1,
+        'currentSlot': 0,
+        'selectedIds': repeat.targets.map((t) => t.exerciseId).toSet().toList(),
+        'guidanceSignature': guidance == null
+            ? null
+            : jsonEncode(guidance.toJson()),
+        'fields': {if (guidance == null) 'repeatTargets': repeat.toJson()},
+      },
+    );
+    await _requireAccount(accountId, guard);
+    return (await _db.workoutDao.getSession(id))!;
+  });
+
   Future<int> startSession({
     bool Function()? guard,
     String? accountId,
     WorkoutGuidance? guidance,
+  }) => _createSession(guard: guard, accountId: accountId, guidance: guidance);
+
+  Future<int> _createSession({
+    bool Function()? guard,
+    String? accountId,
+    WorkoutGuidance? guidance,
+    String? syncId,
   }) async {
     _requireGuard(guard);
     final now = DateTime.now().toUtc();
-    final syncId = Uuid().v4();
+    syncId ??= Uuid().v4();
+    final sessionSyncId = syncId;
     return _db.transaction(() async {
       _requireGuard(guard);
       if (accountId != null) await _requireAccount(accountId, guard);
       final id = await _db.workoutDao.createSession(
         WorkoutSessionsCompanion.insert(
           dataStart: now,
-          syncId: Value(syncId),
+          syncId: Value(sessionSyncId),
           updatedAtUtc: Value(now),
           guidanceJson: Value(
             guidance == null ? null : jsonEncode(guidance.toJson()),
@@ -60,7 +196,7 @@ class WorkoutRepository {
       );
       await _db.syncDao.enqueueUpsert(
         entityType: SyncEntityType.workoutSession,
-        entityId: syncId,
+        entityId: sessionSyncId,
         baseVersion: 0,
         payload: _sessionPayload(
           dataStart: now,

@@ -16,6 +16,7 @@ class UserProfiles extends Table with SyncMetadata {
   TextColumn get dostepnySprzet => text()();
   TextColumn get filterPresetsJson => text().nullable()();
   TextColumn get exerciseVariantsJson => text().nullable()();
+  TextColumn get weeklyScheduleJson => text().nullable()();
   BoolColumn get onboardingZakonczony =>
       boolean().withDefault(const Constant(false))();
   DateTimeColumn get dataUtworzenia =>

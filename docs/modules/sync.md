@@ -4,6 +4,12 @@
 
 Sesje, CSRF, API, Drift, outbox, rekordy synchronizacji i migracje baz danych.
 
+## Decyzja o zakresie
+
+Na razie aplikacja pozostaje osobista, z jednym użytkownikiem — właścicielem.
+Prywatne konta dla znajomych na zaproszenia są **odłożonym planem**, nie bieżącym
+zadaniem implementacyjnym: [uzgodnienia na przyszłość](../future-private-accounts.md).
+
 ## Czytaj najpierw
 
 - `lib/features/auth/**`

@@ -13,13 +13,29 @@ https://github.com/flutter/flutter/blob/d693b4b9dbac2acd4477aea4555ca6dcbea44ba2
 manifest.json records exact engine family names, relative paths, lengths,
 SHA-256, and license references. The source URL for EACH font is:
   https://fonts.gstatic.com/s/ + its manifest path
-All 21 WOFF2 files were downloaded from that official Google Fonts HTTPS
+All 22 WOFF2 files were downloaded from that official Google Fonts HTTPS
 endpoint and preserved byte-for-byte. No conversion, renaming, or subsetting.
 Included: Roboto v32; Noto Sans Symbols v43; all 6 engine Noto Sans Symbols 2
 v24 shards; all 12 engine Noto Color Emoji v32 shards; Noto Sans v37 required
-by real note-entry fallback. Not all 724 Noto fonts.
+by real note-entry fallback; Noto Sans SC v37 engine subset 69 (file .87)
+required by emoji-only note fallback selection. Not all 724 Noto fonts.
 
 License sources (pinned repository snapshots):
+Noto Sans SC, SIL Open Font License 1.1:
+https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosanssc/OFL.txt
+Downloaded name table: (c) 2014-2021 Adobe (http://www.adobe.com/), with
+Reserved Font Name 'Source'. This notice and full OFL terms are in OFL-Noto.txt.
+Original exact engine subset 69 (.87.woff2): 5256 bytes, SHA-256
+e4b7e47d39dc977a198121b39c448c698a5ccb33f14a48d945e25d122f6904e8.
+Independent TTFont cmap audit confirms U+26A0 WARNING SIGN (uni26A0) and
+U+2713 CHECK MARK. It has no nominal FE0F, ZWJ or emoji from the note sample.
+Temporary instrumentation of fit-web:offline-local-fixed selected SC 69 for
+U+26A0 after Emoji 8, then Emoji 9, for the batch
+[128170,9888,65039,128105,8205,128187,127997]. The engine checks whole batches
+when some glyph is missing, then prefers Noto Sans SC on coverage ties. This
+font satisfies an actual engine load; it does not fix the separate FE0F empty-
+map warning or claim U+26A0 was missing in Inter. No engine/text edits made.
+
 Noto Sans, SIL Open Font License 1.1:
 https://raw.githubusercontent.com/google/fonts/47d54ca1ebb14fd864695f1d39dc734f39017c33/ofl/notosans/OFL.txt
 Downloaded name table: Copyright 2022 The Noto Project Authors

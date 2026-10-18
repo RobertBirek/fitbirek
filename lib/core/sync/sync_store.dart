@@ -14,6 +14,136 @@ class SyncStore {
   SyncStore(this.db);
   final AppDatabase db;
 
+  // Device-local metadata in the existing deferred envelope, never a wire key
+  // or part of an attempted request. The original rejected request stays in
+  // outbox until explicit recovery can safely merge its current local intent.
+  static const profileCollectionHold = '_profileCollectionConflict';
+
+  Future<Set<String>> heldProfileIds() async {
+    final rows = await (db.select(
+      db.syncDeferredRecords,
+    )..where((r) => r.entityType.equals('profile'))).get();
+    return {
+      for (final r in rows)
+        if ((jsonDecode(r.recordJson) as Map)[profileCollectionHold] != null)
+          r.entityId,
+    };
+  }
+
+  Future<void> holdProfileConflict(
+    Map<String, dynamic> record,
+    String rejectedOperationId,
+  ) async {
+    final id = record['entityId'] as String;
+    final previous = await _deferred(SyncEntityType.profile, id);
+    final old = previous == null
+        ? null
+        : Map<String, dynamic>.from(jsonDecode(previous.recordJson) as Map);
+    final metadata = old?[profileCollectionHold] as Map?;
+    final rejected = {
+      ...?((metadata?['rejectedOperationIds'] as List?)?.cast<String>()),
+      rejectedOperationId,
+    };
+    await apply({
+      ...(previous != null && previous.version > (record['version'] as int)
+          ? old!
+          : record),
+      profileCollectionHold: {
+        'rejectedOperationIds': rejected.toList()..sort(),
+        'quarantinedRecord': metadata?['quarantinedRecord'] ?? record,
+      },
+    });
+  }
+
+  /// Explicit recovery only, called inside an account-guarded transaction.
+  /// Never releases unknown attempted outcomes or sends the confirmed rejected
+  /// operation again. All validation precedes deletion of any local intent.
+  Future<void> retryHeldProfile(String id) async {
+    final deferred = await _deferred(SyncEntityType.profile, id);
+    if (deferred == null) {
+      throw StateError('Brak wstrzymanego konfliktu profilu.');
+    }
+    final record = Map<String, dynamic>.from(
+      jsonDecode(deferred.recordJson) as Map,
+    );
+    final hold = record.remove(profileCollectionHold) as Map?;
+    if (hold == null || record['deletedAt'] != null) {
+      throw StateError('Profil wymaga ręcznej weryfikacji.');
+    }
+    final rejected = (hold['rejectedOperationIds'] as List)
+        .cast<String>()
+        .toSet();
+    final rows = await db
+        .customSelect(
+          'SELECT * FROM sync_outbox WHERE entity_type = ? AND entity_id = ? ORDER BY rowid DESC',
+          variables: [Variable('profile'), Variable(id)],
+        )
+        .get();
+    if (rows.any(
+      (r) =>
+          r.read<bool>('deleted') ||
+          (r.read<bool>('attempted') &&
+              !rejected.contains(r.read<String>('operation_id'))),
+    )) {
+      throw StateError(
+        'Najpierw rozstrzygnij usunięcie lub nieznany wynik próby profilu.',
+      );
+    }
+    final local = await db.userProfileDao.watchProfileOnce();
+    if (local == null || local.syncId != id || local.deletedAtUtc != null) {
+      throw StateError('Brak aktywnego profilu.');
+    }
+    final remote = Map<String, dynamic>.from(record['payload'] as Map);
+    final merged = Map<String, dynamic>.from(remote);
+    var changed = false;
+    for (final key in UserCollections.keys) {
+      if (remote[key] != null) UserCollections.validate(key, remote[key]);
+      final raw = local.toJson()['${key}Json'] as String?;
+      final latest = rows
+          .map((r) => jsonDecode(r.read<String>('payload_json')) as Map)
+          .where((p) => p.containsKey(key))
+          .firstOrNull;
+      if (raw == null && latest != null && latest[key] == null) {
+        merged[key] = null;
+        if (remote[key] != null) changed = true;
+      } else if (raw != null) {
+        final value = UserCollections.merge(key, jsonDecode(raw), remote[key]);
+        merged[key] = value;
+        if (UserCollections.canonical(value) !=
+            UserCollections.canonical(remote[key])) {
+          changed = true;
+        }
+      }
+    }
+    final preserveLocal =
+        rows.any((r) => r.read<bool>('preserve_local')) && !changed;
+    final payload = preserveLocal
+        ? <String, dynamic>{
+            ...profilePayload(local),
+            for (final key in UserCollections.keys)
+              if (merged.containsKey(key)) key: merged[key],
+          }
+        : merged;
+    // Validate local siblings too, including a corrupt raw column that was not
+    // involved in the original remote failure. No partial recovery or clear.
+    for (final key in UserCollections.keys) {
+      if (payload[key] != null) UserCollections.validate(key, payload[key]);
+    }
+    await (db.delete(
+          db.syncOutbox,
+        )..where((o) => o.entityType.equals('profile') & o.entityId.equals(id)))
+        .go();
+    await _forgetDeferred(SyncEntityType.profile, id, deferred.version);
+    await apply({...record, 'payload': payload});
+    await db.syncDao.enqueueUpsert(
+      entityType: SyncEntityType.profile,
+      entityId: id,
+      baseVersion: deferred.version,
+      payload: payload,
+      preserveLocal: preserveLocal,
+    );
+  }
+
   TableInfo table(SyncEntityType type) => switch (type) {
     SyncEntityType.profile => db.userProfiles,
     SyncEntityType.workoutSession => db.workoutSessions,
@@ -201,8 +331,15 @@ class SyncStore {
               (o) => o.entityType.equals(type.wireName) & o.entityId.equals(id),
             ))
             .get();
-    if (dirty.isNotEmpty) {
-      final previous = await _deferred(type, id);
+    final previous = await _deferred(type, id);
+    final hold = type == SyncEntityType.profile
+        ? record[profileCollectionHold] ??
+              (previous == null
+                  ? null
+                  : (jsonDecode(previous.recordJson)
+                        as Map)[profileCollectionHold])
+        : null;
+    if (dirty.isNotEmpty || hold != null) {
       if (previous == null || previous.version <= v) {
         await db
             .into(db.syncDeferredRecords)
@@ -211,7 +348,10 @@ class SyncStore {
                 entityType: type.wireName,
                 entityId: id,
                 version: v,
-                recordJson: jsonEncode(record),
+                recordJson: jsonEncode({
+                  ...record,
+                  if (hold != null) profileCollectionHold: hold,
+                }),
               ),
             );
       }
@@ -289,6 +429,11 @@ class SyncStore {
   }) async {
     final snapshot = await _deferred(type, id);
     if (snapshot == null) return;
+    if (type == SyncEntityType.profile &&
+        (jsonDecode(snapshot.recordJson) as Map)[profileCollectionHold] !=
+            null) {
+      return;
+    }
     if (acceptedVersion != null && acceptedVersion >= snapshot.version) {
       if (type == SyncEntityType.workoutSession &&
           acceptedOperation != null &&

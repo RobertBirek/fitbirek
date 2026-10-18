@@ -1,9 +1,10 @@
 import 'dart:convert';
 import '../../features/exercises/domain/filter_preset.dart';
+import '../../features/schedule/domain/weekly_schedule.dart';
 
 /// Profile-owned versioned collections. Never prune tombstones or malformed data.
 abstract final class UserCollections {
-  static const keys = ['filterPresets', 'exerciseVariants'];
+  static const keys = ['filterPresets', 'exerciseVariants', 'weeklySchedule'];
   static const maxEntries = 500;
   static const maxBytes = 262144;
   static final _uuid = RegExp(
@@ -55,6 +56,8 @@ abstract final class UserCollections {
         FilterPreset.decodeFilters(
           Map<String, dynamic>.from(e['filters'] as Map),
         );
+      } else if (key == 'weeklySchedule') {
+        WeeklySchedule.validateEntry(e);
       } else {
         if (e['exerciseId'] is! String || (e['exerciseId'] as String).isEmpty) {
           bad();

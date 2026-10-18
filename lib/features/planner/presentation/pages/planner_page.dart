@@ -171,7 +171,16 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
     ref.watch(allExercisesProvider);
     final metadata = ref.watch(exerciseCatalogMetadataProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Generator planu')),
+      appBar: AppBar(
+        title: const Text('Generator planu'),
+        actions: [
+          IconButton(
+            tooltip: 'Rytm tygodnia',
+            onPressed: () => context.push('/schedule'),
+            icon: const Icon(Icons.calendar_month),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: profile.when(
           loading: () => const Center(child: CircularProgressIndicator()),

@@ -28,7 +28,7 @@ void main() {
   );
 
   test(
-    'engine-pinned mirror contains all 21 fonts and licenses with valid SHA',
+    'engine-pinned mirror contains all 22 fonts and licenses with valid SHA',
     () async {
       final manifest =
           jsonDecode(
@@ -37,8 +37,8 @@ void main() {
               as Map<String, dynamic>;
       expect(manifest['flutterVersion'], '3.35.4');
       final fonts = (manifest['fonts'] as List).cast<Map<String, dynamic>>();
-      expect(fonts, hasLength(21));
-      expect(fonts.map((font) => font['path']).toSet(), hasLength(21));
+      expect(fonts, hasLength(22));
+      expect(fonts.map((font) => font['path']).toSet(), hasLength(22));
       expect(fonts.where((font) => font['family'] == 'Roboto'), hasLength(1));
       expect(
         fonts.where((font) => font['family'] == 'Noto Sans Symbols'),
@@ -109,6 +109,31 @@ void main() {
     );
     expect(_hasWoff2Header(html200), isFalse);
     expect(_hasWoff2Header(ascii.encode('wOF2')), isFalse);
+  });
+
+  test('emoji-only warning symbol resolves to the exact engine SC 69 shard', () {
+    const path =
+        'notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.87.woff2';
+    final file = File('web/font-fallbacks/$path');
+    expect(file.existsSync(), isTrue);
+    final bytes = file.readAsBytesSync();
+    expect(_hasWoff2Header(bytes), isTrue);
+    expect(bytes.length, 5256);
+    final manifest =
+        jsonDecode(File('web/font-fallbacks/manifest.json').readAsStringSync())
+            as Map<String, dynamic>;
+    final fonts = (manifest['fonts'] as List).cast<Map<String, dynamic>>();
+    final sc = fonts.singleWhere((font) => font['family'] == 'Noto Sans SC 69');
+    expect(sc['path'], path);
+    expect(
+      sc['sha256'],
+      'e4b7e47d39dc977a198121b39c448c698a5ccb33f14a48d945e25d122f6904e8',
+    );
+    expect(sc['sampleCodePoints'], contains('U+26A0'));
+    expect(
+      File('web/font-fallbacks/${sc['license']}').readAsStringSync(),
+      contains("Reserved Font Name 'Source'"),
+    );
   });
 
   test('SHA-bound audit covers dropdown, symbols and fitness emoji', () {

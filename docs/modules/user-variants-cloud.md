@@ -128,6 +128,17 @@ zastępujemy uszkodzenia pustą listą. Nowy zapis całego profilu z uszkodzonym
 rozszerzeniem zostaje zablokowany, a nie wysyła „naprawy” kasującej dane.
 Nie modyfikujemy attempted payloadów, nawet podczas restore / duplicate ACK.
 
+Wyjątek obsługi odrzuconego CAS dla nieczytelnego rozszerzenia: odrzucona próba
+nie jest usuwana ani ponawiana; profil trafia w trwały hold w istniejącym defer
+(lokalna koperta `_profileCollectionConflict`, poza wire). Lokalne definicje,
+późniejsze edycje i oryginalny zdalny raw są zachowane, niezależne sesje/serie
+nadal synchronizują się, a status pozostaje conflict. Dotyczy wszystkich trzech
+kolekcji, również weeklySchedule. Zwolnienie jest wyłącznie jawne po walidacji,
+przez `retryProfileCollectionConflict`, z nowym UUID operacji i ochroną NULL oraz
+nieznanych attempted outcomes; zwykły retry nie kasuje intencji. Pełna polityka
+recovery i wymagany osobny eksport raw defer/outbox: `weekly-schedule.md`, sekcja
+„HIGH review — izolacja konfliktu nieczytelnej kolekcji”.
+
 Backup schemaVersion pozostaje 2: eksport wiersza zawiera nullable rozszerzenia.
 Restore waliduje je i scala per-ID z obecnymi definicjami (chroni tombstone'y).
 Stary backup bez tych pól zachowuje obecne kolumny zamiast zastosować NULL jako

@@ -26,7 +26,7 @@ from app.sync.schemas import (
 pull_limit = 500
 publisher_lock_key = "sync-change-publisher"
 optional_extension_keys = {
-    "profile": ("filterPresets", "exerciseVariants"),
+    "profile": ("filterPresets", "exerciseVariants", "weeklySchedule"),
     "workoutSession": ("guidance",),
     "workoutSet": ("variantId", "variantLabel"),
     "personalRecord": ("variantId", "variantLabel"),

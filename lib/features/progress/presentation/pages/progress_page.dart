@@ -9,6 +9,7 @@ import '../../../health/providers/health_providers.dart';
 import '../../../health/presentation/widgets/health_sample_delete_button.dart';
 import '../../../health/presentation/widgets/health_steps_history.dart';
 import '../../tests/providers/tests_providers.dart';
+import '../../trends/presentation/training_trends_page.dart';
 
 /// Ekran "Postępy" - pomiary, testy, PR (lista + linki do dodawania danych).
 class ProgressPage extends ConsumerWidget {
@@ -25,6 +26,13 @@ class ProgressPage extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            OutlinedButton.icon(
+              icon: const Icon(Icons.trending_up),
+              label: const Text('Trendy treningowe'),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const TrainingTrendsPage()),
+              ),
+            ),
             Row(
               children: [
                 Expanded(

@@ -79,7 +79,7 @@ void main() {
         (await db.customSelect('SELECT * FROM sync_outbox').getSingle()).data,
         before,
       );
-      expect(db.schemaVersion, 12);
+      expect(db.schemaVersion, 13);
     },
   );
   test(

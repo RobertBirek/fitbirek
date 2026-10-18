@@ -110,6 +110,37 @@ class SyncService extends ChangeNotifier {
     });
   }
 
+  /// Administrative/user-confirmed recovery after preserving the local backup
+  /// and quarantined raw snapshot. A compatible/corrected remote record must
+  /// have been pulled first; ordinary synchronize never releases this hold.
+  Future<void> retryProfileCollectionConflict(
+    String accountId,
+    String profileId,
+  ) async {
+    if (!_enabled || _disposed || _running != null) {
+      throw StateError('Synchronizacja konta jest niedostępna lub trwa.');
+    }
+    final generation = _generation;
+    await db.transaction(() async {
+      Future<void> guard() async {
+        final state = await db.syncDao.readState();
+        if (!_enabled ||
+            _disposed ||
+            generation != _generation ||
+            state?.accountId != accountId ||
+            state?.offlineAccess != true) {
+          throw StateError('Konto zmieniło się lub jest niedostępne.');
+        }
+      }
+
+      await guard();
+      await store.retryHeldProfile(profileId);
+      await guard();
+    });
+    // Still pending, not "fully synchronized" until the new request is ACKed.
+    _setStatus(SyncStatus.conflict);
+  }
+
   void _setStatus(SyncStatus value) {
     status = value;
     if (!_disposed) notifyListeners();
@@ -133,10 +164,17 @@ class SyncService extends ChangeNotifier {
       // A bounded pass prevents an active writer starving pull indefinitely.
       for (var batch = 0; batch < 100 && _enabled; batch++) {
         final operations = await db.transaction(() async {
+          final heldProfiles = await store.heldProfileIds();
+          if (heldProfiles.isNotEmpty) blocked = true;
           final pending = await db.syncDao.pendingOperations();
           final keys = <String>{};
           final next = pending
-              .where((o) => keys.add('${o.entityType.name}:${o.entityId}'))
+              .where(
+                (o) =>
+                    !(o.entityType == SyncEntityType.profile &&
+                        heldProfiles.contains(o.entityId)) &&
+                    keys.add('${o.entityType.name}:${o.entityId}'),
+              )
               .toList();
           // Coalescing a finished session can place it after its sets in the
           // outbox. Publish parents first, including across batch boundaries.
@@ -155,6 +193,7 @@ class SyncService extends ChangeNotifier {
         if (operations.isEmpty) break;
         final response = await api.push(operations);
         if (generation != _generation) return;
+        var unresolvedResponse = false;
         await db.transaction(() async {
           for (final dynamic ack in response['accepted'] as List) {
             final op = operations.firstWhere(
@@ -178,17 +217,38 @@ class SyncService extends ChangeNotifier {
           for (final dynamic conflict in response['conflicts'] as List) {
             if (conflict['kind'] != null) {
               blocked = true;
+              unresolvedResponse = true;
               continue;
             }
             final op = operations.firstWhere(
               (o) => o.operationId == conflict['operationId'],
             );
-            await (db.delete(
-              db.syncOutbox,
-            )..where((o) => o.operationId.equals(op.operationId))).go();
             final record = Map<String, dynamic>.from(conflict['record'] as Map);
+            if (op.entityType == SyncEntityType.profile &&
+                !op.deleted &&
+                record['deletedAt'] == null) {
+              final remote = Map<String, dynamic>.from(
+                record['payload'] as Map,
+              );
+              try {
+                // Validate even when a local NULL/omission or later edit would
+                // bypass merge. Never overwrite an unknown remote extension.
+                for (final key in UserCollections.keys) {
+                  if (remote[key] != null) {
+                    UserCollections.validate(key, remote[key]);
+                  }
+                }
+              } on FormatException {
+                await store.holdProfileConflict(record, op.operationId);
+                blocked = true;
+                continue;
+              }
+            }
             final later = (await db.syncDao.pendingOperations()).any(
-              (o) => o.entityType == op.entityType && o.entityId == op.entityId,
+              (o) =>
+                  o.operationId != op.operationId &&
+                  o.entityType == op.entityType &&
+                  o.entityId == op.entityId,
             );
             final deletedSession =
                 op.entityType == SyncEntityType.workoutSession &&
@@ -204,26 +264,34 @@ class SyncService extends ChangeNotifier {
               );
               final merged = Map<String, dynamic>.from(remote);
               var changed = false;
-              for (final key in UserCollections.keys) {
-                final raw = local?['${key}Json'] as String?;
-                if (raw == null &&
-                    op.payload.containsKey(key) &&
-                    op.payload[key] == null) {
-                  merged[key] = null;
-                  if (remote[key] != null) changed = true;
-                  continue;
+              try {
+                for (final key in UserCollections.keys) {
+                  final raw = local?['${key}Json'] as String?;
+                  if (raw == null &&
+                      op.payload.containsKey(key) &&
+                      op.payload[key] == null) {
+                    merged[key] = null;
+                    if (remote[key] != null) changed = true;
+                    continue;
+                  }
+                  if (raw == null) continue;
+                  final value = UserCollections.merge(
+                    key,
+                    jsonDecode(raw),
+                    remote[key],
+                  );
+                  merged[key] = value;
+                  if (UserCollections.canonical(value) !=
+                      UserCollections.canonical(remote[key])) {
+                    changed = true;
+                  }
                 }
-                if (raw == null) continue;
-                final value = UserCollections.merge(
-                  key,
-                  jsonDecode(raw),
-                  remote[key],
-                );
-                merged[key] = value;
-                if (UserCollections.canonical(value) !=
-                    UserCollections.canonical(remote[key])) {
-                  changed = true;
-                }
+              } on FormatException {
+                // A quarantined local extension or an over-limit merge must
+                // not roll back the whole push response and global pull either.
+                await store.holdProfileConflict(record, op.operationId);
+                blocked = true;
+                continue;
               }
               if (changed || op.preserveLocal) {
                 final payload = changed
@@ -238,6 +306,9 @@ class SyncService extends ChangeNotifier {
                 // The attempted operation was definitively rejected. Apply the
                 // server's scalar fields AND merged collections before creating
                 // a fresh immutable operation at the authoritative CAS version.
+                await (db.delete(
+                  db.syncOutbox,
+                )..where((o) => o.operationId.equals(op.operationId))).go();
                 await store.apply({...record, 'payload': payload});
                 await db.syncDao.enqueueUpsert(
                   entityType: op.entityType,
@@ -252,6 +323,9 @@ class SyncService extends ChangeNotifier {
                 continue;
               }
             }
+            await (db.delete(
+              db.syncOutbox,
+            )..where((o) => o.operationId.equals(op.operationId))).go();
             final deletedProfile =
                 op.entityType == SyncEntityType.profile &&
                 record['deletedAt'] != null;
@@ -283,7 +357,7 @@ class SyncService extends ChangeNotifier {
             await store.reconcile(op.entityType, op.entityId);
           }
         });
-        if (blocked) break;
+        if (unresolvedResponse) break;
         if ((response['accepted'] as List).isEmpty &&
             (response['conflicts'] as List).isEmpty) {
           throw const FormatException('Missing push outcomes');

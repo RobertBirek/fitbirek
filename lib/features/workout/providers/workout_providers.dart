@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart' show WorkoutSessionData;
 import '../../../core/database/app_database.dart' show WorkoutDraftData;
 import '../../../core/providers/database_provider.dart';
@@ -10,11 +11,31 @@ import '../../../core/models/exercise.dart';
 import '../data/workout_repository.dart';
 import '../domain/interval_timer.dart';
 import '../domain/workout_guidance.dart';
+import '../domain/workout_repeat.dart';
+
 import '../domain/workout_draft_write.dart';
 import '../../exercises/providers/exercises_providers.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../progress/prs/providers/prs_providers.dart';
 import '../../exercises/data/exercise_variants_repository.dart';
+
+class RepeatWorkoutRequest {
+  RepeatWorkoutRequest._(
+    this.preview,
+    this._owner,
+    this._authority,
+    this._epoch,
+    this._generation,
+    this._account,
+  );
+  final WorkoutRepeatPreview preview;
+  final ActiveWorkoutNotifier _owner;
+  final CachedAuthWriteAuthority _authority;
+  final int _epoch, _generation;
+  final String? _account;
+  final String _syncId = const Uuid().v4();
+  Future<bool>? _result;
+}
 
 final workoutRepositoryProvider = Provider<WorkoutRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);
@@ -75,6 +96,18 @@ class ActiveWorkoutState {
   final WorkoutGuidance? guidance;
   final int currentSlot;
   final Map<String, Object?> draft;
+
+  WorkoutRepeat? get repeat => draft['repeatTargets'] == null
+      ? null
+      : WorkoutRepeat.fromJson(draft['repeatTargets']);
+  int get repeatCompletedCount =>
+      (draft['repeatCompleted'] as List? ?? []).length;
+  RepeatSetTarget? get repeatTarget {
+    final targets = repeat?.targets;
+    return targets == null || repeatCompletedCount >= targets.length
+        ? null
+        : targets[repeatCompletedCount];
+  }
 
   Set<String> get plannedExerciseIds => {
     ...?guidance?.plan.exerciseIds,
@@ -177,6 +210,61 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
   ActiveWorkoutNotifier(this._ref) : super(const ActiveWorkoutState());
 
   final Ref _ref;
+
+  Future<RepeatWorkoutRequest> previewRepeat(
+    int source,
+    RepeatMode mode,
+  ) async {
+    final authority = _ref.read(cachedAuthWriteAuthorityProvider);
+    final epoch = authority.epoch, generation = _generation;
+    final binding = await _ref.read(appDatabaseProvider).syncDao.readState();
+    final preview = await _ref
+        .read(workoutRepositoryProvider)
+        .previewRepeat(source, mode);
+    return RepeatWorkoutRequest._(
+      preview,
+      this,
+      authority,
+      epoch,
+      generation,
+      binding?.accountId,
+    );
+  }
+
+  Future<bool> confirmRepeat(RepeatWorkoutRequest request) {
+    if (!identical(request._owner, this)) return Future.value(false);
+    return request._result ??= _confirmRepeat(request);
+  }
+
+  Future<bool> _confirmRepeat(RepeatWorkoutRequest request) async {
+    bool guard() =>
+        mounted &&
+        !state.isActive &&
+        request._generation == _generation &&
+        request._authority.epoch == request._epoch &&
+        (request._authority.state == null ||
+            (request._authority.state!.isSignedIn &&
+                request._authority.state!.accountId == request._account));
+    if (!guard() || !request.preview.canStart || request._account == null) {
+      return false;
+    }
+    try {
+      final row = await _ref
+          .read(workoutRepositoryProvider)
+          .startRepeat(
+            preview: request.preview,
+            accountId: request._account,
+            syncId: request._syncId,
+            guard: guard,
+          );
+      if (!guard()) return false;
+      return resumeSession(row.syncId);
+    } on WorkoutSessionUnavailable {
+      return false;
+    } on WorkoutAccountUnavailable {
+      return false;
+    }
+  }
 
   /// Drift 2.28.2 binds an executor via a zone value. Leave only that short-
   /// lived database scope, retaining the caller's UI/error/test zone. A blanket
@@ -737,6 +825,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
   Future<bool> resumeSession(
     String sessionSyncId, {
     bool restartSegment = false,
+    String? expectedAccountId,
+    int? expectedAuthorityEpoch,
   }) async {
     if (state.isActive) return false;
     final generation = ++_generation;
@@ -748,12 +838,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         mounted &&
         generation == _generation &&
         authority.epoch == epoch &&
+        (expectedAuthorityEpoch == null || epoch == expectedAuthorityEpoch) &&
         (authority.state == null || authority.state!.isSignedIn);
     ActiveWorkoutState? restored;
     await db.transaction(() async {
       final binding = await db.syncDao.readState();
       if (!guard() ||
           binding?.offlineAccess != true ||
+          (expectedAccountId != null &&
+              binding?.accountId != expectedAccountId) ||
           (authority.state != null &&
               authority.state!.accountId != binding!.accountId)) {
         return;
@@ -847,11 +940,29 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       }
     });
     if (!guard() || restored == null) return false;
+    // Recheck outside the read transaction: a pull can finish/delete the row
+    // while catalog/sets are awaited. Never publish that old snapshot.
+    await _sessionSubscription?.cancel();
+    final currentBinding = await db.syncDao.readState();
+    final currentRow = await repo.findSessionBySyncId(sessionSyncId);
+    if (!guard() ||
+        currentBinding?.offlineAccess != true ||
+        currentBinding?.accountId != _sessionAccount ||
+        currentRow?.id != restored!.sessionId ||
+        currentRow?.dataKoniec != null ||
+        currentRow?.deletedAtUtc != null ||
+        (currentRow?.guidanceJson != null &&
+            WorkoutGuidance.tryRead(currentRow!.guidanceJson) == null) ||
+        jsonEncode(
+              WorkoutGuidance.tryRead(currentRow?.guidanceJson)?.toJson(),
+            ) !=
+            jsonEncode(restored!.guidance?.toJson())) {
+      return false;
+    }
     _sessionAuthority = authority;
     _sessionEpoch = epoch;
     _intervalClosing = false;
     state = restored!;
-    await _sessionSubscription?.cancel();
     _sessionSubscription = _persistentDatabaseZone().run(
       () => repo.watchSession(state.sessionId!).listen((row) {
         if (row == null ||
@@ -1263,6 +1374,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       return false;
     }
     if (extra && !state.isExtraExercise(exercise.id)) return false;
+    final repeatIndex = state.repeat == null
+        ? null
+        : state.repeatCompletedCount;
+    final repeatTarget = state.repeatTarget;
+    if (repeatIndex != null &&
+        (repeatTarget == null ||
+            repeatTarget.exerciseId != exercise.id ||
+            repeatTarget.side != side ||
+            repeatTarget.variantId != variantId)) {
+      return false;
+    }
     final guidedSlot = state.guidance == null || extra
         ? null
         : state.currentSlot;
@@ -1270,7 +1392,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         state.guidance!.exerciseAt(guidedSlot) != exercise.id) {
       return false;
     }
-    final guardedGuidedWrite = state.guidance != null;
+    final guardedGuidedWrite = state.guidance != null || state.repeat != null;
     if (guardedGuidedWrite) _guidedBusy = true;
     try {
       final sessionId = state.sessionId!;
@@ -1287,6 +1409,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
 
       bool isNewPr = false;
       String? comparison;
+      Map<String, Object?>? repeatDraft;
       void requireOwnership() {
         if (!_isCurrent(sessionId, generation) ||
             authority.epoch != authEpoch ||
@@ -1338,7 +1461,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                   .where((s) => s.cwiczenieId == exercise.id)
                   .fold<int>(0, (n, s) => s.numerSerii > n ? s.numerSerii : n) +
               1;
-          await repo.logSet(
+          final insertedSetId = await repo.logSet(
             sessionId: sessionId,
             exerciseId: exercise.id,
             exerciseNamePl: exercise.nazwaPl,
@@ -1358,6 +1481,43 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             expectedSyncId: state.sessionSyncId,
           );
           requireOwnership();
+          if (repeatIndex != null) {
+            final currentDraft = await repo.readDraft(
+              binding!.accountId,
+              state.sessionSyncId!,
+            );
+            requireOwnership();
+            if (currentDraft == null) {
+              throw WorkoutSessionUnavailable(sessionId);
+            }
+            final fields = Map<String, Object?>.from(
+              currentDraft['fields'] as Map,
+            );
+            final completed = List<String>.from(
+              fields['repeatCompleted'] as List? ?? [],
+            );
+            if (completed.length != repeatIndex ||
+                jsonEncode(fields['repeatTargets']) !=
+                    jsonEncode(state.repeat!.toJson())) {
+              throw WorkoutSessionUnavailable(sessionId);
+            }
+            final inserted = (await repo.getSetsForSession(
+              sessionId,
+            )).firstWhere((s) => s.id == insertedSetId);
+            completed.add(inserted.syncId);
+            fields['repeatCompleted'] = completed;
+            repeatDraft = fields;
+            await repo.saveDraft(
+              sessionId: sessionId,
+              sessionSyncId: state.sessionSyncId!,
+              accountId: binding.accountId,
+              payload: {...currentDraft, 'fields': fields},
+              guard: () =>
+                  _isCurrent(sessionId, generation) &&
+                  authority.epoch == authEpoch,
+            );
+            requireOwnership();
+          }
 
           if (seconds == null &&
               weightKg != null &&
@@ -1422,6 +1582,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       }
 
       state = state.copyWith(
+        draft: repeatDraft == null
+            ? state.draft
+            : {
+                ...state.draft,
+                'repeatCompleted': repeatDraft!['repeatCompleted'],
+              },
         loggedSets: [
           ...state.loggedSets,
           ActiveSetEntry(

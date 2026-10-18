@@ -146,6 +146,17 @@ class $UserProfilesTable extends UserProfiles
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _weeklyScheduleJsonMeta =
+      const VerificationMeta('weeklyScheduleJson');
+  @override
+  late final GeneratedColumn<String> weeklyScheduleJson =
+      GeneratedColumn<String>(
+        'weekly_schedule_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _onboardingZakonczonyMeta =
       const VerificationMeta('onboardingZakonczony');
   @override
@@ -188,6 +199,7 @@ class $UserProfilesTable extends UserProfiles
     dostepnySprzet,
     filterPresetsJson,
     exerciseVariantsJson,
+    weeklyScheduleJson,
     onboardingZakonczony,
     dataUtworzenia,
   ];
@@ -306,6 +318,15 @@ class $UserProfilesTable extends UserProfiles
         ),
       );
     }
+    if (data.containsKey('weekly_schedule_json')) {
+      context.handle(
+        _weeklyScheduleJsonMeta,
+        weeklyScheduleJson.isAcceptableOrUnknown(
+          data['weekly_schedule_json']!,
+          _weeklyScheduleJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('onboarding_zakonczony')) {
       context.handle(
         _onboardingZakonczonyMeta,
@@ -385,6 +406,10 @@ class $UserProfilesTable extends UserProfiles
         DriftSqlType.string,
         data['${effectivePrefix}exercise_variants_json'],
       ),
+      weeklyScheduleJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weekly_schedule_json'],
+      ),
       onboardingZakonczony: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}onboarding_zakonczony'],
@@ -416,6 +441,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
   final String dostepnySprzet;
   final String? filterPresetsJson;
   final String? exerciseVariantsJson;
+  final String? weeklyScheduleJson;
   final bool onboardingZakonczony;
   final DateTime dataUtworzenia;
   const UserProfileData({
@@ -432,6 +458,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     required this.dostepnySprzet,
     this.filterPresetsJson,
     this.exerciseVariantsJson,
+    this.weeklyScheduleJson,
     required this.onboardingZakonczony,
     required this.dataUtworzenia,
   });
@@ -456,6 +483,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     }
     if (!nullToAbsent || exerciseVariantsJson != null) {
       map['exercise_variants_json'] = Variable<String>(exerciseVariantsJson);
+    }
+    if (!nullToAbsent || weeklyScheduleJson != null) {
+      map['weekly_schedule_json'] = Variable<String>(weeklyScheduleJson);
     }
     map['onboarding_zakonczony'] = Variable<bool>(onboardingZakonczony);
     map['data_utworzenia'] = Variable<DateTime>(dataUtworzenia);
@@ -483,6 +513,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       exerciseVariantsJson: exerciseVariantsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(exerciseVariantsJson),
+      weeklyScheduleJson: weeklyScheduleJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(weeklyScheduleJson),
       onboardingZakonczony: Value(onboardingZakonczony),
       dataUtworzenia: Value(dataUtworzenia),
     );
@@ -511,6 +544,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       exerciseVariantsJson: serializer.fromJson<String?>(
         json['exerciseVariantsJson'],
       ),
+      weeklyScheduleJson: serializer.fromJson<String?>(
+        json['weeklyScheduleJson'],
+      ),
       onboardingZakonczony: serializer.fromJson<bool>(
         json['onboardingZakonczony'],
       ),
@@ -534,6 +570,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       'dostepnySprzet': serializer.toJson<String>(dostepnySprzet),
       'filterPresetsJson': serializer.toJson<String?>(filterPresetsJson),
       'exerciseVariantsJson': serializer.toJson<String?>(exerciseVariantsJson),
+      'weeklyScheduleJson': serializer.toJson<String?>(weeklyScheduleJson),
       'onboardingZakonczony': serializer.toJson<bool>(onboardingZakonczony),
       'dataUtworzenia': serializer.toJson<DateTime>(dataUtworzenia),
     };
@@ -553,6 +590,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     String? dostepnySprzet,
     Value<String?> filterPresetsJson = const Value.absent(),
     Value<String?> exerciseVariantsJson = const Value.absent(),
+    Value<String?> weeklyScheduleJson = const Value.absent(),
     bool? onboardingZakonczony,
     DateTime? dataUtworzenia,
   }) => UserProfileData(
@@ -573,6 +611,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     exerciseVariantsJson: exerciseVariantsJson.present
         ? exerciseVariantsJson.value
         : this.exerciseVariantsJson,
+    weeklyScheduleJson: weeklyScheduleJson.present
+        ? weeklyScheduleJson.value
+        : this.weeklyScheduleJson,
     onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
     dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
   );
@@ -603,6 +644,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       exerciseVariantsJson: data.exerciseVariantsJson.present
           ? data.exerciseVariantsJson.value
           : this.exerciseVariantsJson,
+      weeklyScheduleJson: data.weeklyScheduleJson.present
+          ? data.weeklyScheduleJson.value
+          : this.weeklyScheduleJson,
       onboardingZakonczony: data.onboardingZakonczony.present
           ? data.onboardingZakonczony.value
           : this.onboardingZakonczony,
@@ -628,6 +672,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
           ..write('dostepnySprzet: $dostepnySprzet, ')
           ..write('filterPresetsJson: $filterPresetsJson, ')
           ..write('exerciseVariantsJson: $exerciseVariantsJson, ')
+          ..write('weeklyScheduleJson: $weeklyScheduleJson, ')
           ..write('onboardingZakonczony: $onboardingZakonczony, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
@@ -649,6 +694,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     dostepnySprzet,
     filterPresetsJson,
     exerciseVariantsJson,
+    weeklyScheduleJson,
     onboardingZakonczony,
     dataUtworzenia,
   );
@@ -669,6 +715,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
           other.dostepnySprzet == this.dostepnySprzet &&
           other.filterPresetsJson == this.filterPresetsJson &&
           other.exerciseVariantsJson == this.exerciseVariantsJson &&
+          other.weeklyScheduleJson == this.weeklyScheduleJson &&
           other.onboardingZakonczony == this.onboardingZakonczony &&
           other.dataUtworzenia == this.dataUtworzenia);
 }
@@ -687,6 +734,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
   final Value<String> dostepnySprzet;
   final Value<String?> filterPresetsJson;
   final Value<String?> exerciseVariantsJson;
+  final Value<String?> weeklyScheduleJson;
   final Value<bool> onboardingZakonczony;
   final Value<DateTime> dataUtworzenia;
   const UserProfilesCompanion({
@@ -703,6 +751,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     this.dostepnySprzet = const Value.absent(),
     this.filterPresetsJson = const Value.absent(),
     this.exerciseVariantsJson = const Value.absent(),
+    this.weeklyScheduleJson = const Value.absent(),
     this.onboardingZakonczony = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   });
@@ -720,6 +769,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     required String dostepnySprzet,
     this.filterPresetsJson = const Value.absent(),
     this.exerciseVariantsJson = const Value.absent(),
+    this.weeklyScheduleJson = const Value.absent(),
     this.onboardingZakonczony = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   }) : wiek = Value(wiek),
@@ -741,6 +791,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     Expression<String>? dostepnySprzet,
     Expression<String>? filterPresetsJson,
     Expression<String>? exerciseVariantsJson,
+    Expression<String>? weeklyScheduleJson,
     Expression<bool>? onboardingZakonczony,
     Expression<DateTime>? dataUtworzenia,
   }) {
@@ -759,6 +810,8 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
       if (filterPresetsJson != null) 'filter_presets_json': filterPresetsJson,
       if (exerciseVariantsJson != null)
         'exercise_variants_json': exerciseVariantsJson,
+      if (weeklyScheduleJson != null)
+        'weekly_schedule_json': weeklyScheduleJson,
       if (onboardingZakonczony != null)
         'onboarding_zakonczony': onboardingZakonczony,
       if (dataUtworzenia != null) 'data_utworzenia': dataUtworzenia,
@@ -779,6 +832,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     Value<String>? dostepnySprzet,
     Value<String?>? filterPresetsJson,
     Value<String?>? exerciseVariantsJson,
+    Value<String?>? weeklyScheduleJson,
     Value<bool>? onboardingZakonczony,
     Value<DateTime>? dataUtworzenia,
   }) {
@@ -796,6 +850,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
       dostepnySprzet: dostepnySprzet ?? this.dostepnySprzet,
       filterPresetsJson: filterPresetsJson ?? this.filterPresetsJson,
       exerciseVariantsJson: exerciseVariantsJson ?? this.exerciseVariantsJson,
+      weeklyScheduleJson: weeklyScheduleJson ?? this.weeklyScheduleJson,
       onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
       dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
     );
@@ -845,6 +900,9 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
         exerciseVariantsJson.value,
       );
     }
+    if (weeklyScheduleJson.present) {
+      map['weekly_schedule_json'] = Variable<String>(weeklyScheduleJson.value);
+    }
     if (onboardingZakonczony.present) {
       map['onboarding_zakonczony'] = Variable<bool>(onboardingZakonczony.value);
     }
@@ -870,6 +928,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
           ..write('dostepnySprzet: $dostepnySprzet, ')
           ..write('filterPresetsJson: $filterPresetsJson, ')
           ..write('exerciseVariantsJson: $exerciseVariantsJson, ')
+          ..write('weeklyScheduleJson: $weeklyScheduleJson, ')
           ..write('onboardingZakonczony: $onboardingZakonczony, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
@@ -10048,6 +10107,7 @@ typedef $$UserProfilesTableCreateCompanionBuilder =
       required String dostepnySprzet,
       Value<String?> filterPresetsJson,
       Value<String?> exerciseVariantsJson,
+      Value<String?> weeklyScheduleJson,
       Value<bool> onboardingZakonczony,
       Value<DateTime> dataUtworzenia,
     });
@@ -10066,6 +10126,7 @@ typedef $$UserProfilesTableUpdateCompanionBuilder =
       Value<String> dostepnySprzet,
       Value<String?> filterPresetsJson,
       Value<String?> exerciseVariantsJson,
+      Value<String?> weeklyScheduleJson,
       Value<bool> onboardingZakonczony,
       Value<DateTime> dataUtworzenia,
     });
@@ -10141,6 +10202,11 @@ class $$UserProfilesTableFilterComposer
 
   ColumnFilters<String> get exerciseVariantsJson => $composableBuilder(
     column: $table.exerciseVariantsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weeklyScheduleJson => $composableBuilder(
+    column: $table.weeklyScheduleJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10229,6 +10295,11 @@ class $$UserProfilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get weeklyScheduleJson => $composableBuilder(
+    column: $table.weeklyScheduleJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get onboardingZakonczony => $composableBuilder(
     column: $table.onboardingZakonczony,
     builder: (column) => ColumnOrderings(column),
@@ -10300,6 +10371,11 @@ class $$UserProfilesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get weeklyScheduleJson => $composableBuilder(
+    column: $table.weeklyScheduleJson,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get onboardingZakonczony => $composableBuilder(
     column: $table.onboardingZakonczony,
     builder: (column) => column,
@@ -10355,6 +10431,7 @@ class $$UserProfilesTableTableManager
                 Value<String> dostepnySprzet = const Value.absent(),
                 Value<String?> filterPresetsJson = const Value.absent(),
                 Value<String?> exerciseVariantsJson = const Value.absent(),
+                Value<String?> weeklyScheduleJson = const Value.absent(),
                 Value<bool> onboardingZakonczony = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => UserProfilesCompanion(
@@ -10371,6 +10448,7 @@ class $$UserProfilesTableTableManager
                 dostepnySprzet: dostepnySprzet,
                 filterPresetsJson: filterPresetsJson,
                 exerciseVariantsJson: exerciseVariantsJson,
+                weeklyScheduleJson: weeklyScheduleJson,
                 onboardingZakonczony: onboardingZakonczony,
                 dataUtworzenia: dataUtworzenia,
               ),
@@ -10389,6 +10467,7 @@ class $$UserProfilesTableTableManager
                 required String dostepnySprzet,
                 Value<String?> filterPresetsJson = const Value.absent(),
                 Value<String?> exerciseVariantsJson = const Value.absent(),
+                Value<String?> weeklyScheduleJson = const Value.absent(),
                 Value<bool> onboardingZakonczony = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => UserProfilesCompanion.insert(
@@ -10405,6 +10484,7 @@ class $$UserProfilesTableTableManager
                 dostepnySprzet: dostepnySprzet,
                 filterPresetsJson: filterPresetsJson,
                 exerciseVariantsJson: exerciseVariantsJson,
+                weeklyScheduleJson: weeklyScheduleJson,
                 onboardingZakonczony: onboardingZakonczony,
                 dataUtworzenia: dataUtworzenia,
               ),

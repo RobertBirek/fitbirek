@@ -14,6 +14,7 @@ import '../../../auth/providers/auth_providers.dart';
 import '../../../../core/sync/sync_status_tile.dart';
 import '../../../../core/push/push_settings_tile.dart';
 import '../../../health/presentation/widgets/health_integration_tile.dart';
+import '../../../offline/presentation/offline_page.dart';
 
 /// Ekran Ustawienia: profil, motyw, dźwięk, wibracje, backup, o aplikacji.
 class SettingsPage extends ConsumerStatefulWidget {
@@ -184,6 +185,15 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ref.read(authStateProvider.notifier).logout(),
                     );
                   },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.offline_bolt_outlined),
+                  title: const Text('Tryb offline'),
+                  subtitle: const Text('Sprawdź zasoby i jawnie przygotuj pakiet'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const OfflinePage()),
+                  ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.person_outline),

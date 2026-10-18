@@ -42,9 +42,7 @@ class UserCollectionsRepository {
   }
 
   Map<String, dynamic> readRow(UserProfileData row, String key) {
-    final raw = key == 'filterPresets'
-        ? row.filterPresetsJson
-        : row.exerciseVariantsJson;
+    final raw = row.toJson()['${key}Json'] as String?;
     return UserCollections.validate(
       key,
       raw == null ? UserCollections.empty() : jsonDecode(raw),
@@ -87,6 +85,9 @@ class UserCollectionsRepository {
               ? Value(raw)
               : const Value.absent(),
           exerciseVariantsJson: key == 'exerciseVariants'
+              ? Value(raw)
+              : const Value.absent(),
+          weeklyScheduleJson: key == 'weeklySchedule'
               ? Value(raw)
               : const Value.absent(),
           updatedAtUtc: Value(DateTime.now().toUtc()),

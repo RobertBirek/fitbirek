@@ -1,5 +1,12 @@
 # Fonty offline — Inter
 
+**Aktualizacja po offline E2E:** źródłowy mirror uzupełniono do **22 WOFF2**
+o wymagany przez silnik shard `Noto Sans SC 69` (plik `.87`, v37, 5256 bajtów).
+Powodem wyboru jest **U+26A0 `⚠`**, potwierdzony instrumentacją runtime oraz
+pełnym lookupem/cmap, a nie pusty lookup FE0F. Nowy pakiet wymaga przebudowy
+i ponownej akceptacji maina. Poniższy PASS 21 fontów dotyczy historycznej
+próbki z polskim prefiksem; nie obejmuje nowego residual 404 w offline E2E.
+
 **Bieżący stan — 2026-10-17:** lokalne Inter i mirror **21 prawdziwych WOFF2**
 Roboto/Noto mają **funkcjonalną akceptację fontów PASS** w opisanym real-browser
 scenariuszu: zero zewnętrznych prób fontów, zero HTML/parse errors, poprawne
@@ -430,3 +437,89 @@ SHA mirroru: **25/25 OK**, Inter/licencja: **6/6 OK**. Niezależny audyt
 fontTools potwierdził prawidłowy WOFF2, nazwę/licencję, `cmap` oraz ścieżkę
 Noto Sans w przypiętej tabeli Fluttera. Bez runtime builda i bez zmian
 bootstrapu, kodu aplikacji, wersji, zależności lub wdrożenia.
+
+## SC 69 / plik shard 87 — diagnoza offline E2E i minimalne uzupełnienie
+
+Raport `docs/offline-readiness-browser-acceptance-2026-10-17.md` wykazał
+powtarzane 404 dla `notosanssc/v37/...87.woff2`. „69” to nazwa podzbioru
+w silniku, nie wersja; rzeczywisty katalog upstream to **v37**. Nie pomylono
+tego żądania ze znanym warningiem FE0F. Dane readiness 442/46801539 i core
+PASS pozostają dowodami poprzedniego obrazu, nie nowego pakietu fontów.
+
+### Bezpośredni dowód doboru fontów
+
+W odseparowanym kontenerze `fit-web:offline-local-fixed` (`--network none`, bez
+host ports) uruchomiono rzeczywisty browser z osobnym pustym profilem i lokalną
+fixture API. Oryginalny JS SHA:
+`2de34fa3e8c5fcf69dbd40698ee5f4dcaadb4d767284fd962b798844361addcb`.
+Wyłącznie w odpowiedzi JS w tymczasowym harnessie dodano logi do istniejącego
+sprawdzenia braków i doboru fontów; bez zmiany danych, warunków i fontów.
+To diagnoza silnika tego samego obrazu, **nie** ponowna akceptacja real API/SW
+lub pełnego pakietu. Nie instrumentowano repozytoryjnego silnika/aplikacji.
+
+Dla notatki **bez polskiego prefiksu** `💪 ⚠️ 👩‍💻 💪🏽` zarejestrowano batch:
+
+```text
+[128170,9888,65039,128105,8205,128187,127997]
+ U+1F4AA U+26A0 U+FE0F U+1F469 U+200D U+1F4BB U+1F3FD
+selected: Noto Color Emoji 8 → Noto Sans SC 69 → Noto Color Emoji 9
+unknown: [65039] = [U+FE0F]
+```
+
+W sprawdzeniu bazowych fontów Inter pokrywał U+26A0 — nie był to brak widocznego
+glifu `⚠`. Silnik przekazuje jednak cały batch, jeżeli brakuje choć części
+znaków. Emoji 8 pokrywa kobietę/ZWJ/laptop/odcień skóry; dla pozostającego
+U+26A0 zachłanny algorytm rozstrzyga remis przez preferencję **Noto Sans SC**.
+Pełna mapa 724 fontów dla U+26A0 ma sześciu kandydatów: Emoji 2, Symbols 2 3,
+HK 79, JP 60, SC 69 i TC 72. Gdy nie trzeba pobrać Symbols 2 3 dla `▾` lub
+szerszego mieszanego tekstu, SC może wygrać remis mimo lokalnego Symbols.
+Nazwa CJK nie oznacza więc obecności chińskich znaków w notatce.
+
+Ponowne obliczenie pełnego lookupu i algorytmu dla powyższej tablicy dało
+identyczne trzy rodziny. **To rzeczywisty, mapowalny wybór fontu dla symbolu
+U+26A0**, a nie spekulatywne pobranie dla samodzielnego VS16/ZWJ. Brak tego
+pliku w mirrorze powodował realne 404/retry. Dodanie oryginalnego sharda
+obsługuje ten jawny wybór silnika bez patchowania algorytmu lub tekstu.
+
+### Oryginalny asset i licencja
+
+```text
+https://fonts.gstatic.com/s/notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.87.woff2
+5256 bajtów
+SHA-256: e4b7e47d39dc977a198121b39c448c698a5ccb33f14a48d945e25d122f6904e8
+```
+
+Pobrano przez HTTPS z oficjalnego CDN, bez konwersji lub podmiany fontu.
+Dekompresja TTFont potwierdziła `cmap` U+26A0 → `uni26A0` i U+2713; brak
+nominalnego FE0F, ZWJ i emoji z notatki. Licencja **SIL OFL 1.1**, copyright
+Adobe 2014–2021, Reserved Font Name **Source**, zgodne z tabelą nazw fontu
+i przypiętym OFL Google Fonts `ofl/notosanssc/OFL.txt`. Notice dodano do
+`OFL-Noto.txt`, pełne źródła do provenance, rozmiar/SHA do manifestu i sum.
+Pozostałych 21 fontów nie zmieniano; brak rozszerzenia na pełne CJK/724 fonty.
+
+Mirror: **22 fonty / 2782556 bajtów**; cały katalog wraz z licencjami,
+manifestem, provenance i sumami: **2814162 bajty**. Przyrost binariów to tylko
+**5256 bajtów**. Repertuar nadal jest ograniczony, a warning nominalnego
+pokrycia U+FE0F jest osobnym problemem silnika — ta zmiana go nie wycisza.
+
+### Regresja, dowody i przekazanie
+
+- TDD RED: 12 PASS / 2 FAIL przed dodaniem (brak pliku i 21 zamiast 22 wpisów).
+- GREEN: **14/14 focused PASS**, format dwóch własnych testów: 0 zmian.
+- Pełne `flutter analyze --no-pub` w izolowanej kopii: **No issues found!**
+  Pierwsza próba analizy przekroczyła limit 120 s; jawny rerun tej samej kopii
+  z limitem 240 s zakończył się poprawnie w 76,7 s.
+- SHA mirroru **26/26 OK**, Inter/licencja **6/6 OK**. Audyt wszystkich 22
+  WOFF2: SHA/rozmiary, oryginalne ścieżki engine, próbka `cmap`, COLR/CPAL emoji.
+- Test wymaga dokładnej rodziny/ścieżki SC 69, 5256 bajtów, prawdziwego nagłówka
+  WOFF2, ustalonego SHA, audytowanego U+26A0 i właściwego notice Adobe.
+- Dowody: `/tmp/opencode/font-sc-research/`, `conclusion.json`, `sc69-audit.json`,
+  `guided/console-1792268792143150203.json`, traffic i screenshoty. Skrypt
+  `/tmp/opencode/prepare-sc-research.py` dokumentuje tymczasową instrumentację.
+  Własny kontener diagnostyczny usunięto; dowody historyczne pozostawiono.
+
+Nie uruchamiano runtime builda, generatorów ani manifestu post-build. Main musi
+włączyć nowy plik do wyliczanego pakietu offline, przebudować nowy obraz i
+ponowić **cold/offline odczyt notatki bez polskiego prefiksu**. Oczekiwać
+rzeczywistego WOFF2/SHA dla sharda SC i braku 404/retry, nie samego HTTP 200.
+Nie zmieniano workerów, deployu, aplikacji, zależności, wersji ani toolchainu.

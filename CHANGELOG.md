@@ -6,6 +6,66 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.15.0+28] — 2026-10-18
+
+### Added
+- Powtarzanie zakończonego treningu z oryginalnego planu (snapshotu) albo
+  potwierdzonego wykonania wszystkich serii. Potwierdzenie tworzy nowy UUID;
+  nie kopiuje logów ani PR. RPE nowej serii jest puste, a poprzednie RPE służy
+  tylko jako odniesienie. Cele i kursor wykonania pozostają lokalnym szkicem.
+- Rytm tygodnia dla zapisanych planów: ręczne przesuwanie pojedynczych terminów
+  i jawne zaliczanie przez wskazanie zakończonej sesji z rzeczywistą serią.
+  Opcjonalna kolekcja `weeklySchedule` synchronizuje się w istniejącym profilu;
+  sam start treningu ani upływ terminu nie oznaczają zaliczenia.
+- Trendy treningowe tylko do odczytu, w dokładnym zakresie ćwiczenie + nullable
+  strona + nullable UUID wariantu. Porównania respektują układ serii i obciążenia;
+  brakujące RPE oraz nieporównywalne protokoły są wyjaśniane, nie uzupełniane.
+  Bez zmian PR, progresji i celów kolejnego treningu.
+- Ekran trybu offline z jawną zgodą na pełny pakiet statyk, rzeczywistym rozmiarem,
+  postępem, anulowaniem i ponowieniem. Gotowość wynika z kontroli długości i SHA-256
+  faktycznych odpowiedzi cache, nie z trwałej flagi. Zweryfikowany build wydania
+  zawiera 443 pliki / 46 814 736 bajtów (około 44,65 MiB); identyfikator pakietu
+  jest wyliczany z finalnej treści podczas każdego buildu.
+- Core umożliwiający cold start i deep link offline po instalacji podczas wizyty
+  online; pełne ilustracje i fallbacki wymagają osobnego przygotowania pakietu.
+- Jawny panel odzyskania aktywnej sesji po reloadzie bezpośredniego URL:
+  wznowienie zachowuje UUID i szkic, bez automatycznych serii, PR ani startu timera.
+- Lokalny mirror 22 fontów zastępczych Roboto/Noto, w tym shard Noto Sans SC
+  wymagany dla symbolu ostrzeżenia. Zweryfikowana próbka offline działa bez
+  zewnętrznych żądań fontów i bez lokalnych 404/retry po przygotowaniu pakietu.
+
+### Changed
+- Drift 13: addytywna migracja 12→13 dodaje wyłącznie nullable
+  `user_profiles.weekly_schedule_json`, bez backfillu i nowych encji synchronizacji.
+
+### Fixed
+- Nieczytelne lub przyszłe kolekcje profilu trafiają do kwarantanny z trwałym
+  wstrzymaniem operacji tego profilu. Zachowano niezmienione attempted payloady
+  i lokalne dane; niezależne encje nadal push/pull, a status pozostaje konfliktowy
+  do jawnego recovery, zamiast blokowania globalnego pull.
+- Start planu z harmonogramu przechodzi do istniejącego ekranu aktywnej sesji
+  bez duplikowania nawigatora. Bezpośredni reload sesji nie wymaga obejścia przez Home.
+- Pakiet offline zachowuje przypięcie wersji dokumentów i workerów SQLite/Drift;
+  brak zaufanej tożsamości jest odrzucany zamiast podania kodu innego wydania.
+
+### Known Issues
+- Pozostaje niewyciszone ostrzeżenie silnika Flutter 3.35.4 dotyczące nominalnego
+  pokrycia U+FE0F (VS16). Mirror nie gwarantuje obsługi dowolnego Unicode.
+- Fizyczny iPhone/Android: MANUAL PENDING / UNTESTED. Brak gwarancji trwałości
+  storage, pracy timera/JS, pobierania lub synchronizacji w tle po uśpieniu systemu.
+- Nowy klient bezpiecznie odmawia pracy na starym schemacie; samo zamknięcie
+  starej karty i Retry nie gwarantuje migracji. Aktualizacja może wymagać zamknięcia
+  **wszystkich** kart i okien FitBirek, **także zablokowanego**, pełnego zamknięcia
+  PWA i ponownego otwarcia. Retry jest tylko opcjonalnym sprawdzeniem.
+  Nie usuwać danych aplikacji. Rzeczywisty retest dwóch pełnych buildów potwierdził
+  migrację po pełnym wyjściu z przeglądarki i ponownym otwarciu tego samego profilu,
+  z zachowaniem niepustego outboxa przed ACK. Nie potwierdza to migracji przy
+  otwartych starych kartach ani zachowania fizycznego iPhone'a.
+- Prywatne konta wielu użytkowników pozostają DEFERRED — to plan na przyszłość,
+  nie funkcja tego wydania. Aplikacja nadal jest osobista, dla właściciela.
+
+---
+
 ## [1.14.0+27] — 2026-10-17
 
 ### Added

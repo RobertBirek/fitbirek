@@ -84,7 +84,12 @@ class BackupService {
         'exercises': exercises.map((e) => e.toJson()).toList(),
         'workoutSessions': sessions
             .where((r) => r.deletedAtUtc == null)
-            .map(_withoutSyncMetadata)
+            .map(
+              (r) => {
+                ..._withoutSyncMetadata(r),
+                'archiveSessionSyncId': r.syncId,
+              },
+            )
             .toList(),
         'setsLog': sets
             .where(
@@ -116,7 +121,12 @@ class BackupService {
             .toList(),
         'workoutPlans': plans
             .where((r) => r.deletedAtUtc == null)
-            .map(_withoutSyncMetadata)
+            .map(
+              (r) => {
+                ..._withoutSyncMetadata(r),
+                'archivePlanSyncId': r.syncId,
+              },
+            )
             .toList(),
         'exerciseFavorites': favorites
             .where((favorite) => favorite.deletedAtUtc == null)
@@ -234,8 +244,10 @@ class BackupService {
           profileCollectionClears,
         );
         counts['ćwiczenia'] = await _restoreExercises(data['exercises']);
+        final sessionUuids = <String, String>{}, planUuids = <String, String>{};
         final restoredSessionIds = await _restoreSessions(
           data['workoutSessions'],
+          sessionUuids,
         );
         counts['sesje treningowe'] = restoredSessionIds.length;
         counts['serie'] = await _restoreSets(
@@ -248,7 +260,11 @@ class BackupService {
           data['fitnessTestResults'],
         );
         counts['rekordy osobiste'] = await _restorePrs(data['personalRecords']);
-        counts['plany treningowe'] = await _restorePlans(data['workoutPlans']);
+        counts['plany treningowe'] = await _restorePlans(
+          data['workoutPlans'],
+          planUuids,
+        );
+        await _remapScheduleReferences(planUuids, sessionUuids);
         counts['ulubione ćwiczenia'] = await _restoreFavorites(
           favoritesToRestore,
         );
@@ -397,12 +413,22 @@ class BackupService {
     return n;
   }
 
-  Future<Map<int, int>> _restoreSessions(dynamic raw) async {
+  Future<Map<int, int>> _restoreSessions(
+    dynamic raw,
+    Map<String, String> uuids,
+  ) async {
     if (raw == null) return {};
     final list = raw as List;
     final ids = <int, int>{};
     for (final item in list) {
       final row = WorkoutSessionData.fromJson(_withFreshSyncMetadata(item));
+      if (item['archiveSessionSyncId'] is String) {
+        final old = item['archiveSessionSyncId'] as String;
+        if (uuids.containsKey(old)) {
+          throw const FormatException('Duplicate archived session UUID');
+        }
+        uuids[old] = row.syncId;
+      }
       if (ids.containsKey(row.id)) {
         throw const FormatException('Duplicate backup session ID');
       }
@@ -519,18 +545,72 @@ class BackupService {
     return n;
   }
 
-  Future<int> _restorePlans(dynamic raw) async {
+  Future<int> _restorePlans(dynamic raw, Map<String, String> uuids) async {
     if (raw == null) return 0;
     final list = raw as List;
     var n = 0;
     for (final item in list) {
       final row = WorkoutPlanData.fromJson(_withFreshSyncMetadata(item));
+      if (item['archivePlanSyncId'] is String) {
+        final old = item['archivePlanSyncId'] as String;
+        if (uuids.containsKey(old)) {
+          throw const FormatException('Duplicate archived plan UUID');
+        }
+        uuids[old] = row.syncId;
+      }
       await db
           .into(db.workoutPlans)
           .insertOnConflictUpdate(row.toCompanion(true));
       n++;
     }
     return n;
+  }
+
+  /// Restore creates new workout identities. Remap references, not occurrence
+  /// identities, before enqueueing the fresh profile. Old archives without UUID
+  /// metadata stay explicitly unavailable rather than guessing integer IDs.
+  Future<void> _remapScheduleReferences(
+    Map<String, String> plans,
+    Map<String, String> sessions,
+  ) async {
+    final profile = await db.userProfileDao.watchProfileOnce();
+    if (profile?.weeklyScheduleJson == null) return;
+    final json = UserCollections.validate(
+      'weeklySchedule',
+      jsonDecode(profile!.weeklyScheduleJson!),
+    );
+    for (final raw in json['entries'] as List) {
+      final e = raw as Map<String, dynamic>;
+      var changed = false;
+      void replace(Map target, String field, Map<String, String> ids) {
+        final replacement = ids[target[field]];
+        if (replacement != null && replacement != target[field]) {
+          target[field] = replacement;
+          changed = true;
+        }
+      }
+
+      if (e['kind'] == 'rule') replace(e, 'planSyncId', plans);
+      if (e['kind'] == 'override') {
+        replace(e['ruleSnapshot'] as Map, 'planSyncId', plans);
+        replace(e, 'sessionSyncId', sessions);
+      }
+      if (changed) {
+        final previous = DateTime.parse(e['updatedAtUtc'] as String);
+        final now = DateTime.now().toUtc();
+        e['updatedAtUtc'] =
+            (now.isAfter(previous)
+                    ? now
+                    : previous.add(const Duration(microseconds: 1)))
+                .toIso8601String();
+      }
+    }
+    UserCollections.validate('weeklySchedule', json);
+    await db
+        .update(db.userProfiles)
+        .write(
+          UserProfilesCompanion(weeklyScheduleJson: Value(jsonEncode(json))),
+        );
   }
 
   Future<int> _restoreFavorites(dynamic raw) async {

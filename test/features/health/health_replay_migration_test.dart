@@ -102,7 +102,7 @@ void main() {
         };
         old.dispose();
         var db = AppDatabase.forTesting(NativeDatabase(file));
-        expect(db.schemaVersion, 12);
+        expect(db.schemaVersion, 13);
         for (final t in tables) {
           final after = (await db.customSelect('SELECT * FROM $t').get()).map((
             r,
@@ -121,6 +121,7 @@ void main() {
             if (t == 'user_profiles') {
               expect(fields.remove('filter_presets_json'), isNull);
               expect(fields.remove('exercise_variants_json'), isNull);
+              expect(fields.remove('weekly_schedule_json'), isNull);
             }
             if (version < 6) fields.remove('health_replay_enabled');
             return fields;

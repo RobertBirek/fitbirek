@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
 import 'connection/connection.dart';
+import 'schema_gate.dart';
 import 'tables/user_profile_table.dart';
 import 'tables/exercises_table.dart';
 import 'tables/workout_tables.dart';
@@ -58,17 +59,21 @@ part 'app_database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(openConnection());
+  AppDatabase() : super(guardDatabaseSchema(openConnection()));
 
   // Konstruktor testowy - pozwala wstrzyknąć własne połączenie (np. in-memory).
-  AppDatabase.forTesting(super.e);
+  AppDatabase.forTesting(QueryExecutor executor)
+    : super(guardDatabaseSchema(executor));
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
+      if (from < 13) {
+        await m.addColumn(userProfiles, userProfiles.weeklyScheduleJson);
+      }
       if (from < 12) {
         await m.addColumn(userProfiles, userProfiles.filterPresetsJson);
         await m.addColumn(userProfiles, userProfiles.exerciseVariantsJson);

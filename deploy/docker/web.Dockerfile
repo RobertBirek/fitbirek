@@ -14,6 +14,7 @@ RUN dart tools/generate_app_version.dart --check \
 FROM verification AS release
 RUN dart tools/generate_app_version.dart --check \
     && flutter build web --release --no-web-resources-cdn \
+    && dart tools/generate_offline_package.dart \
     && test -s build/web/sqlite3.wasm \
     && test -s build/web/drift_worker.dart.js
 

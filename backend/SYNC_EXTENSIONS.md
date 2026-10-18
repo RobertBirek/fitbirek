@@ -1,7 +1,9 @@
 # Opcjonalne rozszerzenia synchronizacji treningu
 
 Implementacja backendu specyfikacji
-`docs/superpowers/specs/2026-10-16-guided-training-design.md`.
+`docs/superpowers/specs/2026-10-16-guided-training-design.md` oraz rytmu tygodnia
+z `docs/superpowers/specs/2026-10-17-training-rhythm-design.md`
+i kontraktu `docs/modules/weekly-schedule.md`.
 Nie oznacza wdrożenia API ani implementacji klienta.
 
 ## Kontrakt zapisu
@@ -11,7 +13,7 @@ kluczami istniejącego payloadu JSONB:
 
 | entityType | Klucze zachowywane przy pominięciu |
 | --- | --- |
-| `profile` | `filterPresets`, `exerciseVariants` |
+| `profile` | `filterPresets`, `exerciseVariants`, `weeklySchedule` |
 | `workoutSession` | `guidance` |
 | `workoutSet` | `variantId`, `variantLabel` |
 | `personalRecord` | `variantId`, `variantLabel` |
@@ -46,7 +48,8 @@ błąd zapisu/commit również wycofuje rekordy, historię zmian i hashe operacj
 
 ## Schematy należące do klienta
 
-Planowany format obu kolekcji profilu:
+Format trzech kolekcji profilu (`filterPresets`, `exerciseVariants`,
+`weeklySchedule`):
 
 ```json
 {"version": 1, "entries": [{"id": "UUID", "name": "Nazwa", "createdAtUtc": "UTC", "updatedAtUtc": "UTC", "deletedAtUtc": null}]}
@@ -58,6 +61,17 @@ zawiera bazowe `exerciseId` oraz opcjonalne `loadKg`, `tempo`, `pauseSeconds`,
 identyfikatorami `cw...`. Tombstones wpisów kolekcji i scalanie konfliktów per ID
 są odpowiedzialnością klienta. Serwer zachowuje kolekcję jako całą wartość.
 `guidance` jest opcjonalną mapą klienta, początkowo `schemaVersion: 1`.
+
+`weeklySchedule` jest nullable rozszerzeniem istniejącego `profile`, nie nowym
+typem encji. Klient Flutter (lokalny schemat Drift 13) przechowuje kolekcję
+`{"version": 1, "entries": [...]}` z regułami tygodnia (`kind: rule`) i wyjątkami
+wystąpień (`kind: override`). Referencje `planSyncId` / `sessionSyncId` są sync UUID;
+daty harmonogramu to lokalne dni kalendarza. Semantyka, limity kolekcji,
+tombstone'y wpisów i deterministyczne scalanie per ID należą do klienta.
+Backend przechowuje opaque JSON jako całą wartość, również dla przyszłych
+wersji: nie rozwija reguł, nie scala wpisów i nie weryfikuje powiązań planów/sesji.
+Omission zachowuje również uprzednio zapisany `weeklySchedule: null`;
+jawny `null` czyści kolekcję, a obecna wartość zastępuje ją w całości.
 
 Backend nie waliduje semantyki kolekcji, nazw, parametrów ani wersji mapy guidance;
 nadal stosuje istniejący kontrakt JSON (w tym zakaz NaN/Infinity) i limity batcha.
@@ -79,6 +93,22 @@ Testcontainers w Dockerze, bez połączenia do produkcyjnej bazy:
 .venv/bin/python -m pytest -q tests/test_sync.py
 .venv/bin/python -m pytest -q
 ```
+
+Weryfikacja rozszerzenia `weeklySchedule` (2026-10-17, Python 3.12.3):
+
+- TDD RED przed zmianą allowlisty: **5 failed, 29 passed, 39 deselected**
+  (utrata pominiętej kolekcji / zapisanego NULL).
+- Testy rozszerzeń po zmianie: **34 passed, 39 deselected**.
+- Cały `tests/test_sync.py`: **73 passed**.
+- Pełny backend: **378 passed** (373 dotychczasowe + 5 nowych przypadków).
+
+Wspólne testy rozszerzeń obejmują harmonogram samodzielnie i obok pozostałych
+kolekcji profilu: omission starego klienta, zastąpienie opaque JSON, jawny NULL,
+DELETE i jawne wskrzeszenie bez dziedziczenia tombstone'a, retry/idempotencję,
+hash oryginalnego żądania i niezmienność attempted payloadu, dokładne CAS,
+rollback batcha/commit, izolację kont, zakres kluczy per typ i finite JSON.
+Logi lokalnej weryfikacji:
+`/tmp/opencode/weekly-schedule-backend-{red,green,sync,full}-20261017.log`.
 
 Zachowanie wymaga przyszłego, osobno zatwierdzonego wdrożenia API przed
 poleganiem na ochronie omission w nowych klientach. Ta zmiana nie wymaga nowej

@@ -14,12 +14,14 @@ class SavedPlan {
     required this.cwiczeniaIds,
     required this.cel,
     required this.dataUtworzenia,
+    this.syncId,
     this.structure,
     this.structureError,
     this.rawStructureJson,
   });
 
   final int id;
+  final String? syncId;
   final String nazwa;
   final List<String> cwiczeniaIds;
   final String cel;
@@ -96,6 +98,18 @@ class PlannerRepository {
     return _db.plansDao.watchAll().map((rows) => rows.map(_savedPlan).toList());
   }
 
+  Future<List<SavedPlan>> readAll() async => (await (_db.select(
+    _db.workoutPlans,
+  )..where((p) => p.deletedAtUtc.isNull())).get()).map(_savedPlan).toList();
+
+  Future<SavedPlan?> getBySyncId(String id) async {
+    final row =
+        await (_db.select(_db.workoutPlans)
+              ..where((p) => p.syncId.equals(id) & p.deletedAtUtc.isNull()))
+            .getSingleOrNull();
+    return row == null ? null : _savedPlan(row);
+  }
+
   static SavedPlan _savedPlan(WorkoutPlanData row) {
     var ids = <String>[];
     StructuredPlan? structure;
@@ -119,6 +133,7 @@ class PlannerRepository {
     }
     return SavedPlan(
       id: row.id,
+      syncId: row.syncId,
       nazwa: row.nazwa,
       cwiczeniaIds: ids,
       cel: row.cel,

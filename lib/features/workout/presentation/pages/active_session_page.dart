@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/repeat_set_panel.dart';
+import '../widgets/session_recovery_panel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -58,91 +60,99 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
       appBar: AppBar(
         title: const Text('Aktywny trening'),
         actions: [
-          TextButton(
-            onPressed: () async {
-              final id = active.sessionId;
-              final note = TextEditingController();
-              final finish = await showDialog<bool>(
-                context: context,
-                builder: (c) => AlertDialog(
-                  title: const Text('Zakończyć trening?'),
-                  content: TextField(
-                    controller: note,
-                    maxLength: 500,
-                    decoration: const InputDecoration(
-                      labelText: 'Krótka notatka (opcjonalna)',
+          if (active.isActive || active.selectedExercises.isNotEmpty)
+            TextButton(
+              onPressed: () async {
+                final id = active.sessionId;
+                final note = TextEditingController();
+                final finish = await showDialog<bool>(
+                  context: context,
+                  builder: (c) => AlertDialog(
+                    title: const Text('Zakończyć trening?'),
+                    content: TextField(
+                      controller: note,
+                      maxLength: 500,
+                      decoration: const InputDecoration(
+                        labelText: 'Krótka notatka (opcjonalna)',
+                      ),
                     ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(c, false),
+                        child: const Text('Wróć'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(c, true),
+                        child: const Text('Zakończ'),
+                      ),
+                    ],
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(c, false),
-                      child: const Text('Wróć'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(c, true),
-                      child: const Text('Zakończ'),
-                    ),
-                  ],
-                ),
-              );
-              final text = note.text;
-              note.dispose();
-              if (finish != true) return;
-              await ref
-                  .read(activeWorkoutProvider.notifier)
-                  .finishSession(note: text);
-              if (context.mounted) {
-                context.go(id == null ? '/workout' : '/workout/summary/$id');
-              }
-            },
-            child: const Text('Zakończ'),
-          ),
+                );
+                final text = note.text;
+                note.dispose();
+                if (finish != true) return;
+                await ref
+                    .read(activeWorkoutProvider.notifier)
+                    .finishSession(note: text);
+                if (context.mounted) {
+                  context.go(id == null ? '/workout' : '/workout/summary/$id');
+                }
+              },
+              child: const Text('Zakończ'),
+            ),
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            if (ref.read(activeWorkoutProvider.notifier).draftSaveError
-                case final String error)
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text(
-                  error,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: PrimaryButton(
-                label: 'Dodaj ćwiczenie z bazy',
-                icon: Icons.add,
-                outlined: true,
-                onPressed: () => context.push('/exercises'),
-              ),
-            ),
-            Expanded(
-              child: active.guidance != null
-                  ? _guided(context, active)
-                  : active.selectedExercises.isEmpty
-                  ? const Center(
+        child: !active.isActive && active.selectedExercises.isEmpty
+            ? const SessionRecoveryPanel()
+            : Column(
+                children: [
+                  if (ref.read(activeWorkoutProvider.notifier).draftSaveError
+                      case final String error)
+                    Padding(
+                      padding: const EdgeInsets.all(12),
                       child: Text(
-                        'Wybierz ćwiczenia, aby zacząć logować serie',
+                        error,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: active.selectedExercises.length,
-                      itemBuilder: (context, i) {
-                        final ex = active.selectedExercises[i];
-                        return _ExerciseLogCard(
-                          key: ValueKey(ex.id),
-                          exercise: ex,
-                        );
-                      },
                     ),
-            ),
-          ],
-        ),
+                  if (active.repeat == null)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: PrimaryButton(
+                        label: 'Dodaj ćwiczenie z bazy',
+                        icon: Icons.add,
+                        outlined: true,
+                        onPressed: () => context.push('/exercises'),
+                      ),
+                    ),
+                  Expanded(
+                    child: active.repeat != null
+                        ? const RepeatSetPanel()
+                        : active.guidance != null
+                        ? _guided(context, active)
+                        : active.selectedExercises.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Wybierz ćwiczenia, aby zacząć logować serie',
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: active.selectedExercises.length,
+                            itemBuilder: (context, i) {
+                              final ex = active.selectedExercises[i];
+                              return _ExerciseLogCard(
+                                key: ValueKey(ex.id),
+                                exercise: ex,
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
       ),
     );
   }

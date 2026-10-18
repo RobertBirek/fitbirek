@@ -1,7 +1,16 @@
 import 'package:fitbirek_training/core/database/app_database.dart';
 
-/// Remove current-only columns when constructing historical migration fixtures.
+/// Construct v12 (or earlier) without the v13 extension. Do not make this
+/// idempotent: an unexpected fixture shape must fail instead of hiding a bug.
+Future<void> removeV13Columns(AppDatabase db) async {
+  await db.customStatement(
+    'ALTER TABLE user_profiles DROP COLUMN weekly_schedule_json',
+  );
+}
+
+/// Remove v12 and later columns when constructing pre-v12 fixtures.
 Future<void> removeV12Columns(AppDatabase db) async {
+  await removeV13Columns(db);
   for (final column in ['filter_presets_json', 'exercise_variants_json']) {
     await db.customStatement('ALTER TABLE user_profiles DROP COLUMN $column');
   }

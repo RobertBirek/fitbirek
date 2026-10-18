@@ -4,6 +4,8 @@ import '../../../../core/utils/formatters.dart';
 import '../../providers/workout_providers.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../domain/workout_guidance.dart';
+import '../widgets/repeat_workout_dialog.dart';
+import 'package:go_router/go_router.dart';
 
 /// Podsumowanie zakończonej sesji treningowej.
 class SessionSummaryPage extends ConsumerWidget {
@@ -32,6 +34,22 @@ class SessionSummaryPage extends ConsumerWidget {
               <String>{};
           return Column(
             children: [
+              if (session != null &&
+                  session.dataKoniec != null &&
+                  session.deletedAtUtc == null)
+                OutlinedButton.icon(
+                  icon: const Icon(Icons.repeat),
+                  label: const Text('Powtórz trening'),
+                  onPressed: () async {
+                    final started = await showDialog<bool>(
+                      context: context,
+                      builder: (_) => RepeatWorkoutDialog(sessionId: sessionId),
+                    );
+                    if (started == true && context.mounted) {
+                      context.go('/workout/session');
+                    }
+                  },
+                ),
               if (session != null)
                 Flexible(
                   child: SingleChildScrollView(

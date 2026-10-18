@@ -1,0 +1,312 @@
+'use strict';
+// Replaced after the FINAL Flutter build. Never fetch a manifest on cold start.
+const PACKAGE = __FIT_OFFLINE_MANIFEST__;
+const BASE = new URL(self.registration.scope);
+const CACHE = `fit-offline-v1:${BASE.pathname}:${PACKAGE.packageId}`;
+const FILES = new Map(PACKAGE.files.map(file => [file.path, file]));
+let state = 'notReady', cachedFiles = 0, cachedBytes = 0;
+let errorCode = null, message = null, task = null, scanTask = null, abort = null;
+const snapshot = () => ({protocolVersion: 1, state, packageId: PACKAGE.packageId,
+  totalFiles: PACKAGE.files.length, cachedFiles, totalBytes: PACKAGE.totalBytes,
+  cachedBytes, errorCode, message});
+const failure = code => Object.assign(new Error(code), {code});
+const urlFor = path => new URL(path, BASE).href;
+const ROUTING = `fit-offline-v1:${BASE.pathname}:routing`;
+const metaUrl = key => urlFor(`.fit-offline/${key}`);
+const clientPackages = new Map();
+async function readMeta(key) {
+  const response = await (await caches.open(ROUTING)).match(metaUrl(key));
+  return response ? response.json() : null;
+}
+async function writeMeta(key, value) {
+  await (await caches.open(ROUTING)).put(metaUrl(key), new Response(JSON.stringify(value), {headers: {'content-type': 'application/json'}}));
+}
+async function digest(bytes) {
+  return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), b => b.toString(16).padStart(2, '0')).join('');
+}
+async function legacyPackage() {
+  if (!(await caches.keys()).includes('flutter-app-cache')) return null;
+  const cache = await caches.open('flutter-app-cache'), files = [];
+  for (const request of await cache.keys()) {
+    const url = new URL(request.url);
+    if (url.origin !== BASE.origin || !url.pathname.startsWith(BASE.pathname)) continue;
+    const path = url.pathname.slice(BASE.pathname.length) || 'index.html';
+    if (/(^|\/)(api|auth|export|exports)(\/|$)/.test(path) || !/\.(js|wasm|html|json|bin|png|webp|woff2?|ttf|otf|css|ico|svg|mp3|wav)$/.test(path)) continue;
+    const response = await cache.match(request);
+    if (!response || response.status !== 200 || response.type === 'opaque') continue;
+    const bytes = await response.arrayBuffer();
+    files.push({path, cacheKey: request.url, bytes: bytes.byteLength, sha256: await digest(bytes)});
+  }
+  const main = files.find(file => file.path === 'main.dart.js');
+  return main ? {packageId: `legacy-${main.sha256}`, shellId: main.sha256, legacy: true, files} : null;
+}
+async function identifyShell(clientId) {
+  const client = await self.clients.get(clientId);
+  // The DOM identity protocol belongs only to WindowClient. Sending it to a
+  // Drift/CanvasKit worker can collide with that worker's own message protocol.
+  // Non-window clients need a persisted pin from their verified script fetch.
+  if (!client || client.type !== 'window') return null;
+  const channel = new MessageChannel();
+  let timer;
+  try {
+    return await new Promise(resolve => {
+      timer = setTimeout(() => resolve(null), 500);
+      channel.port1.onmessage = event => resolve(event.data?.shellId || null);
+      client.postMessage({type: 'fitOffline.identifyShell'}, [channel.port2]);
+    });
+  } finally {clearTimeout(timer); channel.port1.close(); channel.port2.close();}
+}
+async function packageFor(clientId, explicitShell) {
+  const key = `${clientId}:${explicitShell || ''}`;
+  if (clientPackages.has(key)) return clientPackages.get(key);
+  const selection = (async () => {
+    // Only an exact document pin, a trusted navigation, or a recognized shell
+    // identity can select bytes. Global active/previous metadata is NOT proof
+    // of this document's version, particularly after eviction or SW restart.
+    let selected = clientId ? await readMeta(`client/${clientId}`) : null;
+    // A resource query is a version constraint, NOT proof that its requesting
+    // document is that version. Ask the document even for versioned bootstrap.
+    const shellId = clientId ? await identifyShell(clientId) : null;
+    if (shellId && selected?.shellId !== shellId) {
+      if (PACKAGE.shellId === shellId) selected = PACKAGE;
+      else {
+        const metadata = await caches.open(ROUTING);
+        selected = null;
+        for (const request of await metadata.keys()) {
+          if (!request.url.startsWith(metaUrl('manifest/'))) continue;
+          const manifest = await (await metadata.match(request)).json();
+          if (manifest.shellId === shellId) {selected = manifest; break;}
+        }
+      }
+    }
+    if (!selected || !Array.isArray(selected.files)) throw failure('reloadRequired');
+    if (explicitShell && selected.shellId !== explicitShell) throw failure('reloadRequired');
+    if (clientId) await writeMeta(`client/${clientId}`, selected);
+    return selected;
+  })();
+  clientPackages.set(key, selection);
+  // An early request can precede the bridge listener. A denial is not a pin;
+  // let a later request establish identity instead of caching the rejection.
+  selection.catch(() => {if (clientPackages.get(key) === selection) clientPackages.delete(key);});
+  return selection;
+}
+
+async function verifiedBytes(response, file) {
+  if (!response) return null;
+  if (response.status !== 200 || response.type === 'opaque' || response.redirected ||
+      (file.path !== 'index.html' && /text\/html/i.test(response.headers.get('content-type') || ''))) {
+    await response.body?.cancel(); return null;
+  }
+  // Fully consume the source, never tee CacheStorage/network streams. Returning
+  // or storing a fresh buffered response also releases the predecessor's native
+  // response pipes before skipWaiting waits for its outstanding work to finish.
+  const bytes = await response.arrayBuffer();
+  if (bytes.byteLength !== file.bytes || await digest(bytes) !== file.sha256) return null;
+  return bytes;
+}
+const verified = async (response, file) => await verifiedBytes(response, file) !== null;
+function bufferedResponse(bytes, source) {
+  const headers = new Headers(source.headers);
+  // Fetch exposes decoded bytes; the buffered body is not the compressed wire
+  // representation. Do not retain its encoding or compressed content-length.
+  headers.delete('content-encoding'); headers.delete('transfer-encoding');
+  headers.set('content-length', String(bytes.byteLength));
+  return new Response(bytes, {status: 200, statusText: source.statusText, headers});
+}
+
+async function download(cache, file, signal) {
+  const controller = new AbortController();
+  const cancel = () => controller.abort();
+  signal?.addEventListener('abort', cancel, {once: true});
+  const timer = setTimeout(cancel, 30000);
+  try {
+    if (signal?.aborted) throw failure('cancelled');
+    const response = await fetch(urlFor(file.path), {cache: 'no-store', credentials: 'omit', redirect: 'error', signal: controller.signal});
+    const bytes = await verifiedBytes(response, file);
+    if (bytes === null) throw failure('integrity');
+    if (signal?.aborted) throw failure('cancelled');
+    await cache.put(urlFor(file.path), bufferedResponse(bytes, response));
+  } catch (error) {
+    if (signal?.aborted) throw failure('cancelled');
+    if (controller.signal.aborted) throw failure('timeout');
+    throw error;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', cancel);
+  }
+}
+
+async function scan() {
+  const cache = await caches.open(CACHE);
+  let count = 0, bytes = 0;
+  const deadline = Date.now() + 55000;
+  for (const file of PACKAGE.files) {
+    if (Date.now() > deadline) throw failure('timeout');
+    if (await verified(await cache.match(urlFor(file.path)), file)) {count++; bytes += file.bytes;}
+  }
+  cachedFiles = count; cachedBytes = bytes;
+  return count === PACKAGE.files.length;
+}
+
+function recordError(error) {
+  errorCode = error.name === 'QuotaExceededError' ? 'quota' : (error.code || 'network');
+  state = errorCode === 'cancelled' ? 'cancelled' : 'error';
+  message = ({quota: 'Brak miejsca na pakiet offline.', integrity: 'Zasób nie odpowiada tej wersji pakietu.',
+    timeout: 'Przekroczono czas operacji.', cancelled: 'Pobieranie anulowane.', network: 'Nie udało się pobrać lub odczytać zasobów.'})[errorCode] || 'Operacja offline nie powiodła się.';
+}
+
+function prepare() {
+  if (task) return task;
+  state = 'checking'; errorCode = null; message = null;
+  abort = new AbortController();
+  task = (async () => {
+    // Serialize with a status scan, also across messages from different tabs.
+    if (scanTask) await scanTask;
+    cachedFiles = 0; cachedBytes = 0;
+    const cache = await caches.open(CACHE);
+    state = 'downloading';
+    for (const file of PACKAGE.files) {
+      if (abort.signal.aborted) throw failure('cancelled');
+      if (!await verified(await cache.match(urlFor(file.path)), file)) await download(cache, file, abort.signal);
+      cachedFiles++; cachedBytes += file.bytes;
+    }
+    if (abort.signal.aborted) throw failure('cancelled');
+    const complete = await scan();
+    if (abort.signal.aborted) throw failure('cancelled');
+    state = complete ? 'ready' : 'notReady';
+    errorCode = null; message = null;
+  })().catch(recordError).finally(() => {task = null; abort = null;});
+  return task;
+}
+
+self.addEventListener('install', event => event.waitUntil((async () => {
+  let previous = await readMeta('active');
+  let firstLegacyMigration = false;
+  if (!previous) {
+    // A retained custom package with missing routing metadata means lost
+    // provenance, not a first legacy migration. Never guess its clients are B
+    // (or a stale Flutter legacy version whose cache also happens to remain).
+    const prefix = `fit-offline-v1:${BASE.pathname}:`;
+    const customExists = (await caches.keys()).some(name => name.startsWith(prefix) && name !== ROUTING);
+    if (!customExists) {
+      previous = await legacyPackage();
+      firstLegacyMigration = !!previous;
+    }
+  }
+  if (previous && previous.packageId !== PACKAGE.packageId) await writeMeta(`previous/${PACKAGE.packageId}`, previous);
+  const cache = await caches.open(CACHE);
+  for (const path of PACKAGE.core) {
+    const file = FILES.get(path);
+    if (!await verified(await cache.match(urlFor(path)), file)) await download(cache, file);
+  }
+  // Explicit alias: root works after installation, without a second online visit.
+  await cache.put(BASE.href, await cache.match(urlFor('index.html')));
+  await writeMeta(`manifest/${PACKAGE.packageId}`, PACKAGE);
+  // Only the one-time migration from the original Flutter cache can establish
+  // a legacy snapshot. Modern documents already have per-navigation/identity
+  // pins. Do NOT infer a missing modern pin from the global active descriptor:
+  // it could be an older unknown document whose metadata was evicted.
+  for (const client of firstLegacyMigration ? await self.clients.matchAll({type: 'window', includeUncontrolled: true}) : []) {
+    if (client.url.startsWith(BASE.href) && !await readMeta(`client/${client.id}`)) {
+      await writeMeta(`client/${client.id}`, previous);
+    }
+  }
+  // Flutter 3.35.4's loader never sends skipWaiting. Activate only after all core
+  // bytes have passed verification and the initial legacy snapshot is recorded.
+  await self.skipWaiting();
+})()));
+// No deletion of legacy Flutter caches, push caches, IndexedDB or other packages.
+// skipWaiting retargets already controlled clients even WITHOUT clients.claim().
+// Persist their predecessor descriptor, so A documents keep requesting A bytes.
+self.addEventListener('activate', event => event.waitUntil((async () => {
+  await writeMeta('active', PACKAGE);
+  // Deliberately no claim(): uncontrolled documents are not taken over.
+})()));
+self.addEventListener('message', event => {
+  const port = event.ports?.[0];
+  if (!port) return;
+  if (event.data?.protocolVersion !== 1 || !['status', 'prepare', 'cancel'].includes(event.data.action)) {
+    port.postMessage({...snapshot(), state: 'error', errorCode: 'protocol', message: 'Nieobsługiwana wersja protokołu.'}); return;
+  }
+  const reloadRequired = () => port.postMessage({...snapshot(), state: 'error', cachedFiles: 0, cachedBytes: 0,
+    errorCode: 'reloadRequired', message: 'Wersja tej karty jest nieaktualna lub nieznana. Przeładuj kartę przed przygotowaniem offline.'});
+  event.waitUntil((async () => {
+    try {
+      const selected = await packageFor(event.source?.id);
+      if (selected.packageId !== PACKAGE.packageId) {reloadRequired(); return;}
+      if (event.data.action === 'prepare') {
+        if (event.data.packageId !== PACKAGE.packageId) {
+          port.postMessage({...snapshot(), state: 'error', errorCode: 'packageChanged',
+            message: 'Pakiet uległ zmianie. Sprawdź rozmiar i ponownie zatwierdź pobieranie.'}); return;
+        }
+        const work = prepare(); port.postMessage(snapshot()); await work; return;
+      }
+      if (event.data.action === 'cancel') {
+        abort?.abort(); if (task) {state = 'cancelled'; errorCode = null; message = null;}
+        port.postMessage(snapshot()); return;
+      }
+      if (task) {port.postMessage(snapshot()); return;}
+      if (!scanTask) {
+        const previous = state;
+        state = 'checking';
+        scanTask = scan().then(complete => {
+          state = complete ? 'ready' : (['error', 'cancelled'].includes(previous) ? previous : 'notReady');
+          if (complete) {errorCode = null; message = null;}
+        }).catch(recordError).finally(() => {scanTask = null;});
+      }
+      await scanTask; port.postMessage(snapshot());
+    } catch (error) {
+      // A per-document denial must not mutate the package's shared task/state.
+      if (error.code === 'reloadRequired') {reloadRequired(); return;}
+      port.postMessage({...snapshot(), state: 'error', cachedFiles: 0, cachedBytes: 0,
+        errorCode: error.name === 'QuotaExceededError' ? 'quota' : 'network',
+        message: 'Nie udało się potwierdzić wersji tej karty. Przeładuj kartę lub ponów sprawdzenie.'});
+    }
+  })());
+});
+
+self.addEventListener('fetch', event => {
+  const request = event.request, url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== BASE.origin || !url.pathname.startsWith(BASE.pathname)) return;
+  const path = url.pathname.slice(BASE.pathname.length);
+  // Defense in depth, including a subpath deployment's /app/api and /api.
+  if (/(^|\/)api(\/|$)/.test(path) || /(^|\/)(auth|export|exports)(\/|$)/.test(path)) return;
+  const navigation = request.mode === 'navigate' && /^(?:|index\.html|today(?:\/classic)?|bootstrap|login|onboarding|schedule|exercises(?:\/[^/.]+)?|workout(?:\/session|\/summary\/[^/.]+)?|progress(?:\/add-measurement|\/run-test)?|settings(?:\/[^/.]+)?)$/.test(path);
+  if (['flutter_service_worker.js', 'offline_package.json', 'offline_worker.js.template', 'push/push-worker.js'].includes(path)) return;
+  // Do not gate on current FILES: A may legitimately request a cached file that
+  // was removed from B. Selection and allowlisting happen against its manifest.
+  const staticRequest = FILES.has(path) || /^(assets|font-fallbacks|canvaskit)\//.test(path) || /\.[^/]+$/.test(path);
+  if (!navigation && !staticRequest) return;
+  event.respondWith((async () => {
+    const selected = navigation ? PACKAGE : await packageFor(event.clientId, url.searchParams.get('fit-shell'));
+    const finish = async response => {
+      // Chromium exposes the creator as clientId and the new file-backed
+      // dedicated/shared worker as resultingClientId. Persist inheritance only
+      // after its executable bytes have been verified; never for arbitrary
+      // subresources, URL hints, or blob workers without a served script.
+      if (event.resultingClientId && (navigation || ['worker', 'sharedworker'].includes(request.destination))) {
+        const key = `client/${event.resultingClientId}`;
+        const existing = await readMeta(key);
+        if (existing && existing.packageId !== selected.packageId) throw failure('integrity');
+        await writeMeta(key, selected);
+      }
+      return response;
+    };
+    const cache = await caches.open(selected.legacy ? 'flutter-app-cache' : `fit-offline-v1:${BASE.pathname}:${selected.packageId}`);
+    const target = navigation ? 'index.html' : path;
+    const selectedFile = selected.files.find(file => file.path === target);
+    if (!selectedFile) return new Response('', {status: 404, headers: {'cache-control': 'no-store'}});
+    const cached = await cache.match(selectedFile.cacheKey || urlFor(target));
+    const bytes = await verifiedBytes(cached, selectedFile);
+    if (bytes !== null) return finish(bufferedResponse(bytes, cached));
+    // Legacy bytes are cache-only: fetching them from the new origin could mix
+    // old documents with a new release. Missing old bytes fail closed.
+    if (selected.legacy) throw failure('integrity');
+    // Only immutable allowlisted build files, never navigation/user responses.
+    await download(cache, selectedFile);
+    const downloaded = await cache.match(urlFor(target));
+    const downloadedBytes = await verifiedBytes(downloaded, selectedFile);
+    if (downloadedBytes === null) throw failure('integrity');
+    return finish(bufferedResponse(downloadedBytes, downloaded));
+  })());
+});

@@ -3,6 +3,7 @@
   "flutterCommit": "d693b4b9dbac2acd4477aea4555ca6dcbea44ba2",
   "upstreamBaseUrl": "https://fonts.gstatic.com/s/",
   "fonts": [
+    {"family":"Noto Sans SC 69","path":"notosanssc/v37/k3kCo84MPvpLmixcA63oeAL7Iqp5IZJF9bmaG9_FnYkldv7JjxkkgFsFSSOPMOkySAZ73y9ViAt3acb8NexQ2w.87.woff2","bytes":5256,"sha256":"e4b7e47d39dc977a198121b39c448c698a5ccb33f14a48d945e25d122f6904e8","license":"OFL-Noto.txt","sampleCodePoints":["U+2713","U+26A0"]},
     {"family":"Noto Sans","path":"notosans/v37/o-0mIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjcz6L1SoM-jCpoiyD9A99Y41P6zHtY.woff2","bytes":199616,"sha256":"62a7417925f89dc84917c38d96b7b2e68092106dc3832c7a48129030322e73d8","license":"OFL-Noto.txt","sampleCodePoints":[]},
     {"family":"Roboto","path":"roboto/v32/KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2","bytes":63464,"sha256":"35b02ca266b79eb4996590f15817425a1ce9ebf48f84471843233ff614656bf2","license":"Apache-2.0-Roboto.txt","sampleCodePoints":[]},
     {"family":"Noto Color Emoji 0","path":"notocoloremoji/v32/Yq6P-KqIXTD0t4D9z1ESnKM3-HpFabsE4tq3luCC7p-aXxcn.0.woff2","bytes":709292,"sha256":"928e12b560823ba9fe0de01abbdbf35c40fb4c4f27700d4b27b884240df84e1a","license":"OFL-Noto.txt","sampleCodePoints":[]},

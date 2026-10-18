@@ -2,6 +2,7 @@ import 'dart:convert';
 import '../../planner/domain/structured_plan.dart';
 import 'interval_timer.dart';
 import '../../../core/sync/user_collections.dart';
+import 'workout_repeat.dart';
 
 Map<String, dynamic> validateWorkoutDraft(Object? value) {
   try {
@@ -26,6 +27,17 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
       throw const FormatException('Nieprawidłowy szkic');
     }
     final fields = Map<String, dynamic>.from(j['fields'] as Map);
+    if (fields['repeatTargets'] != null) {
+      final repeat = WorkoutRepeat.fromJson(fields['repeatTargets']);
+      final completed = fields['repeatCompleted'] ?? <String>[];
+      if (repeat.plan != null ||
+          completed is! List ||
+          completed.any((id) => id is! String || !UserCollections.isUuid(id)) ||
+          completed.toSet().length != completed.length ||
+          completed.length > repeat.targets.length) {
+        throw const FormatException('Nieprawidłowy postęp powtórzenia');
+      }
+    }
     if (j['checkpointVersions'] != null &&
         (j['checkpointVersions'] is! Map ||
             (j['checkpointVersions'] as Map).entries.any(

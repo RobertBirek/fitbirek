@@ -817,6 +817,14 @@ async def test_pull_watermark_ceiling_never_skips_interleaved_commit(account, se
     assert [change.cursor for change in next_page.changes] == [inserted[0].cursor]
 
 
+WEEKLY_SCHEDULE = {"version": 1, "entries": [{
+    "id": "11111111-1111-4111-8111-111111111111", "name": "Plan siłowy", "kind": "rule",
+    "createdAtUtc": "2026-10-17T12:00:00.000Z", "updatedAtUtc": "2026-10-17T12:00:00.000Z",
+    "planSyncId": "22222222-2222-4222-8222-222222222222", "weekday": 1,
+    "effectiveFromDate": "2026-10-19",
+}]}
+
+
 EXTENSION_CASES = [
     ("profile", {"filterPresets": {"version": 1, "entries": [{
         "id": str(uuid4()), "name": "Mata", "filters": {"equipment": ["Mata"]},
@@ -824,7 +832,8 @@ EXTENSION_CASES = [
     }]}, "exerciseVariants": {"version": 1, "entries": [{
         "id": str(uuid4()), "exerciseId": "cw317", "name": "Wolno", "tempo": "3-1-3",
         "createdAtUtc": "2026-10-16T00:00:00Z", "updatedAtUtc": "2026-10-16T00:00:00Z",
-    }]}}),
+    }]}, "weeklySchedule": WEEKLY_SCHEDULE}),
+    pytest.param("profile", {"weeklySchedule": WEEKLY_SCHEDULE}, id="weeklySchedule"),
     ("workoutSession", {"guidance": {"schemaVersion": 1, "progress": {"block": 2}}}),
     ("workoutSet", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
     ("personalRecord", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
@@ -889,6 +898,8 @@ async def test_extension_independent_omission_null_and_per_write_snapshot(accoun
                                 payload={"name": "third"})
     original = second.model_dump(mode="json")
     digest = sync_service.request_digest(second)
+    omitted_original = third.model_dump(mode="json")
+    omitted_digest = sync_service.request_digest(third)
     result = await sync_service.push_operations(session, account.id, [second, second, third])
     assert result.conflicts == []
     assert [a.version for a in result.accepted] == [2, 2, 3]
@@ -898,6 +909,10 @@ async def test_extension_independent_omission_null_and_per_write_snapshot(accoun
     assert [c.payload for c in changes] == [initial.payload, {"name": "second", **kept}, {"name": "third", **kept}]
     assert second.model_dump(mode="json") == original
     assert sync_service.request_digest(second) == digest
+    assert third.model_dump(mode="json") == omitted_original
+    assert sync_service.request_digest(third) == omitted_digest
+    stored = await session.scalar(select(SyncOperation).where(SyncOperation.operation_id == third.operation_id))
+    assert stored.request_digest == omitted_digest
 
 
 @pytest.mark.parametrize("entity_type,extras", EXTENSION_CASES)
@@ -972,8 +987,8 @@ async def test_extension_new_record_baseline_and_keys_are_type_scoped(account, s
     baseline = extension_operation(entity_type, payload={"name": "baseline"})
     assert (await sync_service.push_operations(session, account.id, [baseline])).conflicts == []
     assert (await sync_service.pull_changes(session, account.id, 0)).changes[-1].payload == baseline.payload
-    foreign_keys = {"filterPresets", "exerciseVariants", "guidance", "variantId", "variantLabel"} - set(
-        {"profile": ("filterPresets", "exerciseVariants"), "workoutSession": ("guidance",),
+    foreign_keys = {"filterPresets", "exerciseVariants", "weeklySchedule", "guidance", "variantId", "variantLabel"} - set(
+        {"profile": ("filterPresets", "exerciseVariants", "weeklySchedule"), "workoutSession": ("guidance",),
          "workoutSet": ("variantId", "variantLabel"), "personalRecord": ("variantId", "variantLabel")}.get(entity_type, ())
     )
     with_foreign = extension_operation(entity_type, entity_id=baseline.entity_id, base_version=1,
@@ -1005,11 +1020,11 @@ async def test_extension_commit_failure_rolls_back_snapshot_history_and_digest(a
     assert (await sync_service.push_operations(session, user_id, [update])).conflicts == []
 
 
-@pytest.mark.parametrize("key", ["filterPresets", "exerciseVariants", "guidance", "variantId", "variantLabel"])
+@pytest.mark.parametrize("key", ["filterPresets", "exerciseVariants", "weeklySchedule", "guidance", "variantId", "variantLabel"])
 async def test_extension_values_do_not_bypass_finite_json_validation(client, account, key):
     headers = await authenticate(client, account)
     invalid = {**operation(payload={key: {"entries": [{"value": float("inf")}]}}),
-               "entityType": "profile" if key in ("filterPresets", "exerciseVariants") else
+               "entityType": "profile" if key in ("filterPresets", "exerciseVariants", "weeklySchedule") else
                "workoutSession" if key == "guidance" else "workoutSet"}
     response = await client.post("/api/sync/push", content=json.dumps({"operations": [invalid]}),
                                  headers={**headers, "Content-Type": "application/json"})

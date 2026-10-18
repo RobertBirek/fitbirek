@@ -20,6 +20,7 @@ import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/settings/presentation/pages/edit_profile_page.dart';
 import '../features/calculator/presentation/pages/calculator_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
+import '../features/schedule/presentation/schedule_page.dart';
 import '../features/mentor/presentation/pages/mentor_page.dart';
 import '../features/mentor/presentation/pages/mentor_settings_page.dart';
 
@@ -58,6 +59,10 @@ GoRouter createRouter({
       pendingLocation: pendingLocation,
     ),
     routes: [
+      GoRoute(
+        path: '/schedule',
+        builder: (context, state) => const SchedulePage(),
+      ),
       GoRoute(
         path: '/bootstrap',
         builder: (context, state) => const _BootstrapPage(),

@@ -3,10 +3,19 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router.dart';
 import 'theme.dart';
+import 'database_bootstrap.dart';
 import '../features/settings/providers/settings_provider.dart';
 
-class FitBirekApp extends ConsumerWidget {
+class FitBirekApp extends StatelessWidget {
   const FitBirekApp({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      const DatabaseBootstrap(child: _ReadyApp());
+}
+
+class _ReadyApp extends ConsumerWidget {
+  const _ReadyApp();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
