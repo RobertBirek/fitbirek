@@ -98,7 +98,8 @@ historii serii. Prawdziwe NULL nadal oznacza zwykłą sesję ręczną.
   UI pobiera zamiennik z aktualnego `StructuredPlanGenerator.replace`,
   aktualnego katalogu i shared filter engine. Oryginalne prescriptions zostają.
 - `moveGuided(slot)` sprawdza zakres i blokadę zapisu; zmiana bloku czyści
-  lokalne pola. Cele są tylko domyślnymi szkicami formularza. Ani start,
+  lokalne pola (historyczne zachowanie; zastąpione zachowaniem szkiców w korekcie
+  ciągłości z 2026-10-18 opisanej poniżej). Cele są tylko domyślnymi szkicami formularza. Ani start,
   nawigacja, zamiana, upływ czasu, ani restore nie logują serii.
 - `logSet` blokuje równoczesny podwójny tap guided. Interwały zachowują własny
   jednokrotny `IntervalWriteOrigin`; nigdy nie jest serializowany.
@@ -650,3 +651,77 @@ całe `test/features/workout` — **148 passed**; `flutter analyze --no-pub` —
 `fit-web:release-1.13.0-26-verified`, z bieżącym `/opt/fit:/app`. Format tylko
 providera i nowego testu. Bez migracji/codegenu, zmiany wersji, commit/push,
 deployu i full Docker build. Nowy obraz do prawdziwego retestu przygotowuje main.
+
+## Ciągłość aktywnej sesji — 2026-10-18
+
+`ActiveWorkoutNotifier.startSession` nie zastępuje aktywnego stanu RAM.
+Start nowego wiersza używa transakcyjnego warunku `requireNoActiveSession`:
+istniejąca niezakończona, nieusunięta sesja powoduje `ActiveSessionExists`,
+bez nowego UUID i outboxa. Dotyczy także sesji bez poprawnego szkicu — nie
+wolno traktować braku możliwości recovery jako zgody na nową sesję.
+Klasyczny dashboard pokazuje **Kontynuuj trening** dla sesji w RAM lub
+persisted recovery i prowadzi do istniejącej trasy sesji. Po restarcie wybór
+wznowienia nadal jest jawny; dashboard nie wybiera pierwszego kandydata.
+
+`moveGuided` zachowuje formularze bloków w istniejącym lokalnym payloadzie v1:
+
+```text
+fields.guidedForms[JSON(["guided", sessionUUID, slot, exerciseId, side, variantId])]
+fields.guidedSelections[JSON([slot, exerciseId])] = dokładny klucz formularza
+```
+
+Aktywny formularz nadal jest bezpośrednio w `fields`. Przy przejściu zapisujemy
+źródło, a docelowy formularz usuwamy z mapy nieaktywnych i odtwarzamy jako
+aktywny: checkpoint nie ma drugiej kopii, która mogłaby wrócić po zużyciu.
+Ten sam slot jest no-op; przejście podczas transakcji zużycia jest odrzucane.
+Walidacja obejmuje zagnieżdżone formularze, a CAS, epoch i wersje obejmują
+także nieaktywne checkpointy. EXTRA pozostaje osobną przestrzenią.
+Zmiana ćwiczenia nie podkłada formularza poprzedniej tożsamości. Nie zmieniono
+dialogów świadomego odrzucenia timera przy zmianie strony/wariantu.
+
+Regresje `training_continuity_test.dart` i `classic_today_continuity_test.dart`
+obejmują ponowny start, persisted recovery, dashboard, A–B–A/restart, stronę
+i wariant, zamianę ćwiczenia, pauzę po dobie nieobecności, brak automatycznego
+logowania i brak odtworzenia zużytego checkpointu. RED: nowy UUID zamiast
+dotychczasowego, brak odmowy startu, utracone pole `9`, brak przycisku kontynuacji.
+GREEN: wszystkie sześć nowych testów, workout + test workflow planera
+**190 passed**, pełny klient **846 passed**, analiza **No issues found**.
+
+Polecenia przez udokumentowany istniejący obraz (bez sieci i budowania obrazu):
+
+```sh
+docker run --rm --network none -v /opt/fit:/app -w /app \
+  fit-web:release-1.13.0-26-verified flutter test --no-pub -r expanded \
+  test/features/workout test/features/planner/planner_workflow_test.dart
+docker run --rm --network none -v /opt/fit:/app -w /app \
+  fit-web:release-1.13.0-26-verified flutter analyze --no-pub
+docker run --rm --network none -v /opt/fit:/app -w /app \
+  fit-web:release-1.13.0-26-verified flutter test --no-pub -r expanded
+```
+
+Bez migracji i deklaracji generatorów; nie zmieniono wersji, zależności ani
+artefaktów Web SQLite (hashe jak wyżej, Drift 2.28.2 / sqlite3 2.9.4).
+Bez commit/deploy i testu rzeczywistego restartu procesu PWA. Nadal nie ma
+gwarancji flush przy zabiciu procesu ani odzyskania szkiców wcześniej utraconych.
+
+### Korekta P1 po review — tożsamość wewnątrz bloku
+
+Pierwsza poprawka archiwizowała formularz tylko przy `moveGuided`. Zmiana
+strony/wariantu w tym samym bloku nadal nadpisywała poprzednie pomiary.
+`selectGuidedIdentity` używa teraz tej samej operacji zapisz źródło / odczytaj
+cel co nawigacja bloków. UI zapisuje kontrolery przed zmianą tożsamości,
+ładuje docelowe wartości przy wyciszonych listenerach i stosuje cele/defaulty
+tylko dla brakujących pól nowego szkicu. Nie zmieniono ręcznych kart ani EXTRA.
+
+Przejście z niezapisanym timerem wymaga dotychczasowego świadomego discard;
+notifier odmawia przełączenia, jeśli timer nie został wyczyszczony. Anulowanie
+dialogu nie zmienia formularza. Odrzucony timer jest usuwany przed archiwizacją,
+a zużyty checkpoint nie wraca po przełączeniu strony i wznowieniu.
+
+Rozszerzone rzeczywiste testy UI w `draft_form_transition_review_test.dart`
+wykazały RED: nowy wariant dostał stare `9` zamiast celu `10`, a powrót na
+poprzednią stronę zwracał `7` zamiast `9`. GREEN obejmuje także sekwencję
+blok A/lewa/X=9 → B → A/prawa/Y=4 → B → A/lewa/X=9 i ponowne wznowienie.
+`training_continuity_test.dart` sprawdza przejście stron po zużyciu checkpointu.
+Focused `test/features/workout`: **189 passed**. Pełnej suite w tej korekcie
+nie uruchamiano — pozostaje do wykonania po integracji.

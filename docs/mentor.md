@@ -64,6 +64,14 @@ dostawcy, a właściwy projekcyjny kontekst buduje wyłącznie w pamięci. Treś
 nie tworzy dodatkowej kopii wybranego kontekstu. Zapis operacji idempotentnej
 może zachować techniczny wybór kategorii i selektory, lecz nie projekcję danych.
 
+Jeśli wybrana notatka lub masa zmieni się albo selektor wygaśnie między podglądem
+a wysłaniem, serwer odrzuca żądanie przed rezerwacją i wywołaniem dostawcy.
+Klient zachowuje tekst i prosi o odświeżenie podglądu przyciskiem dodawania
+kontekstu, ponowny wybór oraz jawne potwierdzenie. Nie wysyła ani nie zatwierdza
+nowych danych automatycznie. Tylko znane odrzucenie nowej próby pozwala usunąć
+jej lokalny wpis operacji; wcześniejsze nieznane wyniki pozostają chronione,
+także gdy ich ponowienie otrzyma później błąd nieaktualnego kontekstu.
+
 ## Klucz główny i overlay
 
 `deploy/compose.mentor.yaml` jest opcjonalnym overlayem wyłącznie dla `api`.

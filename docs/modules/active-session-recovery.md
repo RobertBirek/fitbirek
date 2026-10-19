@@ -116,3 +116,33 @@ Nie wykonano nowego compiled-browser retestu ani testu telefonu. Native/RPC
 nie zastępują akceptacji Web SQLite w rzeczywistym procesie przeglądarki.
 Historyczny browser FAIL pozostaje zachowany; ten etap dostarcza poprawkę
 źródeł i testy regresyjne, nie nowy runtime ani deklarację gotowości PWA offline.
+
+## Korekta ciągłości — jawne zakończenie bez szkicu (2026-10-18)
+
+Panel oferuje teraz **Zakończ bez wznawiania** z osobnym potwierdzeniem, także
+dla sesji bez lokalnego szkicu (np. synchronizacja lub awaria przed checkpointem).
+Brak szkicu nadal wyklucza resume, ale nie blokuje możliwości kolejnego treningu
+po świadomym zakończeniu starego. Poprawny szkic zachowuje zwykłe **Wznów trening**.
+
+`finishPendingSession` przyjmuje konto/authority epoch pokazanego snapshotu.
+W transakcji sprawdza binding, offlineAccess, UUID, finish/DELETE i brak szkicu
+innego konta; przejście A–B–A unieważnia żądanie. Zakończenie i outbox są atomowe,
+a utrata authority po zapisie SQL wycofuje również zapis. Nie odtwarza formularza,
+nie tworzy serii/PR i zachowuje dotychczasowe `czasTrwaniaSekund`, także zero:
+nie wylicza brakującego czasu ze ściennej różnicy od startu. Czas zakończenia
+oznacza moment jawnej decyzji użytkownika.
+
+Klasyczny dashboard blokuje przycisk ze wskaźnikiem ładowania, dopóki recovery
+nie jest znane (aktywna sesja w RAM może być kontynuowana od razu).
+Regresje: `recovery_finish_test.dart` oraz opóźniony odczyt w
+`classic_today_continuity_test.dart`. Pełna suite pozostaje do integracji;
+bez zmian schematu, wersji i wdrożenia.
+
+Weryfikacja tej korekty przez istniejący obraz Flutter 3.35.4 / Dart 3.9.2:
+focused recovery/continuity/deleted-session/guided-resume — **35 passed**;
+`flutter analyze --no-pub` — **No issues found**. RED przed poprawką:
+finish bez szkicu zwracał null, brakowało akcji UI, a przycisk startu miał
+aktywny callback podczas opóźnionego odczytu recovery. Testy obejmują anulowanie,
+potwierdzenie, zachowanie zerowego/niezerowego czasu i istniejących serii,
+odmowę dla starego snapshotu, blokady konta i obcego szkicu oraz rollback
+sesji/outboxa po unieważnieniu authority już po wykonaniu SQL.

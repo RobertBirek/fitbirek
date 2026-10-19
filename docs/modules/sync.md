@@ -28,3 +28,5 @@ zadaniem implementacyjnym: [uzgodnienia na przyszłość](../future-private-acco
 - Warianty i filtry: Drift12, optional kolekcje w istniejącym `profile`, bez
   nowych typów encji i kursora; per-ID merge po odrzuconym CAS, tombstone'y,
   limity i warunek osobnego wydania API: `user-variants-cloud.md`.
+- Kwarantanna pull, trwałe blokady push i generacja powiązania przy logout:
+  [audyt klienta 2026-10-18](../2026-10-18-client-sync-audit.md).
