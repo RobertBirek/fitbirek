@@ -3,6 +3,12 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
+Prepared, **not deployed**: API + web **1.16.0+29**, built from clean source
+`b2bffc558380781ffdcc1acc0453225333e4ad60`. Final artifact smoke passed 18/18;
+API must precede web because measurement edits now use date omission.
+Exact images, verification, rollout and rollback constraints:
+[prepared release 1.16.0+29](docs/releases/2026-10-19-api-web-1.16.0-29-prepared.md).
+
 Current API + web **1.15.0+28 deployed 2026-10-18**, API/sender at
 **13:47:06 UTC**, web at **13:47:46 UTC**. Repeat plan/actual workout,
 weekly rhythm with manual completion, read-only trends, verified offline
