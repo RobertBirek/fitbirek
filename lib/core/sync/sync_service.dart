@@ -7,6 +7,7 @@ import '../api/api_client.dart';
 import '../database/app_database.dart';
 import 'sync_models.dart';
 import 'sync_store.dart';
+import 'sync_quarantine.dart';
 import 'user_collections.dart';
 import 'dart:convert';
 
@@ -60,8 +61,11 @@ class SyncService extends ChangeNotifier {
   bool _enabled = false;
   bool _disposed = false;
   int _generation = 0;
+  String? _accountId;
+  String? _bindingId;
 
   Future<void> bindAccount(String accountId) async {
+    _generation++;
     await db.transaction(() async {
       final state = await db.syncDao.readState();
       if (state != null && state.accountId != accountId) {
@@ -78,6 +82,9 @@ class SyncService extends ChangeNotifier {
               ),
             );
       }
+      final binding = await db.syncDao.readState();
+      _accountId = accountId;
+      _bindingId = binding!.deviceId;
     });
     _enabled = true;
   }
@@ -94,13 +101,14 @@ class SyncService extends ChangeNotifier {
 
   Future<void> stop() async {
     _enabled = false;
-    _generation++;
+    final generation = ++_generation;
     _retry?.cancel();
     _retry = null;
-    await _mutations?.cancel();
+    final mutations = _mutations;
     _mutations = null;
+    await mutations?.cancel();
     await _running;
-    _setStatus(SyncStatus.signedOut);
+    if (_generation == generation) _setStatus(SyncStatus.signedOut);
   }
 
   Future<void> synchronize() {
@@ -123,6 +131,7 @@ class SyncService extends ChangeNotifier {
     final generation = _generation;
     await db.transaction(() async {
       Future<void> guard() async {
+        await _guard(generation);
         final state = await db.syncDao.readState();
         if (!_enabled ||
             _disposed ||
@@ -146,11 +155,26 @@ class SyncService extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
+  Future<void> _guard(int generation) async {
+    final state = await db.syncDao.readState();
+    if (!_enabled ||
+        _disposed ||
+        generation != _generation ||
+        state?.offlineAccess != true ||
+        state?.accountId != _accountId ||
+        state?.deviceId != _bindingId) {
+      throw const _BindingChanged();
+    }
+  }
+
   Future<void> _run(int generation) async {
     _setStatus(SyncStatus.syncing);
     try {
+      await _guard(generation);
+      final quarantine = SyncQuarantine(db, store);
       if (currentAccountId != null) {
         final remoteAccount = await currentAccountId!();
+        await _guard(generation);
         final bound = await db.syncDao.readState();
         if (generation != _generation) return;
         if (remoteAccount == null || remoteAccount != bound?.accountId) {
@@ -164,13 +188,21 @@ class SyncService extends ChangeNotifier {
       // A bounded pass prevents an active writer starving pull indefinitely.
       for (var batch = 0; batch < 100 && _enabled; batch++) {
         final operations = await db.transaction(() async {
+          await _guard(generation);
           final heldProfiles = await store.heldProfileIds();
+          final held = await quarantine.heldKeys(_accountId!);
+          if (held.isNotEmpty) blocked = true;
           if (heldProfiles.isNotEmpty) blocked = true;
           final pending = await db.syncDao.pendingOperations();
           final keys = <String>{};
           final next = pending
               .where(
                 (o) =>
+                    !held.contains('${o.entityType.wireName}:${o.entityId}') &&
+                    !(o.entityType == SyncEntityType.workoutSet &&
+                        held.contains(
+                          'workoutSession:${o.payload['sessionSyncId']}',
+                        )) &&
                     !(o.entityType == SyncEntityType.profile &&
                         heldProfiles.contains(o.entityId)) &&
                     keys.add('${o.entityType.name}:${o.entityId}'),
@@ -191,10 +223,11 @@ class SyncService extends ChangeNotifier {
           return ops;
         });
         if (operations.isEmpty) break;
+        await _guard(generation);
         final response = await api.push(operations);
-        if (generation != _generation) return;
-        var unresolvedResponse = false;
+        await _guard(generation);
         await db.transaction(() async {
+          await _guard(generation);
           for (final dynamic ack in response['accepted'] as List) {
             final op = operations.firstWhere(
               (o) => o.operationId == ack['operationId'],
@@ -216,158 +249,205 @@ class SyncService extends ChangeNotifier {
           }
           for (final dynamic conflict in response['conflicts'] as List) {
             if (conflict['kind'] != null) {
+              final op = operations.firstWhere(
+                (o) => o.operationId == conflict['operationId'],
+              );
+              await quarantine.hold(_accountId!, op, conflict);
               blocked = true;
-              unresolvedResponse = true;
               continue;
             }
             final op = operations.firstWhere(
               (o) => o.operationId == conflict['operationId'],
             );
-            final record = Map<String, dynamic>.from(conflict['record'] as Map);
-            if (op.entityType == SyncEntityType.profile &&
-                !op.deleted &&
-                record['deletedAt'] == null) {
-              final remote = Map<String, dynamic>.from(
-                record['payload'] as Map,
-              );
-              try {
-                // Validate even when a local NULL/omission or later edit would
-                // bypass merge. Never overwrite an unknown remote extension.
-                for (final key in UserCollections.keys) {
-                  if (remote[key] != null) {
-                    UserCollections.validate(key, remote[key]);
-                  }
+            try {
+              // A savepoint restores the attempted request and local state if
+              // any branch discovers invalid authority after changing the queue.
+              // Database failures escape and still roll back the whole response.
+              await db.transaction(() async {
+                final raw = conflict['record'];
+                if (raw is! Map<String, dynamic>) {
+                  throw const InvalidSyncRecord('Invalid CAS record');
                 }
-              } on FormatException {
-                await store.holdProfileConflict(record, op.operationId);
-                blocked = true;
-                continue;
-              }
-            }
-            final later = (await db.syncDao.pendingOperations()).any(
-              (o) =>
-                  o.operationId != op.operationId &&
-                  o.entityType == op.entityType &&
-                  o.entityId == op.entityId,
-            );
-            final deletedSession =
-                op.entityType == SyncEntityType.workoutSession &&
-                record['deletedAt'] != null &&
-                !op.deleted;
-            if (op.entityType == SyncEntityType.profile &&
-                !later &&
-                !op.deleted &&
-                record['deletedAt'] == null) {
-              final local = await store.row(op.entityType, op.entityId);
-              final remote = Map<String, dynamic>.from(
-                record['payload'] as Map,
-              );
-              final merged = Map<String, dynamic>.from(remote);
-              var changed = false;
-              try {
-                for (final key in UserCollections.keys) {
-                  final raw = local?['${key}Json'] as String?;
-                  if (raw == null &&
-                      op.payload.containsKey(key) &&
-                      op.payload[key] == null) {
-                    merged[key] = null;
-                    if (remote[key] != null) changed = true;
-                    continue;
-                  }
-                  if (raw == null) continue;
-                  final value = UserCollections.merge(
-                    key,
-                    jsonDecode(raw),
-                    remote[key],
+                final record = Map<String, dynamic>.from(raw);
+                store.validateEnvelope(record);
+                if (record['entityType'] != op.entityType.wireName ||
+                    record['entityId'] != op.entityId) {
+                  throw const InvalidSyncRecord(
+                    'CAS identity differs from operation',
                   );
-                  merged[key] = value;
-                  if (UserCollections.canonical(value) !=
-                      UserCollections.canonical(remote[key])) {
-                    changed = true;
+                }
+                // Validate ORIGINAL authority before preserveLocal/merge can
+                // mask malformed remote scalar fields with local values.
+                await store.validateRecord(record);
+                if (op.entityType == SyncEntityType.measurement &&
+                    !op.payload.containsKey('data') &&
+                    record['deletedAt'] != null) {
+                  // Omission requires live server authority. Rebasing onto a
+                  // tombstone can never satisfy it, even for delete/restore.
+                  // Retain the attempted bytes, intent and raw CAS evidence;
+                  // the entity-scoped durable hold also withholds successors.
+                  await quarantine.hold(_accountId!, op, {
+                    ...Map<String, dynamic>.from(conflict as Map),
+                    'localHoldReason':
+                        'Measurement date omission cannot resolve against a tombstone',
+                    'localRecoveryPolicy': 'explicit-authoritative-resolution',
+                  });
+                  blocked = true;
+                  return;
+                }
+                if (op.entityType == SyncEntityType.profile &&
+                    !op.deleted &&
+                    record['deletedAt'] == null) {
+                  final remote = Map<String, dynamic>.from(
+                    record['payload'] as Map,
+                  );
+                  try {
+                    // Validate even when a local NULL/omission or later edit would
+                    // bypass merge. Never overwrite an unknown remote extension.
+                    for (final key in UserCollections.keys) {
+                      if (remote[key] != null) {
+                        UserCollections.validate(key, remote[key]);
+                      }
+                    }
+                  } on FormatException {
+                    await store.holdProfileConflict(record, op.operationId);
+                    blocked = true;
+                    return;
                   }
                 }
-              } on FormatException {
-                // A quarantined local extension or an over-limit merge must
-                // not roll back the whole push response and global pull either.
-                await store.holdProfileConflict(record, op.operationId);
-                blocked = true;
-                continue;
-              }
-              if (changed || op.preserveLocal) {
-                final payload = changed
-                    ? merged
-                    : <String, dynamic>{
-                        ...op.payload,
-                        // Explicit backup scalar restore keeps its existing policy,
-                        // but must NEVER replay stale collections over merged data.
-                        for (final key in UserCollections.keys)
-                          if (merged.containsKey(key)) key: merged[key],
-                      };
-                // The attempted operation was definitively rejected. Apply the
-                // server's scalar fields AND merged collections before creating
-                // a fresh immutable operation at the authoritative CAS version.
+                final later = (await db.syncDao.pendingOperations()).any(
+                  (o) =>
+                      o.operationId != op.operationId &&
+                      o.entityType == op.entityType &&
+                      o.entityId == op.entityId,
+                );
+                final deletedSession =
+                    op.entityType == SyncEntityType.workoutSession &&
+                    record['deletedAt'] != null &&
+                    !op.deleted;
+                if (op.entityType == SyncEntityType.profile &&
+                    !later &&
+                    !op.deleted &&
+                    record['deletedAt'] == null) {
+                  final local = await store.row(op.entityType, op.entityId);
+                  final remote = Map<String, dynamic>.from(
+                    record['payload'] as Map,
+                  );
+                  final merged = Map<String, dynamic>.from(remote);
+                  var changed = false;
+                  try {
+                    for (final key in UserCollections.keys) {
+                      final raw = local?['${key}Json'] as String?;
+                      if (raw == null &&
+                          op.payload.containsKey(key) &&
+                          op.payload[key] == null) {
+                        merged[key] = null;
+                        if (remote[key] != null) changed = true;
+                        continue;
+                      }
+                      if (raw == null) continue;
+                      final value = UserCollections.merge(
+                        key,
+                        jsonDecode(raw),
+                        remote[key],
+                      );
+                      merged[key] = value;
+                      if (UserCollections.canonical(value) !=
+                          UserCollections.canonical(remote[key])) {
+                        changed = true;
+                      }
+                    }
+                  } on FormatException {
+                    // A quarantined local extension or an over-limit merge must
+                    // not roll back the whole push response and global pull either.
+                    await store.holdProfileConflict(record, op.operationId);
+                    blocked = true;
+                    return;
+                  }
+                  if (changed || op.preserveLocal) {
+                    final payload = changed
+                        ? merged
+                        : <String, dynamic>{
+                            ...op.payload,
+                            // Explicit backup scalar restore keeps its existing policy,
+                            // but must NEVER replay stale collections over merged data.
+                            for (final key in UserCollections.keys)
+                              if (merged.containsKey(key)) key: merged[key],
+                          };
+                    // The attempted operation was definitively rejected. Apply the
+                    // server's scalar fields AND merged collections before creating
+                    // a fresh immutable operation at the authoritative CAS version.
+                    await (db.delete(
+                      db.syncOutbox,
+                    )..where((o) => o.operationId.equals(op.operationId))).go();
+                    await store.apply({...record, 'payload': payload});
+                    await db.syncDao.enqueueUpsert(
+                      entityType: op.entityType,
+                      entityId: op.entityId,
+                      baseVersion: record['version'] as int,
+                      payload: payload,
+                      // Once server scalars were chosen, this is a normal merged
+                      // write, not a renewed request to restore older scalars.
+                      preserveLocal: op.preserveLocal && !changed,
+                    );
+                    await store.reconcile(op.entityType, op.entityId);
+                    return;
+                  }
+                }
                 await (db.delete(
                   db.syncOutbox,
                 )..where((o) => o.operationId.equals(op.operationId))).go();
-                await store.apply({...record, 'payload': payload});
-                await db.syncDao.enqueueUpsert(
-                  entityType: op.entityType,
-                  entityId: op.entityId,
-                  baseVersion: record['version'] as int,
-                  payload: payload,
-                  // Once server scalars were chosen, this is a normal merged
-                  // write, not a renewed request to restore older scalars.
-                  preserveLocal: op.preserveLocal && !changed,
-                );
+                final deletedProfile =
+                    op.entityType == SyncEntityType.profile &&
+                    record['deletedAt'] != null;
+                if (op.preserveLocal &&
+                    !later &&
+                    !deletedSession &&
+                    !deletedProfile) {
+                  // This request was definitively rejected, so a fresh operation
+                  // may carry the explicit restore intent at the observed version.
+                  if (op.deleted) {
+                    await db.syncDao.enqueueDelete(
+                      entityType: op.entityType,
+                      entityId: op.entityId,
+                      baseVersion: record['version'] as int,
+                      payload: op.payload,
+                      preserveLocal: true,
+                    );
+                  } else {
+                    await db.syncDao.enqueueUpsert(
+                      entityType: op.entityType,
+                      entityId: op.entityId,
+                      baseVersion: record['version'] as int,
+                      payload: op.payload,
+                      preserveLocal: true,
+                    );
+                  }
+                }
+                await store.apply(record);
                 await store.reconcile(op.entityType, op.entityId);
-                continue;
-              }
+              });
+            } on InvalidSyncRecord catch (e) {
+              await quarantine.hold(_accountId!, op, {
+                ...Map<String, dynamic>.from(conflict as Map),
+                'localHoldReason': e.message,
+                'localRecoveryPolicy': 'explicit-authoritative-resolution',
+              });
+              blocked = true;
             }
-            await (db.delete(
-              db.syncOutbox,
-            )..where((o) => o.operationId.equals(op.operationId))).go();
-            final deletedProfile =
-                op.entityType == SyncEntityType.profile &&
-                record['deletedAt'] != null;
-            if (op.preserveLocal &&
-                !later &&
-                !deletedSession &&
-                !deletedProfile) {
-              // This request was definitively rejected, so a fresh operation
-              // may carry the explicit restore intent at the observed version.
-              if (op.deleted) {
-                await db.syncDao.enqueueDelete(
-                  entityType: op.entityType,
-                  entityId: op.entityId,
-                  baseVersion: record['version'] as int,
-                  payload: op.payload,
-                  preserveLocal: true,
-                );
-              } else {
-                await db.syncDao.enqueueUpsert(
-                  entityType: op.entityType,
-                  entityId: op.entityId,
-                  baseVersion: record['version'] as int,
-                  payload: op.payload,
-                  preserveLocal: true,
-                );
-              }
-            }
-            await store.apply(record);
-            await store.reconcile(op.entityType, op.entityId);
           }
         });
-        if (unresolvedResponse) break;
         if ((response['accepted'] as List).isEmpty &&
             (response['conflicts'] as List).isEmpty) {
           throw const FormatException('Missing push outcomes');
         }
       }
       while (_enabled) {
+        await _guard(generation);
         final state = await db.syncDao.readState();
         if (state == null) throw StateError('Missing account binding');
         final page = await api.pull(state.fullCursor);
-        if (generation != _generation) return;
+        await _guard(generation);
         final cursor = page['cursor'] as int;
         final changes = page['changes'] as List;
         if (cursor < state.fullCursor ||
@@ -375,17 +455,38 @@ class SyncService extends ChangeNotifier {
           throw const FormatException('Invalid cursor');
         }
         await db.transaction(() async {
+          await _guard(generation);
           // Parents precede children, retaining version order within each type.
           for (final type in SyncEntityType.values) {
             for (final dynamic change in changes.where(
-              (dynamic c) => c['entityType'] == type.wireName,
+              (dynamic c) => c is Map && c['entityType'] == type.wireName,
             )) {
-              await store.apply(Map<String, dynamic>.from(change as Map));
+              await quarantine.apply(
+                change,
+                _accountId!,
+                cursor,
+                changes.indexOf(change),
+              );
             }
           }
           for (final dynamic change in changes) {
-            syncEntityTypeFromWireName(change['entityType'] as String);
+            if (change is! Map ||
+                !SyncEntityType.values.any(
+                  (t) => t.wireName == change['entityType'],
+                )) {
+              await quarantine.apply(
+                change,
+                _accountId!,
+                cursor,
+                changes.indexOf(change),
+              );
+            }
           }
+          final unrecovered = await quarantine.recover(_accountId!);
+          blocked =
+              unrecovered ||
+              (await quarantine.heldKeys(_accountId!)).isNotEmpty ||
+              (await store.heldProfileIds()).isNotEmpty;
           await db
               .update(db.syncState)
               .write(SyncStateCompanion(fullCursor: Value(cursor)));
@@ -393,8 +494,19 @@ class SyncService extends ChangeNotifier {
         if (changes.length < 500) break;
       }
       _setStatus(blocked ? SyncStatus.conflict : SyncStatus.idle);
+    } on _BindingChanged {
+      if (generation != _generation) return;
+      _enabled = false;
+      _setStatus(SyncStatus.signedOut);
     } on DioException catch (e) {
       if (generation != _generation) return;
+      try {
+        await _guard(generation);
+      } on _BindingChanged {
+        _enabled = false;
+        _setStatus(SyncStatus.signedOut);
+        return;
+      }
       if (e.response?.statusCode == 401) {
         _enabled = false;
         _setStatus(SyncStatus.signedOut);
@@ -404,6 +516,13 @@ class SyncService extends ChangeNotifier {
       }
     } catch (_) {
       if (generation != _generation) return;
+      try {
+        await _guard(generation);
+      } on _BindingChanged {
+        _enabled = false;
+        _setStatus(SyncStatus.signedOut);
+        return;
+      }
       _setStatus(SyncStatus.error);
     }
   }
@@ -417,4 +536,8 @@ class SyncService extends ChangeNotifier {
     unawaited(_mutations?.cancel());
     super.dispose();
   }
+}
+
+class _BindingChanged implements Exception {
+  const _BindingChanged();
 }

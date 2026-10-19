@@ -25,6 +25,7 @@ class PausedStart extends WorkoutRepository {
     bool Function()? guard,
     String? accountId,
     WorkoutGuidance? guidance,
+    bool requireNoActiveSession = false,
   }) async {
     entered.complete();
     await release.future;
@@ -32,6 +33,7 @@ class PausedStart extends WorkoutRepository {
       guard: guard,
       accountId: accountId,
       guidance: guidance,
+      requireNoActiveSession: requireNoActiveSession,
     );
   }
 }

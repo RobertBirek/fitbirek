@@ -11,6 +11,7 @@ import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/sync/sync_service.dart';
 import 'package:fitbirek_training/core/sync/sync_models.dart';
 import 'package:fitbirek_training/core/sync/sync_store.dart';
+import 'package:fitbirek_training/core/sync/sync_quarantine.dart';
 import 'package:fitbirek_training/features/health/data/health_repository.dart';
 import 'health_sync_lifecycle_test.dart' show record;
 
@@ -100,56 +101,98 @@ void main() {
     },
   );
 
-  test(
-    'failed full page rolls back sample and full cursor but not independent legacy commit',
-    () async {
-      final dir = await Directory.systemTemp.createTemp('shared-rollback-');
-      final file = File('${dir.path}/db.sqlite');
-      final db = AppDatabase.forTesting(NativeDatabase(file));
-      final api = _SharedApi();
-      final sync = SyncService(db, api);
-      await sync.bindAccount('account');
-      final legacy = sqlite.sqlite3.open(file.path);
-      addTearDown(() async {
-        legacy.dispose();
-        sync.dispose();
-        await db.close();
-        await dir.delete(recursive: true);
-      });
-      final entered = Completer<void>();
-      final response = Completer<Map<String, dynamic>>();
-      api.onPull = (_) {
-        entered.complete();
-        return response.future;
-      };
-      final running = sync.synchronize();
-      await entered.future;
-      legacy.execute('UPDATE sync_state SET cursor=501 WHERE id=1');
-      // Same entity type preserves ordering: valid row inserted before bad row.
-      response.complete({
-        'cursor': 2,
-        'changes': [
-          record(1),
-          record(1)
-            ..['entityId'] = 'bad'
-            ..['payload'] = {},
-        ],
-      });
-      await running;
-      expect(sync.status, SyncStatus.error);
-      expect(await db.select(db.healthSamples).get(), isEmpty);
-      expect((await db.syncDao.readState())!.fullCursor, 0);
-      expect((await db.syncDao.readState())!.cursor, 501);
-      api.onPull = (_) async => {
-        'cursor': 1,
-        'changes': [record(1)],
-      };
-      await sync.synchronize();
-      expect(api.cursors, [0, 0]);
-      expect((await db.syncDao.readState())!.fullCursor, 1);
-      expect((await db.syncDao.readState())!.cursor, 501);
-    },
-  );
+  for (final storageFailure in [false, true]) {
+    test(
+      storageFailure
+          ? 'SQLite failure rolls back full page but not independent legacy commit'
+          : 'quarantined full record advances safely without touching legacy cursor',
+      () async {
+        final dir = await Directory.systemTemp.createTemp('shared-rollback-');
+        final file = File('${dir.path}/db.sqlite');
+        final db = AppDatabase.forTesting(NativeDatabase(file));
+        final api = _SharedApi();
+        final sync = SyncService(db, api);
+        await sync.bindAccount('account');
+        final legacy = sqlite.sqlite3.open(file.path);
+        addTearDown(() async {
+          legacy.dispose();
+          sync.dispose();
+          await db.close();
+          await dir.delete(recursive: true);
+        });
+        final entered = Completer<void>();
+        final response = Completer<Map<String, dynamic>>();
+        if (storageFailure) {
+          await db.customStatement(
+            "CREATE TRIGGER fail_second_sample BEFORE INSERT ON health_samples WHEN NEW.sync_id = 'bad' BEGIN SELECT RAISE(ABORT, 'injected storage failure'); END",
+          );
+        }
+        api.onPull = (_) {
+          entered.complete();
+          return response.future;
+        };
+        final running = sync.synchronize();
+        await entered.future;
+        legacy.execute('UPDATE sync_state SET cursor=501 WHERE id=1');
+        // Same entity type preserves ordering: valid row inserted before bad row.
+        final bad = record(1)..['entityId'] = 'bad';
+        if (!storageFailure) bad['payload'] = <String, dynamic>{};
+        response.complete({
+          'cursor': 2,
+          'changes': [record(1), bad],
+        });
+        await running;
+        expect(
+          sync.status,
+          storageFailure ? SyncStatus.error : SyncStatus.conflict,
+        );
+        expect(
+          await db.select(db.healthSamples).get(),
+          hasLength(storageFailure ? 0 : 1),
+        );
+        expect(
+          (await db.syncDao.readState())!.fullCursor,
+          storageFailure ? 0 : 2,
+        );
+        expect((await db.syncDao.readState())!.cursor, 501);
+        if (storageFailure) {
+          expect(await db.select(db.syncDeferredRecords).get(), isEmpty);
+          await db.customStatement('DROP TRIGGER fail_second_sample');
+        } else {
+          final held = jsonDecode(
+            (await db.select(db.syncDeferredRecords).getSingle()).recordJson,
+          );
+          expect(held['raw'], bad);
+          expect(held['cursor'], 2);
+          expect(held['accountId'], 'account');
+          expect(held['recovered'], false);
+        }
+        api.onPull = (_) async => {
+          'cursor': storageFailure ? 2 : 3,
+          'changes': [
+            if (storageFailure) record(1),
+            record(storageFailure ? 1 : 2)..['entityId'] = 'bad',
+          ],
+        };
+        await sync.synchronize();
+        expect(sync.status, SyncStatus.idle);
+        expect(api.cursors, [0, storageFailure ? 0 : 2]);
+        expect(await db.select(db.healthSamples).get(), hasLength(2));
+        expect(
+          (await db.syncDao.readState())!.fullCursor,
+          storageFailure ? 2 : 3,
+        );
+        expect((await db.syncDao.readState())!.cursor, 501);
+        if (!storageFailure) {
+          final recovered = jsonDecode(
+            (await db.select(db.syncDeferredRecords).getSingle()).recordJson,
+          );
+          expect(recovered['raw'], bad);
+          expect(recovered['recovered'], true);
+        }
+      },
+    );
+  }
 
   test(
     'full replay preserves newer manual fields, attempted bytes and newer deferred tombstone',
@@ -212,9 +255,23 @@ void main() {
       expect(await db.select(db.measurements).getSingle(), measurementBefore);
       expect(await db.select(db.syncOutbox).getSingle(), operationBefore);
       expect(
-        await db.select(db.syncDeferredRecords).getSingle(),
+        await (db.select(db.syncDeferredRecords)
+              ..where((r) => r.entityType.equals('healthSample'))
+              ..where((r) => r.entityId.equals(health.syncId)))
+            .getSingle(),
         deferredBefore,
       );
+      // The fake explicitly returns indeterminateOperation. Its new durable
+      // hold is separate from the exact deferred snapshot checked above.
+      final hold =
+          await (db.select(db.syncDeferredRecords)
+                ..where((r) => r.entityType.equals(SyncQuarantine.pushType)))
+              .getSingle();
+      final envelope = jsonDecode(hold.recordJson);
+      expect(envelope['operationId'], operationBefore.operationId);
+      expect(envelope['outcome']['kind'], 'indeterminateOperation');
+      expect(await db.select(db.syncDeferredRecords).get(), hasLength(2));
+      expect(sync.status, SyncStatus.conflict);
       expect(await HealthRepository(db).watchAll().first, isEmpty);
       expect((await db.syncDao.readState())!.fullCursor, 10);
       expect((await db.syncDao.readState())!.cursor, 0);

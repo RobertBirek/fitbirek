@@ -77,7 +77,14 @@ class AuthController extends StateNotifier<AuthState> {
     this.prepare,
     this.preparePush,
     this.disablePush,
-  }) : super(const AuthState.loading());
+  }) : super(const AuthState.loading()) {
+    final database = db;
+    if (database != null) {
+      _bindingSubscription = database
+          .tableUpdates(TableUpdateQuery.onTable(database.syncState))
+          .listen((_) => unawaited(_checkPersistentBinding()));
+    }
+  }
 
   final AuthApi _api;
   final AppDatabase? db;
@@ -86,16 +93,84 @@ class AuthController extends StateNotifier<AuthState> {
   final Future<void> Function(String)? preparePush;
   final Future<void> Function()? disablePush;
   bool _loggingOut = false;
+  int _intent = 0;
+  bool _hasBinding = false;
+  SyncStateData? _binding;
+  StreamSubscription<Set<TableUpdate>>? _bindingSubscription;
 
-  Future<void> _accept(String accountId) async {
-    await sync?.bindAccount(accountId);
-    final database = db;
-    if (database != null) {
-      await database
-          .update(database.syncState)
-          .write(const SyncStateCompanion(offlineAccess: Value(true)));
+  bool _current(int intent) => mounted && intent == _intent;
+
+  bool _sameBinding(SyncStateData? a, SyncStateData? b) =>
+      a?.accountId == b?.accountId &&
+      a?.deviceId == b?.deviceId &&
+      a?.offlineAccess == b?.offlineAccess;
+
+  // Observation is read-only: echoing lockOfflineAccess here would rotate the
+  // generation forever between tabs, and could revoke a newer explicit login.
+  void _invalidate() {
+    if (!mounted) return;
+    _intent++;
+    _hasBinding = false;
+    state = const AuthState.signedOut();
+    unawaited(sync?.stop());
+  }
+
+  Future<void> _checkPersistentBinding() async {
+    final intent = _intent;
+    final expected = _binding;
+    try {
+      final latest = await db?.syncDao.readState();
+      if (_current(intent) &&
+          _hasBinding &&
+          identical(expected, _binding) &&
+          !_sameBinding(expected, latest)) {
+        _invalidate();
+      }
+    } catch (_) {
+      if (_current(intent)) _invalidate();
     }
+  }
+
+  Future<bool> _captureBinding(int intent) async {
+    final binding = await db?.syncDao.readState();
+    if (!_current(intent)) return false;
+    if (_hasBinding && !_sameBinding(_binding, binding)) {
+      _invalidate();
+      return false;
+    }
+    _binding = binding;
+    _hasBinding = true;
+    return true;
+  }
+
+  Future<void> _accept(String accountId, int intent) async {
+    final database = db;
+    if (!_current(intent)) return;
+    if (database == null) {
+      await sync?.bindAccount(accountId);
+    } else {
+      // Check + bind + unlock are one shared-server transaction. A delayed
+      // session response must never unlock a generation revoked in another tab.
+      await database.transaction(() async {
+        final latest = await database.syncDao.readState();
+        if (!_current(intent)) return;
+        if (!_sameBinding(_binding, latest)) {
+          _invalidate();
+          return;
+        }
+        await sync?.bindAccount(accountId);
+        if (!_current(intent)) return;
+        await database
+            .update(database.syncState)
+            .write(const SyncStateCompanion(offlineAccess: Value(true)));
+        final accepted = await database.syncDao.readState();
+        if (_current(intent)) _binding = accepted;
+      });
+    }
+    if (!_current(intent)) return;
     await prepare?.call();
+    await _checkPersistentBinding();
+    if (!_current(intent)) return;
     state = AuthState.signedIn(accountId);
     sync?.start();
     final push = preparePush;
@@ -105,17 +180,27 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> _lockOfflineAccess() async {
     final database = db;
     if (database != null) {
-      await database
-          .update(database.syncState)
-          .write(const SyncStateCompanion(offlineAccess: Value(false)));
+      await database.syncDao.lockOfflineAccess();
     }
   }
 
   Future<void> unauthorized() async {
-    final disabling = _revokePush();
-    await _lockOfflineAccess();
-    if (!_loggingOut) state = const AuthState.signedOut();
-    await disabling;
+    final expected = _binding;
+    _invalidate();
+    final intent = _intent;
+    final database = db;
+    if (database != null) {
+      final locked = await database.transaction(() async {
+        final latest = await database.syncDao.readState();
+        if (!_current(intent) || !_sameBinding(expected, latest)) {
+          return false;
+        }
+        await _lockOfflineAccess();
+        return true;
+      });
+      if (!locked) return;
+    }
+    if (_current(intent)) await _revokePush();
   }
 
   Future<void> _revokePush() async {
@@ -127,39 +212,48 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<void> bootstrap() async {
-    final cached = await db?.syncDao.readState();
+    if (!mounted || _loggingOut) return;
+    final intent = ++_intent;
+    if (!await _captureBinding(intent)) return;
+    final cached = _binding;
     if (cached != null && !cached.offlineAccess) {
       // Repair a shutdown between the Drift lock and the separate consent DB
       // commit. This path must not depend on session restoration or connectivity.
       await _revokePush();
-      state = const AuthState.signedOut();
+      if (_current(intent)) state = const AuthState.signedOut();
       return;
     }
     try {
       final session = await _api.getSession();
+      await _checkPersistentBinding();
+      if (!_current(intent)) return;
       if (session == null) {
-        await sync?.stop();
         await unauthorized();
       } else {
-        await _accept(session.accountId);
+        await _accept(session.accountId, intent);
       }
     } on DioException catch (e) {
+      if (!_current(intent)) return;
       if (e.response == null && cached != null && cached.offlineAccess) {
-        await _accept(cached.accountId);
+        await _accept(cached.accountId, intent);
       } else {
         state = const AuthState.signedOut();
       }
     } catch (_) {
-      state = const AuthState.signedOut();
+      if (_current(intent)) state = const AuthState.signedOut();
     }
   }
 
   Future<void> login(String email, String password) async {
+    if (!mounted || _loggingOut) return;
+    final intent = ++_intent;
+    if (state.isSignedIn) state = const AuthState.loading();
+    if (!await _captureBinding(intent)) return;
     try {
       final session = await _api.login(email: email, password: password);
-      await _accept(session.accountId);
-    } on AuthFailure {
-      state = const AuthState.signedOut();
+      await _accept(session.accountId, intent);
+    } catch (_) {
+      if (_current(intent)) state = const AuthState.signedOut();
       rethrow;
     }
   }
@@ -167,6 +261,8 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> logout() async {
     if (_loggingOut) return;
     _loggingOut = true;
+    _intent++;
+    _hasBinding = false;
     // Wait for cookie revocation and the bounded local consent commit, not
     // PushManager cleanup. A slow bridge must not delay revoking the session.
     state = const AuthState.loading();
@@ -181,8 +277,15 @@ class AuthController extends StateNotifier<AuthState> {
       await stopping;
       await disabling;
       _loggingOut = false;
-      state = const AuthState.signedOut();
+      if (mounted) state = const AuthState.signedOut();
     }
+  }
+
+  @override
+  void dispose() {
+    _intent++;
+    unawaited(_bindingSubscription?.cancel());
+    super.dispose();
   }
 }
 

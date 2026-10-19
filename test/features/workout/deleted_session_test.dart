@@ -40,6 +40,7 @@ class DelayedFinishRepository extends WorkoutRepository {
     bool Function()? guard,
     String? note,
     String? accountId,
+    bool preserveRecordedDuration = false,
   }) async {
     await super.finishSession(
       id,
@@ -48,6 +49,7 @@ class DelayedFinishRepository extends WorkoutRepository {
       guard: guard,
       note: note,
       accountId: accountId,
+      preserveRecordedDuration: preserveRecordedDuration,
     );
     written.complete();
     await release.future;

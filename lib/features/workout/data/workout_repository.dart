@@ -10,6 +10,11 @@ import '../domain/workout_repeat.dart';
 import '../domain/workout_draft_write.dart';
 import '../../exercises/data/exercise_variants_repository.dart';
 
+class ActiveSessionExists extends StateError {
+  ActiveSessionExists()
+    : super('Aktywna sesja wymaga kontynuacji lub jawnego zakończenia.');
+}
+
 class WorkoutSessionUnavailable extends StateError {
   WorkoutSessionUnavailable(int id)
     : super('Workout session $id is missing or deleted.');
@@ -169,13 +174,20 @@ class WorkoutRepository {
     bool Function()? guard,
     String? accountId,
     WorkoutGuidance? guidance,
-  }) => _createSession(guard: guard, accountId: accountId, guidance: guidance);
+    bool requireNoActiveSession = false,
+  }) => _createSession(
+    guard: guard,
+    accountId: accountId,
+    guidance: guidance,
+    requireNoActiveSession: requireNoActiveSession,
+  );
 
   Future<int> _createSession({
     bool Function()? guard,
     String? accountId,
     WorkoutGuidance? guidance,
     String? syncId,
+    bool requireNoActiveSession = false,
   }) async {
     _requireGuard(guard);
     final now = DateTime.now().toUtc();
@@ -184,6 +196,16 @@ class WorkoutRepository {
     return _db.transaction(() async {
       _requireGuard(guard);
       if (accountId != null) await _requireAccount(accountId, guard);
+      if (requireNoActiveSession) {
+        final active =
+            await (_db.select(_db.workoutSessions)
+                  ..where(
+                    (s) => s.dataKoniec.isNull() & s.deletedAtUtc.isNull(),
+                  )
+                  ..limit(1))
+                .get();
+        if (active.isNotEmpty) throw ActiveSessionExists();
+      }
       final id = await _db.workoutDao.createSession(
         WorkoutSessionsCompanion.insert(
           dataStart: now,
@@ -273,9 +295,9 @@ class WorkoutRepository {
     bool Function()? guard,
     String? note,
     String? accountId,
+    bool preserveRecordedDuration = false,
   }) async {
     final now = DateTime.now().toUtc();
-    final duration = now.difference(start).inSeconds;
     await _db.transaction(() async {
       _requireGuard(guard);
       if (accountId != null) await _requireAccount(accountId, guard);
@@ -288,6 +310,9 @@ class WorkoutRepository {
                   session.syncId != expectedSyncId))) {
         throw WorkoutSessionUnavailable(sessionId);
       }
+      final duration = preserveRecordedDuration
+          ? session.czasTrwaniaSekund
+          : now.difference(start).inSeconds;
       await _db.workoutDao.updateSession(
         sessionId,
         WorkoutSessionsCompanion(

@@ -312,8 +312,12 @@ Future<void> mount(
   AuthFake? auth,
   ActionsFake? actions,
   MentorSettings? configuredSettings,
+  Size size = const Size(1000, 1100),
+  double textScale = 1,
+  bool reducedMotion = false,
+  double keyboardInset = 0,
 }) async {
-  await tester.binding.setSurfaceSize(const Size(1000, 1100));
+  await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
   final router = GoRouter(
     initialLocation: '/today',
@@ -321,7 +325,7 @@ Future<void> mount(
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => Scaffold(
           body: shell,
-          bottomNavigationBar: Row(
+          bottomNavigationBar: Wrap(
             children: [
               TextButton(
                 onPressed: () => shell.goBranch(0),
@@ -378,7 +382,18 @@ Future<void> mount(
         if (actions != null) mentorActionsProvider.overrideWithValue(actions),
         allExercisesProvider.overrideWith((ref) => Stream.value([exercise])),
       ],
-      child: MaterialApp.router(routerConfig: router),
+      child: MaterialApp.router(
+        routerConfig: router,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(textScale),
+            disableAnimations: reducedMotion,
+            accessibleNavigation: reducedMotion,
+            viewInsets: EdgeInsets.only(bottom: keyboardInset),
+          ),
+          child: child!,
+        ),
+      ),
     ),
   );
   await tester.pumpAndSettle();

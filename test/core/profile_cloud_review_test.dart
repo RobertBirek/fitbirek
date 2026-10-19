@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' show Uint8List, driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -116,6 +117,29 @@ Uint8List bytes(Map<String, dynamic> json) =>
 Map<String, dynamic> archivedProfile(Map<String, dynamic> json) =>
     (json['data']['userProfiles'] as List).single as Map<String, dynamic>;
 
+// A retryable transport failure is NOT the explicit indeterminateOperation
+// returned by blockPush. Seed a concurrently observed snapshot separately:
+// the failed push itself does not execute pull.
+Future<void> observeDeferredAfterTransportFailure(
+  AppDatabase db,
+  SyncService sync,
+  ReviewServer server,
+) async {
+  server.beforePush = () async => throw DioException.connectionError(
+    requestOptions: RequestOptions(path: '/api/sync/push'),
+    reason: 'Simulated connection loss',
+  );
+  try {
+    await sync.synchronize();
+    expect(sync.status, SyncStatus.offline);
+  } finally {
+    server.beforePush = null;
+  }
+  await db.transaction(
+    () => SyncStore(db).apply(Map<String, dynamic>.from(server.record!)),
+  );
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -143,9 +167,7 @@ void main() {
         await saveProfile(d.a, height: 195);
         await d.sa.synchronize();
         expect(d.server.record!['version'], 2);
-        d.server.blockPush = true;
-        await d.sb.synchronize();
-        d.server.blockPush = false;
+        await observeDeferredAfterTransportFailure(d.b, d.sb, d.server);
         expect((await d.b.userProfileDao.watchProfileOnce())!.syncVersion, 2);
         expect(
           (await d.b.select(d.b.syncDeferredRecords).getSingle()).version,
@@ -381,9 +403,7 @@ void main() {
       await saveProfile(d.a, height: 195);
       await d.sa.synchronize();
       expect(d.server.record!['version'], 3);
-      d.server.blockPush = true;
-      await sync.synchronize();
-      d.server.blockPush = false;
+      await observeDeferredAfterTransportFailure(db, sync, d.server);
       expect((await db.userProfileDao.watchProfileOnce())!.syncVersion, 3);
       await saveProfile(db, name: 'Later after reopen');
       final pending = await db.syncDao.pendingOperations();

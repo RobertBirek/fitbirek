@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' show Value, Uint8List, driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +19,22 @@ import '../../core/profile_cloud_review_test.dart' show ReviewServer;
 import 'weekly_schedule_test.dart' show rule, ruleId, planId;
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart' as sqlite;
+
+// A transport failure is retryable. ReviewServer.blockPush instead
+// returns an explicit indeterminateOperation, which must remain held
+// until authoritative resolution; it is not an offline simulation.
+Future<void> failPushTransport(SyncService sync, ReviewServer server) async {
+  server.beforePush = () async => throw DioException.connectionError(
+    requestOptions: RequestOptions(path: '/api/sync/push'),
+    reason: 'Simulated connection loss',
+  );
+  try {
+    await sync.synchronize();
+    expect(sync.status, SyncStatus.offline);
+  } finally {
+    server.beforePush = null;
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -56,9 +73,7 @@ void main() {
         )).success,
         isTrue,
       );
-      server.blockPush = true;
-      await sb.synchronize();
-      server.blockPush = false;
+      await failPushTransport(sb, server);
       final attempted = (await b.syncDao.pendingOperations()).single.toJson();
       await saveProfile(b, name: 'Po wyczyszczeniu');
       final pending = await b.syncDao.pendingOperations();
@@ -77,6 +92,7 @@ void main() {
         isNull,
       );
       expect(await b.syncDao.pendingOperations(), isEmpty);
+      expect(sb.status, SyncStatus.idle);
     },
   );
   test(
@@ -141,9 +157,16 @@ void main() {
         });
         await sa.synchronize();
         if (deferred) {
-          server.blockPush = true;
-          await sb.synchronize();
-          server.blockPush = false;
+          await failPushTransport(sb, server);
+          // Model a snapshot observed by another pull while this attempted
+          // request is unresolved. A failed push does not itself run pull.
+          await b.transaction(
+            () => SyncStore(b).apply(Map<String, dynamic>.from(server.record!)),
+          );
+          expect(
+            (await b.select(b.syncDeferredRecords).getSingle()).version,
+            server.record!['version'],
+          );
           final attempted = (await b.syncDao.pendingOperations()).single
               .toJson();
           await saveProfile(b, name: 'Późniejsza edycja');
@@ -160,6 +183,8 @@ void main() {
         }
         final x = await ca.load('account', 'weeklySchedule'),
             y = await cb.load('account', 'weeklySchedule');
+        expect(sa.status, SyncStatus.idle);
+        expect(sb.status, SyncStatus.idle);
         expect(UserCollections.canonical(x), UserCollections.canonical(y));
         expect(x['entries'], hasLength(2));
         expect(
@@ -228,7 +253,11 @@ void main() {
       await SyncStore(db).apply({
         ...op,
         'version': 11,
-        'payload': {...op['payload'] as Map, 'weeklySchedule': null},
+        // Match the string-keyed object produced by JSON HTTP decoding.
+        'payload': <String, dynamic>{
+          ...op['payload'] as Map,
+          'weeklySchedule': null,
+        },
       });
       expect(
         (await db.userProfileDao.watchProfileOnce())!.weeklyScheduleJson,

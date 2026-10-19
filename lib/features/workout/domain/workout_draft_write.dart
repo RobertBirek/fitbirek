@@ -89,8 +89,8 @@ Set<String> changedCheckpointKeys(
     mainKey(a, before);
     mainKey(b, after);
   }
-  final oldForms = a['extraForms'] as Map? ?? {},
-      newForms = b['extraForms'] as Map? ?? {};
+  final oldForms = {...?a['extraForms'] as Map?, ...?a['guidedForms'] as Map?},
+      newForms = {...?b['extraForms'] as Map?, ...?b['guidedForms'] as Map?};
   for (final key in {
     ...oldForms.keys.cast<String>(),
     ...newForms.keys.cast<String>(),
@@ -205,7 +205,7 @@ class WorkoutDraftPatch {
       final extraTimer =
           path.length >= 4 &&
           path[0] == 'fields' &&
-          path[1] == 'extraForms' &&
+          (path[1] == 'extraForms' || path[1] == 'guidedForms') &&
           (path[3] == 'timer' || path[3] == 'timerBinding');
       final mainTimer =
           path.length >= 2 &&

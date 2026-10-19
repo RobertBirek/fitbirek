@@ -22,6 +22,14 @@ class TestScoreChart extends StatefulWidget {
 
 class _TestScoreChartState extends State<TestScoreChart> {
   TypTestu? _selected;
+  static const _pageSize = 5;
+  int _historyPage = 0;
+
+  @override
+  void didUpdateWidget(covariant TestScoreChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.allResults != widget.allResults) _historyPage = 0;
+  }
 
   List<TypTestu> get _typyZWynikami {
     final typyNazwy = widget.allResults.map((r) => r.typ).toSet();
@@ -33,13 +41,12 @@ class _TestScoreChartState extends State<TestScoreChart> {
     final dostepneTypy = _typyZWynikami;
 
     if (dostepneTypy.isEmpty) {
-      return const SizedBox(
-        height: 100,
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
         child: Center(
           child: Text(
             'Wykonaj pierwszy test sprawności, żeby zobaczyć progres',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey),
           ),
         ),
       );
@@ -54,40 +61,97 @@ class _TestScoreChartState extends State<TestScoreChart> {
     final historia =
         widget.allResults.where((r) => r.typ == selected.name).toList()
           ..sort((a, b) => a.data.compareTo(b.data));
+    // Strony liczone od najnowszych, wiersze w obrębie strony chronologicznie.
+    // Wykres nadal korzysta z pełnej historii.
+    final page = _historyPage.clamp(0, (historia.length - 1) ~/ _pageSize);
+    final end = historia.length - page * _pageSize;
+    final start = (end - _pageSize).clamp(0, end);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 36,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: dostepneTypy.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            itemBuilder: (context, i) {
-              final typ = dostepneTypy[i];
-              return ChoiceChip(
-                label: Text(typ.label),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final typ in dostepneTypy)
+              ChoiceChip(
+                // Chip domyślnie ogranicza etykietę do jednej linii.
+                label: Builder(
+                  builder: (context) => DefaultTextStyle(
+                    style: DefaultTextStyle.of(context).style,
+                    child: Text(typ.label),
+                  ),
+                ),
                 selected: typ == selected,
-                onSelected: (_) => setState(() => _selected = typ),
-              );
-            },
-          ),
+                onSelected: (_) => setState(() {
+                  _selected = typ;
+                  _historyPage = 0;
+                }),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+              ),
+          ],
         ),
         const SizedBox(height: 16),
+        Text(
+          'Najnowszy wynik: ${historia.last.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(historia.last.data)}',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 12),
         if (historia.length < 2)
-          SizedBox(
-            height: 120,
-            child: Center(
-              child: Text(
-                'Dodaj przynajmniej 2 wyniki testu "${selected.label}",\nżeby zobaczyć trend',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ),
+          Text(
+            'Dodaj przynajmniej 2 wyniki testu "${selected.label}",\nżeby zobaczyć trend',
           )
         else
-          _ScoreChart(history: historia, typ: selected),
+          ExcludeSemantics(
+            child: _ScoreChart(history: historia, typ: selected),
+          ),
+        const SizedBox(height: 16),
+        Semantics(
+          header: true,
+          child: Text(
+            'Historia wyników',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
+        for (final wynik in historia.sublist(start, end))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Semantics(
+              container: true,
+              child: Text(
+                '${wynik.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(wynik.data)} • score ${wynik.score}/100',
+              ),
+            ),
+          ),
+        if (historia.length > _pageSize) ...[
+          Semantics(
+            liveRegion: true,
+            child: Text('Wyniki ${start + 1}–$end z ${historia.length}'),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton(
+                onPressed: start > 0
+                    ? () => setState(() => _historyPage = page + 1)
+                    : null,
+                child: const Text(
+                  'Starsze wyniki',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              OutlinedButton(
+                onPressed: page > 0
+                    ? () => setState(() => _historyPage = page - 1)
+                    : null,
+                child: const Text('Nowsze wyniki', textAlign: TextAlign.center),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -101,6 +165,7 @@ class _ScoreChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final axisColor = Theme.of(context).colorScheme.onSurfaceVariant;
     final spots = <FlSpot>[
       for (var i = 0; i < history.length; i++)
         FlSpot(i.toDouble(), history[i].score.toDouble()),
@@ -136,7 +201,7 @@ class _ScoreChart extends StatelessWidget {
                 interval: 25,
                 getTitlesWidget: (value, meta) => Text(
                   value.toStringAsFixed(0),
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  style: TextStyle(fontSize: 11, color: axisColor),
                 ),
               ),
             ),
@@ -154,7 +219,7 @@ class _ScoreChart extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
                       Formatters.dayMonth(history[index].data),
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      style: TextStyle(fontSize: 10, color: axisColor),
                     ),
                   );
                 },

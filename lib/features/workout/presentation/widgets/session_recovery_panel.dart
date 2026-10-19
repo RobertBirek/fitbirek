@@ -16,6 +16,66 @@ class _SessionRecoveryPanelState extends ConsumerState<SessionRecoveryPanel> {
   bool busy = false;
   String? error;
 
+  Future<void> finish(
+    SessionRecovery snapshot,
+    RecoverableSession session,
+  ) async {
+    final authority = ref.read(cachedAuthWriteAuthorityProvider);
+    if (busy ||
+        snapshot.accountId == null ||
+        authority.epoch != snapshot.epoch) {
+      return;
+    }
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(
+          title: const Text('Zakończyć bez wznawiania?'),
+          content: const Text(
+            'Zachowamy zapisane serie i dotychczasowy zapis czasu. Nie odtworzymy szkicu ani nie doliczymy czasu nieobecności. Niezapisany szkic zostanie usunięty.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Zakończ sesję'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted || authority.epoch != snapshot.epoch) {
+        return;
+      }
+      final id = await ref
+          .read(activeWorkoutProvider.notifier)
+          .finishPendingSession(
+            session.syncId,
+            expectedAccountId: snapshot.accountId,
+            expectedAuthorityEpoch: snapshot.epoch,
+          );
+      if (mounted && authority.epoch == snapshot.epoch && id == null) {
+        setState(
+          () => error = 'Sesja lub konto uległy zmianie. Sprawdź ponownie.',
+        );
+      }
+    } catch (_) {
+      if (mounted && authority.epoch == snapshot.epoch) {
+        setState(
+          () => error = 'Nie udało się zakończyć treningu. Spróbuj ponownie.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   Future<void> resume(
     SessionRecovery snapshot,
     RecoverableSession session,
@@ -117,6 +177,10 @@ class _SessionRecoveryPanelState extends ConsumerState<SessionRecoveryPanel> {
                             : () => resume(snapshot, session),
                         child: const Text('Wznów trening'),
                       ),
+                    TextButton(
+                      onPressed: busy ? null : () => finish(snapshot, session),
+                      child: const Text('Zakończ bez wznawiania'),
+                    ),
                     TextButton(
                       onPressed: busy
                           ? null

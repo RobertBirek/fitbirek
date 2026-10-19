@@ -132,7 +132,7 @@ void main() {
       server.record = {
         ...server.record!,
         'version': 2,
-        'payload': {
+        'payload': <String, dynamic>{
           ...server.record!['payload'] as Map,
           'weeklySchedule': {'version': 2, 'entries': []},
         },
@@ -169,7 +169,7 @@ void main() {
       server.record = {
         ...server.record!,
         'version': 3,
-        'payload': {
+        'payload': <String, dynamic>{
           ...server.record!['payload'] as Map,
           'weeklySchedule': collection([rule()]),
           'filterPresets': collection([
@@ -264,7 +264,10 @@ void main() {
           server.record = {
             ...server.record!,
             'version': 2,
-            'payload': {...server.record!['payload'] as Map, key: invalid},
+            'payload': <String, dynamic>{
+              ...server.record!['payload'] as Map,
+              key: invalid,
+            },
           };
           server.log.addAll([server.record!, setRecord(), sessionRecord()]);
           await b.customStatement('UPDATE sync_outbox SET attempted = 1');
@@ -305,7 +308,7 @@ void main() {
             {
               ...sessionRecord(),
               'version': 2,
-              'payload': {
+              'payload': <String, dynamic>{
                 ...sessionRecord()['payload'] as Map,
                 'notatka': 'Remote after hold',
               },
@@ -313,7 +316,10 @@ void main() {
             {
               ...setRecord(),
               'version': 2,
-              'payload': {...setRecord()['payload'] as Map, 'powtorzenia': 10},
+              'payload': <String, dynamic>{
+                ...setRecord()['payload'] as Map,
+                'powtorzenia': 10,
+              },
             },
           ]);
           for (var i = 0; i < 3; i++) {

@@ -28,6 +28,102 @@ class MentorPage extends ConsumerStatefulWidget {
 class _MentorPageState extends ConsumerState<MentorPage>
     with WidgetsBindingObserver {
   final _input = TextEditingController();
+  final _messages = ScrollController();
+  int _scrollGeneration = 0;
+  bool _newReply = false;
+  int _scrollIntent = 0;
+  bool _startingScroll = false;
+  bool _autoScrolling = false;
+
+  bool get _nearEnd =>
+      !_messages.hasClients || _messages.position.extentAfter < 80;
+
+  void _resetScroll() {
+    _scrollGeneration++;
+    _newReply = false;
+    // Stop an animation belonging to the previous conversation immediately.
+    if (_messages.hasClients) _messages.jumpTo(_messages.offset);
+  }
+
+  void _latest({bool animate = true, bool conditional = false}) {
+    final ticket = ++_scrollGeneration;
+    final generation = _generation;
+    final session = ref.read(mentorConversationProvider).sessionId;
+    final intent = _scrollIntent;
+    final previousEnd = _messages.hasClients
+        ? _messages.position.maxScrollExtent
+        : 0.0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          ticket != _scrollGeneration ||
+          generation != _generation ||
+          !_foreground ||
+          _router?.routeInformationProvider.value.uri.path != '/today' ||
+          session != ref.read(mentorConversationProvider).sessionId ||
+          !_messages.hasClients) {
+        return;
+      }
+      // Compare against the old end: layout growth from the answer itself
+      // must not look like the user moving away from the conversation end.
+      if (conditional &&
+          (intent != _scrollIntent || previousEnd - _messages.offset >= 80)) {
+        setState(() => _newReply = true);
+        return;
+      }
+      if (_newReply) setState(() => _newReply = false);
+      final media = MediaQuery.of(context);
+      final end = _messages.position.maxScrollExtent;
+      _startingScroll = _autoScrolling = true;
+      try {
+        if (!animate || media.disableAnimations || media.accessibleNavigation) {
+          _messages.jumpTo(end);
+          _autoScrolling = false;
+        } else {
+          _messages
+              .animateTo(
+                end,
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+              )
+              .whenComplete(() {
+                if (mounted && ticket == _scrollGeneration) {
+                  _autoScrolling = false;
+                }
+              });
+        }
+      } finally {
+        _startingScroll = false;
+      }
+    });
+  }
+
+  void _conversationChanged(
+    MentorConversationState? previous,
+    MentorConversationState next,
+  ) {
+    if (!_foreground ||
+        _router?.routeInformationProvider.value.uri.path != '/today') {
+      _resetScroll();
+      return;
+    }
+    if (previous?.sessionId != next.sessionId) {
+      _resetScroll();
+      if (next.sessionId != null) _latest(animate: false);
+      return;
+    }
+    if (next.messages.isEmpty ||
+        // Removing a rejected local draft is not a new assistant answer.
+        previous?.messages.any((m) => m.id == next.messages.last.id) == true) {
+      return;
+    }
+    final last = next.messages.last;
+    if (!last.isAssistant || _nearEnd) {
+      _latest(conditional: last.isAssistant);
+    } else {
+      setState(() => _newReply = true);
+    }
+  }
+
   late final MentorVoice _voice;
   bool _voiceBusy = false;
   bool _foreground = true;
@@ -92,6 +188,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
 
   void _cleanup() {
     _generation++;
+    _resetScroll();
     _stopVoice();
     _timer?.cancel();
     _ttl?.cancel();
@@ -139,6 +236,8 @@ class _MentorPageState extends ConsumerState<MentorPage>
 
   @override
   void dispose() {
+    _scrollGeneration++;
+    _messages.dispose();
     _input.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _router?.routerDelegate.removeListener(_routeChanged);
@@ -193,15 +292,16 @@ class _MentorPageState extends ConsumerState<MentorPage>
   }
 
   Future<void> _composeContext() async {
+    final generation = _generation;
     final settings = ref.read(mentorSettingsProvider).valueOrNull;
     if (settings == null || _input.text.trim().isEmpty) return;
+    // Fetch only on explicit opening, never auto-refresh/approve after rejection.
+    ref.invalidate(mentorContextOptionsProvider);
     final selection = await showDialog<MentorContextSelection>(
       context: context,
-      builder: (_) => MentorContextComposer(
-        consents: settings.contextConsents,
-      ),
+      builder: (_) => MentorContextComposer(consents: settings.contextConsents),
     );
-    if (!mounted || selection == null) return;
+    if (!mounted || generation != _generation || selection == null) return;
     await _send(context: selection, settingsRevision: settings.revision);
   }
 
@@ -456,6 +556,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
     });
     final settings = ref.watch(mentorSettingsProvider);
     final state = ref.watch(mentorConversationProvider);
+    ref.listen(mentorConversationProvider, _conversationChanged);
     final enabled =
         _foreground &&
         _router?.routeInformationProvider.value.uri.path == '/today' &&
@@ -639,53 +740,102 @@ class _MentorPageState extends ConsumerState<MentorPage>
                     )
                   : state.loading && state.messages.isEmpty
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount:
-                          state.messages.length + (state.loading ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == state.messages.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('Mentor odpowiada…'),
-                            ),
-                          );
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        // Real offset activity, not ScrollMetricsNotification:
+                        // covers drag, wheel, keyboard and external jumpTo.
+                        if (notification is ScrollStartNotification &&
+                            !_startingScroll) {
+                          _autoScrolling = false;
+                          _scrollIntent++;
+                        } else if (notification is ScrollUpdateNotification &&
+                            !_autoScrolling &&
+                            notification.scrollDelta != 0) {
+                          _scrollIntent++;
                         }
-                        final message = state.messages[index];
-                        return _MessageBubble(
-                          message: message,
-                          playing: _playing == message.id,
-                          onPlay:
-                              message.isAssistant &&
-                                  !_voiceBusy &&
-                                  !_recording &&
-                                  settings.valueOrNull?.consentVoice == true &&
-                                  settings.valueOrNull?.elevenLabsConfigured ==
-                                      true &&
-                                  _voice.supported
-                              ? () => _play(message)
-                              : null,
-                          onProposal: message.proposal == null
-                              ? null
-                              : () => _confirm(message.proposal!),
-                        );
+                        if (notification is ScrollEndNotification &&
+                            _newReply &&
+                            _nearEnd) {
+                          setState(() => _newReply = false);
+                        }
+                        return false;
                       },
+                      child: SingleChildScrollView(
+                        key: const ValueKey('mentor-messages'),
+                        controller: _messages,
+                        padding: const EdgeInsets.all(16),
+                        // History is capped at 40 messages by the API. Eager
+                        // layout gives an exact end even for unequal bubbles.
+                        child: Column(
+                          children: List.generate(
+                            state.messages.length + (state.loading ? 1 : 0),
+                            (index) {
+                              if (index == state.messages.length) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text('Mentor odpowiada…'),
+                                  ),
+                                );
+                              }
+                              final message = state.messages[index];
+                              return _MessageBubble(
+                                message: message,
+                                playing: _playing == message.id,
+                                onPlay:
+                                    message.isAssistant &&
+                                        !_voiceBusy &&
+                                        !_recording &&
+                                        settings.valueOrNull?.consentVoice ==
+                                            true &&
+                                        settings
+                                                .valueOrNull
+                                                ?.elevenLabsConfigured ==
+                                            true &&
+                                        _voice.supported
+                                    ? () => _play(message)
+                                    : null,
+                                onProposal: message.proposal == null
+                                    ? null
+                                    : () => _confirm(message.proposal!),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ),
             ),
-            if (state.error != null)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  state.error!,
-                  style: const TextStyle(color: FitBirekColors.danger),
+            if (enabled && _newReply)
+              Semantics(
+                liveRegion: true,
+                child: TextButton.icon(
+                  onPressed: () => _latest(),
+                  icon: const Icon(Icons.arrow_downward),
+                  label: const Text('Nowa odpowiedź'),
                 ),
               ),
-            if (state.error != null && enabled)
-              TextButton(
-                onPressed: state.loading ? null : () => _send(regenerate: true),
-                child: const Text(_regenerateLabel),
+            if (state.error != null)
+              Flexible(
+                flex: 2,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      Text(
+                        state.error!,
+                        style: const TextStyle(color: FitBirekColors.danger),
+                      ),
+                      if (enabled)
+                        TextButton(
+                          onPressed: state.loading
+                              ? null
+                              : () => _send(regenerate: true),
+                          child: const Text(_regenerateLabel),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
@@ -712,7 +862,9 @@ class _MentorPageState extends ConsumerState<MentorPage>
                       controller: _input,
                       maxLength: 2000,
                       minLines: 1,
-                      maxLines: 4,
+                      maxLines: MediaQuery.viewInsetsOf(context).bottom > 0
+                          ? 2
+                          : 4,
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _send(),
                       decoration: const InputDecoration(
@@ -814,7 +966,9 @@ class _MessageBubble extends StatelessWidget {
         children: [
           Text(
             message.text,
-            style: TextStyle(color: message.isAssistant ? null : Colors.white),
+            style: TextStyle(
+              color: message.isAssistant ? null : FitBirekColors.onAccent,
+            ),
           ),
           if (message.isAssistant && onPlay != null)
             Align(

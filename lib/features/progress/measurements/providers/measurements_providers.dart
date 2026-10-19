@@ -2,10 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/database/app_database.dart' show MeasurementData;
 import '../../../../core/providers/database_provider.dart';
 import '../data/measurements_repository.dart';
+import '../../../auth/providers/auth_providers.dart';
 
 final measurementsRepositoryProvider = Provider<MeasurementsRepository>((ref) {
   final db = ref.watch(appDatabaseProvider);
-  return MeasurementsRepository(db);
+  return MeasurementsRepository(
+    db,
+    authority: ref.watch(cachedAuthWriteAuthorityProvider),
+  );
 });
 
 final allMeasurementsProvider = StreamProvider<List<MeasurementData>>((ref) {

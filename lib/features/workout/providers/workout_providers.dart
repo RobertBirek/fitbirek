@@ -340,6 +340,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
   }
 
   Future<void> startSession({WorkoutGuidance? guidance}) async {
+    if (state.isActive && _ownsAuthority) return;
     final generation = ++_generation;
     _lastDraftSnapshot = null;
     _checkpointEpochs = {};
@@ -363,6 +364,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     _sessionAccount = authority.state?.accountId ?? binding?.accountId;
     if (!current()) return;
     final id = await repo.startSession(
+      requireNoActiveSession: true,
       guard: current,
       accountId: authority.state?.accountId,
       guidance: guidance,
@@ -622,8 +624,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       if (a['timer'] != null) addMain(a);
       if (b['timer'] != null) addMain(b);
     }
-    final oldForms = a['extraForms'] as Map? ?? {},
-        newForms = b['extraForms'] as Map? ?? {};
+    final oldForms = {
+          ...?a['extraForms'] as Map?,
+          ...?a['guidedForms'] as Map?,
+        },
+        newForms = {...?b['extraForms'] as Map?, ...?b['guidedForms'] as Map?};
     for (final key in {
       ...oldForms.keys.cast<String>(),
       ...newForms.keys.cast<String>(),
@@ -678,6 +683,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
   }
 
   Map<String, Object?> _clearedGuidedFields() => {
+    if (state.draft.containsKey('guidedForms'))
+      'guidedForms': state.draft['guidedForms'],
+    if (state.draft.containsKey('guidedSelections'))
+      'guidedSelections': state.draft['guidedSelections'],
     if (state.draft.containsKey('extraForms'))
       'extraForms': state.draft['extraForms'],
     if (state.draft.containsKey('extraSelections'))
@@ -765,14 +774,99 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     final g = state.guidance;
     if (!_ownsAuthority ||
         _guidedBusy ||
+        _draftConsumptionInFlight ||
         g == null ||
         slot < 0 ||
         slot >= g.plan.blocks.length) {
       return false;
     }
-    state = state.copyWith(currentSlot: slot, draft: _clearedGuidedFields());
-    updateDraft({});
+    if (slot == state.currentSlot) return true;
+    _switchGuidedDraft(slot);
     return true;
+  }
+
+  /// UI saves the source controllers and explicitly discards its timer first.
+  /// Identity changes must load a destination, not merge source measurements.
+  bool selectGuidedIdentity(
+    String exerciseId, {
+    required String? side,
+    required String? variantId,
+    String? variantLabel,
+  }) {
+    if (!state.isActive ||
+        !_ownsAuthority ||
+        _guidedBusy ||
+        _draftConsumptionInFlight ||
+        state.guidance == null ||
+        state.guidance!.exerciseAt(state.currentSlot) != exerciseId) {
+      return false;
+    }
+    if (state.draft['side'] == side && state.draft['variantId'] == variantId) {
+      return true;
+    }
+    if (state.draft['timer'] != null) return false;
+    _switchGuidedDraft(
+      state.currentSlot,
+      identity: {
+        'side': side,
+        'variantId': variantId,
+        'variantLabel': variantLabel,
+      },
+    );
+    return true;
+  }
+
+  void _switchGuidedDraft(int slot, {Map<String, Object?>? identity}) {
+    final g = state.guidance!;
+    final forms = Map<String, Object?>.from(
+      state.draft['guidedForms'] as Map? ?? {},
+    );
+    final selections = Map<String, Object?>.from(
+      state.draft['guidedSelections'] as Map? ?? {},
+    );
+    final sourceKey = checkpointKey(
+      state.sessionSyncId,
+      g.exerciseAt(state.currentSlot),
+      state.draft['side'] as String?,
+      state.draft['variantId'] as String?,
+      extra: false,
+      slot: state.currentSlot,
+    );
+    final source = {...state.draft}
+      ..remove('guidedForms')
+      ..remove('guidedSelections')
+      ..remove('extraForms')
+      ..remove('extraSelections');
+    forms[sourceKey] = source;
+    selections[jsonEncode([
+          state.currentSlot,
+          g.exerciseAt(state.currentSlot),
+        ])] =
+        sourceKey;
+    final selectionKey = jsonEncode([slot, g.exerciseAt(slot)]);
+    final targetKey = identity == null
+        ? selections[selectionKey]
+        : checkpointKey(
+            state.sessionSyncId,
+            g.exerciseAt(slot),
+            identity['side'] as String?,
+            identity['variantId'] as String?,
+            extra: false,
+            slot: slot,
+          );
+    final target = targetKey is String ? forms.remove(targetKey) : null;
+    if (targetKey is String) selections[selectionKey] = targetKey;
+    state = state.copyWith(
+      currentSlot: slot,
+      draft: {
+        ..._clearedGuidedFields(),
+        ...?identity,
+        if (target is Map) ...Map<String, Object?>.from(target),
+        'guidedForms': forms,
+        'guidedSelections': selections,
+      },
+    );
+    updateDraft({});
   }
 
   Future<bool> guidedEvent({String? replacement}) async {
@@ -978,12 +1072,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     return true;
   }
 
-  /// Closing a damaged draft must not need to decode its guidance or timer.
-  Future<int?> finishPendingSession(String sessionSyncId) async {
+  /// Explicit recovery finish needs neither a draft nor inferred elapsed work.
+  Future<int?> finishPendingSession(
+    String sessionSyncId, {
+    String? expectedAccountId,
+    int? expectedAuthorityEpoch,
+  }) async {
     if (state.isActive) return null;
     final generation = _generation;
     final authority = _ref.read(cachedAuthWriteAuthorityProvider),
         epoch = _ref.read(cachedAuthWriteAuthorityProvider).epoch;
+    if (expectedAuthorityEpoch != null && expectedAuthorityEpoch != epoch) {
+      return null;
+    }
     bool guard() =>
         mounted &&
         generation == _generation &&
@@ -997,12 +1098,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         final binding = await db.syncDao.readState();
         if (!guard() ||
             binding?.offlineAccess != true ||
+            (expectedAccountId != null &&
+                binding?.accountId != expectedAccountId) ||
             (authority.state != null &&
                 authority.state!.accountId != binding!.accountId)) {
           return null;
         }
-        final drafts = await repo.pendingDrafts(binding!.accountId);
-        if (!guard() || !drafts.any((d) => d.sessionSyncId == sessionSyncId)) {
+        // Legacy/synced rows belong to sync_state's bound dataset. A draft
+        // explicitly owned by another account must never authorize this action.
+        final account = binding!.accountId;
+        final drafts = await (db.select(
+          db.workoutDrafts,
+        )..where((d) => d.sessionSyncId.equals(sessionSyncId))).get();
+        if (!guard() || drafts.any((d) => d.accountId != account)) {
           return null;
         }
         final row = await repo.findSessionBySyncId(sessionSyncId);
@@ -1018,7 +1126,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           expectedSyncId: sessionSyncId,
           accountId: binding.accountId,
           guard: guard,
+          preserveRecordedDuration: true,
         );
+        if (!guard()) throw WorkoutAccountUnavailable();
         return row.id;
       });
     } on WorkoutAccountUnavailable {

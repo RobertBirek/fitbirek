@@ -16,10 +16,38 @@ import 'package:fitbirek_training/features/workout/providers/workout_providers.d
 import 'guided_extras_review_test.dart' show reviewContainer, reviewPlan, extra;
 import 'guided_side_checkpoint_review_test.dart' show completedLeftTimer;
 import '../../core/profile_collections_sync_test.dart' show saveProfile;
+import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
+
+StructuredPlan guidedPlan(String id) => StructuredPlan(
+  criteria: reviewPlan().criteria,
+  budgetSeconds: 300,
+  blocks: [
+    PlanBlock(
+      exerciseId: id,
+      section: PlanSection.main,
+      prescription: const PlanPrescription(
+        tracking: 'reps',
+        sets: 2,
+        reps: 10,
+        workSeconds: 30,
+        restSeconds: 20,
+        transitionSeconds: 10,
+      ),
+    ),
+    reviewPlan().blocks.first,
+  ],
+  warnings: [],
+);
 
 void main() {
+  for (final guided in [false, true]) {
+    _identityTests(guided);
+  }
+}
+
+void _identityTests(bool guided) {
   testWidgets(
-    'extra variants load exact destination, keep cancelled timer, restore defaults only for new keys',
+    'variants load exact destination, keep cancelled timer, restore defaults only for new keys guided=$guided',
     (tester) async {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMessageHandler(
@@ -65,9 +93,9 @@ void main() {
             exerciseCatalogMetadataProvider.overrideWith(
               (ref) async => ExerciseCatalogMetadata(
                 exercises: {
-                  ex.id: const ExerciseCatalogEntry(
+                  ex.id: ExerciseCatalogEntry(
                     tracking: 'reps',
-                    unilateral: false,
+                    unilateral: guided,
                   ),
                 },
               ),
@@ -75,7 +103,11 @@ void main() {
           ],
         );
         final n = c.read(activeWorkoutProvider.notifier);
-        await n.startSession(guidance: WorkoutGuidance.start(reviewPlan()));
+        await n.startSession(
+          guidance: WorkoutGuidance.start(
+            guided ? guidedPlan(ex.id) : reviewPlan(),
+          ),
+        );
         n.addExercise(ex);
         await n.flushDraft();
         uuid = c.read(activeWorkoutProvider).sessionSyncId!;
@@ -94,7 +126,9 @@ void main() {
           await db.close();
         });
       });
-      Finder card() => find.byKey(ValueKey('extra:$uuid:$exerciseId'));
+      Finder card() => find.byKey(
+        ValueKey(guided ? '$uuid:0:$exerciseId' : 'extra:$uuid:$exerciseId'),
+      );
       Finder field(int i) =>
           find.descendant(of: card(), matching: find.byType(TextField)).at(i);
       String value(int i) =>
@@ -127,17 +161,19 @@ void main() {
       }
 
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Dodatkowe ćwiczenia'),
-        400,
-        maxScrolls: 8,
-        scrollable: find.byType(Scrollable).first,
-      );
+      if (!guided) {
+        await tester.scrollUntilVisible(
+          find.text('Dodatkowe ćwiczenia'),
+          400,
+          maxScrolls: 8,
+          scrollable: find.byType(Scrollable).first,
+        );
+      }
       await enter(0, '5');
       await enter(1, '9');
       await choose('Wariant A');
       expect(value(0), '10.0');
-      expect(value(1), '');
+      expect(value(1), guided ? '10' : '');
       await enter(0, '12');
       await enter(1, '8');
       await tester.runAsync(() async {
@@ -146,21 +182,27 @@ void main() {
             .updateExerciseDraft(
               exerciseId,
               {'timer': completedLeftTimer()},
-              extra: true,
+              extra: !guided,
               variantId: a,
             );
         await c.read(activeWorkoutProvider.notifier).flushDraft();
       });
       await choose('Wariant B', cancel: true);
       expect(
-        c
-            .read(activeWorkoutProvider)
-            .exerciseDraft(exerciseId, extra: true, variantId: a)['timer'],
+        guided
+            ? c.read(activeWorkoutProvider).draft['timer']
+            : c
+                  .read(activeWorkoutProvider)
+                  .exerciseDraft(
+                    exerciseId,
+                    extra: true,
+                    variantId: a,
+                  )['timer'],
         isNotNull,
       );
       await choose('Wariant B');
       expect(value(0), '20.0');
-      expect(value(1), '');
+      expect(value(1), guided ? '10' : '');
       await enter(0, '22');
       await enter(1, '6');
       await choose('Wariant A');
@@ -185,32 +227,98 @@ void main() {
         );
       });
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Dodatkowe ćwiczenia'),
-        400,
-        maxScrolls: 8,
-        scrollable: find.byType(Scrollable).first,
-      );
+      if (!guided) {
+        await tester.scrollUntilVisible(
+          find.text('Dodatkowe ćwiczenia'),
+          400,
+          maxScrolls: 8,
+          scrollable: find.byType(Scrollable).first,
+        );
+      }
       expect(value(0), '5');
       expect(value(1), '9');
       await choose('Wariant B');
       expect(value(0), '22');
       expect(value(1), '6');
       expect(
-        c
-            .read(activeWorkoutProvider)
-            .exerciseDraft(exerciseId, extra: true, variantId: a)['timer'],
+        guided
+            ? c.read(activeWorkoutProvider).draft['timer']
+            : c
+                  .read(activeWorkoutProvider)
+                  .exerciseDraft(
+                    exerciseId,
+                    extra: true,
+                    variantId: a,
+                  )['timer'],
         isNull,
       );
       expect(
-        c.read(activeWorkoutProvider).extraSelection(exerciseId)['variantId'],
+        guided
+            ? c.read(activeWorkoutProvider).draft['variantId']
+            : c
+                  .read(activeWorkoutProvider)
+                  .extraSelection(exerciseId)['variantId'],
         b,
       );
+      if (guided) {
+        Future<void> side(String label) async {
+          final button = find.descendant(
+            of: card(),
+            matching: find.text(label),
+          );
+          await tester.ensureVisible(button);
+          await tester.pumpAndSettle();
+          await tester.tap(button);
+          await tester.pumpAndSettle();
+          await drain();
+        }
+
+        Future<void> visitOtherBlock() async {
+          c.read(activeWorkoutProvider.notifier).moveGuided(1);
+          await tester.pumpAndSettle();
+          c.read(activeWorkoutProvider.notifier).moveGuided(0);
+          await tester.pumpAndSettle();
+          await drain();
+        }
+
+        await side('Lewa');
+        await choose('Wariant A');
+        await enter(1, '9');
+        await visitOtherBlock();
+        await side('Prawa');
+        await choose('Wariant B');
+        await enter(1, '4');
+        await visitOtherBlock();
+        await side('Lewa');
+        await choose('Wariant A');
+        expect(value(1), '9');
+        expect(c.read(activeWorkoutProvider).draft['timer'], isNull);
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpAndSettle();
+        await tester.runAsync(() async {
+          c.read(activeWorkoutProvider.notifier).discardSession();
+          expect(
+            await c.read(activeWorkoutProvider.notifier).resumeSession(uuid),
+            isTrue,
+          );
+          await tester.pumpWidget(
+            UncontrolledProviderScope(
+              container: c,
+              child: const MaterialApp(home: ActiveSessionPage()),
+            ),
+          );
+        });
+        await tester.pumpAndSettle();
+        expect(value(1), '9');
+        await side('Prawa');
+        await choose('Wariant B');
+        expect(value(1), '4');
+      }
       expect(await tester.runAsync(() => db.workoutDao.getAllSets()), isEmpty);
     },
   );
   testWidgets(
-    'extra RIGHT 9 to LEFT 7 to RIGHT restores 9 and both survive a real resume',
+    'RIGHT 9 to LEFT 7 to RIGHT restores 9 and both survive a real resume guided=$guided',
     (tester) async {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMessageHandler(
@@ -227,7 +335,11 @@ void main() {
             .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
         c = reviewContainer(db);
         final n = c.read(activeWorkoutProvider.notifier);
-        await n.startSession(guidance: WorkoutGuidance.start(reviewPlan()));
+        await n.startSession(
+          guidance: WorkoutGuidance.start(
+            guided ? guidedPlan(extra.id) : reviewPlan(),
+          ),
+        );
         n.addExercise(extra);
         await n.flushDraft();
         uuid = c.read(activeWorkoutProvider).sessionSyncId!;
@@ -246,7 +358,9 @@ void main() {
           await db.close();
         });
       });
-      Finder card() => find.byKey(ValueKey('extra:$uuid:${extra.id}'));
+      Finder card() => find.byKey(
+        ValueKey(guided ? '$uuid:0:${extra.id}' : 'extra:$uuid:${extra.id}'),
+      );
       Finder input() =>
           find.descendant(of: card(), matching: find.byType(TextField)).first;
       Future<void> drainWrites() async {
@@ -281,16 +395,30 @@ void main() {
 
       String value() => tester.widget<TextField>(input()).controller!.text;
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Dodatkowe ćwiczenia'),
-        400,
-        maxScrolls: 8,
-        scrollable: find.byType(Scrollable).first,
-      );
+      if (!guided) {
+        await tester.scrollUntilVisible(
+          find.text('Dodatkowe ćwiczenia'),
+          400,
+          maxScrolls: 8,
+          scrollable: find.byType(Scrollable).first,
+        );
+      }
       await side('Prawa');
       await enter('9');
+      if (guided) {
+        c.read(activeWorkoutProvider.notifier).moveGuided(1);
+        await tester.pumpAndSettle();
+        c.read(activeWorkoutProvider.notifier).moveGuided(0);
+        await tester.pumpAndSettle();
+      }
       await side('Lewa');
       await enter('7');
+      if (guided) {
+        c.read(activeWorkoutProvider.notifier).moveGuided(1);
+        await tester.pumpAndSettle();
+        c.read(activeWorkoutProvider.notifier).moveGuided(0);
+        await tester.pumpAndSettle();
+      }
       await side('Prawa');
       expect(value(), '9');
       await tester.runAsync(
@@ -313,12 +441,14 @@ void main() {
         );
       });
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Dodatkowe ćwiczenia'),
-        400,
-        maxScrolls: 8,
-        scrollable: find.byType(Scrollable).first,
-      );
+      if (!guided) {
+        await tester.scrollUntilVisible(
+          find.text('Dodatkowe ćwiczenia'),
+          400,
+          maxScrolls: 8,
+          scrollable: find.byType(Scrollable).first,
+        );
+      }
       expect(value(), '9');
       await side('Lewa');
       expect(value(), '7');

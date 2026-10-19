@@ -12,6 +12,12 @@ class MentorException implements Exception {
   String toString() => 'Mentor jest chwilowo niedostępny. Spróbuj ponownie.';
 }
 
+/// Exact chat rejection guaranteed by the backend to precede reservation.
+class MentorContextSelectionUnavailable extends MentorException {
+  const MentorContextSelectionUnavailable()
+    : super('context_selection_unavailable');
+}
+
 abstract class MentorApi {
   Future<List<MentorOperation>> operations({
     String? sessionId,
@@ -52,13 +58,20 @@ class HttpMentorApi implements MentorApi {
   final ApiClient _client;
   final CancelToken _cancelToken = CancelToken();
   static const _uuid = Uuid();
-  Never _error(Object error) {
+  Never _error(Object error, {bool chatSend = false}) {
     String? code;
+    var contextUnavailable = false;
     if (error is DioException) {
       dynamic data = error.response?.data;
       try {
         if (data is List<int>) data = jsonDecode(utf8.decode(data));
         if (data is String) data = jsonDecode(data);
+        contextUnavailable =
+            chatSend &&
+            error.response?.statusCode == 409 &&
+            data is Map &&
+            data['detail'] == 'Context selection unavailable' &&
+            !data.containsKey('code');
         if (data is Map &&
             const {
               'operation_pending',
@@ -71,6 +84,7 @@ class HttpMentorApi implements MentorApi {
         }
       } catch (_) {}
     }
+    if (contextUnavailable) throw const MentorContextSelectionUnavailable();
     throw MentorException(code);
   }
 
@@ -242,8 +256,10 @@ class HttpMentorApi implements MentorApi {
             data: {
               'request_id': requestId,
               'text': text,
-              if (settingsRevision != null) 'settings_revision': settingsRevision,
-              if (context != null && !context.isEmpty) 'context': context.toJson(),
+              if (settingsRevision != null)
+                'settings_revision': settingsRevision,
+              if (context != null && !context.isEmpty)
+                'context': context.toJson(),
             },
             cancelToken: _cancelToken,
             options: Options(receiveTimeout: const Duration(seconds: 55)),
@@ -251,7 +267,7 @@ class HttpMentorApi implements MentorApi {
         ),
       );
     } catch (e) {
-      _error(e);
+      _error(e, chatSend: true);
     }
   }
 

@@ -1,3 +1,9 @@
+/// Only remote wire validation may produce this recoverable failure. Storage
+/// failures (including malformed local metadata) must still abort transactions.
+class InvalidSyncRecord extends FormatException {
+  const InvalidSyncRecord(super.message);
+}
+
 /// User-owned entities understood by the generic FitBirek sync API.
 enum SyncEntityType {
   profile,

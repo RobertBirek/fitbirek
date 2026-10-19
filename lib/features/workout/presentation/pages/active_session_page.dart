@@ -462,8 +462,12 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     if (mounted && !_loadingForm) setState(() {});
   }
 
-  void _loadExtraForm({Map<String, dynamic>? definition}) {
+  void _loadDurableForm({Map<String, dynamic>? definition}) {
     final draft = _formDraft;
+    final active = ref.read(activeWorkoutProvider);
+    final target = widget.guided
+        ? active.guidance!.plan.blocks[active.currentSlot].prescription
+        : null;
     definition ??=
         (ref.read(exerciseVariantsProvider(widget.exercise.id)).valueOrNull ??
                 [])
@@ -473,8 +477,9 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     try {
       _weightController.text =
           '${draft['weight'] ?? (_usesWeight && definition?['loadKg'] != null ? definition!['loadKg'] : '')}';
-      _repsController.text = '${draft['reps'] ?? ''}';
-      _secondsController.text = '${draft['seconds'] ?? ''}';
+      _repsController.text = '${draft['reps'] ?? target?.reps ?? ''}';
+      _secondsController.text =
+          '${draft['seconds'] ?? (target == null || target.tracking == 'reps' ? '' : target.workSeconds)}';
       _rpe = draft['rpe'] is int ? (draft['rpe'] as int).clamp(1, 10) : 7;
       _variantLabel =
           definition?['name'] as String? ?? draft['variantLabel'] as String?;
@@ -520,10 +525,21 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       _clearTimer();
     }
     if (!current()) return;
-    if (widget.extra) _saveForm(); // old exact key, before changing identity
+    if (_durable) _saveForm(); // old exact key, before changing identity
+    if (widget.guided &&
+        !ref
+            .read(activeWorkoutProvider.notifier)
+            .selectGuidedIdentity(
+              widget.exercise.id,
+              side: _entry?.unilateral == true ? side : null,
+              variantId: _variantId,
+              variantLabel: _variantLabel,
+            )) {
+      return;
+    }
     setState(() {
       _selectedSide = side;
-      if (widget.extra) _loadExtraForm();
+      if (_durable) _loadDurableForm();
     });
     _saveForm(); // loaded destination/defaults, never previous controllers
   }
@@ -704,13 +720,24 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             .any((e) => e['id'] == id)) {
       return;
     }
-    if (widget.extra) _saveForm();
+    if (_durable) _saveForm();
     if (_durable) _clearTimer();
+    if (widget.guided &&
+        !ref
+            .read(activeWorkoutProvider.notifier)
+            .selectGuidedIdentity(
+              widget.exercise.id,
+              side: _side,
+              variantId: id,
+              variantLabel: selected?['name'] as String?,
+            )) {
+      return;
+    }
     setState(() {
       _variantId = id;
       _variantLabel = selected?['name'] as String?;
-      if (widget.extra) {
-        _loadExtraForm(definition: selected);
+      if (_durable) {
+        _loadDurableForm(definition: selected);
       } else {
         _weightController.text = _usesWeight && selected?['loadKg'] != null
             ? '${selected!['loadKg']}'

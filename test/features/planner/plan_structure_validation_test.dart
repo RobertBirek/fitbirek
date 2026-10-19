@@ -124,7 +124,7 @@ void main() {
         ...planRecord(row.syncId),
         'version': 2,
         'deletedAt': '2026-10-16T01:00:00Z',
-        'payload': {},
+        'payload': <String, dynamic>{},
       });
       expect((await db.select(db.workoutPlans).getSingle()).structureJson, '{');
       expect((await db.select(db.workoutPlans).getSingle()).syncVersion, 2);
@@ -242,7 +242,7 @@ void main() {
     },
   );
   test(
-    'bad structure pull rolls back page rows and cursor, then retries intact',
+    'bad structure is quarantined while independent plans and cursor advance',
     () async {
       final api = FakeSyncApi();
       final sync = SyncService(db, api);
@@ -250,22 +250,46 @@ void main() {
       await sync.bindAccount('account');
       await store.apply(planRecord('existing'));
       final before = (await db.syncDao.readState())!.toJson();
+      final bad = planRecord('new-bad', value: {});
       api.page = {
         'cursor': 25,
-        'changes': [planRecord('new-good'), planRecord('new-bad', value: {})],
+        'changes': [planRecord('new-good'), bad],
       };
       await sync.synchronize();
       expect((await db.select(db.workoutPlans).get()).map((p) => p.nazwa), [
         'existing',
+        'new-good',
       ]);
-      expect((await db.syncDao.readState())!.toJson(), before);
+      expect(sync.status, SyncStatus.conflict);
+      expect((await db.syncDao.readState())!.toJson(), {
+        ...before,
+        'fullCursor': 25,
+      });
+      final held = jsonDecode(
+        (await db.select(db.syncDeferredRecords).getSingle()).recordJson,
+      );
+      expect(held['raw'], bad);
+      expect(held['cursor'], 25);
+      expect(held['accountId'], 'account');
+      expect(held['recovered'], false);
       api.page = {
-        'cursor': 25,
-        'changes': [planRecord('new-good'), planRecord('new-bad')],
+        'cursor': 26,
+        'changes': [
+          {...planRecord('new-bad'), 'version': 2},
+        ],
       };
       await sync.synchronize();
       expect(await db.select(db.workoutPlans).get(), hasLength(3));
-      expect((await db.syncDao.readState())!.fullCursor, 25);
+      expect(sync.status, SyncStatus.idle);
+      expect((await db.syncDao.readState())!.toJson(), {
+        ...before,
+        'fullCursor': 26,
+      });
+      final recovered = jsonDecode(
+        (await db.select(db.syncDeferredRecords).getSingle()).recordJson,
+      );
+      expect(recovered['raw'], bad);
+      expect(recovered['recovered'], true);
     },
   );
   test(

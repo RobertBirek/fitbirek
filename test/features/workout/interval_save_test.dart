@@ -133,7 +133,7 @@ void main() {
           case 'finish':
             await notifier.finishSession();
           case 'new session':
-            notifier.discardSession();
+            await notifier.finishSession();
             await notifier.startSession();
           case 'locked':
             await db
@@ -171,6 +171,7 @@ void main() {
     test(
       '$action while first round awaits rolls back entire batch and outbox',
       () async {
+        await notifier.finishSession();
         container.dispose();
         final repo = PausedRoundRepository(db);
         container = ProviderContainer(
@@ -218,6 +219,7 @@ void main() {
   test(
     'logout epoch changes during transaction; full batch/outbox rolled back without HTTP reads',
     () async {
+      await notifier.finishSession();
       container.dispose();
       final repo = PausedRoundRepository(db);
       final api = IntervalAuthRepository();

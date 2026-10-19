@@ -18,11 +18,13 @@ class MentorOperationRegistry {
 
   String get storageKey =>
       'mentor.operations.v1.${const Uuid().v5(Namespace.url.value, accountId)}';
-  String fingerprint(String text, [Map<String, Object?> selection = const {}]) =>
-      const Uuid().v5(
-        Namespace.url.value,
-        '$accountId:${text.trim()}:${jsonEncode(_canonical(selection))}',
-      );
+  String fingerprint(
+    String text, [
+    Map<String, Object?> selection = const {},
+  ]) => const Uuid().v5(
+    Namespace.url.value,
+    '$accountId:${text.trim()}:${jsonEncode(_canonical(selection))}',
+  );
 
   Object? _canonical(Object? value) {
     if (value is Map) {
@@ -31,6 +33,28 @@ class MentorOperationRegistry {
     }
     if (value is List) return value.map(_canonical).toList(growable: false);
     return value;
+  }
+
+  /// Only a newly allocated attempt can be forgotten after a known rejection
+  /// before reserve. A retry of an unknown attempt may have an earlier cost.
+  Future<void> discardRejectedNew(MentorOperation operation) async {
+    _check();
+    if (operation.state != 'new') return;
+    if (_busy) throw const MentorException('operation_pending');
+    _busy = true;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _check();
+      final rows = (jsonDecode(prefs.getString(storageKey) ?? '[]') as List)
+          .cast<Map>();
+      rows.removeWhere((row) => row['request_id'] == operation.requestId);
+      if (!await prefs.setString(storageKey, jsonEncode(rows))) {
+        throw const MentorException();
+      }
+      _check();
+    } finally {
+      _busy = false;
+    }
   }
 
   /// Always reconcile, including on the first click after reload. A failed GET
@@ -83,7 +107,8 @@ class MentorOperationRegistry {
                     o.subjectId == null) &&
                 (kind != 'chat' ||
                     (selection.isEmpty &&
-                        (o.userText == null || fingerprint(o.userText!) == hash))),
+                        (o.userText == null ||
+                            fingerprint(o.userText!) == hash))),
           )
           .toList();
       MentorOperation? previous = matches.firstOrNull;

@@ -8,6 +8,8 @@ import '../../../health/presentation/widgets/health_today_card.dart';
 import '../../../mood/presentation/widgets/mood_quick_entry_card.dart';
 import '../../../onboarding/providers/user_profile_provider.dart';
 import '../../../workout/providers/workout_providers.dart';
+import '../../../workout/providers/session_recovery_provider.dart';
+import '../../../workout/data/workout_repository.dart';
 
 /// Dotychczasowy ekran Dziś pozostaje dostępny jako w pełni offline klasyka.
 class ClassicTodayPage extends ConsumerWidget {
@@ -16,6 +18,10 @@ class ClassicTodayPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileStreamProvider);
+    final active = ref.watch(activeWorkoutProvider).isActive;
+    final recovery = ref.watch(sessionRecoveryProvider);
+    final continueSession =
+        active || (recovery.asData?.value.sessions.isNotEmpty ?? false);
     final now = DateTime.now();
     return Scaffold(
       appBar: AppBar(title: const Text('Klasyczny trening')),
@@ -45,12 +51,24 @@ class ClassicTodayPage extends ConsumerWidget {
                     const Text('Gotowy na trening?'),
                     const SizedBox(height: 12),
                     PrimaryButton(
-                      label: 'Rozpocznij trening',
+                      label: continueSession
+                          ? 'Kontynuuj trening'
+                          : 'Rozpocznij trening',
                       icon: Icons.play_arrow,
+                      isLoading: !active && recovery.isLoading,
                       onPressed: () async {
-                        await ref
-                            .read(activeWorkoutProvider.notifier)
-                            .startSession();
+                        if (!continueSession &&
+                            !recovery.isLoading &&
+                            !recovery.hasError) {
+                          try {
+                            await ref
+                                .read(activeWorkoutProvider.notifier)
+                                .startSession();
+                          } on ActiveSessionExists {
+                            // A session appeared since the read. Let recovery offer
+                            // an explicit choice; never replace it with a new row.
+                          }
+                        }
                         if (context.mounted) context.go('/workout/session');
                       },
                     ),

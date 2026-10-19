@@ -161,15 +161,19 @@ class _RestTimerScreenState extends ConsumerState<RestTimerScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    _finished ? 'Czas minął!' : 'Przerwa',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      _finished ? 'Czas minął!' : 'Przerwa',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 28),
+                    color: Colors.white,
                     tooltip: 'Pomiń przerwę',
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -177,90 +181,115 @@ class _RestTimerScreenState extends ConsumerState<RestTimerScreen> {
               ),
             ),
             Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 260,
-                      height: 260,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            width: 260,
-                            height: 260,
-                            child: CircularProgressIndicator(
-                              value: _finished ? 1 : progress,
-                              strokeWidth: 10,
-                              backgroundColor:
-                                  FitBirekColors.darkSurfaceVariant,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                _finished
-                                    ? FitBirekColors.success
-                                    : FitBirekColors.accent,
-                              ),
-                            ),
-                          ),
-                          Text(
-                                _finished ? '✓' : _formatted,
-                                style: TextStyle(
-                                  fontSize: _finished ? 96 : 76,
-                                  fontWeight: FontWeight.w800,
-                                  color: isUrgent
-                                      ? FitBirekColors.danger
-                                      : Colors.white,
-                                  fontFeatures: const [
-                                    FontFeature.tabularFigures(),
-                                  ],
-                                ),
-                              )
-                              .animate(
-                                target: isUrgent ? 1 : 0,
-                                onPlay: (c) => c.repeat(reverse: true),
-                              )
-                              .scale(
-                                begin: const Offset(1, 1),
-                                end: const Offset(1.15, 1.15),
-                                duration: 400.ms,
-                              ),
-                        ],
-                      ),
+              child: LayoutBuilder(
+                builder: (context, constraints) => SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                    const SizedBox(height: 32),
-                    if (!_finished) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _adjustButton('-15s', () => _addSeconds(-15)),
-                          const SizedBox(width: 16),
-                          _adjustButton('+15s', () => _addSeconds(15)),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 10,
-                        children: [
-                          ...AppConstants.czasyPrzerwy.map(
-                            (s) => ChoiceChip(
-                              label: Text('${s}s'),
-                              selected: _totalSeconds == s,
-                              onSelected: (_) => _setDuration(s),
-                            ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 260),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox(
+                                width: 260,
+                                height: 260,
+                                child: CircularProgressIndicator(
+                                  value: _finished ? 1 : progress,
+                                  strokeWidth: 10,
+                                  backgroundColor:
+                                      FitBirekColors.darkSurfaceVariant,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    _finished
+                                        ? FitBirekColors.success
+                                        : FitBirekColors.accent,
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                    _finished ? '✓' : _formatted,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: _finished ? 96 : 76,
+                                      fontWeight: FontWeight.w800,
+                                      color: isUrgent
+                                          ? FitBirekColors.danger
+                                          : Colors.white,
+                                      fontFeatures: const [
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                    ),
+                                  )
+                                  .animate(
+                                    target: isUrgent ? 1 : 0,
+                                    onPlay: (c) => c.repeat(reverse: true),
+                                  )
+                                  .scale(
+                                    begin: const Offset(1, 1),
+                                    end: const Offset(1.15, 1.15),
+                                    duration: 400.ms,
+                                  ),
+                            ],
                           ),
-                          ActionChip(
-                            label: const Text('Własny'),
-                            onPressed: _showCustomDurationDialog,
+                        ),
+                        const SizedBox(height: 32),
+                        if (!_finished) ...[
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 16,
+                            runSpacing: 8,
+                            children: [
+                              _adjustButton('-15s', () => _addSeconds(-15)),
+                              _adjustButton('+15s', () => _addSeconds(15)),
+                            ],
                           ),
-                        ],
-                      ),
-                    ] else
-                      Text(
-                        'Wróć do ćwiczenia',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                  ],
+                          const SizedBox(height: 20),
+                          Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 10,
+                            runSpacing: 8,
+                            children: [
+                              ...AppConstants.czasyPrzerwy.map(
+                                (s) => ChoiceChip(
+                                  label: Text('${s}s'),
+                                  backgroundColor:
+                                      FitBirekColors.darkSurfaceVariant,
+                                  selectedColor: FitBirekColors.accent,
+                                  labelStyle: TextStyle(
+                                    color: _totalSeconds == s
+                                        ? FitBirekColors.onAccent
+                                        : Colors.white,
+                                  ),
+                                  checkmarkColor: FitBirekColors.onAccent,
+                                  selected: _totalSeconds == s,
+                                  onSelected: (_) => _setDuration(s),
+                                ),
+                              ),
+                              ActionChip(
+                                label: const Text('Własny'),
+                                backgroundColor:
+                                    FitBirekColors.darkSurfaceVariant,
+                                labelStyle: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                                onPressed: _showCustomDurationDialog,
+                              ),
+                            ],
+                          ),
+                        ] else
+                          Text(
+                            'Wróć do ćwiczenia',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: Colors.white),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -270,6 +299,9 @@ class _RestTimerScreenState extends ConsumerState<RestTimerScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    foregroundColor: _finished
+                        ? FitBirekColors.darkBackground
+                        : Colors.white,
                     backgroundColor: _finished
                         ? FitBirekColors.success
                         : FitBirekColors.darkSurfaceVariant,
@@ -278,6 +310,7 @@ class _RestTimerScreenState extends ConsumerState<RestTimerScreen> {
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
                     _finished ? 'Kontynuuj trening' : 'Pomiń przerwę',
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
@@ -292,6 +325,7 @@ class _RestTimerScreenState extends ConsumerState<RestTimerScreen> {
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
+        minimumSize: const Size(64, 56),
         foregroundColor: Colors.white,
         side: const BorderSide(color: Colors.white54),
       ),

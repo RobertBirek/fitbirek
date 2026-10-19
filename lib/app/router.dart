@@ -141,6 +141,13 @@ GoRouter createRouter({
                 builder: (context, state) => const ProgressPage(),
                 routes: [
                   GoRoute(
+                    path: 'measurement/:id',
+                    builder: (context, state) => AddMeasurementPage(
+                      measurementId:
+                          int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+                    ),
+                  ),
+                  GoRoute(
                     path: 'add-measurement',
                     builder: (context, state) => const AddMeasurementPage(),
                   ),

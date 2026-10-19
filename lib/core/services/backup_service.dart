@@ -61,17 +61,37 @@ class BackupService {
   /// Eksportuje całą bazę danych do bajtów JSON (UTF-8), gotowych do
   /// zapisania/udostępnienia przez share_plus.
   Future<Uint8List> exportToBytes() async {
-    final userProfiles = await db.select(db.userProfiles).get();
-    final exercises = await db.select(db.exercises).get();
-    final sessions = await db.select(db.workoutSessions).get();
-    final sets = await db.select(db.setsLog).get();
-    final moods = await db.select(db.moodEntries).get();
-    final measurements = await db.select(db.measurements).get();
-    final tests = await db.select(db.fitnessTestResults).get();
-    final prs = await db.select(db.personalRecords).get();
-    final plans = await db.select(db.workoutPlans).get();
-    final favorites = await db.select(db.exerciseFavorites).get();
+    // Materialize every source in one snapshot, so concurrent writes cannot
+    // mix parent/child revisions or health imports in the same archive.
+    final (
+      userProfiles,
+      exercises,
+      sessions,
+      sets,
+      moods,
+      measurements,
+      tests,
+      prs,
+      plans,
+      favorites,
+      healthSamples,
+    ) = await db.transaction(() async {
+      return (
+        await db.select(db.userProfiles).get(),
+        await db.select(db.exercises).get(),
+        await db.select(db.workoutSessions).get(),
+        await db.select(db.setsLog).get(),
+        await db.select(db.moodEntries).get(),
+        await db.select(db.measurements).get(),
+        await db.select(db.fitnessTestResults).get(),
+        await db.select(db.personalRecords).get(),
+        await db.select(db.workoutPlans).get(),
+        await db.select(db.exerciseFavorites).get(),
+        await db.select(db.healthSamples).get(),
+      );
+    });
 
+    // Filtering, archive mapping and JSON encoding do not hold the transaction.
     final payload = {
       'schemaVersion': currentSchemaVersion,
       'appVersion': AppConstants.appVersion,
@@ -134,7 +154,7 @@ class BackupService {
             .toList(),
         // Informational archive only: imports are refreshed from the account's
         // server, never restored as user-created records or new UUIDs.
-        'healthSamples': (await db.select(db.healthSamples).get())
+        'healthSamples': healthSamples
             .where((s) => s.deletedAtUtc == null)
             .map(_withoutSyncMetadata)
             .toList(),

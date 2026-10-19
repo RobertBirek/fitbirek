@@ -99,6 +99,15 @@ class WorkoutHomePage extends ConsumerWidget {
                 },
               ),
             ),
+            // Planning only navigates; it must not start or replace a session.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: OutlinedButton.icon(
+                onPressed: () => context.push('/settings/planner'),
+                icon: const Icon(Icons.edit_calendar_outlined),
+                label: const Text('Ułóż plan'),
+              ),
+            ),
             Expanded(
               child: sessionsAsync.when(
                 data: (sessions) {
@@ -106,12 +115,14 @@ class WorkoutHomePage extends ConsumerWidget {
                       .where((s) => s.dataKoniec != null)
                       .toList();
                   if (finished.isEmpty) {
-                    return EmptyState(
-                      icon: Icons.history,
-                      title: 'Brak historii treningów',
-                      subtitle: 'Zacznij pierwszy trening →',
-                      ctaLabel: 'Wybierz ćwiczenia z bazy',
-                      onCtaPressed: () => context.go('/exercises'),
+                    return SingleChildScrollView(
+                      child: EmptyState(
+                        icon: Icons.history,
+                        title: 'Brak historii treningów',
+                        subtitle: 'Zacznij pierwszy trening →',
+                        ctaLabel: 'Wybierz ćwiczenia z bazy',
+                        onCtaPressed: () => context.go('/exercises'),
+                      ),
                     );
                   }
                   return ListView.separated(

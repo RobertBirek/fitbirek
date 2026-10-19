@@ -91,7 +91,7 @@ void main() {
     expect((await db.workoutDao.getSession(id))!.dataKoniec, isNotNull);
   });
 
-  test('bad pull rolls back all rows and cursor', () async {
+  test('bad pull preserves raw record and advances independent rows', () async {
     api.page = {
       'cursor': 2,
       'changes': [
@@ -119,9 +119,10 @@ void main() {
       ],
     };
     await sync.synchronize();
-    expect(await db.select(db.workoutSessions).get(), isEmpty);
-    expect((await db.syncDao.readState())!.fullCursor, 0);
-    expect(sync.status, SyncStatus.error);
+    expect(await db.select(db.workoutSessions).get(), hasLength(1));
+    expect((await db.syncDao.readState())!.fullCursor, 2);
+    expect(sync.status, SyncStatus.conflict);
+    expect(await db.select(db.syncDeferredRecords).get(), hasLength(1));
   });
 
   test(
@@ -297,6 +298,7 @@ void main() {
       await sync.bindAccount('account');
       await sync.synchronize();
       expect((await db.syncDao.pendingOperations()).single.toJson(), before);
+      expect(api.requests, hasLength(1));
     });
   }
 
@@ -635,7 +637,7 @@ void main() {
   );
 
   test(
-    'resolved conflict applies previously observed remote version',
+    'held unknown outcome is not automatically resent or discarded',
     () async {
       await WorkoutRepository(db).startSession();
       final op = (await db.syncDao.pendingOperations()).single;
@@ -666,11 +668,9 @@ void main() {
       };
       api.page = {'cursor': 1, 'changes': []};
       await sync.synchronize();
-      expect(
-        (await db.select(db.workoutSessions).getSingle()).notatka,
-        'Server',
-      );
-      expect(await db.syncDao.pendingOperations(), isEmpty);
+      expect((await db.select(db.workoutSessions).getSingle()).notatka, isNull);
+      expect(await db.syncDao.pendingOperations(), hasLength(1));
+      expect(api.requests, hasLength(1));
     },
   );
 

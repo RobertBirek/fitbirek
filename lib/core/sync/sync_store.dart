@@ -14,6 +14,16 @@ class SyncStore {
   SyncStore(this.db);
   final AppDatabase db;
 
+  T _wire<T>(T Function() parse) {
+    try {
+      return parse();
+    } on FormatException catch (e) {
+      throw InvalidSyncRecord(e.message);
+    } on TypeError {
+      throw const InvalidSyncRecord('Invalid sync payload field type');
+    }
+  }
+
   // Device-local metadata in the existing deferred envelope, never a wire key
   // or part of an attempted request. The original rejected request stays in
   // outbox until explicit recovery can safely merge its current local intent.
@@ -209,15 +219,81 @@ class SyncStore {
         .write(SyncOutboxCompanion(baseVersion: Value(pendingBase)));
   }
 
-  Future<void> apply(Map<String, dynamic> record) async {
-    final type = syncEntityTypeFromWireName(record['entityType'] as String);
+  SyncEntityType _recordType(Map<String, dynamic> record) {
+    if (record['entityType'] is! String ||
+        record['entityId'] is! String ||
+        (record['entityId'] as String).isEmpty ||
+        record['version'] is! int ||
+        (record['version'] as int) < 1) {
+      throw const InvalidSyncRecord('Invalid sync identity/version');
+    }
+    return _wire(
+      () => syncEntityTypeFromWireName(record['entityType'] as String),
+    );
+  }
+
+  void validateEnvelope(Map<String, dynamic> record) {
+    _recordType(record);
+    if (record['updatedAt'] is! String ||
+        (record['deletedAt'] != null && record['deletedAt'] is! String) ||
+        record['payload'] is! Map<String, dynamic>) {
+      throw const InvalidSyncRecord('Invalid sync envelope');
+    }
+  }
+
+  /// Uses the same payload parser as apply, but never writes, defers, or skips
+  /// validation because another version was observed. Optional extensions keep
+  /// their existing tolerant parsing policy.
+  Future<void> validateRecord(Map<String, dynamic> record) =>
+      _apply(record, validateOnly: true);
+
+  Future<void> apply(Map<String, dynamic> record) => _apply(record);
+
+  Future<bool> _hasValidatedNewerDeferred(
+    SyncEntityType type,
+    String id,
+    int version,
+  ) async {
+    final deferred = await _deferred(type, id);
+    if (deferred == null || deferred.version <= version) return false;
+    final Object? candidate;
+    try {
+      candidate = jsonDecode(deferred.recordJson);
+    } on FormatException {
+      return false;
+    }
+    if (candidate is! Map<String, dynamic> ||
+        candidate['entityType'] != type.wireName ||
+        candidate['entityId'] != id ||
+        candidate['version'] != deferred.version) {
+      return false;
+    }
+    try {
+      await validateRecord(candidate);
+    } on InvalidSyncRecord {
+      return false;
+    }
+    // Validated snapshot authority only; independent push holds are untouched.
+    return true;
+  }
+
+  Future<void> _apply(
+    Map<String, dynamic> record, {
+    bool validateOnly = false,
+  }) async {
+    // Only a known type and trustworthy identity/version can be superseded.
+    // A strictly newer validated/acknowledged state wins even when an old
+    // historical envelope is malformed. Equal or future versions still validate.
+    final type = _recordType(record);
     final id = record['entityId'] as String;
     final v = record['version'] as int;
     final existing = await row(type, id);
-    if (existing == null && record['deletedAt'] != null) return;
-    if (existing != null && (existing['syncVersion'] as int) > v) {
-      return;
+    if (!validateOnly) {
+      if (existing != null && (existing['syncVersion'] as int) > v) return;
+      if (await _hasValidatedNewerDeferred(type, id, v)) return;
     }
+    validateEnvelope(record);
+    if (existing == null && record['deletedAt'] != null) return;
     // Deleting an existing plan requires only its sync identity. Retain raw
     // local data even if an older client already stored an invalid structure.
     final planTombstone =
@@ -267,14 +343,25 @@ class SyncStore {
     if ((type == SyncEntityType.workoutSet ||
             type == SyncEntityType.personalRecord) &&
         record['deletedAt'] == null) {
-      UserCollections.validateVariantPair(json);
+      _wire(() => UserCollections.validateVariantPair(json));
+    }
+    if ((type == SyncEntityType.workoutSet ||
+            type == SyncEntityType.personalRecord) &&
+        json['side'] != null &&
+        !const ['left', 'right', 'both'].contains(json['side'])) {
+      throw const InvalidSyncRecord('Unsupported side');
     }
     if (type == SyncEntityType.workoutSet) {
+      if (json['sessionSyncId'] is! String) {
+        throw const InvalidSyncRecord('Missing session UUID');
+      }
       final session = await row(
         SyncEntityType.workoutSession,
         json.remove('sessionSyncId') as String,
       );
-      if (session == null) throw const FormatException('Missing session UUID');
+      if (session == null) {
+        throw const InvalidSyncRecord('Missing session UUID');
+      }
       json['sesjaId'] = session['id'];
       if (session['deletedAtUtc'] != null && record['deletedAt'] == null) {
         // The backend has no FK cascade. A late child of a removed session
@@ -286,9 +373,11 @@ class SyncStore {
     if (type == SyncEntityType.workoutPlan && !planTombstone) {
       final structure = json.remove('structure');
       if (structure != null) {
-        StructuredPlan.validateJson(
-          structure,
-          exerciseIds: json['cwiczeniaIds'],
+        _wire(
+          () => StructuredPlan.validateJson(
+            structure,
+            exerciseIds: json['cwiczeniaIds'],
+          ),
         );
       }
       json['structureJson'] = structure == null ? null : jsonEncode(structure);
@@ -309,23 +398,29 @@ class SyncStore {
     }
     for (final key in ['dostepnySprzet', 'cwiczeniaIds']) {
       if (planTombstone) continue;
-      if (json.containsKey(key)) json[key] = jsonEncode(json[key] as List);
+      if (json.containsKey(key)) {
+        if (json[key] is! List) throw InvalidSyncRecord('Invalid list: $key');
+        json[key] = jsonEncode(json[key]);
+      }
     }
     // Generated parsers validate required fields and types before writing.
-    final Insertable<dynamic> data = switch (type) {
-      SyncEntityType.profile => UserProfileData.fromJson(json),
-      SyncEntityType.workoutSession => WorkoutSessionData.fromJson(json),
-      SyncEntityType.workoutSet => SetLogData.fromJson(json),
-      SyncEntityType.mood => MoodEntryData.fromJson(json),
-      SyncEntityType.measurement => MeasurementData.fromJson(json),
-      SyncEntityType.fitnessTest => FitnessTestResultData.fromJson(json),
-      SyncEntityType.personalRecord => PersonalRecordData.fromJson(json),
-      SyncEntityType.workoutPlan => WorkoutPlanData.fromJson(json),
-      SyncEntityType.exerciseFavorite => ExerciseFavoriteData.fromJson(json),
-      SyncEntityType.healthSample => HealthSampleData.fromJson(json),
-    };
-    // Validate complete payloads even while dirty: a bad page must not advance
-    // either the observed version or cursor and become unreconcilable later.
+    final Insertable<dynamic> data = _wire(
+      () => switch (type) {
+        SyncEntityType.profile => UserProfileData.fromJson(json),
+        SyncEntityType.workoutSession => WorkoutSessionData.fromJson(json),
+        SyncEntityType.workoutSet => SetLogData.fromJson(json),
+        SyncEntityType.mood => MoodEntryData.fromJson(json),
+        SyncEntityType.measurement => MeasurementData.fromJson(json),
+        SyncEntityType.fitnessTest => FitnessTestResultData.fromJson(json),
+        SyncEntityType.personalRecord => PersonalRecordData.fromJson(json),
+        SyncEntityType.workoutPlan => WorkoutPlanData.fromJson(json),
+        SyncEntityType.exerciseFavorite => ExerciseFavoriteData.fromJson(json),
+        SyncEntityType.healthSample => HealthSampleData.fromJson(json),
+      },
+    );
+    if (validateOnly) return;
+    // Validate even while dirty: quarantining a bad snapshot must not advance
+    // its observed version. The page cursor may advance with durable raw evidence.
     final dirty =
         await (db.select(db.syncOutbox)..where(
               (o) => o.entityType.equals(type.wireName) & o.entityId.equals(id),

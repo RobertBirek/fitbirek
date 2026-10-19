@@ -179,8 +179,22 @@ void main() {
       expect(find.textContaining('Czas ESTYMOWANY'), findsOneWidget);
       expect(await db.select(db.workoutPlans).get(), isEmpty);
       await tester.ensureVisible(find.text('Zapisz plan'));
-      await tester.tap(find.text('Zapisz plan'));
+      final saveButton = find.widgetWithText(OutlinedButton, 'Zapisz plan');
+      final save = tester.widget<OutlinedButton>(saveButton).onPressed!;
+      save();
+      save();
       await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog, skipOffstage: false), findsOneWidget);
+      await tester.tap(find.text('Anuluj'));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog, skipOffstage: false), findsNothing);
+      expect(tester.widget<OutlinedButton>(saveButton).onPressed, isNotNull);
+      expect(await db.select(db.workoutPlans).get(), isEmpty);
+      expect(await db.syncDao.pendingOperations(), isEmpty);
+      save();
+      save();
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog, skipOffstage: false), findsOneWidget);
       expect(await db.select(db.workoutPlans).get(), isEmpty);
       await tester.tap(find.text('Potwierdź'));
       await tester.pumpAndSettle();
@@ -189,12 +203,28 @@ void main() {
         isNotNull,
       );
       await tester.ensureVisible(find.text('Rozpocznij trening'));
-      await tester.tap(find.text('Rozpocznij trening'));
+      final startButton = find.widgetWithText(
+        FilledButton,
+        'Rozpocznij trening',
+      );
+      final start = tester.widget<FilledButton>(startButton).onPressed!;
+      start();
+      start();
       await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog, skipOffstage: false), findsOneWidget);
+      await tester.tap(find.text('Anuluj'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<FilledButton>(startButton).onPressed, isNotNull);
+      expect(await db.select(db.workoutSessions).get(), isEmpty);
+      start();
+      start();
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog, skipOffstage: false), findsOneWidget);
       expect(c.read(activeWorkoutProvider).isActive, isFalse);
       await tester.tap(find.text('Potwierdź'));
       await tester.pumpAndSettle();
       expect(find.text('Aktywna sesja'), findsOneWidget);
+      expect(await db.select(db.workoutSessions).get(), hasLength(1));
       expect(
         c.read(activeWorkoutProvider).selectedExercises.single.nazwaPl,
         'Ruch aktualny',

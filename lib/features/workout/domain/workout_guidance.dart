@@ -47,6 +47,36 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
       throw const FormatException('Nieprawidłowe wersje checkpointów');
     }
     _validateWorkoutForm(fields);
+    if (fields['guidedForms'] != null) {
+      for (final entry in (fields['guidedForms'] as Map).entries) {
+        final key = jsonDecode(entry.key as String) as List;
+        final form = Map<String, dynamic>.from(entry.value as Map);
+        if (key.length != 6 ||
+            key[0] != 'guided' ||
+            key[1] is! String ||
+            key[2] is! int ||
+            (key[2] as int) < 0 ||
+            key[3] is! String ||
+            form['side'] != key[4] ||
+            form['variantId'] != key[5]) {
+          throw const FormatException('Nieprawidłowy klucz szkicu bloku');
+        }
+        _validateWorkoutForm(form);
+      }
+    }
+    if (fields['guidedSelections'] != null) {
+      for (final entry in (fields['guidedSelections'] as Map).entries) {
+        final slot = jsonDecode(entry.key as String) as List;
+        final key = jsonDecode(entry.value as String) as List;
+        if (slot.length != 2 ||
+            key.length != 6 ||
+            key[0] != 'guided' ||
+            slot[0] != key[2] ||
+            slot[1] != key[3]) {
+          throw const FormatException('Nieprawidłowy wybór szkicu bloku');
+        }
+      }
+    }
     if (fields['extraForms'] != null) {
       for (final entry in (fields['extraForms'] as Map).entries) {
         final key = jsonDecode(entry.key as String) as List;

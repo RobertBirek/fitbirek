@@ -145,13 +145,40 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
       if (operation.state != 'new' && operation.state != 'unknown') {
         throw const MentorException('result_unavailable');
       }
-      final reply = await _api.send(
-        id,
-        trimmed,
+      late final MentorMessage reply;
+      try {
+        reply = await _api.send(
+          id,
+          trimmed,
           requestId: operation.requestId,
           settingsRevision: settingsRevision,
           context: context,
-      );
+        );
+      } on MentorContextSelectionUnavailable {
+        if (!_valid(generation)) return;
+        // Never forget an earlier ambiguous paid attempt, even if its retry
+        // now encounters a stale selector before reserve.
+        var cleaned = false;
+        try {
+          await _registry.discardRejectedNew(operation);
+          cleaned = operation.state == 'new';
+        } catch (_) {
+          // Storage failure is fail-closed: retain the ledger protection.
+        }
+        if (!_valid(generation)) return;
+        state = state.copyWith(
+          messages: state.messages.where((m) => m.id != local.id).toList(),
+          loading: false,
+          error:
+              'Wybrany kontekst jest już niedostępny. Ta próba została odrzucona przed wysłaniem do dostawcy. Odśwież podgląd przyciskiem dodawania kontekstu, wybierz dane ponownie i potwierdź wysłanie.'
+              '${cleaned
+                  ? ''
+                  : operation.state == 'new'
+                  ? ' Nie udało się wyczyścić lokalnego wpisu operacji; jego ochrona pozostaje aktywna.'
+                  : ' Wynik wcześniejszej próby pozostaje nieznany; jej rejestr został zachowany. Nowa operacja wymaga osobnego potwierdzenia limitu i kosztu.'}',
+        );
+        return;
+      }
       if (generation != _generation || !mounted) return;
       state = state.copyWith(
         messages: [...state.messages, reply],

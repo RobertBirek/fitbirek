@@ -6,6 +6,60 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.16.0+29] — 2026-10-19
+
+### Added
+- Edycja i usuwanie ręcznych pomiarów z potwierdzeniem oraz atomowym zapisem
+  do kolejki synchronizacji. Zachowane UUID, data i pola niewidoczne w formularzu;
+  niezastosowane zmiany zdalne blokują nadpisanie. Importy Apple Health nadal
+  mają odrębną ścieżkę obsługi.
+- Tekstowa historia wyników sprawności, stronicowana po pięć wpisów, z widoczną
+  wartością, jednostką i datą już po pierwszym wyniku. Bezpośredni skrót
+  „Ułóż plan” w zakładce Trening.
+- Trwała kwarantanna nieodtwarzalnych rekordów synchronizacji i blokady operacji
+  o nieznanym wyniku, bez utraty oryginalnych żądań i z postępem niezależnych encji.
+
+### Fixed
+- Rozpoczęcie treningu nie zastępuje aktywnej sesji. Szkice bloków zachowują
+  wartości osobno dla ćwiczenia, strony i wariantu; zużyte checkpointy nie wracają
+  po nawigacji. Sesję bez szkicu można jawnie zakończyć bez dopisywania pracy.
+- Formularze pomiarów i testów przyjmują przecinek i kropkę, wyświetlają błędy
+  przy polach, zachowują tekst po błędzie zapisu i blokują podwójne wysłanie.
+- Podsumowanie odróżnia błąd odczytu od ładowania i pozwala ponowić odczyt.
+  Usuwanie planów wymaga potwierdzenia; akcje planera chronione przed duplikacją.
+- Poprawiono kontrast przycisków, aktywnych chipów, wiadomości użytkownika,
+  etykiet wykresów, timera i jasnej dolnej nawigacji. Etykiety przycisków,
+  nagłówek RPE i kontrolki przerwy dostosowują się do dużego tekstu.
+- Mentor przewija do nowych wiadomości bez przerywania czytania wcześniejszej
+  historii. Podgląd kontekstu wiąże zgodę z dokładną treścią notatki lub pomiaru;
+  zmiana źródła wymaga ponownego wyboru przed wywołaniem dostawcy.
+- Wylogowanie offline blokuje prywatne ekrany pozostałych otwartych kart bez
+  reloadu i unieważnia opóźnione wyniki autoryzacji oraz synchronizacji.
+- Eksport backupu odczytuje wszystkie kolekcje z jednego spójnego snapshotu.
+- API zachowuje pominięte `structure` planu i `side` serii/PR; niezgodna lista
+  ćwiczeń powoduje konflikt zamiast cichego usunięcia struktury. Pominięte
+  `measurement.data` przy korekcie zachowuje dokładną datę żywego rekordu serwera,
+  również milisekundy; konflikt z tombstone'em nie wywołuje pętli ponowień.
+
+### Deployment Notes
+- **API przed webem:** nowy klient korzysta z zachowania pominiętej daty pomiaru.
+  Nie cofać API do poprzedniej wersji przy aktywnych nowych klientach, również
+  uruchomionych z cache. Stare podglądy kontekstu Mentora wymagają odświeżenia.
+- Bez zmiany schematów Drift (13) i Alembic (0010), zależności, wersji Fluttera
+  ani artefaktów Web SQLite. Przy aktualizacji nie usuwać lokalnych danych.
+
+### Known Issues
+- Fizyczny iPhone/Android, VoiceOver/TalkBack oraz rzeczywisty płatny dostawca
+  Mentora nadal wymagają osobnej akceptacji. Testy Chromium nie gwarantują
+  trwałości storage ani pracy w tle na urządzeniach mobilnych.
+- Kwarantanna i blokady zachowują dowody; nieznany wynik push wymaga jawnego,
+  autorytatywnego rozstrzygnięcia. Zwykły backup nie jest kopią outboxa i kwarantanny.
+- Poprawka daty pomiaru nie odzyskuje precyzji utraconej historycznie w SQLite
+  lub backupie. Przy 320 px dolna etykieta „Ustawienia” może być skrócona.
+- Pozostaje znane ostrzeżenie Fluttera 3.35.4 dotyczące pokrycia U+FE0F (VS16).
+
+---
+
 ## [1.15.0+28] — 2026-10-18
 
 ### Added

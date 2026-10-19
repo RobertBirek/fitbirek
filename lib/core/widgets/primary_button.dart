@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../app/theme.dart';
+
 /// Duży przycisk - łatwy do kliknięcia jedną ręką, spoconymi palcami po serii.
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
@@ -19,13 +21,28 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final foreground = outlined
+        ? theme.outlinedButtonTheme.style?.foregroundColor?.resolve({}) ??
+              theme.colorScheme.primary
+        : FitBirekColors.onAccent;
+    final style = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size.fromHeight(56)),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      ),
+      // Ładowanie blokuje akcję, ale nie wygasza wskaźnika postępu.
+      backgroundColor: isLoading && !outlined
+          ? const WidgetStatePropertyAll(FitBirekColors.accent)
+          : null,
+    );
     final child = isLoading
-        ? const SizedBox(
+        ? SizedBox(
             height: 24,
             width: 24,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              color: Colors.white,
+              color: foreground,
             ),
           )
         : Row(
@@ -35,19 +52,28 @@ class PrimaryButton extends StatelessWidget {
                 Icon(icon, size: 22),
                 const SizedBox(width: 10),
               ],
-              Text(label),
+              Flexible(child: Text(label, textAlign: TextAlign.center)),
             ],
           );
 
-    if (outlined) {
-      return OutlinedButton(
-        onPressed: isLoading ? null : onPressed,
-        child: child,
-      );
-    }
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      child: child,
+    final button = outlined
+        ? OutlinedButton(
+            style: style,
+            onPressed: isLoading ? null : onPressed,
+            child: child,
+          )
+        : ElevatedButton(
+            style: style,
+            onPressed: isLoading ? null : onPressed,
+            child: child,
+          );
+    if (!isLoading) return button;
+    return Semantics(
+      label: '$label, trwa ładowanie',
+      button: true,
+      enabled: false,
+      liveRegion: true,
+      child: ExcludeSemantics(child: button),
     );
   }
 }

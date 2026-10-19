@@ -74,7 +74,7 @@ void main() {
         deletes.any((o) => o.entityId == 'remote-child' && o.deleted),
         isTrue,
       );
-      // Invalid siblings still roll back both the cursor and all entity writes.
+      // Invalid siblings are retained; safe child deletion still progresses.
       api.page = {
         'cursor': 5,
         'changes': [
@@ -90,24 +90,24 @@ void main() {
         ],
       };
       await sync.synchronize();
-      expect(sync.status, SyncStatus.error);
-      expect((await db.syncDao.readState())!.fullCursor, 3);
+      expect(sync.status, SyncStatus.conflict);
+      expect((await db.syncDao.readState())!.fullCursor, 5);
       expect(
         (await db.select(db.setsLog).get()).any(
           (s) => s.syncId == 'another-child',
         ),
-        isFalse,
+        isTrue,
       );
       // A later valid child delete page advances normally, even on a retry.
       api.page = {
-        'cursor': 4,
+        'cursor': 6,
         'changes': [
           {...child, 'version': 2, 'deletedAt': '2026-09-10T02:00:00Z'},
         ],
       };
       await sync.synchronize();
-      expect(sync.status, SyncStatus.idle);
-      expect((await db.syncDao.readState())!.fullCursor, 4);
+      expect(sync.status, SyncStatus.conflict);
+      expect((await db.syncDao.readState())!.fullCursor, 6);
     },
   );
 

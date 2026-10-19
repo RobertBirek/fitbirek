@@ -4,6 +4,25 @@ import 'package:fitbirek_training/core/sync/sync_service.dart';
 import 'package:fitbirek_training/core/sync/sync_status_tile.dart';
 
 void main() {
+  testWidgets('held state explains local queue and safe retry', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SyncStatusTile(
+            status: SyncStatus.conflict,
+            pending: 0,
+            onRetry: () {},
+            onLogout: () {},
+          ),
+        ),
+      ),
+    );
+    expect(find.textContaining('Kwarantanna'), findsOneWidget);
+    expect(
+      find.textContaining('nie ponawia wstrzymanych operacji'),
+      findsOneWidget,
+    );
+  });
   testWidgets('shows retained queue and offers retry and logout', (
     tester,
   ) async {

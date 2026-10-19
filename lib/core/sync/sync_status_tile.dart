@@ -25,10 +25,17 @@ class SyncStatusTile extends StatelessWidget {
           SyncStatus.offline => 'Offline — dane zapisane na urządzeniu',
           SyncStatus.error => 'Błąd synchronizacji — dane zachowane',
           SyncStatus.conflict =>
-            'Operacja wymaga weryfikacji — wyeksportuj kopię i skontaktuj się z administratorem',
+            'Kwarantanna synchronizacji — część danych wymaga weryfikacji',
           SyncStatus.signedOut => 'Zaloguj się, aby synchronizować',
         }),
-        subtitle: Text('Oczekujące zmiany: $pending'),
+        subtitle: Text(
+          status == SyncStatus.conflict
+              ? 'Lokalne zmiany oczekujące (także wstrzymane): $pending. '
+                    'Zachowano dane do odzyskania. Synchronizuj teraz nie ponawia wstrzymanych operacji; '
+                    'pobiera poprawione dane i synchronizuje niezależne zmiany. '
+                    'Przed ręczną naprawą zachowaj kopię i skontaktuj się z administratorem.'
+              : 'Oczekujące zmiany: $pending',
+        ),
         trailing: IconButton(
           tooltip: 'Synchronizuj teraz',
           onPressed: status == SyncStatus.syncing ? null : onRetry,

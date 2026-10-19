@@ -10,6 +10,7 @@ import '../../../health/presentation/widgets/health_sample_delete_button.dart';
 import '../../../health/presentation/widgets/health_steps_history.dart';
 import '../../tests/providers/tests_providers.dart';
 import '../../trends/presentation/training_trends_page.dart';
+import '../../measurements/presentation/widgets/manual_measurement_actions.dart';
 
 /// Ekran "Postępy" - pomiary, testy, PR (lista + linki do dodawania danych).
 class ProgressPage extends ConsumerWidget {
@@ -30,7 +31,9 @@ class ProgressPage extends ConsumerWidget {
               icon: const Icon(Icons.trending_up),
               label: const Text('Trendy treningowe'),
               onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const TrainingTrendsPage()),
+                MaterialPageRoute<void>(
+                  builder: (_) => const TrainingTrendsPage(),
+                ),
               ),
             ),
             Row(
@@ -125,16 +128,26 @@ class ProgressPage extends ConsumerWidget {
                           .map(
                             (m) => Card(
                               margin: const EdgeInsets.only(bottom: 8),
-                              child: ListTile(
-                                title: Text(Formatters.weight(m.wagaKg)),
-                                subtitle: Text(
-                                  '${Formatters.date(m.data)} • ${m.source ?? 'Pomiar ręczny'}',
-                                ),
-                                trailing: m.sample == null
-                                    ? null
-                                    : HealthSampleDeleteButton(
-                                        sample: m.sample!,
-                                      ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ListTile(
+                                    title: Text(Formatters.weight(m.wagaKg)),
+                                    subtitle: Text(
+                                      '${Formatters.date(m.data)} • ${m.source ?? 'Pomiar ręczny'}',
+                                    ),
+                                    trailing: m.sample == null
+                                        ? null
+                                        : HealthSampleDeleteButton(
+                                            sample: m.sample!,
+                                          ),
+                                  ),
+                                  if (m.manual != null && !m.imported)
+                                    ManualMeasurementActions(
+                                      key: ValueKey(m.manual!.syncId),
+                                      measurement: m.manual!,
+                                    ),
+                                ],
                               ),
                             ),
                           )

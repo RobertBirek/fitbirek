@@ -71,8 +71,28 @@ void main() {
         matching: find.byTooltip('Usuń plan'),
       );
       await tester.ensureVisible(delete);
+      final planBefore = await db.plansDao.getPlan(bad);
+      final outboxBefore = await db.select(db.syncOutbox).get();
       await tester.tap(delete);
       await tester.pumpAndSettle();
+      expect(find.text('Usunąć plan „damaged”?'), findsOneWidget);
+      await tester.tap(find.text('Anuluj'));
+      await tester.pumpAndSettle();
+      expect(await db.plansDao.getPlan(bad), planBefore);
+      expect(
+        await db.select(db.syncOutbox).get(),
+        unorderedEquals(outboxBefore),
+      );
+      await tester.tap(delete);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Usuń'));
+      await tester.pumpAndSettle();
+      expect(find.text('Plan usunięty.'), findsOneWidget);
+      expect((await db.plansDao.getPlan(bad))!.deletedAtUtc, isNotNull);
+      final deleted = (await db.syncDao.pendingOperations()).where(
+        (op) => op.entityId == planBefore!.syncId,
+      );
+      expect(deleted.single.deleted, isTrue);
       expect(find.text('damaged'), findsNothing);
       expect(find.text('good'), findsOneWidget);
       expect(

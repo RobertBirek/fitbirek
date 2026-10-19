@@ -75,35 +75,36 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
   }
 
   Future<void> _act(UserProfile profile, {required bool start}) async {
+    if (_busy) return;
     final plan = _plan!;
     final epoch = ref.read(cachedAuthWriteAuthorityProvider).epoch;
     if (_previewEpoch != epoch) {
       setState(() => _message = 'Konto zmieniło się. Otwórz planner ponownie.');
       return;
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(start ? 'Rozpocząć trening?' : 'Zapisać plan?'),
-        content: Text(
-          'Czas ESTYMOWANY: ${plan.estimatedSeconds} s. Cele są widoczne w podglądzie; '
-          'serie zapisujesz samodzielnie w sesji. Nie jest to pomiar czasu.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Anuluj'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Potwierdź'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) return;
     setState(() => _busy = true);
     try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(start ? 'Rozpocząć trening?' : 'Zapisać plan?'),
+          content: Text(
+            'Czas ESTYMOWANY: ${plan.estimatedSeconds} s. Cele są widoczne w podglądzie; '
+            'serie zapisujesz samodzielnie w sesji. Nie jest to pomiar czasu.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Potwierdź'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
       if (ref.read(cachedAuthWriteAuthorityProvider).epoch != epoch) {
         throw StateError('Konto zmieniło się.');
       }
@@ -140,6 +141,44 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
       }
     } catch (e) {
       if (mounted) setState(() => _message = '$e');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _deletePlan(int id, String name) async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Usunąć plan „$name”?'),
+          content: const Text('Tej operacji nie można cofnąć.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Usuń'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true || !mounted) return;
+      await ref.read(plannerRepositoryProvider).deletePlan(id);
+      if (mounted) setState(() => _message = 'Plan usunięty.');
+    } catch (_) {
+      if (mounted) {
+        setState(
+          () => _message = 'Nie udało się usunąć planu. Spróbuj ponownie.',
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -294,9 +333,8 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
                                   icon: const Icon(Icons.delete_outline),
                                   onPressed: _busy
                                       ? null
-                                      : () => ref
-                                            .read(plannerRepositoryProvider)
-                                            .deletePlan(saved.id),
+                                      : () =>
+                                            _deletePlan(saved.id, saved.nazwa),
                                 ),
                               ),
                             )

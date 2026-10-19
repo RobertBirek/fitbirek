@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../auth/providers/auth_providers.dart';
 
 import '../../data/mentor_models.dart';
 import '../../providers/mentor_providers.dart';
@@ -27,6 +28,7 @@ class _MentorContextComposerState extends ConsumerState<MentorContextComposer> {
   MentorContextWeightOption? _weight;
   MentorContextNoteOption? _note;
   bool _initialized = false;
+  bool _revoked = false;
 
   void _initialize(MentorContextOptions options) {
     if (_initialized) return;
@@ -51,15 +53,33 @@ class _MentorContextComposerState extends ConsumerState<MentorContextComposer> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateProvider, (previous, next) {
+      if (previous == next || _revoked) return;
+      _revoked = true;
+      _weight = null;
+      _note = null;
+      final route = ModalRoute.of(context);
+      if (route == null || !route.isActive) return;
+      final navigator = Navigator.of(context);
+      // Close a selector popup as well as the old account's preview.
+      navigator.popUntil((candidate) => candidate == route);
+      navigator.pop();
+    });
+    if (_revoked) return const SizedBox.shrink();
     final options = ref.watch(mentorContextOptionsProvider);
     return options.when(
       loading: () => const AlertDialog(
         title: Text('Kontekst tej wiadomości'),
-        content: SizedBox(height: 72, child: Center(child: CircularProgressIndicator())),
+        content: SizedBox(
+          height: 72,
+          child: Center(child: CircularProgressIndicator()),
+        ),
       ),
       error: (_, _) => AlertDialog(
         title: const Text('Kontekst tej wiadomości'),
-        content: const Text('Nie udało się pobrać kontekstu. Wiadomość nie została wysłana.'),
+        content: const Text(
+          'Nie udało się pobrać kontekstu. Wiadomość nie została wysłana.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -112,8 +132,7 @@ class _MentorContextComposerState extends ConsumerState<MentorContextComposer> {
                 ),
                 _selector<MentorContextNoteOption>(
                   label: 'Notatka treningowa',
-                  enabled:
-                      widget.consents.note && data.workoutNotes.isNotEmpty,
+                  enabled: widget.consents.note && data.workoutNotes.isNotEmpty,
                   value: _note,
                   options: data.workoutNotes,
                   labelOf: (option) => '${option.summary}: ${option.preview}',

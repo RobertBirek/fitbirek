@@ -31,7 +31,7 @@ class HealthRepository {
     List<MeasurementData> manual,
     List<HealthSampleData> imported,
   ) => [
-    for (final m in manual) WeightEntry(date: m.data, kg: m.wagaKg),
+    for (final m in manual) WeightEntry(date: m.data, kg: m.wagaKg, manual: m),
     for (final s in imported.where(
       (s) => s.kind == 'weight' && s.deletedAtUtc == null,
     ))

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 /// Kolory marki FitBirek - pomarańczowy akcent, grafitowe tło dark.
 class FitBirekColors {
   static const Color accent = Color(0xFFFF6B35);
+
+  /// Czytelny tekst i ikony na pomarańczowym tle marki.
+  static const Color onAccent = Color(0xFF1A1D23);
   static const Color darkBackground = Color(0xFF1A1D23);
   static const Color darkSurface = Color(0xFF23262E);
   static const Color darkSurfaceVariant = Color(0xFF2C2F38);
@@ -103,7 +106,7 @@ class FitBirekTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: FitBirekColors.accent,
-          foregroundColor: Colors.white,
+          foregroundColor: FitBirekColors.onAccent,
           minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(
@@ -140,6 +143,8 @@ class FitBirekTheme {
         backgroundColor: FitBirekColors.darkSurfaceVariant,
         selectedColor: FitBirekColors.accent,
         labelStyle: const TextStyle(color: Colors.white),
+        secondaryLabelStyle: const TextStyle(color: FitBirekColors.onAccent),
+        checkmarkColor: FitBirekColors.onAccent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -177,6 +182,14 @@ class FitBirekTheme {
     );
 
     return base.copyWith(
+      // Five items otherwise default to shifting with white foregrounds,
+      // which are unreadable on the light Material 3 surface.
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: base.colorScheme.surface,
+        selectedItemColor: base.colorScheme.primary,
+        unselectedItemColor: base.colorScheme.onSurfaceVariant,
+        type: BottomNavigationBarType.fixed,
+      ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         centerTitle: false,
@@ -195,7 +208,7 @@ class FitBirekTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: FitBirekColors.accent,
-          foregroundColor: Colors.white,
+          foregroundColor: FitBirekColors.onAccent,
           minimumSize: const Size.fromHeight(56),
           textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
           shape: RoundedRectangleBorder(

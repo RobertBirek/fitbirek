@@ -16,6 +16,15 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
 
   Future<SyncStateData?> readState() => select(syncState).getSingleOrNull();
 
+  /// Revokes every service/tab using the old binding, even after A → B → A
+  /// or a same-account login. deviceId is local-only, not an API identity.
+  Future<void> lockOfflineAccess() => update(syncState).write(
+    SyncStateCompanion(
+      offlineAccess: const Value(false),
+      deviceId: Value(Uuid().v4()),
+    ),
+  );
+
   Future<String> singletonId(String key) async {
     final state = await readState();
     return state == null

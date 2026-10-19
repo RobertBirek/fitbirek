@@ -7,11 +7,13 @@ class WeightEntry {
     required this.kg,
     this.source,
     this.sample,
+    this.manual,
   });
   final DateTime date;
   final double kg;
   final String? source;
   final HealthSampleData? sample;
+  final MeasurementData? manual;
   bool get imported => sample != null;
   // Compatibility with the chart's existing presentation.
   DateTime get data => imported ? warsawTime(date) : date;

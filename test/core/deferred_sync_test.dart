@@ -30,6 +30,24 @@ Map<String, dynamic> uncertain(SyncOperation op) => {
   ],
 };
 
+// Seed a concurrently observed snapshot while a network-lost request remains
+// retryable. A server indeterminateOperation is now a permanent hold, not a
+// simulation of a transient lost response. Keep reconciliation coverage separate.
+Future<Map<String, dynamic>> deferWhileOffline(
+  AppDatabase db,
+  FakeSyncApi api,
+) async {
+  await db.transaction(() async {
+    for (final change in api.page['changes'] as List) {
+      await SyncStore(db).apply(Map<String, dynamic>.from(change as Map));
+    }
+    await db.customStatement('UPDATE sync_state SET full_cursor = ?', [
+      api.page['cursor'],
+    ]);
+  });
+  throw Exception('transient lost response');
+}
+
 Map<String, dynamic> accepted(SyncOperation op, int version) => {
   'accepted': [
     {
@@ -61,7 +79,7 @@ void main() {
         await SyncStore(db).version(SyncEntityType.workoutSession, identity, 5);
         await repo.finishSession(id, DateTime.now());
         final op = (await db.syncDao.pendingOperations()).single;
-        api.onPush = (_) async => uncertain(op);
+        api.onPush = (_) => deferWhileOffline(db, api);
         await sync.synchronize();
         if (laterEdit) {
           await repo.finishSession(
@@ -106,7 +124,7 @@ void main() {
       await sync.bindAccount('account');
       final id = await WorkoutRepository(db).startSession();
       final op = (await db.syncDao.pendingOperations()).single;
-      api.onPush = (_) async => uncertain(op);
+      api.onPush = (_) => deferWhileOffline(db, api);
       api.page = {
         'cursor': 20,
         'changes': [remote(op, 5)],
@@ -149,7 +167,7 @@ void main() {
         if (preserveRestoreIntent) {
           await db.customStatement('UPDATE sync_outbox SET preserve_local = 1');
         }
-        api.onPush = (_) async => uncertain(op);
+        api.onPush = (_) => deferWhileOffline(db, api);
         await sync.synchronize();
         await repo.finishSession(id, DateTime.now());
         api.page = {
@@ -202,13 +220,13 @@ void main() {
         await sync.bindAccount('account');
         final id = await WorkoutRepository(db).startSession();
         final op = (await db.syncDao.pendingOperations()).single;
-        api.onPush = (_) async => uncertain(op);
+        api.onPush = (_) => deferWhileOffline(db, api);
         api.page = {
           'cursor': 20,
           'changes': [remote(op, 5, deleted: deleted)],
         };
         await sync.synchronize();
-        expect(sync.status, SyncStatus.conflict);
+        expect(sync.status, SyncStatus.error);
         expect((await db.syncDao.readState())!.fullCursor, 20);
         // A later page must replace, rather than lose, the deferred snapshot.
         api.page = {
@@ -250,7 +268,7 @@ void main() {
       final repo = WorkoutRepository(db);
       final id = await repo.startSession();
       final op = (await db.syncDao.pendingOperations()).single;
-      api.onPush = (_) async => uncertain(op);
+      api.onPush = (_) => deferWhileOffline(db, api);
       api.page = {
         'cursor': 20,
         'changes': [remote(op, 5)],
@@ -278,7 +296,7 @@ void main() {
   );
 
   test(
-    'malformed dirty snapshot rolls back payload, version and cursor atomically',
+    'malformed dirty snapshot is retained without rolling back valid observation',
     () async {
       final db = AppDatabase.forTesting(NativeDatabase.memory());
       final api = FakeSyncApi();
@@ -299,15 +317,15 @@ void main() {
         ],
       };
       await sync.synchronize();
-      expect(sync.status, SyncStatus.error);
-      expect((await db.syncDao.readState())!.fullCursor, 0);
-      expect((await db.workoutDao.getSession(id))!.syncVersion, 0);
+      expect(sync.status, SyncStatus.conflict);
+      expect((await db.syncDao.readState())!.fullCursor, 20);
+      expect((await db.workoutDao.getSession(id))!.syncVersion, 5);
       api.onPush = (_) async => accepted(op, 1);
-      api.page = {'cursor': 0, 'changes': []};
+      api.page = {'cursor': 20, 'changes': []};
       await sync.synchronize();
-      expect(sync.status, SyncStatus.idle);
+      expect(sync.status, SyncStatus.conflict);
       expect((await db.workoutDao.getSession(id))!.notatka, isNull);
-      expect((await db.workoutDao.getSession(id))!.syncVersion, 1);
+      expect((await db.workoutDao.getSession(id))!.syncVersion, 5);
     },
   );
 
