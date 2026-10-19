@@ -28,8 +28,9 @@ publisher_lock_key = "sync-change-publisher"
 optional_extension_keys = {
     "profile": ("filterPresets", "exerciseVariants", "weeklySchedule"),
     "workoutSession": ("guidance",),
-    "workoutSet": ("variantId", "variantLabel"),
-    "personalRecord": ("variantId", "variantLabel"),
+    "workoutSet": ("variantId", "variantLabel", "side"),
+    "personalRecord": ("variantId", "variantLabel", "side"),
+    "workoutPlan": ("structure",),
 }
 
 
@@ -110,11 +111,33 @@ def revised_record_payload(operation: PushOperation, record: PlannedRecord) -> d
     # Only the stored snapshot is extended, never the attempted operation used
     # by request_digest. Explicit null is present and therefore clears a value.
     payload = deepcopy(operation.payload)
+    # Server-first rollout: measurement edits may omit data only when the
+    # current live record supplies it. Never revise the idempotency input.
+    if operation.entity_type == "measurement" and "data" not in payload:
+        payload["data"] = deepcopy(record.payload["data"])
     if not operation.deleted and record.version > 0 and record.deleted_at is None:
         for key in optional_extension_keys.get(operation.entity_type, ()):
             if key not in payload and key in record.payload:
                 payload[key] = deepcopy(record.payload[key])
     return payload
+
+
+def incompatible_omitted_structure(operation: PushOperation, record: PlannedRecord) -> bool:
+    if (operation.entity_type != "workoutPlan" or operation.deleted
+            or record.version == 0 or record.deleted_at is not None
+            or "structure" in operation.payload or record.payload.get("structure") is None):
+        return False
+    ids = operation.payload.get("cwiczeniaIds")
+    structure = record.payload["structure"]
+    # Fail closed for legacy edits, including already inconsistent snapshots.
+    # Explicit structure/null remains client-owned and is never silently added.
+    if not isinstance(ids, list) or ids != record.payload.get("cwiczeniaIds"):
+        return True
+    if not isinstance(structure, dict) or not isinstance(structure.get("blocks"), list):
+        return True
+    blocks = structure["blocks"]
+    return (any(not isinstance(block, dict) or not isinstance(block.get("exerciseId"), str) for block in blocks)
+            or [block["exerciseId"] for block in blocks] != ids)
 
 
 async def push_operations(
@@ -229,7 +252,15 @@ async def push_operations(
                         )
                     )
                     continue
-            if operation.base_version != record.version:
+            missing_measurement_date = (
+                operation.entity_type == "measurement" and "data" not in operation.payload
+                and (record.version == 0 or record.deleted_at is not None
+                     or not isinstance(record.payload.get("data"), str)
+                     or not record.payload["data"])
+            )
+            if (operation.base_version != record.version
+                    or incompatible_omitted_structure(operation, record)
+                    or missing_measurement_date):
                 conflicts.append(
                     SyncConflict(
                         operation_id=operation.operation_id,

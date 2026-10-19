@@ -1,6 +1,7 @@
 """Bounded, consented Mentor context built only in memory."""
 import base64
 import hashlib
+import hmac
 import json
 import math
 from datetime import datetime, timedelta, timezone
@@ -61,20 +62,32 @@ def _selector_cipher() -> Fernet:
         raise HTTPException(503, "Mentor unavailable") from None
 
 
-def _selector(user_id, record_id, category: str, revision: int, source: str | None = None) -> str:
-    payload = {"u": str(user_id), "r": str(record_id), "c": category, "v": revision, "s": source}
+def _projection_digest(value) -> str:
+    # Bind the bounded preview/projection, not unrelated fields or sync version.
+    # The digest stays inside the authenticated encrypted token, never in logs.
+    return hashlib.sha256(json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+
+
+def _selector(user_id, record_id, category: str, revision: int, value, source: str | None = None) -> str:
+    payload = {"u": str(user_id), "r": str(record_id), "c": category, "v": revision, "s": source,
+               "d": _projection_digest(value)}
     return _selector_cipher().encrypt(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).decode().rstrip("=")
 
 
-def _selected_record_id(user_id, selection_id: str, category: str, revision: int, source: str | None = None) -> UUID:
+def _selected_record_id(user_id, selection_id: str, category: str, revision: int, source: str | None = None) -> tuple[UUID, str]:
     try:
         if not isinstance(selection_id, str) or len(selection_id) > 512:
             raise ValueError()
         padded = selection_id + "=" * (-len(selection_id) % 4)
         payload = json.loads(_selector_cipher().decrypt(padded.encode(), ttl=None))
-        if payload != {"u": str(user_id), "r": payload.get("r"), "c": category, "v": revision, "s": source}:
+        if not isinstance(payload, dict):
             raise ValueError()
-        return UUID(payload["r"])
+        digest = payload.get("d")
+        if not isinstance(digest, str) or len(digest) != 64:
+            raise ValueError()
+        if payload != {"u": str(user_id), "r": payload.get("r"), "c": category, "v": revision, "s": source, "d": digest}:
+            raise ValueError()
+        return UUID(payload["r"]), digest
     except (InvalidToken, UnicodeError, ValueError, TypeError, KeyError, json.JSONDecodeError):
         raise HTTPException(409, "Context selection unavailable") from None
 
@@ -148,13 +161,13 @@ async def context_options(db, user_id, revision: int) -> dict:
         value = _manual_weight(row.payload)
         if value is not None:
             measured_at, weight = value
-            weights.append({"selection_id": _selector(user_id, row.entity_id, "weight", revision, "measurement"),
+            weights.append({"selection_id": _selector(user_id, row.entity_id, "weight", revision, value, "measurement"),
                             "source": "measurement", "summary": f"{weight:g} kg · {measured_at[:10]}"})
     for row in health_rows:
         value = _apple_weight(row.payload)
         if value is not None:
             measured_at, weight = value
-            weights.append({"selection_id": _selector(user_id, row.entity_id, "weight", revision, "apple_health"),
+            weights.append({"selection_id": _selector(user_id, row.entity_id, "weight", revision, value, "apple_health"),
                             "source": "apple_health", "summary": f"{weight:g} kg · {measured_at[:10]}"})
     weights.sort(key=lambda item: item["summary"], reverse=True)
 
@@ -163,7 +176,7 @@ async def context_options(db, user_id, revision: int) -> dict:
         value = _workout_note(row.payload)
         if value is not None:
             started_at, note = value
-            notes.append({"selection_id": _selector(user_id, row.entity_id, "note", revision),
+            notes.append({"selection_id": _selector(user_id, row.entity_id, "note", revision, value),
                           "summary": started_at[:10], "preview": note})
 
     return {"settings_revision": revision, "options": {
@@ -176,12 +189,16 @@ async def context_options(db, user_id, revision: int) -> dict:
 
 
 async def _selected_row(db, user_id, selection_id, category, revision, source, entity_type):
-    entity_id = _selected_record_id(user_id, selection_id, category, revision, source)
+    entity_id, digest = _selected_record_id(user_id, selection_id, category, revision, source)
     row = await db.scalar(select(SyncRecord).where(
         SyncRecord.user_id == user_id, SyncRecord.entity_id == entity_id,
         SyncRecord.entity_type == entity_type, SyncRecord.deleted_at.is_(None),
     ))
     if row is None:
+        raise HTTPException(409, "Context selection unavailable")
+    projection = (_workout_note(row.payload) if category == "note" else
+                  _manual_weight(row.payload) if source == "measurement" else _apple_weight(row.payload))
+    if projection is None or not hmac.compare_digest(_projection_digest(projection), digest):
         raise HTTPException(409, "Context selection unavailable")
     return row
 

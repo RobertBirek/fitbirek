@@ -7,6 +7,146 @@ import pytest_asyncio
 from pydantic import ValidationError
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("kind", ["note", "measurement", "apple_health"])
+@pytest.mark.parametrize("mutation", [
+    "content", "date", "irrelevant", "unchanged", "deleted", "legacy", "other_account", "revision",
+    "persisted_owner", "persisted_type", "settings_stale_request", "settings_current_request",
+])
+async def test_preview_binding_before_paid_operation(client, context_account, session, monkeypatch, kind, mutation):
+    from app.mentor import service
+    from app.mentor.context import _selector_cipher
+    from app.identity.models import User
+    from app.mentor.models import MentorRequest, MentorUsage, MentorMessage, MentorLease
+    from app.sync.models import SyncRecord
+    from sqlalchemy import select, func
+
+    account, headers, _ = context_account
+    calls = []
+    async def provider(*args):
+        calls.append(args)
+        return {"text": "Gotowe.", "proposal": None, "input_tokens": 4, "output_tokens": 4}
+    monkeypatch.setattr(service, "openai_reply", provider)
+    assert (await client.put("/api/mentor/keys/openai", json={"key": "mock-key"}, headers=headers)).status_code == 200
+    configured = await client.put("/api/mentor/settings", json={
+        "consent_text": True, "model_profile_key": "legacy-gpt-4.1-mini-2025-04-14",
+        "context_policy_version": 1,
+        "context_consents": {"training": False, "profile": False, "weight": True, "note": True, "apple_health": True},
+    }, headers=headers)
+    assert configured.status_code == 200
+    revision = configured.json()["revision"]
+    sid = str(uuid4())
+    assert (await client.post("/api/mentor/sessions", json={"id": sid}, headers=headers)).status_code == 200
+    field, date, entity = {
+        "note": ("notatka", "dataStart", "workoutSession"),
+        "measurement": ("wagaKg", "data", "measurement"),
+        "apple_health": ("value", "measuredAt", "healthSample"),
+    }[kind]
+    row = SyncRecord(user_id=account.id, entity_type=entity, entity_id=uuid4(), version=1,
+                     deleted_at=None, updated_at=service.now(),
+                     payload={field: "Approved note" if kind == "note" else 80,
+                              date: "2026-10-01T08:00:00Z", "kind": "weight"})
+    session.add(row)
+    persisted_mutation = mutation in {
+        "persisted_owner", "persisted_type", "settings_stale_request", "settings_current_request",
+    }
+    if persisted_mutation:
+        # A separate original-account record must survive both the source
+        # mutation and the rejected send. It cannot be selected as a weight/note.
+        untouched = SyncRecord(user_id=account.id, entity_type="profile", entity_id=uuid4(), version=1,
+                               deleted_at=None, updated_at=service.now(), payload={"private": "keep"})
+        session.add(untouched)
+    await session.commit()
+    options = (await client.get("/api/mentor/context-options")).json()["options"]
+    option = options["workout_notes" if kind == "note" else "weight"][0]
+    token = option["selection_id"]
+    if mutation in {"legacy", "other_account", "revision"}:
+        cipher = _selector_cipher()
+        decoded = json.loads(cipher.decrypt((token + "=" * (-len(token) % 4)).encode()))
+        if mutation == "legacy":
+            decoded.pop("d", None)
+        elif mutation == "other_account":
+            decoded["u"] = str(uuid4())
+        else:
+            decoded["v"] -= 1
+        token = cipher.encrypt(json.dumps(decoded).encode()).decode().rstrip("=")
+    elif mutation == "deleted":
+        row.deleted_at = service.now()
+    elif mutation == "persisted_owner":
+        other = User(email=f"{uuid4()}@example.com", password_hash="unused")
+        session.add(other)
+        await session.flush()
+        # SyncRecord has a separate UUID PK and a (user,type,entity) unique key:
+        # moving this fixture to an existing user is a meaningful persisted
+        # ownership change, not a token forgery or a supported sync API action.
+        row.user_id = other.id
+    elif mutation == "persisted_type":
+        row.entity_type = "mood"
+    elif mutation in {"settings_stale_request", "settings_current_request"}:
+        changed = await client.put("/api/mentor/settings", json={"persona": "Nowa persona"}, headers=headers)
+        assert changed.status_code == 200, changed.text
+        current_revision = changed.json()["revision"]
+        assert current_revision > revision
+        persisted = await client.get("/api/mentor/settings")
+        assert persisted.json()["revision"] == current_revision
+        assert persisted.json()["persona"] == "Nowa persona"
+        if mutation == "settings_current_request":
+            # Even refreshing the envelope revision cannot authorize the
+            # unchanged selector issued before the real settings update.
+            revision = current_revision
+    else:
+        patch = {"content": {field: "UNAPPROVED" if kind == "note" else 99},
+                 "date": {date: "2026-10-02T08:00:00Z"},
+                 "irrelevant": {"private": "NOT SENT"}, "unchanged": {}}[mutation]
+        row.payload = {**row.payload, **patch}
+        row.version += 1
+    await session.commit()
+    if persisted_mutation:
+        await session.refresh(row)
+        assert row.payload == {field: "Approved note" if kind == "note" else 80,
+                               date: "2026-10-01T08:00:00Z", "kind": "weight"}
+        assert row.user_id == (other.id if mutation == "persisted_owner" else account.id)
+        assert row.entity_type == ("mood" if mutation == "persisted_type" else entity)
+        await session.refresh(untouched)
+        assert untouched.user_id == account.id
+        assert untouched.payload == {"private": "keep"}
+        # Read actual column values, not identity-map objects, so later equality
+        # proves that the HTTP rejection did not change either account's data.
+        records_before_send = (await session.execute(
+            select(SyncRecord.__table__).order_by(SyncRecord.id)
+        )).mappings().all()
+    selection = {"note": {"selection_id": token}} if kind == "note" else {
+        "weight": {"source": kind, "selection_id": token}}
+    response = await client.post(f"/api/mentor/sessions/{sid}/messages", json={
+        "request_id": str(uuid4()), "text": "Plan", "settings_revision": revision, "context": selection,
+    }, headers=headers)
+    allowed = mutation in {"irrelevant", "unchanged"}
+    assert response.status_code == (200 if allowed else 409), response.text
+    assert len(calls) == int(allowed)
+    assert await session.scalar(select(func.count()).select_from(MentorRequest)) == int(allowed)
+    if not allowed:
+        detail = "Mentor settings changed" if mutation == "settings_stale_request" else "Context selection unavailable"
+        assert response.json() == {"detail": detail}
+    if persisted_mutation:
+        assert token == option["selection_id"]
+        assert await session.scalar(select(func.coalesce(func.sum(MentorUsage.requests), 0))) == 0
+        assert await session.scalar(select(func.count()).select_from(MentorMessage)) == 0
+        assert await session.scalar(select(func.count()).select_from(MentorLease)) == 0
+        records_after_send = (await session.execute(
+            select(SyncRecord.__table__).order_by(SyncRecord.id)
+        )).mappings().all()
+        assert records_after_send == records_before_send
+    if mutation in {"content", "date"}:
+        refreshed = (await client.get("/api/mentor/context-options")).json()["options"]
+        fresh_token = refreshed["workout_notes" if kind == "note" else "weight"][0]["selection_id"]
+        selection["note" if kind == "note" else "weight"]["selection_id"] = fresh_token
+        retry = await client.post(f"/api/mentor/sessions/{sid}/messages", json={
+            "request_id": str(uuid4()), "text": "Plan", "settings_revision": revision, "context": selection,
+        }, headers=headers)
+        assert retry.status_code == 200, retry.text
+        assert len(calls) == 1
+
+
 def test_message_context_selection_is_strict_and_never_accepts_raw_record_ids():
     from app.mentor.schemas import MessageInput
 

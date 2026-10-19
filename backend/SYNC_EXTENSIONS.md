@@ -15,8 +15,9 @@ kluczami istniejącego payloadu JSONB:
 | --- | --- |
 | `profile` | `filterPresets`, `exerciseVariants`, `weeklySchedule` |
 | `workoutSession` | `guidance` |
-| `workoutSet` | `variantId`, `variantLabel` |
-| `personalRecord` | `variantId`, `variantLabel` |
+| `workoutSet` | `variantId`, `variantLabel`, `side` |
+| `personalRecord` | `variantId`, `variantLabel`, `side` |
+| `workoutPlan` | `structure` (z kontrolą zgodności ID opisaną poniżej) |
 
 Przy zaakceptowanym UPSERT istniejącego, żywego rekordu każdy z tych kluczy
 jest kopiowany z aktualnego snapshotu tylko wtedy, gdy żądanie go **nie zawiera**.
@@ -24,9 +25,49 @@ Jawne `null` zapisuje `null` (wyczyszczenie); obecna wartość zastępuje całą
 poprzednią wartość, bez deep merge. Pozostałe klucze nadal podlegają zwykłemu
 zastąpieniu payloadu. Nowe rekordy nie dostają wartości domyślnych.
 
+`side` jest chronione tylko dla serii i rekordów osobistych. Jawne `null`
+oznacza brak strony, zgodnie z nullable polem klienta; nie jest zamieniane
+na lewą/prawą stronę ani na wartość domyślną.
+
+Dla żywego planu z niepustą (`!= null`) strukturą pominięcie `structure`
+wymaga identycznej uporządkowanej listy `cwiczeniaIds` jak przed zapisem oraz
+zgodności z `structure.blocks[*].exerciseId`. Brak listy, zmiana kolejności,
+zmiana ćwiczeń lub struktura, której zgodności nie można potwierdzić, powoduje
+zwykły konflikt sync ze snapshotem sprzed batcha i rollback całego batcha.
+Nie usuwamy struktury po cichu i nie łączymy jej z inną listą ćwiczeń.
+Klient musi przesłać świadomie nową strukturę lub jawne `structure: null`.
+Serwer nadal nie waliduje pełnego schematu struktury jawnie przesłanej przez
+klienta; ochrona dotyczy dziedziczenia przy omission. DELETE i revival pozostają
+wyjątkami opisanymi niżej. Stary klient nie może rozwiązać takiego konfliktu
+samym ponownym CAS — potrzebna jest decyzja klienta obsługującego strukturę.
+
 DELETE nie kopiuje rozszerzeń. UPSERT tombstone nie dziedziczy jego rozszerzeń,
 nawet jeśli tombstone je zawierał. Dotychczasowe reguły jawnego wskrzeszania
 nie zmieniają się; backend nie wykonuje automatycznego wskrzeszania profilu.
+
+## Zachowanie dokładnej daty pomiaru przy korekcie
+
+Osobny kontrakt dla `measurement.data` pozwala edycji zachować dokładny czas
+serwera mimo sekundowej precyzji lokalnego pola DateTime w Drift:
+
+- Żądanie bez klucza `data`, po poprawnym CAS, kopiuje tę wartość z aktualnego
+  żywego pomiaru. Dotyczy zarówno UPSERT, jak i DELETE, odmiennie od rozszerzeń
+  treningowych opisanych powyżej.
+- Brak aktualnego rekordu, tombstone lub brak/NULL daty źródłowej powodują
+  konflikt. Backend nie wymyśla daty i nie wskrzesza rekordu przez omission.
+- Jawne `data`, również jawne `null`, zachowuje dotychczasowy kontrakt zapisu;
+  ta ochrona nie jest pełną walidacją dat ani globalną niezmiennością pola.
+- Hash idempotencji nadal obejmuje oryginalne żądanie bez daty, nie wynik
+  rozszerzenia payloadu.
+
+Nowy klient pomija datę przy edycji/usuwaniu zsynchronizowanego pomiaru.
+Dla niewysłanego create zachowuje dokładną datę z oczekującej operacji; nie
+zmienia bajtów rozpoczętej próby. Konflikt omission z tombstone'em ustanawia
+trwały hold zamiast ponawiać niewykonalny zapis pod kolejnymi UUID.
+
+**API musi zostać wdrożone przed klientem korzystającym z tego kontraktu.**
+Stary backend nie uzupełni pominiętej daty. Naprawa nie odzyskuje precyzji
+historycznie utraconej w lokalnej bazie lub archiwach backupu.
 
 ## Kolejność i atomowość
 

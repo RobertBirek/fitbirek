@@ -75,6 +75,78 @@ def parsed_operation(**kwargs):
     return PushOperation.model_validate_json(json.dumps(operation(**kwargs)))
 
 
+@pytest.mark.parametrize("deleted", [False, True])
+async def test_measurement_date_omission_preserves_live_authority(session, account, deleted):
+    entity_id = uuid4()
+    def measurement(base, payload, deleted=False):
+        raw = operation(entity_id=entity_id, base_version=base, payload=payload, deleted=deleted)
+        raw["entityType"] = "measurement"
+        return PushOperation.model_validate(raw)
+    original = "2026-10-19T12:34:58.979Z"
+    await sync_service.push_operations(session, account.id, [measurement(0, {"data": original, "wagaKg": 72})])
+    edit = measurement(1, {"wagaKg": 73}, deleted)
+    result = await sync_service.push_operations(session, account.id, [edit])
+    assert not result.conflicts
+    record = await session.scalar(select(SyncRecord).where(SyncRecord.entity_id == entity_id))
+    assert record.payload == {"data": original, "wagaKg": 73}
+    retry = await sync_service.push_operations(session, account.id, [edit])
+    assert retry.accepted[0].duplicate
+    changed = edit.model_copy(update={"payload": {"data": original, "wagaKg": 73}})
+    assert (await sync_service.push_operations(session, account.id, [changed])).conflicts
+
+
+@pytest.mark.parametrize("deleted", [False, True])
+@pytest.mark.parametrize("state", ["unknown", "missing", "null", "tombstone"])
+async def test_measurement_date_omission_requires_live_date(session, account, state, deleted):
+    entity_id = uuid4()
+    raw = operation(entity_id=entity_id, payload={"wagaKg": 72}, deleted=deleted)
+    raw["entityType"] = "measurement"
+    if state != "unknown":
+        payload: dict = {"wagaKg": 72}
+        if state in ("null", "tombstone"):
+            payload["data"] = None if state == "null" else "2026-10-19T12:34:58.979Z"
+        session.add(SyncRecord(user_id=account.id, entity_type="measurement", entity_id=entity_id,
+                               version=1, payload=payload, updated_at=datetime.now(timezone.utc),
+                               deleted_at=datetime.now(timezone.utc) if state == "tombstone" else None))
+        await session.commit()
+        raw["baseVersion"] = 1
+    result = await sync_service.push_operations(session, account.id, [PushOperation.model_validate(raw)])
+    assert result.conflicts
+    assert not result.accepted
+
+
+async def test_measurement_explicit_date_retains_contract(session, account):
+    entity_id = uuid4()
+    for base, date in enumerate(["2026-10-19T12:34:58.979Z", "2025-01-01T00:00:00Z", None]):
+        raw = operation(entity_id=entity_id, base_version=base, payload={"data": date, "wagaKg": 72})
+        raw["entityType"] = "measurement"
+        assert not (await sync_service.push_operations(session, account.id, [PushOperation.model_validate(raw)])).conflicts
+        record = await session.scalar(select(SyncRecord).where(SyncRecord.entity_id == entity_id))
+        assert record.payload["data"] == date
+
+
+async def test_measurement_omission_uses_current_date_after_cas_and_not_other_entities(session, account):
+    entity_id = uuid4()
+    account_id = account.id
+    def measurement(base, payload):
+        raw = operation(entity_id=entity_id, base_version=base, payload=payload)
+        raw["entityType"] = "measurement"
+        return PushOperation.model_validate(raw)
+    for base, date in enumerate(["2026-10-19T12:34:58.979Z", "2026-10-19T12:34:58.123Z"]):
+        await sync_service.push_operations(session, account_id, [measurement(base, {"data": date, "wagaKg": 72})])
+    stale = measurement(1, {"wagaKg": 73})
+    assert (await sync_service.push_operations(session, account_id, [stale])).conflicts
+    fresh = measurement(2, {"wagaKg": 73})
+    assert not (await sync_service.push_operations(session, account_id, [fresh])).conflicts
+    record = await session.scalar(select(SyncRecord).where(SyncRecord.entity_id == entity_id))
+    assert record.payload["data"] == "2026-10-19T12:34:58.123Z"
+    other_id = uuid4()
+    await sync_service.push_operations(session, account_id, [parsed_operation(entity_id=other_id, payload={"data": "old"})])
+    await sync_service.push_operations(session, account_id, [parsed_operation(entity_id=other_id, base_version=1, payload={"mood": "good"})])
+    other = await session.scalar(select(SyncRecord).where(SyncRecord.entity_id == other_id))
+    assert "data" not in other.payload
+
+
 async def cancel_tasks(tasks):
     for task in tasks:
         if not task.done():
@@ -837,6 +909,8 @@ EXTENSION_CASES = [
     ("workoutSession", {"guidance": {"schemaVersion": 1, "progress": {"block": 2}}}),
     ("workoutSet", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
     ("personalRecord", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
+    ("workoutSet", {"side": "left"}),
+    ("personalRecord", {"side": "right"}),
 ]
 
 
@@ -987,9 +1061,9 @@ async def test_extension_new_record_baseline_and_keys_are_type_scoped(account, s
     baseline = extension_operation(entity_type, payload={"name": "baseline"})
     assert (await sync_service.push_operations(session, account.id, [baseline])).conflicts == []
     assert (await sync_service.pull_changes(session, account.id, 0)).changes[-1].payload == baseline.payload
-    foreign_keys = {"filterPresets", "exerciseVariants", "weeklySchedule", "guidance", "variantId", "variantLabel"} - set(
+    foreign_keys = {"filterPresets", "exerciseVariants", "weeklySchedule", "guidance", "variantId", "variantLabel", "side", "structure"} - set(
         {"profile": ("filterPresets", "exerciseVariants", "weeklySchedule"), "workoutSession": ("guidance",),
-         "workoutSet": ("variantId", "variantLabel"), "personalRecord": ("variantId", "variantLabel")}.get(entity_type, ())
+         "workoutSet": ("variantId", "variantLabel", "side"), "personalRecord": ("variantId", "variantLabel", "side")}.get(entity_type, ())
     )
     with_foreign = extension_operation(entity_type, entity_id=baseline.entity_id, base_version=1,
                                       payload={"name": "foreign", **{k: "not preserved" for k in foreign_keys}})
@@ -1030,3 +1104,89 @@ async def test_extension_values_do_not_bypass_finite_json_validation(client, acc
                                  headers={**headers, "Content-Type": "application/json"})
     assert response.status_code == 422
     assert (await client.get("/api/sync/pull?cursor=0")).json() == {"cursor": 0, "changes": []}
+
+
+@pytest.mark.parametrize("mode", ["omitted", "changed_ids", "null", "replacement"])
+async def test_plan_structure_omission_contract(client, account, session, mode):
+    headers = await authenticate(client, account)
+    structure = plan_structure("cw001")
+    initial = extension_operation("workoutPlan", payload={"cwiczeniaIds": ["cw001"], "structure": structure})
+    assert (await sync_service.push_operations(session, account.id, [initial])).conflicts == []
+    payload: dict = {"cwiczeniaIds": ["cw002"] if mode != "omitted" else ["cw001"]}
+    if mode == "null":
+        payload["structure"] = None
+    if mode == "replacement":
+        payload["structure"] = plan_structure("cw002")
+    update = extension_operation("workoutPlan", entity_id=initial.entity_id, base_version=1, payload=payload)
+    original = update.model_dump(mode="json", by_alias=True)
+    response = await client.post("/api/sync/push", json={"operations": [original]}, headers=headers)
+    assert response.status_code == 200
+    body = response.json()
+    if mode == "changed_ids":
+        assert body["accepted"] == []
+        assert body["conflicts"][0]["record"]["payload"] == initial.payload
+        assert await session.scalar(select(func.count()).select_from(SyncOperation)) == 1
+    else:
+        assert body["conflicts"] == []
+        expected = {**payload, "structure": structure} if mode == "omitted" else payload
+        assert (await client.get("/api/sync/pull?cursor=0")).json()["changes"][-1]["payload"] == expected
+        stored = await session.scalar(select(SyncOperation).where(SyncOperation.operation_id == update.operation_id))
+        assert stored.request_digest == sync_service.request_digest(update)
+        replay = await client.post("/api/sync/push", json={"operations": [original]}, headers=headers)
+        assert replay.json()["accepted"][0]["duplicate"] is True
+        if mode == "omitted":
+            changed_retry = {**original, "payload": expected}
+            reused = await client.post("/api/sync/push", json={"operations": [changed_retry]}, headers=headers)
+            assert reused.json()["conflicts"][0]["kind"] == "operationReuse"
+    assert update.model_dump(mode="json", by_alias=True) == original
+
+
+def plan_structure(exercise_id):
+    return {"schemaVersion": 1, "criteria": {}, "budgetSeconds": 300,
+            "level": "Średni", "equipment": [], "warnings": [],
+            "blocks": [{"exerciseId": exercise_id, "section": "main", "prescription": {
+                "tracking": "time", "sets": 2, "reps": None, "workSeconds": 40,
+                "restSeconds": 20, "transitionSeconds": 15}}]}
+
+
+@pytest.mark.parametrize("stored,ids,deleted,tombstone,blocked", [
+    (plan_structure("cw001"), ["cw001"], False, False, False),
+    (plan_structure("cw001"), ["cw002"], False, False, True),
+    (plan_structure("cw002"), ["cw001"], False, False, True),
+    ({}, ["cw001"], False, False, True),
+    ({"blocks": [None]}, ["cw001"], False, False, True),
+    (plan_structure("cw001"), None, False, False, True),
+    (None, ["cw002"], False, False, False),
+    (plan_structure("cw001"), [], True, False, False),
+    (plan_structure("cw001"), [], False, True, False),
+])
+async def test_omitted_structure_guard(stored, ids, deleted, tombstone, blocked):
+    instant = datetime.now(timezone.utc)
+    record = sync_service.PlannedRecord("workoutPlan", uuid4(), 1,
+        {"cwiczeniaIds": ["cw001"], "structure": stored}, instant if tombstone else None, instant, None)
+    op = extension_operation("workoutPlan", entity_id=record.entity_id, base_version=1,
+                             payload={"cwiczeniaIds": ids}, deleted=deleted)
+    assert sync_service.incompatible_omitted_structure(op, record) is blocked
+    if not blocked:
+        payload = sync_service.revised_record_payload(op, record)
+        assert ("structure" in payload) is (not deleted and not tombstone)
+
+
+async def test_structure_conflict_rolls_back_batch_and_null_then_omit(account, session):
+    user_id = account.id
+    initial = extension_operation("workoutPlan", payload={"cwiczeniaIds": ["cw001"], "structure": plan_structure("cw001")})
+    assert not (await sync_service.push_operations(session, user_id, [initial])).conflicts
+    rename = extension_operation("workoutPlan", entity_id=initial.entity_id, base_version=1,
+                                 payload={"cwiczeniaIds": ["cw001"], "nazwa": "New"})
+    incompatible = extension_operation("workoutPlan", entity_id=initial.entity_id, base_version=2,
+                                       payload={"cwiczeniaIds": ["cw002"]})
+    result = await sync_service.push_operations(session, user_id, [rename, incompatible])
+    assert result.accepted == []
+    assert result.conflicts[0].record.payload == initial.payload
+    assert result.conflicts[0].record.version == 1
+    assert len((await sync_service.pull_changes(session, user_id, 0)).changes) == 1
+    clear = extension_operation("workoutPlan", entity_id=initial.entity_id, base_version=1,
+                                payload={"cwiczeniaIds": ["cw002"], "structure": None})
+    assert not (await sync_service.push_operations(session, user_id, [clear, incompatible])).conflicts
+    assert (await sync_service.pull_changes(session, user_id, 0)).changes[-1].payload == {
+        "cwiczeniaIds": ["cw002"], "structure": None}

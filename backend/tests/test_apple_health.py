@@ -258,7 +258,7 @@ async def test_bearer_is_import_only_and_manual_measurements_are_untouched(clien
     from app.identity.models import User
     from app.identity.service import issue_session
     root, csrf, bearer = integration
-    manual = {"operationId": str(uuid4()), "entityType": "measurement", "entityId": str(uuid4()), "baseVersion": 0, "payload": {"weight": 85}, "deleted": False}
+    manual = {"operationId": str(uuid4()), "entityType": "measurement", "entityId": str(uuid4()), "baseVersion": 0, "payload": {"data": "2026-09-10T06:00:00.000Z", "wagaKg": 85.0}, "deleted": False}
     assert len((await client.post("/api/sync/push", json={"operations": [manual]}, headers=csrf)).json()["accepted"]) == 1
     async with AsyncClient(transport=ASGITransport(app=app), base_url="https://test") as isolated:
         assert len(isolated.cookies) == 0
@@ -277,7 +277,7 @@ async def test_bearer_is_import_only_and_manual_measurements_are_untouched(clien
     changes = (await client.get("/api/sync/pull?include_health=true")).json()["changes"]
     measurements = [change for change in changes if change["entityType"] == "measurement"]
     assert len(measurements) == 1
-    assert measurements[0]["payload"] == {"weight": 85}
+    assert measurements[0]["payload"] == {"data": "2026-09-10T06:00:00.000Z", "wagaKg": 85.0}
     assert measurements[0]["version"] == 1
 
 @pytest.mark.asyncio
