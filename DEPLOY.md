@@ -3,13 +3,19 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Prepared, **not deployed**: API + web **1.16.0+29**, built from clean source
-`b2bffc558380781ffdcc1acc0453225333e4ad60`. Final artifact smoke passed 18/18;
-API must precede web because measurement edits now use date omission.
-Exact images, verification, rollout and rollback constraints:
-[prepared release 1.16.0+29](docs/releases/2026-10-19-api-web-1.16.0-29-prepared.md).
+Current API + web **1.16.0+29 deployed 2026-10-19**: API/sender at
+**06:52:11 UTC**, web at **06:52:36 UTC**, after a fresh verified backup,
+isolated restore and serialized migrate (Alembic **0010**, Drift **13**).
+Built from clean source `b2bffc558380781ffdcc1acc0453225333e4ad60`;
+published deployment source `d67dd127ea90ddb78797a41ed2d9ed1c1410134d`
+adds only documentation. Public version/health and **443/443 package hashes**
+passed; API preceded web for the measurement date-omission contract.
+Six TTF files retain pre-existing `application/octet-stream` MIME; comparison
+with 1.15 confirmed unchanged bytes/configuration, a non-blocking metadata issue.
+Exact images, backup, evidence, limitations and rollback constraints:
+[deployed release 1.16.0+29](docs/releases/2026-10-19-api-web-1.16.0-29-deployed.md).
 
-Current API + web **1.15.0+28 deployed 2026-10-18**, API/sender at
+Previous API + web **1.15.0+28 deployed 2026-10-18**, API/sender at
 **13:47:06 UTC**, web at **13:47:46 UTC**. Repeat plan/actual workout,
 weekly rhythm with manual completion, read-only trends, verified offline
 preparation and active-session recovery. Local Drift **13**; PostgreSQL
@@ -245,9 +251,10 @@ checks the committed generated file before regeneration, analysis and web build.
 The web artifact `version.json` must match `AppVersion.name` and `buildNumber`.
 
 Historical production builds used an approved working tree with uncommitted
-account/sync implementation. Release 1.15.0+28 identifies clean, pushed
-source commit `c639d661bf93a34eff97e7a0071207bca16606a6` and exact API/web
-images in its report. Do not reset or overwrite subsequent local work; review
+account/sync implementation. Release 1.16.0+29 identifies clean build source
+`b2bffc558380781ffdcc1acc0453225333e4ad60`, published deployment source
+`d67dd127ea90ddb78797a41ed2d9ed1c1410134d` and exact API/web images in its report.
+Do not reset or overwrite subsequent local work; review
 the tree and retain previous images before every release.
 
 ```bash
@@ -266,9 +273,12 @@ systemctl start fit-backup.service
 # Promote approved API/web only after successful migration below.
 flock -w 900 /run/lock/fit-backup-restore.lock \
   docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml -f /docker/fit/compose.mentor.yaml run --rm --no-deps -T migrate
-# Confirm database revision, then promote the approved API/web candidate tags.
+# Confirm database revision. Promote API first and verify its health and the
+# sender heartbeat before promoting web (required by 1.16 date omission).
 docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml -f /docker/fit/compose.mentor.yaml config --quiet
-docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml -f /docker/fit/compose.mentor.yaml up -d --no-deps --no-build --wait --wait-timeout 180 web api push-sender
+docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml -f /docker/fit/compose.mentor.yaml up -d --no-deps --no-build --wait --wait-timeout 180 api push-sender
+# After API health, exact image and fresh sender heartbeat pass, promote web:
+docker compose -f /docker/fit/compose.yaml -f /docker/fit/compose.push.yaml -f /docker/fit/compose.mentor.yaml up -d --no-deps --no-build --wait --wait-timeout 180 web
 ```
 
 For template changes:
