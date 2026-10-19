@@ -1,0 +1,4103 @@
+{
+  "sources_sha256": {
+    "exercises.json": "2a5ff3050fa7ed24a69bc4344001bfe64f19d8f03c76a973954cc1fd5bc00a9e",
+    "exercise_catalog_metadata.json": "d00aea5530308d04f875b7ed39ff07deabf5e2ae57dee7685ff6d65b545207f9"
+  },
+  "exercises": [
+    {
+      "id": "cw001",
+      "name": "Pompki klasyczne",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw002",
+      "name": "Pompki wąskie (diamentowe)",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw003",
+      "name": "Pompki szerokie",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw004",
+      "name": "Pompki łucznika",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw005",
+      "name": "Pompki na jednej ręce",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw006",
+      "name": "Pompki plyometryczne z klaśnięciem",
+      "type": "Explosive",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw007",
+      "name": "Pompki hinduskie",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw008",
+      "name": "Pompki z przyciąganiem kolana do łokcia",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw009",
+      "name": "Pompki z podniesionymi nogami",
+      "type": "Hipertrofia",
+      "muscle": "Górna klatka piersiowa",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw010",
+      "name": "Głębokie pompki na hantlach",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw011",
+      "name": "Pompki z rotacją",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw012",
+      "name": "Wyciskanie hantli na ławce płaskiej",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw013",
+      "name": "Wyciskanie hantli na ławce skośnej głową w górę",
+      "type": "Hipertrofia",
+      "muscle": "Górna klatka piersiowa",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw014",
+      "name": "Wyciskanie hantli w leżeniu na podłodze",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw015",
+      "name": "Wyciskanie ściskające hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Wewnętrzna klatka piersiowa",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw016",
+      "name": "Rozpiętki z hantlami na ławce płaskiej",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa (izolacja)",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw017",
+      "name": "Rozpiętki z hantlami na ławce skośnej głową w górę",
+      "type": "Hipertrofia",
+      "muscle": "Górna klatka piersiowa",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw018",
+      "name": "Rozpiętki z hantlami w leżeniu na podłodze",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw019",
+      "name": "Przenoszenie hantla za głowę w leżeniu na ławce",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa, Latissimus dorsi",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw020",
+      "name": "Wyciskanie hantli w moście biodrowym",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw021",
+      "name": "Wyciskanie gumy przed klatkę piersiową w staniu",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw022",
+      "name": "Rozpiętki z gumą w staniu",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa (izolacja)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw023",
+      "name": "Pompka z gumą na plecach",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw024",
+      "name": "Ściąganie gumy znad głowy do bioder na prostych ramionach",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa, Lat",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw025",
+      "name": "Pompki między krzesłami lub na ławce (na klatkę piersiową)",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa dolna",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw026",
+      "name": "Pompki z dłońmi przy biodrach i pochyleniem w przód",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa dolna",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw027",
+      "name": "Pompki na palcach",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw028",
+      "name": "Pompki łucznika z nogami na ławce",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa górna",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw029",
+      "name": "Pompki z pauzą",
+      "type": "Hipertrofia",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw030",
+      "name": "Pompki eksplozywne z przeskokiem w bok",
+      "type": "Explosive",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw031",
+      "name": "Podciąganie szerokim nachwytem",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw032",
+      "name": "Podciąganie podchwytem",
+      "type": "Siła",
+      "muscle": "Biceps, Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw033",
+      "name": "Podciąganie chwytem neutralnym",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw034",
+      "name": "Podciąganie wąskim chwytem",
+      "type": "Siła",
+      "muscle": "Dolna część latissimus",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw035",
+      "name": "Podciąganie chwytem mieszanym",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw036",
+      "name": "Podciąganie z pauzą na górze",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw037",
+      "name": "Podciąganie z prostymi nogami uniesionymi do poziomu",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw038",
+      "name": "Podciąganie łucznika",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw039",
+      "name": "Opuszczanie na jednej ręce z podciągnięcia",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw040",
+      "name": "Podciąganie do klatki",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw041",
+      "name": "Podciąganie eksplozywne",
+      "type": "Explosive",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw042",
+      "name": "Opuszczanie z podciągnięcia",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw043",
+      "name": "Zwis martwy",
+      "type": "Izometria",
+      "muscle": "Grip",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw044",
+      "name": "Aktywny zwis",
+      "type": "Izometria",
+      "muscle": "Łopatki (dolne trapezy)",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw045",
+      "name": "Podciąganie łopatkowe",
+      "type": "Siła",
+      "muscle": "Łopatki, Dolne trapezy",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw046",
+      "name": "Wiosłowanie hantlem jednorącz",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw047",
+      "name": "Wiosłowanie hantlami w opadzie",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi, Środkowe plecy",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw048",
+      "name": "Wiosłowanie hantlami z klatką opartą na ławce skośnej",
+      "type": "Hipertrofia",
+      "muscle": "Środkowe plecy, Latissimus",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw049",
+      "name": "Wiosłowanie hantlami w podporze przodem",
+      "type": "Siła",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw050",
+      "name": "Wiosłowanie Meadowsa z hantlem",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw051",
+      "name": "Wiosłowanie hantlami podchwytem",
+      "type": "Hipertrofia",
+      "muscle": "Dolna część lat",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw052",
+      "name": "Naprzemienne wiosłowanie hantlami z podłogi w opadzie",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw053",
+      "name": "Ściąganie łopatek Kelso z hantlami na ławce skośnej",
+      "type": "Hipertrofia",
+      "muscle": "Środkowa część trapezów",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw054",
+      "name": "Wzruszanie barkami z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Górne trapezy",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw055",
+      "name": "Rozciąganie gumy przed klatką piersiową",
+      "type": "Wytrzymałość",
+      "muscle": "Tylne barki, Romboidy",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw056",
+      "name": "Wiosłowanie gumą w siadzie",
+      "type": "Hipertrofia",
+      "muscle": "Środkowe plecy, Lat",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw057",
+      "name": "Ściąganie gumy z góry do klatki piersiowej",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw058",
+      "name": "Face pull z gumą",
+      "type": "Wytrzymałość",
+      "muscle": "Tylne barki, Górne plecy",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw059",
+      "name": "Unoszenie ramion i nóg w leżeniu na brzuchu",
+      "type": "Wytrzymałość",
+      "muscle": "Prostowniki grzbietu",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw060",
+      "name": "Utrzymanie uniesionych ramion i nóg w leżeniu na brzuchu",
+      "type": "Izometria",
+      "muscle": "Prostowniki grzbietu",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw061",
+      "name": "Przenoszenie ramion łukiem nad głowę w leżeniu na brzuchu",
+      "type": "Wytrzymałość",
+      "muscle": "Tylne barki, Górne plecy",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw062",
+      "name": "Skłony tułowia z hantlem i cofnięciem bioder",
+      "type": "Hipertrofia",
+      "muscle": "Prostowniki grzbietu",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw063",
+      "name": "Rumuński martwy ciąg z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Dwugłowe uda, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw064",
+      "name": "Wiosłowanie oburącz hantlem opartym jednym końcem w rogu",
+      "type": "Hipertrofia",
+      "muscle": "Latissimus dorsi, Środkowe plecy",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw065",
+      "name": "Wyciskanie hantli nad głowę w siadzie",
+      "type": "Hipertrofia",
+      "muscle": "Barki (wszystkie aktony)",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw066",
+      "name": "Wyciskanie hantli nad głowę w staniu",
+      "type": "Siła",
+      "muscle": "Barki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw067",
+      "name": "Wyciskanie Arnolda z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Barki (wszystkie 3 aktony)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw068",
+      "name": "Wyciskanie hantli nad głowę chwytem neutralnym",
+      "type": "Hipertrofia",
+      "muscle": "Barki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw069",
+      "name": "Wyciskanie hantli nad głowę z wybiciem z nóg",
+      "type": "Explosive",
+      "muscle": "Barki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw070",
+      "name": "Unoszenie hantli bokiem",
+      "type": "Hipertrofia",
+      "muscle": "Boczne aktony barków",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw071",
+      "name": "Unoszenie hantli bokiem w staniu na jednej nodze",
+      "type": "Hipertrofia",
+      "muscle": "Boczne aktony barków",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw072",
+      "name": "Unoszenie hantli bokiem z pauzą",
+      "type": "Hipertrofia",
+      "muscle": "Boczne aktony barków",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw073",
+      "name": "Unoszenie hantli w przód",
+      "type": "Hipertrofia",
+      "muscle": "Przednie aktony barków",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw074",
+      "name": "Naprzemienne unoszenie hantli w przód",
+      "type": "Hipertrofia",
+      "muscle": "Przednie aktony barków",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw075",
+      "name": "Odwrotne rozpiętki z hantlami w opadzie",
+      "type": "Hipertrofia",
+      "muscle": "Tylne aktony barków",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw076",
+      "name": "Odwrotne rozpiętki z hantlami na ławce skośnej",
+      "type": "Hipertrofia",
+      "muscle": "Tylne aktony barków",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw077",
+      "name": "Unoszenie hantli w kształt litery Y na ławce skośnej",
+      "type": "Hipertrofia",
+      "muscle": "Dolne trapezy, Tylne barki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw078",
+      "name": "Pompki z biodrami uniesionymi wysoko",
+      "type": "Hipertrofia",
+      "muscle": "Barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw079",
+      "name": "Pompki z biodrami uniesionymi wysoko i nogami na ławce",
+      "type": "Siła",
+      "muscle": "Barki",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw080",
+      "name": "Stanie na rękach przy ścianie",
+      "type": "Izometria",
+      "muscle": "Barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw081",
+      "name": "Pompki w staniu na rękach przy ścianie",
+      "type": "Siła",
+      "muscle": "Barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw082",
+      "name": "Wyciskanie gumy nad głowę",
+      "type": "Hipertrofia",
+      "muscle": "Barki",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw083",
+      "name": "Unoszenie ramienia bokiem z gumą",
+      "type": "Hipertrofia",
+      "muscle": "Boczne aktony barków",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw084",
+      "name": "Unoszenie ramion w przód z gumą",
+      "type": "Hipertrofia",
+      "muscle": "Przednie aktony barków",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw085",
+      "name": "Face pull z gumą",
+      "type": "Hipertrofia",
+      "muscle": "Tylne aktony barków",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw086",
+      "name": "Rozciąganie gumy przed klatką piersiową",
+      "type": "Wytrzymałość",
+      "muscle": "Tylne aktony barków",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw087",
+      "name": "Rotacja zewnętrzna ramienia z gumą",
+      "type": "Rozgrzewka",
+      "muscle": "Rotatory (infraspinatus, teres minor)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw088",
+      "name": "Rotacja wewnętrzna ramienia z gumą",
+      "type": "Rozgrzewka",
+      "muscle": "Rotatory (subscapularis)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw089",
+      "name": "Wyciskanie kubańskie z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Rotatory + Barki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw090",
+      "name": "Rotacja zewnętrzna ramienia z hantlem w leżeniu bokiem",
+      "type": "Rozgrzewka",
+      "muscle": "Rotatory (infraspinatus)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw091",
+      "name": "Unoszenie hantli w skos w przód z kciukami w dół",
+      "type": "Rozgrzewka",
+      "muscle": "Supraspinatus",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw092",
+      "name": "Unoszenie hantli w skos w przód z kciukami w górę",
+      "type": "Rozgrzewka",
+      "muscle": "Supraspinatus",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw093",
+      "name": "Uginanie przedramion z hantlami w staniu",
+      "type": "Hipertrofia",
+      "muscle": "Biceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw094",
+      "name": "Uginanie młotkowe z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Biceps, Ramienny (brachialis)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw095",
+      "name": "Naprzemienne uginanie przedramion z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Biceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw096",
+      "name": "Uginanie przedramion z hantlami na ławce skośnej",
+      "type": "Hipertrofia",
+      "muscle": "Biceps (długa głowa)",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw097",
+      "name": "Uginanie Zottmana z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Biceps, Przedramię",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw098",
+      "name": "Uginanie przedramienia z hantlem w oparciu o udo",
+      "type": "Hipertrofia",
+      "muscle": "Biceps (szczyt)",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw099",
+      "name": "Uginanie młotkowe z hantlem do przeciwnego barku",
+      "type": "Hipertrofia",
+      "muscle": "Ramienny (brachialis)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw100",
+      "name": "Uginanie przedramion z hantlami nachwytem",
+      "type": "Hipertrofia",
+      "muscle": "Przedramię (brachioradialis), Ramienny",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw101",
+      "name": "Uginanie przedramion z hantlami metodą 21 powtórzeń",
+      "type": "Hipertrofia",
+      "muscle": "Biceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw102",
+      "name": "Podciąganie podchwytem z naciskiem na biceps",
+      "type": "Siła",
+      "muscle": "Biceps",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw103",
+      "name": "Uginanie przedramion z gumą",
+      "type": "Hipertrofia",
+      "muscle": "Biceps",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw104",
+      "name": "Uginanie przedramion z hantlami prowadzonymi wzdłuż tułowia",
+      "type": "Hipertrofia",
+      "muscle": "Biceps (długa głowa)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw105",
+      "name": "Wyciskanie francuskie hantla oburącz nad głową",
+      "type": "Hipertrofia",
+      "muscle": "Triceps (długa głowa)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw106",
+      "name": "Wyciskanie francuskie hantla jednorącz nad głową",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw107",
+      "name": "Wyciskanie francuskie hantli w leżeniu na ławce",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw108",
+      "name": "Wyciskanie hantli wąsko na ławce",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw109",
+      "name": "Prostowanie przedramienia z hantlem w opadzie",
+      "type": "Wytrzymałość",
+      "muscle": "Triceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw110",
+      "name": "Pompki diamentowe z naciskiem na triceps",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw111",
+      "name": "Pompki tyłem na ławce",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw112",
+      "name": "Pompki tyłem na ławce z hantlem na udach",
+      "type": "Siła",
+      "muscle": "Triceps",
+      "equipment": [
+        "Masa własna",
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw113",
+      "name": "Wyciskanie JM z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Triceps",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw114",
+      "name": "Prostowanie przedramion w dół z gumą",
+      "type": "Wytrzymałość",
+      "muscle": "Triceps",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw115",
+      "name": "Prostowanie przedramion nad głową z gumą",
+      "type": "Wytrzymałość",
+      "muscle": "Triceps (długa głowa)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw116",
+      "name": "Wyciskanie Tate'a z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Triceps (przyśrodkowa głowa)",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw117",
+      "name": "Uginanie nadgarstków z hantlami podchwytem",
+      "type": "Hipertrofia",
+      "muscle": "Zginacze nadgarstka",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw118",
+      "name": "Prostowanie nadgarstków z hantlami nachwytem",
+      "type": "Hipertrofia",
+      "muscle": "Prostowniki nadgarstka",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw119",
+      "name": "Chód farmera z hantlami",
+      "type": "Siła",
+      "muscle": "Grip, Trapezy",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw120",
+      "name": "Zwis martwy na siłę chwytu",
+      "type": "Izometria",
+      "muscle": "Grip",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw121",
+      "name": "Podciąganie na ręcznikach przewieszonych przez drążek",
+      "type": "Siła",
+      "muscle": "Grip, Latissimus",
+      "equipment": [
+        "Drążek",
+        "Ręcznik"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw122",
+      "name": "Ściskanie końca hantla palcami",
+      "type": "Izometria",
+      "muscle": "Grip (kciuk-palce)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw123",
+      "name": "Nawijanie linki z hantlem na drążek",
+      "type": "Hipertrofia",
+      "muscle": "Przedramiona (zginacze + prostowniki)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw124",
+      "name": "Uginanie nadgarstków z hantlami za plecami",
+      "type": "Hipertrofia",
+      "muscle": "Zginacze nadgarstka",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw125",
+      "name": "Przysiad z hantlem trzymanym oburącz przy klatce",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw126",
+      "name": "Przysiad z hantlami po bokach",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw127",
+      "name": "Przysiad przedni z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw128",
+      "name": "Przysiad bułgarski z hantlami",
+      "type": "Siła",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw129",
+      "name": "Przysiad w wykroku z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw130",
+      "name": "Wykroki chodzone z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw131",
+      "name": "Zakroki z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw132",
+      "name": "Wypady w bok z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Adduktory",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw133",
+      "name": "Zakroki skrzyżne z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Pośladki (glute medius)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw134",
+      "name": "Wykroki chodzone z rotacją tułowia i hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw135",
+      "name": "Wchodzenie na ławkę z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw136",
+      "name": "Wchodzenie na ławkę z uniesieniem kolana i hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw137",
+      "name": "Przysiad na jednej nodze z drugą wyprostowaną w przód",
+      "type": "Siła",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw138",
+      "name": "Przysiad na jednej nodze z drugą wyprostowaną w przód z podparciem",
+      "type": "Siła",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Masa własna",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw139",
+      "name": "Przysiad łyżwiarski",
+      "type": "Siła",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw140",
+      "name": "Przysiad na palcach z odchyleniem tułowia w tył i podparciem",
+      "type": "Siła",
+      "muscle": "Kwadryceps",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw141",
+      "name": "Siad przy ścianie",
+      "type": "Izometria",
+      "muscle": "Kwadryceps",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw142",
+      "name": "Siad przy ścianie z hantlem",
+      "type": "Izometria",
+      "muscle": "Kwadryceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw143",
+      "name": "Przysiad kozacki z hantlem",
+      "type": "Hipertrofia",
+      "muscle": "Kwadryceps, Adduktory",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw144",
+      "name": "Przysiad ze skokiem",
+      "type": "Explosive",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw145",
+      "name": "Przysiad ze skokiem i obrotem o 180°",
+      "type": "Explosive",
+      "muscle": "Kwadryceps, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw146",
+      "name": "Wyskoki na skrzynię lub ławkę",
+      "type": "Explosive",
+      "muscle": "Nogi (eksplozja)",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw147",
+      "name": "Skok w dal z miejsca",
+      "type": "Explosive",
+      "muscle": "Nogi (eksplozja)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw148",
+      "name": "Rumuński martwy ciąg z hantlami (na nogi)",
+      "type": "Hipertrofia",
+      "muscle": "Dwugłowe uda, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw149",
+      "name": "Rumuński martwy ciąg z hantlami na jednej nodze",
+      "type": "Hipertrofia",
+      "muscle": "Dwugłowe uda, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw150",
+      "name": "Martwy ciąg z hantlami na prostych nogach",
+      "type": "Hipertrofia",
+      "muscle": "Dwugłowe uda, Prostowniki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw151",
+      "name": "Martwy ciąg z hantlem w szerokim rozkroku",
+      "type": "Hipertrofia",
+      "muscle": "Adduktory, Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw152",
+      "name": "Skłony tułowia z gumą i cofnięciem bioder",
+      "type": "Hipertrofia",
+      "muscle": "Prostowniki grzbietu, Dwugłowe",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw153",
+      "name": "Opad tułowia w klęku z zablokowanymi stopami i pomocą rąk",
+      "type": "Siła",
+      "muscle": "Dwugłowe uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw154",
+      "name": "Most biodrowy",
+      "type": "Wytrzymałość",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw155",
+      "name": "Most biodrowy z hantlem",
+      "type": "Hipertrofia",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw156",
+      "name": "Hip thrust z hantlem",
+      "type": "Hipertrofia",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw157",
+      "name": "Hip thrust jednonóż",
+      "type": "Hipertrofia",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw158",
+      "name": "Unoszenie bioder w leżeniu ze złączonymi podeszwami stóp",
+      "type": "Wytrzymałość",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw159",
+      "name": "Unoszenie ugiętej nogi w tył w klęku podpartym",
+      "type": "Wytrzymałość",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw160",
+      "name": "Odwodzenie ugiętej nogi w bok w klęku podpartym z gumą",
+      "type": "Wytrzymałość",
+      "muscle": "Pośladki (glute medius)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw161",
+      "name": "Rozwieranie kolan w leżeniu bokiem z gumą",
+      "type": "Rozgrzewka",
+      "muscle": "Pośladki (glute medius)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw162",
+      "name": "Chód w półprzysiadzie z gumą",
+      "type": "Wytrzymałość",
+      "muscle": "Odwodziciele bioder, Pośladki",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw163",
+      "name": "Wspięcia na palce w staniu",
+      "type": "Wytrzymałość",
+      "muscle": "Łydka (gastrocnemius)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw164",
+      "name": "Wspięcia na palce na jednej nodze z hantlem",
+      "type": "Hipertrofia",
+      "muscle": "Łydka (gastrocnemius)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw165",
+      "name": "Wspięcia na palce na krawędzi ławki z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Łydka (pełny zakres)",
+      "equipment": [
+        "Hantle",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw166",
+      "name": "Wspięcia na palce w siadzie z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Łydka (soleus)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw167",
+      "name": "Wspięcia na palce w opadzie tułowia",
+      "type": "Hipertrofia",
+      "muscle": "Łydka (gastrocnemius)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw168",
+      "name": "Unoszenie przodostopia w oparciu plecami o ścianę",
+      "type": "Wytrzymałość",
+      "muscle": "Przednia goleń (tibialis anterior)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw169",
+      "name": "Deska na przedramionach",
+      "type": "Izometria",
+      "muscle": "Core (proste + poprzeczny)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw170",
+      "name": "Deska na prostych ramionach",
+      "type": "Izometria",
+      "muscle": "Core",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw171",
+      "name": "Deska bokiem",
+      "type": "Izometria",
+      "muscle": "Skośne brzucha (anty-fleksja boczna)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw172",
+      "name": "Deska bokiem z opuszczaniem i unoszeniem bioder",
+      "type": "Wytrzymałość",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw173",
+      "name": "Deska bokiem z unoszeniem nogi",
+      "type": "Siła",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw174",
+      "name": "Deska z dotykaniem przeciwnego barku",
+      "type": "Wytrzymałość",
+      "muscle": "Core (anty-rotacja)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw175",
+      "name": "Przejścia z deski na przedramionach do podporu na dłoniach",
+      "type": "Wytrzymałość",
+      "muscle": "Core, Barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw176",
+      "name": "Wiosłowanie hantlami w podporze przodem (stabilizacja tułowia)",
+      "type": "Siła",
+      "muscle": "Core (anty-rotacja)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw177",
+      "name": "Deska z unoszeniem nogi",
+      "type": "Wytrzymałość",
+      "muscle": "Core, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw178",
+      "name": "Deska kopenhaska z nogą na ławce",
+      "type": "Siła",
+      "muscle": "Adduktory",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw179",
+      "name": "Martwy robak",
+      "type": "Wytrzymałość",
+      "muscle": "Deep core (poprzeczny)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw180",
+      "name": "Martwy robak z hantlem",
+      "type": "Wytrzymałość",
+      "muscle": "Deep core",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw181",
+      "name": "Prostowanie przeciwnej ręki i nogi w klęku podpartym",
+      "type": "Wytrzymałość",
+      "muscle": "Stabilizacja core, Prostowniki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw182",
+      "name": "Prostowanie przeciwnej ręki i nogi z przyciąganiem łokcia do kolana w klęku podpartym",
+      "type": "Wytrzymałość",
+      "muscle": "Stabilizacja core",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw183",
+      "name": "Utrzymanie pozycji łódki w leżeniu na plecach",
+      "type": "Izometria",
+      "muscle": "Core (proste, anty-ekstensja)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw184",
+      "name": "Kołysanie w pozycji łódki na plecach",
+      "type": "Wytrzymałość",
+      "muscle": "Core (proste)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw185",
+      "name": "Utrzymanie pozycji łódki w leżeniu na brzuchu",
+      "type": "Izometria",
+      "muscle": "Tylny łańcuch (erektory)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw186",
+      "name": "Pełne brzuszki",
+      "type": "Wytrzymałość",
+      "muscle": "Proste brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw187",
+      "name": "Pełne brzuszki z hantlem na klatce piersiowej",
+      "type": "Hipertrofia",
+      "muscle": "Proste brzucha",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw188",
+      "name": "Spięcia brzucha",
+      "type": "Wytrzymałość",
+      "muscle": "Górne proste brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw189",
+      "name": "Odwrotne spięcia brzucha",
+      "type": "Wytrzymałość",
+      "muscle": "Dolne proste brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw190",
+      "name": "Scyzoryki",
+      "type": "Wytrzymałość",
+      "muscle": "Proste brzucha (pełne)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw191",
+      "name": "Sięganie dłońmi do uniesionych stóp w leżeniu",
+      "type": "Wytrzymałość",
+      "muscle": "Górne proste brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw192",
+      "name": "Spięcia brzucha ze skrętem i naprzemienną pracą nóg",
+      "type": "Wytrzymałość",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw193",
+      "name": "Skręty tułowia w siadzie bez obciążenia",
+      "type": "Wytrzymałość",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw194",
+      "name": "Skręty tułowia w siadzie z hantlem",
+      "type": "Hipertrofia",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw195",
+      "name": "Rąbanie drewna z hantlem po przekątnej",
+      "type": "Hipertrofia",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw196",
+      "name": "Wyciskanie Pallofa z gumą",
+      "type": "Wytrzymałość",
+      "muscle": "Core (anty-rotacja)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw197",
+      "name": "Wyciskanie Pallofa z gumą i rotacją tułowia",
+      "type": "Wytrzymałość",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw198",
+      "name": "Skłony boczne z hantlem w staniu",
+      "type": "Hipertrofia",
+      "muscle": "Skośne brzucha, QL",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw199",
+      "name": "Unoszenie kolan w zwisie na drążku",
+      "type": "Hipertrofia",
+      "muscle": "Dolne proste brzucha",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw200",
+      "name": "Unoszenie prostych nóg w zwisie na drążku",
+      "type": "Siła",
+      "muscle": "Dolne proste brzucha",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw201",
+      "name": "Przenoszenie uniesionych nóg na boki w zwisie na drążku",
+      "type": "Siła",
+      "muscle": "Skośne brzucha",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw202",
+      "name": "Unoszenie stóp do drążka w zwisie",
+      "type": "Siła",
+      "muscle": "Proste brzucha, Latissimus",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw203",
+      "name": "Utrzymanie podporu z prostymi nogami uniesionymi do poziomu",
+      "type": "Izometria",
+      "muscle": "Core, Zginacze bioder",
+      "equipment": [
+        "Drążek"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw204",
+      "name": "Unoszenie i opuszczanie prostego ciała w oparciu na barkach na ławce",
+      "type": "Siła",
+      "muscle": "Core (anty-ekstensja)",
+      "equipment": [
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw205",
+      "name": "Przetaczanie hantli sześciokątnych w przód w klęku",
+      "type": "Siła",
+      "muscle": "Core (anty-ekstensja)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw206",
+      "name": "Chód farmera z hantlami (stabilizacja tułowia)",
+      "type": "Siła",
+      "muscle": "Core (anty-fleksja boczna)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw207",
+      "name": "Chód z hantlem w jednej ręce",
+      "type": "Siła",
+      "muscle": "Core (anty-fleksja boczna)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw208",
+      "name": "Bieg w podporze (na brzuch)",
+      "type": "Cardio",
+      "muscle": "Core, Zginacze bioder",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw209",
+      "name": "Burpee klasyczny",
+      "type": "Cardio",
+      "muscle": "Full body",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw210",
+      "name": "Burpee z pompką",
+      "type": "Cardio",
+      "muscle": "Full body",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw211",
+      "name": "Burpee z podskokiem",
+      "type": "Cardio",
+      "muscle": "Full body",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw212",
+      "name": "Burpee bez pompki i wyskoku",
+      "type": "Cardio",
+      "muscle": "Cardio",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw213",
+      "name": "Pajacyki",
+      "type": "Cardio",
+      "muscle": "Cardio",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw214",
+      "name": "Wyskoki z przysiadu do pozycji gwiazdy",
+      "type": "Explosive",
+      "muscle": "Cardio (explosive)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw215",
+      "name": "Bieg w miejscu z wysokim unoszeniem kolan",
+      "type": "Cardio",
+      "muscle": "Cardio, Zginacze bioder",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw216",
+      "name": "Bieg w miejscu z uderzaniem piętami o pośladki",
+      "type": "Cardio",
+      "muscle": "Cardio, Dwugłowe uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw217",
+      "name": "Bieg w podporze",
+      "type": "Cardio",
+      "muscle": "Core, Cardio",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw218",
+      "name": "Bieg w podporze z kolanami do przeciwnych łokci",
+      "type": "Cardio",
+      "muscle": "Skośne brzucha, Cardio",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw219",
+      "name": "Wyrzuty nóg w tył do podporu z przysiadu",
+      "type": "Cardio",
+      "muscle": "Cardio, Nogi",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw220",
+      "name": "Skoki łyżwiarskie",
+      "type": "Explosive",
+      "muscle": "Nogi (bok-bok), Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw221",
+      "name": "Wyskoki z przyciąganiem kolan do klatki piersiowej",
+      "type": "Explosive",
+      "muscle": "Nogi (explosive)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw222",
+      "name": "Skok w dal z miejsca z powrotem truchtem",
+      "type": "Explosive",
+      "muscle": "Nogi (explosive)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw223",
+      "name": "Chód niedźwiedzia",
+      "type": "Wytrzymałość",
+      "muscle": "Full body",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw224",
+      "name": "Chód kraba",
+      "type": "Wytrzymałość",
+      "muscle": "Triceps, Tylne barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw225",
+      "name": "Skakanka — podskoki obunóż",
+      "type": "Cardio",
+      "muscle": "Cardio, Łydki",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw226",
+      "name": "Skakanka — krok bokserski",
+      "type": "Cardio",
+      "muscle": "Cardio, Łydki",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw227",
+      "name": "Skakanka — wysokie unoszenie kolan",
+      "type": "Cardio",
+      "muscle": "Cardio, Zginacze bioder",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw228",
+      "name": "Skakanka — podskoki na jednej nodze",
+      "type": "Cardio",
+      "muscle": "Cardio, Łydka",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw229",
+      "name": "Skakanka — podskoki na boki",
+      "type": "Cardio",
+      "muscle": "Cardio, Skośne",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw230",
+      "name": "Skakanka — podskoki w przód i w tył",
+      "type": "Cardio",
+      "muscle": "Cardio",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw231",
+      "name": "Skakanka — podwójny obrót linki w podskoku",
+      "type": "Explosive",
+      "muscle": "Cardio (explosive)",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw232",
+      "name": "Skakanka — podskoki ze skrzyżowaniem ramion",
+      "type": "Cardio",
+      "muscle": "Koordynacja, Cardio",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw233",
+      "name": "Skakanka — podwójny obrót linki ze skrzyżowaniem ramion",
+      "type": "Explosive",
+      "muscle": "Koordynacja, Cardio (explosive)",
+      "equipment": [
+        "Skakanka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw234",
+      "name": "Bieżnia — spokojny bieg w drugiej strefie tętna",
+      "type": "Cardio",
+      "muscle": "Cardio (baza tlenowa)",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw235",
+      "name": "Bieżnia — marsz 12-3-30 (nachylenie 12%, 3 mile/h, 30 min)",
+      "type": "Cardio",
+      "muscle": "Cardio",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw236",
+      "name": "Bieżnia — interwały: 30 sekund sprintu i 90 sekund truchtu",
+      "type": "Cardio",
+      "muscle": "Cardio (HIIT)",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    {
+      "id": "cw237",
+      "name": "Bieżnia — sprinty pod górę (nachylenie 5–7%)",
+      "type": "Cardio",
+      "muscle": "Cardio (HIIT)",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    {
+      "id": "cw238",
+      "name": "Bieżnia — piramida tempa",
+      "type": "Cardio",
+      "muscle": "Cardio",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw239",
+      "name": "Bieżnia — bieg tempowy",
+      "type": "Cardio",
+      "muscle": "Cardio (próg mleczanowy)",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw240",
+      "name": "Bieżnia — długi, spokojny bieg",
+      "type": "Cardio",
+      "muscle": "Cardio (baza tlenowa)",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw241",
+      "name": "Bieżnia — spacer regeneracyjny",
+      "type": "Regeneracja",
+      "muscle": "Regeneracja",
+      "equipment": [
+        "Bieżnia"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw242",
+      "name": "Krążenia ramion",
+      "type": "Rozgrzewka",
+      "muscle": "Barki (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw243",
+      "name": "Wymachy nogi w przód i w tył",
+      "type": "Rozgrzewka",
+      "muscle": "Biodra (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw244",
+      "name": "Wymachy nogi na boki",
+      "type": "Rozgrzewka",
+      "muscle": "Biodra (adduktory, odwodziciele)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw245",
+      "name": "Krążenia bioder",
+      "type": "Rozgrzewka",
+      "muscle": "Biodra (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw246",
+      "name": "Wykroki chodzone z rotacją tułowia bez obciążenia",
+      "type": "Rozgrzewka",
+      "muscle": "Biodra, Th kręgosłup",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw247",
+      "name": "Gąsienica",
+      "type": "Rozgrzewka",
+      "muscle": "Full body dynamic stretch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw248",
+      "name": "Rozciąganie w wykroku z rotacją tułowia",
+      "type": "Rozgrzewka",
+      "muscle": "Full body mobility",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw249",
+      "name": "Przyciąganie stopy do zewnętrznej strony dłoni w podporze",
+      "type": "Rozgrzewka",
+      "muscle": "Biodra (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw250",
+      "name": "Koci grzbiet i wygięcie pleców w klęku podpartym",
+      "type": "Rozgrzewka",
+      "muscle": "Kręgosłup (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw251",
+      "name": "Pozycja kobry",
+      "type": "Rozciąganie",
+      "muscle": "Prostowniki grzbietu (rozciąganie)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw252",
+      "name": "Pozycja dziecka",
+      "type": "Rozciąganie",
+      "muscle": "Plecy (rozciąganie)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw253",
+      "name": "Pies z głową w dół",
+      "type": "Rozciąganie",
+      "muscle": "Cała tylna łańcuch, Barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw254",
+      "name": "Pies z głową w górę",
+      "type": "Rozciąganie",
+      "muscle": "Prostowniki grzbietu, Klatka",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw255",
+      "name": "Pozycja gołębia",
+      "type": "Rozciąganie",
+      "muscle": "Biodra (rotator zewnętrzny), Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw256",
+      "name": "Rozciąganie bioder w siadzie 90/90",
+      "type": "Rozciąganie",
+      "muscle": "Biodra (rotatory)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw257",
+      "name": "Rozciąganie w pozycji motyla",
+      "type": "Rozciąganie",
+      "muscle": "Adduktory, Biodra",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw258",
+      "name": "Rozciąganie w pozycji żaby",
+      "type": "Rozciąganie",
+      "muscle": "Adduktory (głębokie)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw259",
+      "name": "Rozciąganie w przysiadzie kozackim",
+      "type": "Rozciąganie",
+      "muscle": "Biodra, Adduktory",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw260",
+      "name": "Rozciąganie zginaczy biodra w klęku ze stopą na ławce",
+      "type": "Rozciąganie",
+      "muscle": "Zginacze bioder (iliopsoas)",
+      "equipment": [
+        "Masa własna",
+        "Ławeczka"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw261",
+      "name": "Rozciąganie mięśnia czworogłowego uda w staniu",
+      "type": "Rozciąganie",
+      "muscle": "Kwadryceps",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw262",
+      "name": "Rozciąganie tylnej części uda w staniu z nogą na podwyższeniu",
+      "type": "Rozciąganie",
+      "muscle": "Dwugłowe uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw263",
+      "name": "Skłon w przód w siadzie prostym",
+      "type": "Rozciąganie",
+      "muscle": "Cała tylna łańcuch (dwugłowe, plecy)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw264",
+      "name": "Rozciąganie łydki przy ścianie",
+      "type": "Rozciąganie",
+      "muscle": "Łydka (gastrocnemius + soleus)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw265",
+      "name": "Rozciąganie klatki piersiowej w futrynie",
+      "type": "Rozciąganie",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw266",
+      "name": "Przekładanie ręki pod tułowiem w klęku podpartym",
+      "type": "Rozciąganie",
+      "muscle": "Th kręgosłup, Górne plecy",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw267",
+      "name": "Wyprost odcinka piersiowego kręgosłupa na ławce",
+      "type": "Mobilność",
+      "muscle": "Th kręgosłup (mobilność)",
+      "equipment": [
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw268",
+      "name": "Koci grzbiet i wygięcie pleców w siadzie",
+      "type": "Rozgrzewka",
+      "muscle": "Kręgosłup (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw269",
+      "name": "Krążenia szyi",
+      "type": "Rozgrzewka",
+      "muscle": "Szyja (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw270",
+      "name": "Cofanie brody",
+      "type": "Rozgrzewka",
+      "muscle": "Głębokie zginacze szyi",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw271",
+      "name": "Krążenia barków",
+      "type": "Rozgrzewka",
+      "muscle": "Barki (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw272",
+      "name": "Krążenia nadgarstków",
+      "type": "Rozgrzewka",
+      "muscle": "Nadgarstki (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw273",
+      "name": "Rozciąganie nadgarstków ze złożonymi dłońmi",
+      "type": "Rozciąganie",
+      "muscle": "Nadgarstki, Przedramiona",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw274",
+      "name": "Rozciąganie nadgarstków w klęku podpartym z palcami ku kolanom",
+      "type": "Mobilność",
+      "muscle": "Nadgarstki (przygotowanie)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw275",
+      "name": "Krążenia kostek",
+      "type": "Rozgrzewka",
+      "muscle": "Kostki (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw276",
+      "name": "Zgięcie grzbietowe stawu skokowego z kolanem do ściany",
+      "type": "Mobilność",
+      "muscle": "Kostki (dorsalfleksja)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw277",
+      "name": "Utrzymanie głębokiego przysiadu",
+      "type": "Mobilność",
+      "muscle": "Biodra, Kostki (mobilność)",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw278",
+      "name": "Przenoszenie gumy nad głową za plecy na prostych ramionach",
+      "type": "Mobilność",
+      "muscle": "Barki (mobilność)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw279",
+      "name": "Rozciąganie przedniej i tylnej części barków z gumą",
+      "type": "Rozciąganie",
+      "muscle": "Barki (mobilność)",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw280",
+      "name": "Rozciąganie mięśnia czworogłowego uda w staniu z rotacją tułowia",
+      "type": "Rozciąganie",
+      "muscle": "Kwadryceps + biodra",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw281",
+      "name": "Powitanie słońca A",
+      "type": "Mobilność",
+      "muscle": "Full body flow",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    {
+      "id": "cw282",
+      "name": "Tai Chi — otwarcie klatki piersiowej w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Klatka piersiowa (regeneracja)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw283",
+      "name": "Tai Chi — dłonie jak chmury w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Koordynacja, Barki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw284",
+      "name": "Tai Chi — chwytanie wróblego ogona w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Koordynacja, Barki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw285",
+      "name": "Tai Chi — falowanie dłońmi jak chmurami w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Barki, Th kręgosłup",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw286",
+      "name": "Tai Chi — rozdzielanie grzywy dzikiego konia w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Koordynacja",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw287",
+      "name": "Tai Chi — złoty kogut w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Równowaga, Zginacze bioder",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw288",
+      "name": "Tai Chi — omiatanie kolana w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Koordynacja, Barki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw289",
+      "name": "Tai Chi — pojedynczy bicz w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Koordynacja, Barki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw290",
+      "name": "Skręt tułowia w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Th kręgosłup (rotacja)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw291",
+      "name": "Koci grzbiet i wygięcie pleców w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Kręgosłup (mobilność)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw292",
+      "name": "Skłon w przód w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Dolne plecy (rozciąganie)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw293",
+      "name": "Pozycja gołębia w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Biodra (rotator zewnętrzny)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw294",
+      "name": "Skłon boczny w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "QL, Skośne",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw295",
+      "name": "Boczne rozciąganie szyi w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Szyja (bok)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw296",
+      "name": "Krążenia barków w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Barki (mobilność)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw297",
+      "name": "Ramiona orła w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Górne plecy, Barki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw298",
+      "name": "Krążenia kostek w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Kostki (mobilność)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw299",
+      "name": "Krążenia bioder w siadzie na krześle",
+      "type": "Regeneracja",
+      "muscle": "Biodra (mobilność)",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw300",
+      "name": "Oddech kwadratowy 4–4–4–4",
+      "type": "Regeneracja",
+      "muscle": "Regeneracja, Nerw błędny",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    {
+      "id": "cw301",
+      "name": "Oddech przeponowy",
+      "type": "Regeneracja",
+      "muscle": "Regeneracja, Przepona",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw302",
+      "name": "Przysiad z dynamicznym wyciśnięciem hantli nad głowę",
+      "type": "Explosive",
+      "muscle": "Full body (nogi + barki)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw303",
+      "name": "Pompka, wiosłowanie w podporze i przysiad z wyciskaniem hantli",
+      "type": "Siła",
+      "muscle": "Full body",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw304",
+      "name": "Burpee z rwaniem dwóch hantli nad głowę",
+      "type": "Explosive",
+      "muscle": "Full body (explosive)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw305",
+      "name": "Zarzut hantli z wyciskaniem nad głowę",
+      "type": "Explosive",
+      "muscle": "Full body",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw306",
+      "name": "Rwanie hantla jednorącz",
+      "type": "Explosive",
+      "muscle": "Full body (explosive)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw307",
+      "name": "Wymach hantlem oburącz",
+      "type": "Explosive",
+      "muscle": "Pośladki, Dwugłowe",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw308",
+      "name": "Wstawanie tureckie z hantlem",
+      "type": "Siła",
+      "muscle": "Full body (stabilizacja)",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw309",
+      "name": "Przysiad, uginanie przedramion i wyciskanie hantli nad głowę",
+      "type": "Hipertrofia",
+      "muscle": "Full body",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw310",
+      "name": "Wiosłowanie hantlami w podporze z pompką",
+      "type": "Siła",
+      "muscle": "Full body",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw311",
+      "name": "Wykrok z uginaniem przedramion z hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Nogi + biceps",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw312",
+      "name": "Rumuński martwy ciąg z wiosłowaniem hantlami",
+      "type": "Hipertrofia",
+      "muscle": "Cała tylna łańcuch",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw313",
+      "name": "Chód niedźwiedzia z pompkami",
+      "type": "Wytrzymałość",
+      "muscle": "Full body",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    {
+      "id": "cw314",
+      "name": "Przysiad z wyciskaniem hantli nad głowę",
+      "type": "Hipertrofia",
+      "muscle": "Nogi + barki",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw315",
+      "name": "Burpee z podciąganiem na drążku",
+      "type": "Siła",
+      "muscle": "Full body",
+      "equipment": [
+        "Masa własna",
+        "Drążek"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw316",
+      "name": "Chód farmera naprzemiennie z chodem z hantlem w jednej ręce",
+      "type": "Siła",
+      "muscle": "Full body carry",
+      "equipment": [
+        "Hantle"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw317",
+      "name": "Martwy ciąg z sandbagiem za uchwyty",
+      "type": "Siła",
+      "muscle": "Pośladki, Tył uda",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw318",
+      "name": "Przysiad z sandbagiem trzymanym z przodu",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw319",
+      "name": "Przysiad z sandbagiem objętym pionowo",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw320",
+      "name": "Przysiad z sandbagiem na jednym barku",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw321",
+      "name": "Skłon biodrowy z sandbagiem przed klatką",
+      "type": "Siła",
+      "muscle": "Tył uda, Pośladki",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw322",
+      "name": "Wiosłowanie sandbagiem w opadzie",
+      "type": "Siła",
+      "muscle": "Plecy",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw323",
+      "name": "Dynamiczne podciągnięcie sandbaga do klatki",
+      "type": "Siła",
+      "muscle": "Pośladki, Tył uda",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw324",
+      "name": "Zarzut sandbaga na przedramiona",
+      "type": "Siła",
+      "muscle": "Pośladki, Tył uda",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw325",
+      "name": "Wyciskanie sandbaga nad głowę",
+      "type": "Siła",
+      "muscle": "Barki, Triceps",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw326",
+      "name": "Zarzut i wyciskanie sandbaga",
+      "type": "Siła",
+      "muscle": "Pośladki, Tył uda, Barki, Triceps",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw327",
+      "name": "Zakrok z przeniesieniem sandbaga przy przedniej nodze",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw328",
+      "name": "Przenoszenie sandbaga ruchem szuflowania",
+      "type": "Siła",
+      "muscle": "Pośladki, Brzuch",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw329",
+      "name": "Obwodzenie sandbaga wokół tułowia w klęku",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw330",
+      "name": "Przeciąganie sandbaga pod tułowiem w desce",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw331",
+      "name": "Most biodrowy z napięciem sandbaga nad klatką",
+      "type": "Siła",
+      "muscle": "Pośladki, Tył uda",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw332",
+      "name": "Wyciskanie sandbaga łukiem w półklęku",
+      "type": "Siła",
+      "muscle": "Barki, Triceps",
+      "equipment": [
+        "Sandbag"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw333",
+      "name": "Przetaczanie kółka w przód z kolan",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Kółko do brzucha"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw334",
+      "name": "Przetaczanie kółka po skosie z kolan",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Kółko do brzucha"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw335",
+      "name": "Deska z dłońmi na kółku",
+      "type": "Izometria",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Kółko do brzucha"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw336",
+      "name": "Wojownik I",
+      "type": "Izometria",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw337",
+      "name": "Wojownik II",
+      "type": "Izometria",
+      "muscle": "Przód uda, Pośladki, Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw338",
+      "name": "Wojownik III",
+      "type": "Izometria",
+      "muscle": "Pośladki, Tył uda, Przód uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw339",
+      "name": "Pozycja trójkąta",
+      "type": "Izometria",
+      "muscle": "Tył uda, Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw340",
+      "name": "Pozycja rozciągniętego kąta bocznego",
+      "type": "Izometria",
+      "muscle": "Przód uda, Pośladki, Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw341",
+      "name": "Pozycja półksiężyca w staniu",
+      "type": "Izometria",
+      "muscle": "Pośladki, Przód uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw342",
+      "name": "Pozycja drzewa",
+      "type": "Izometria",
+      "muscle": "Pośladki, Przód uda, Łydki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw343",
+      "name": "Pozycja orła w staniu",
+      "type": "Izometria",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw344",
+      "name": "Pozycja krzesła bez podparcia",
+      "type": "Izometria",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw345",
+      "name": "Pozycja wielbłąda",
+      "type": "Izometria",
+      "muscle": "Plecy, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw346",
+      "name": "Pozycja łuku",
+      "type": "Izometria",
+      "muscle": "Plecy, Pośladki, Tył uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw347",
+      "name": "Pozycja łodzi w siadzie",
+      "type": "Izometria",
+      "muscle": "Brzuch, Zginacze bioder",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw348",
+      "name": "Skręt mędrca w siadzie na podłodze",
+      "type": "Izometria",
+      "muscle": "Plecy, Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw349",
+      "name": "Pozycja bramy w klęku",
+      "type": "Izometria",
+      "muscle": "Brzuch, Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw350",
+      "name": "Skłon w przód w szerokim rozkroku",
+      "type": "Izometria",
+      "muscle": "Tył uda, Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw351",
+      "name": "Pozycja szczęśliwego dziecka",
+      "type": "Izometria",
+      "muscle": "Przywodziciele uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw352",
+      "name": "Przemieszczanie bokiem w przysiadzie na rękach",
+      "type": "Siła",
+      "muscle": "Barki, Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "rounds",
+      "unilateral": true
+    },
+    {
+      "id": "cw353",
+      "name": "Przemieszczanie żabki z podparciem rąk",
+      "type": "Siła",
+      "muscle": "Barki, Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "rounds",
+      "unilateral": false
+    },
+    {
+      "id": "cw354",
+      "name": "Przysiad krewetki z chwytem tylnej stopy",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw355",
+      "name": "Przerzut bokiem na obie ręce",
+      "type": "Siła",
+      "muscle": "Barki, Triceps",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw356",
+      "name": "Most trójpunktowy z sięganiem",
+      "type": "Siła",
+      "muscle": "Pośladki, Plecy, Barki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw357",
+      "name": "Podpór żaby na ugiętych ramionach",
+      "type": "Izometria",
+      "muscle": "Barki, Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw358",
+      "name": "Unoszenie prostej nogi w siadzie z kompresją",
+      "type": "Siła",
+      "muscle": "Zginacze bioder, Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw359",
+      "name": "Utrzymanie podporu tyłem z ugiętymi nogami",
+      "type": "Izometria",
+      "muscle": "Pośladki, Barki, Tył uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw360",
+      "name": "Tai chi — zbieranie wiśni w siadzie",
+      "type": "Regeneracja",
+      "muscle": "Barki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw361",
+      "name": "Tai chi — wiosłowanie łodzią w siadzie",
+      "type": "Regeneracja",
+      "muscle": "Plecy, Brzuch",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw362",
+      "name": "Tai chi — żółw pływający w oceanie w siadzie",
+      "type": "Regeneracja",
+      "muscle": "Barki, Plecy",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw363",
+      "name": "Tai chi — otwieranie drzwi podeszwą w siadzie",
+      "type": "Regeneracja",
+      "muscle": "Przód uda",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw364",
+      "name": "Przetaczanie miednicy w leżeniu na plecach",
+      "type": "Mobilność",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw365",
+      "name": "Łagodne napięcie brzucha w leżeniu z normalnym oddechem",
+      "type": "Izometria",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw366",
+      "name": "Kołysanie ugiętych kolan w leżeniu na plecach",
+      "type": "Mobilność",
+      "muscle": "Plecy",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw367",
+      "name": "Otwarta książka — obrót klatki w leżeniu bokiem",
+      "type": "Mobilność",
+      "muscle": "Plecy",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw368",
+      "name": "Przyciąganie jednego kolana do klatki w leżeniu",
+      "type": "Mobilność",
+      "muscle": "Plecy, Mięsień czworoboczny lędźwi",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw369",
+      "name": "Cofanie bioder do ściany bez obciążenia",
+      "type": "Rozgrzewka",
+      "muscle": "Pośladki, Tył uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    }
+  ]
+}

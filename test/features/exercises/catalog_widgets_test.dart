@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/models/exercise.dart';
+import 'package:fitbirek_training/features/auth/providers/auth_providers.dart';
 import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/exercises/presentation/pages/exercises_list_page.dart';
 import 'package:fitbirek_training/features/exercises/presentation/pages/exercise_detail_page.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+import 'package:fitbirek_training/features/workout/providers/session_recovery_provider.dart';
 import 'catalog_filter_test.dart' show metadata, exercise;
 
 void main() {
@@ -16,6 +18,7 @@ void main() {
     ExerciseFilters filters = const ExerciseFilters(),
     bool metadataError = false,
     Widget page = const ExercisesListPage(),
+    List<Override> overrides = const [],
   }) async {
     final container = ProviderContainer(
       overrides: [
@@ -32,6 +35,7 @@ void main() {
           return metadata;
         }),
         exerciseFiltersProvider.overrideWith((ref) => filters),
+        ...overrides,
       ],
     );
     addTearDown(container.dispose);
@@ -216,7 +220,23 @@ void main() {
   testWidgets('detail distinguishes primary and supporting muscles', (
     tester,
   ) async {
-    await mount(tester, page: const ExerciseDetailPage(exerciseId: 'a'));
+    await mount(
+      tester,
+      page: const ExerciseDetailPage(exerciseId: 'a'),
+      overrides: [
+        // This is a metadata fixture, not a database/bootstrap integration test.
+        sessionRecoveryProvider.overrideWith((ref) {
+          final authority = ref.read(cachedAuthWriteAuthorityProvider);
+          return Stream.value(
+            SessionRecovery(
+              authority.state?.accountId,
+              authority.epoch,
+              const [],
+            ),
+          );
+        }),
+      ],
+    );
     await tester.pumpAndSettle();
     expect(find.text('Mięśnie główne'), findsOneWidget);
     expect(find.text('Mięśnie wspierające'), findsOneWidget);

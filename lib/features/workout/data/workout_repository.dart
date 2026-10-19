@@ -31,6 +31,13 @@ class IdempotentSessionWrite {
   final bool alreadyExists;
 }
 
+class EmptyWorkoutSession extends StateError {
+  EmptyWorkoutSession()
+    : super(
+        'Pusty trening nie jest wykonaniem. Wróć, zapisz szablon lub odrzuć trening.',
+      );
+}
+
 class IdempotentSetWrite {
   const IdempotentSetWrite(this.set, {required this.alreadyExists});
 
@@ -313,6 +320,9 @@ class WorkoutRepository {
       final duration = preserveRecordedDuration
           ? session.czasTrwaniaSekund
           : now.difference(start).inSeconds;
+      if ((await _db.workoutDao.getSetsForSession(sessionId)).isEmpty) {
+        throw EmptyWorkoutSession();
+      }
       await _db.workoutDao.updateSession(
         sessionId,
         WorkoutSessionsCompanion(

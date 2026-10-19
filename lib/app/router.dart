@@ -11,6 +11,7 @@ import '../features/home/presentation/pages/classic_today_page.dart';
 import '../features/exercises/presentation/pages/exercises_list_page.dart';
 import '../features/exercises/presentation/pages/exercise_detail_page.dart';
 import '../features/workout/presentation/pages/workout_home_page.dart';
+import '../features/workout/presentation/pages/workout_recovery_page.dart';
 import '../features/workout/presentation/pages/active_session_page.dart';
 import '../features/workout/presentation/pages/session_summary_page.dart';
 import '../features/progress/presentation/pages/progress_page.dart';
@@ -20,6 +21,8 @@ import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/settings/presentation/pages/edit_profile_page.dart';
 import '../features/calculator/presentation/pages/calculator_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
+import '../features/planner/presentation/pages/templates_page.dart';
+import '../features/planner/presentation/pages/template_editor_page.dart';
 import '../features/schedule/presentation/schedule_page.dart';
 import '../features/mentor/presentation/pages/mentor_page.dart';
 import '../features/mentor/presentation/pages/mentor_settings_page.dart';
@@ -88,7 +91,8 @@ GoRouter createRouter({
             routes: [
               GoRoute(
                 path: '/today',
-                builder: (context, state) => const MentorPage(),
+                builder: (context, state) =>
+                    MentorPage(templatePrompt: state.extra == 'template'),
                 routes: [
                   GoRoute(
                     path: 'classic',
@@ -120,6 +124,32 @@ GoRouter createRouter({
                 path: '/workout',
                 builder: (context, state) => const WorkoutHomePage(),
                 routes: [
+                  GoRoute(
+                    path: 'templates',
+                    builder: (context, state) => const TemplatesPage(),
+                    routes: [
+                      GoRoute(
+                        path: 'new',
+                        builder: (context, state) => TemplateEditorPage(
+                          seed: state.extra is TemplateEditorSeed
+                              ? state.extra as TemplateEditorSeed
+                              : null,
+                        ),
+                      ),
+                      GoRoute(
+                        path: ':syncId/edit',
+                        builder: (context, state) => TemplateEditorPage(
+                          syncId: state.pathParameters['syncId'],
+                        ),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'recovery',
+                    builder: (context, state) => WorkoutRecoveryPage(
+                      exerciseId: state.uri.queryParameters['exercise'],
+                    ),
+                  ),
                   GoRoute(
                     path: 'session',
                     builder: (context, state) => const ActiveSessionPage(),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../helpers/recorded_workout_fixture.dart';
 
 import 'package:drift/native.dart';
 import 'database/legacy_schema.dart';
@@ -77,6 +78,7 @@ void main() {
         final id = await repo.startSession();
         final identity = (await db.workoutDao.getSession(id))!.syncId;
         await SyncStore(db).version(SyncEntityType.workoutSession, identity, 5);
+        await seedRecordedWorkoutSet(db, id);
         await repo.finishSession(id, DateTime.now());
         final op = (await db.syncDao.pendingOperations()).single;
         api.onPush = (_) => deferWhileOffline(db, api);
@@ -169,6 +171,7 @@ void main() {
         }
         api.onPush = (_) => deferWhileOffline(db, api);
         await sync.synchronize();
+        await seedRecordedWorkoutSet(db, id);
         await repo.finishSession(id, DateTime.now());
         api.page = {
           'cursor': 20,
@@ -274,6 +277,7 @@ void main() {
         'changes': [remote(op, 5)],
       };
       await sync.synchronize();
+      await seedRecordedWorkoutSet(db, id);
       await repo.finishSession(id, DateTime.now());
       api.page = {'cursor': 20, 'changes': []};
       api.onPush = (ops) async {

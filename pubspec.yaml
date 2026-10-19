@@ -2,7 +2,7 @@ name: fitbirek_training
 description: "FitBirek - osobisty asystent treningowy do treningow domowych."
 publish_to: 'none'
 
-version: 1.16.0+29
+version: 1.17.0+31
 
 environment:
   sdk: ^3.9.2

@@ -15,6 +15,10 @@ enum PlanSection {
 /// Work is per set (and includes both sides for unilateral exercises).
 /// Repetition estimates use an explicit 3 s/rep; rests occur BETWEEN sets.
 class PlanPrescription {
+  /// schema1's maximum budget. Bound operands BEFORE any int arithmetic on
+  /// native (signed 64-bit) or Web (53-bit exact integers).
+  static const maxSeconds = 5400;
+  static const maxReps = maxSeconds ~/ 3;
   const PlanPrescription({
     required this.tracking,
     required this.sets,
@@ -22,12 +26,37 @@ class PlanPrescription {
     required this.workSeconds,
     required this.restSeconds,
     required this.transitionSeconds,
+    this.weightKg,
   });
   final String tracking;
   final int sets, workSeconds, restSeconds, transitionSeconds;
   final int? reps;
-  int get totalSeconds =>
-      sets * workSeconds + (sets - 1) * restSeconds + transitionSeconds;
+  final double? weightKg;
+  void validate() {
+    if (!{'reps', 'time', 'rounds'}.contains(tracking) ||
+        (weightKg != null && (!weightKg!.isFinite || weightKg! < 0)) ||
+        sets < 1 ||
+        sets > maxSeconds ||
+        workSeconds < 1 ||
+        workSeconds > maxSeconds ||
+        restSeconds < 0 ||
+        restSeconds > maxSeconds ||
+        transitionSeconds < 0 ||
+        transitionSeconds > maxSeconds ||
+        (tracking == 'reps'
+            ? (reps == null || reps! < 1 || reps! > maxReps)
+            : reps != null)) {
+      throw const FormatException(
+        'Nieprawidłowe cele planu: serie i sekundy maksymalnie 5400, powtórzenia maksymalnie 1800; ciężar musi być skończony i nieujemny.',
+      );
+    }
+  }
+
+  int get totalSeconds {
+    validate();
+    return sets * workSeconds + (sets - 1) * restSeconds + transitionSeconds;
+  }
+
   Map<String, Object?> toJson() => {
     'tracking': tracking,
     'sets': sets,
@@ -35,6 +64,7 @@ class PlanPrescription {
     'workSeconds': workSeconds,
     'restSeconds': restSeconds,
     'transitionSeconds': transitionSeconds,
+    if (weightKg != null) 'weightKg': weightKg,
   };
   factory PlanPrescription.fromJson(Map<String, dynamic> j) {
     final p = PlanPrescription(
@@ -44,17 +74,9 @@ class PlanPrescription {
       workSeconds: j['workSeconds'] as int,
       restSeconds: j['restSeconds'] as int,
       transitionSeconds: j['transitionSeconds'] as int,
+      weightKg: (j['weightKg'] as num?)?.toDouble(),
     );
-    if (!{'reps', 'time', 'rounds'}.contains(p.tracking) ||
-        p.sets < 1 ||
-        p.workSeconds < 1 ||
-        p.restSeconds < 0 ||
-        p.transitionSeconds < 0 ||
-        (p.tracking == 'reps'
-            ? (p.reps == null || p.reps! < 1)
-            : p.reps != null)) {
-      throw const FormatException('Nieprawidłowe cele planu');
-    }
+    p.validate();
     return p;
   }
 }
@@ -317,7 +339,16 @@ class StructuredPlanGenerator {
       unilateral: entry.unilateral,
       section: section,
     );
-    if (catalogDose != null) return (value: catalogDose, fallback: false);
+    if (catalogDose != null) {
+      // A recognized but over-limit dose must be skipped, not replaced with
+      // a smaller default that would falsely appear to fit the budget.
+      try {
+        catalogDose.validate();
+      } on FormatException {
+        return null;
+      }
+      return (value: catalogDose, fallback: false);
+    }
     final main = section == PlanSection.main;
     final reps = entry.tracking == 'reps' ? (main ? 10 : 6) : null;
     final work = reps == null ? (main ? 40 : 30) : reps * 3;
@@ -456,7 +487,8 @@ class StructuredPlanGenerator {
       if (entry == null || entry.tracking != old.prescription.tracking) {
         continue;
       }
-      final dose = _prescription(e, engine, old.section)!;
+      final dose = _prescription(e, engine, old.section);
+      if (dose == null) continue;
       final p = dose.value;
       if (p.totalSeconds != old.prescription.totalSeconds) continue;
       final blocks = [...plan.blocks];

@@ -9,6 +9,7 @@ import '../../../core/utils/pr_detector.dart';
 import '../../../core/utils/set_comparison.dart';
 import '../../../core/models/exercise.dart';
 import '../data/workout_repository.dart';
+import '../data/session_actions_repository.dart';
 import '../domain/interval_timer.dart';
 import '../domain/workout_guidance.dart';
 import '../domain/workout_repeat.dart';
@@ -110,6 +111,7 @@ class ActiveWorkoutState {
   }
 
   Set<String> get plannedExerciseIds => {
+    ...?repeat?.targets.map((t) => t.exerciseId),
     ...?guidance?.plan.exerciseIds,
     if (guidance != null)
       ...List.generate(guidance!.plan.blocks.length, guidance!.exerciseAt),
@@ -120,7 +122,7 @@ class ActiveWorkoutState {
   };
 
   bool isExtraExercise(String id) =>
-      guidance != null &&
+      (guidance != null || repeat != null) &&
       !plannedExerciseIds.contains(id) &&
       selectedExercises.any((e) => e.id == id);
 
@@ -190,6 +192,7 @@ class IntervalWriteOrigin {
     this.extra,
     this.checkpointKey,
     this.checkpointEpoch,
+    this.weightKg,
   );
   final ActiveWorkoutNotifier _owner;
   final int sessionId, _generation, _epoch;
@@ -203,6 +206,7 @@ class IntervalWriteOrigin {
   final bool extra;
   final String checkpointKey;
   final int checkpointEpoch;
+  final double? weightKg;
   bool _claimed = false;
 }
 
@@ -663,7 +667,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       side: origin.side,
       variantId: origin.variantId,
     );
-    if (state.guidance == null || fields['timer'] == null) return true;
+    if ((state.guidance == null && !origin.extra) || fields['timer'] == null) {
+      return true;
+    }
     final binding =
         fields['timerBinding'] ??
         _timerBinding(
@@ -1078,7 +1084,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     String? expectedAccountId,
     int? expectedAuthorityEpoch,
   }) async {
-    if (state.isActive) return null;
+    // Finishing another persisted session must not replace or reset RAM state.
+    // The current RAM session still requires its normal explicit finish flow.
+    if (state.isActive && state.sessionSyncId == sessionSyncId) return null;
     final generation = _generation;
     final authority = _ref.read(cachedAuthWriteAuthorityProvider),
         epoch = _ref.read(cachedAuthWriteAuthorityProvider).epoch;
@@ -1088,7 +1096,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     bool guard() =>
         mounted &&
         generation == _generation &&
-        !state.isActive &&
+        (!state.isActive ||
+            (_ownsAuthority && state.sessionSyncId != sessionSyncId)) &&
         authority.epoch == epoch &&
         (authority.state == null || authority.state!.isSignedIn);
     final db = _ref.read(appDatabaseProvider),
@@ -1162,7 +1171,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     String? variantLabel,
     int? rpe,
     bool extra = false,
+    double? weightKg,
   }) {
+    if (weightKg != null && (!weightKg.isFinite || weightKg < 0)) return null;
     if (!mounted || !state.isActive || state.sessionId == null) return null;
     if (extra && !state.isExtraExercise(exercise.id)) return null;
     if (!extra &&
@@ -1196,6 +1207,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       extra,
       key,
       _checkpointEpochs[key] ?? 0,
+      weightKg,
     );
     return isIntervalCurrent(origin) ? origin : null;
   }
@@ -1276,7 +1288,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     final repo = _ref.read(workoutRepositoryProvider);
     final entries = <ActiveSetEntry>[];
     final previousDraft = state.draft;
-    final consumesDraft = state.guidance != null;
+    final consumesDraft = state.guidance != null || origin.extra;
     final previousGuidanceSignature = state.guidance == null
         ? null
         : jsonEncode(state.guidance!.toJson());
@@ -1333,6 +1345,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
               exerciseId: origin.exercise.id,
               exerciseNamePl: origin.exercise.nazwaPl,
               setNumber: ++number,
+              weightKg: origin.weightKg,
               seconds: result.seconds,
               side: origin.side,
               variantId: origin.variantId,
@@ -1349,6 +1362,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                 exerciseId: origin.exercise.id,
                 exerciseNamePl: origin.exercise.nazwaPl,
                 setNumber: number,
+                weightKg: origin.weightKg,
                 seconds: result.seconds,
                 side: origin.side,
                 variantId: origin.variantId,
@@ -1361,7 +1375,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             final row = await db.workoutDao.getSession(origin.sessionId);
             requireOwnership();
             final guidance = WorkoutGuidance.tryRead(row?.guidanceJson);
-            if (row?.syncId != origin.sessionSyncId || guidance == null) {
+            if (row?.syncId != origin.sessionSyncId ||
+                (state.guidance != null && guidance == null)) {
               throw WorkoutSessionUnavailable(origin.sessionId);
             }
             // Consuming a checkpoint is part of the same commit as its actual
@@ -1381,7 +1396,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                 'selectedIds': state.selectedExercises
                     .map((e) => e.id)
                     .toList(),
-                'guidanceSignature': jsonEncode(guidance.toJson()),
+                'guidanceSignature': guidance == null
+                    ? null
+                    : jsonEncode(guidance.toJson()),
                 'fields': previousDraft,
               },
               guard: () => isIntervalCurrent(origin) && (guard?.call() ?? true),
@@ -1484,7 +1501,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       return false;
     }
     if (extra && !state.isExtraExercise(exercise.id)) return false;
-    final repeatIndex = state.repeat == null
+    final repeatIndex = state.repeat == null || extra
         ? null
         : state.repeatCompletedCount;
     final repeatTarget = state.repeatTarget;
@@ -1952,8 +1969,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     return write;
   }
 
-  Future<void> finishSession({String? note}) async {
-    if (state.sessionId == null || state.startTime == null) return;
+  Future<void> finishSession({String? note, SessionEdit? expectedEdit}) async {
+    if (state.sessionId == null ||
+        state.startTime == null ||
+        _intervalClosing) {
+      return;
+    }
     // Invalidate timer captures synchronously: SQLite finish may be queued
     // behind an in-flight interval transaction, which must then roll back.
     _intervalClosing = true;
@@ -1967,14 +1988,30 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     bool guard() =>
         _isCurrent(sessionId, generation) && authority.epoch == epoch;
     try {
-      await repo.finishSession(
-        sessionId,
-        startTime,
-        expectedSyncId: state.sessionSyncId,
-        guard: guard,
-        note: note,
-        accountId: account,
-      );
+      if (expectedEdit != null) {
+        if (expectedEdit.row.id != sessionId ||
+            expectedEdit.row.syncId != state.sessionSyncId) {
+          throw SessionConflict();
+        }
+        await SessionActionsRepository(
+          _ref.read(appDatabaseProvider),
+          authority,
+        ).finish(
+          expectedEdit,
+          note: note,
+          preserveRecordedDuration: false,
+          guard: guard,
+        );
+      } else {
+        await repo.finishSession(
+          sessionId,
+          startTime,
+          expectedSyncId: state.sessionSyncId,
+          guard: guard,
+          note: note,
+          accountId: account,
+        );
+      }
     } on WorkoutAccountUnavailable {
       if (mounted && generation == _generation) discardSession();
       return;
@@ -1982,6 +2019,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       // A restore/pull may win the race before the watch notification arrives.
       _resetIfCurrent(sessionId, generation);
       return;
+    } catch (_) {
+      if (mounted && generation == _generation) _intervalClosing = false;
+      rethrow;
     }
     _resetIfCurrent(sessionId, generation);
   }

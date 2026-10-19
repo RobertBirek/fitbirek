@@ -12,6 +12,7 @@ import 'package:fitbirek_training/features/auth/providers/auth_providers.dart';
 import 'package:fitbirek_training/features/health/providers/health_providers.dart';
 import 'package:fitbirek_training/features/planner/presentation/pages/planner_page.dart';
 import 'package:fitbirek_training/features/workout/providers/workout_providers.dart';
+import 'package:fitbirek_training/features/workout/data/workout_repository.dart';
 
 void main() {
   setUpAll(() => initializeDateFormatting('pl_PL'));
@@ -46,7 +47,17 @@ void main() {
           if (scenario != 'empty') {
             final n = c.read(activeWorkoutProvider.notifier);
             await n.startSession();
-            if (scenario == 'history') await n.finishSession();
+            if (scenario == 'history') {
+              await WorkoutRepository(db).logSet(
+                sessionId: c.read(activeWorkoutProvider).sessionId!,
+                exerciseId: 'cw1',
+                exerciseNamePl: 'Wykonane',
+                setNumber: 1,
+                reps: 1,
+                accountId: 'a',
+              );
+              await n.finishSession();
+            }
             await n.flushDraft();
           }
         });

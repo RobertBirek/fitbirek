@@ -137,6 +137,13 @@ void main() {
       });
       final notifier = container.read(activeWorkoutProvider.notifier);
       await notifier.startSession();
+      await WorkoutRepository(db).logSet(
+        sessionId: container.read(activeWorkoutProvider).sessionId!,
+        exerciseId: 'cw001',
+        exerciseNamePl: 'Wykonane',
+        setNumber: 1,
+        reps: 1,
+      );
       final finishing = notifier.finishSession();
       await repo.written.future;
       notifier.discardSession();

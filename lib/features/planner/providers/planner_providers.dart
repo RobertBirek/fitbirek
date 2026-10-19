@@ -18,10 +18,120 @@ final plannerWorkflowProvider = Provider<PlannerWorkflow>(
   (ref) => PlannerWorkflow(ref),
 );
 
+/// Captured before opening an editor/confirmation, not after the user's await.
+class TemplateLease {
+  TemplateLease(
+    this.epoch,
+    this.accountId,
+    this.deviceId,
+    this.offlineAccess,
+    this.baseline,
+  );
+  final int epoch;
+  final String? accountId, deviceId;
+  final bool? offlineAccess;
+  final WorkoutPlanData? baseline;
+}
+
 class PlannerWorkflow {
   PlannerWorkflow(this.ref);
   final Ref ref;
   bool _busy = false;
+
+  Future<TemplateLease> openTemplate({String? syncId}) =>
+      _write((db, guard) async {
+        final state = await db.syncDao.readState();
+        final repo = ref.read(plannerRepositoryProvider);
+        final row = syncId == null ? null : await repo.snapshot(syncId);
+        if (syncId != null && row == null) {
+          throw StateError('Szablon jest niedostępny.');
+        }
+        if (row != null) await repo.checkTemplate(row);
+        return TemplateLease(
+          ref.read(cachedAuthWriteAuthorityProvider).epoch,
+          state?.accountId,
+          state?.deviceId,
+          state?.offlineAccess,
+          row,
+        );
+      });
+
+  Future<void> _checkLease(AppDatabase db, TemplateLease lease) async {
+    final state = await db.syncDao.readState();
+    if (ref.read(cachedAuthWriteAuthorityProvider).epoch != lease.epoch ||
+        state?.accountId != lease.accountId ||
+        state?.deviceId != lease.deviceId ||
+        state?.offlineAccess != lease.offlineAccess) {
+      throw StateError(
+        'Konto zmieniło się. Zamknij edytor i otwórz go ponownie.',
+      );
+    }
+    if (lease.baseline != null) {
+      await ref.read(plannerRepositoryProvider).checkTemplate(lease.baseline!);
+    }
+  }
+
+  Future<void> validateTemplateLease(TemplateLease lease) =>
+      _write((db, guard) => _checkLease(db, lease));
+
+  /// Capture optimistic baselines under the *source* account, never recapture
+  /// authority after a session read or the destination picker.
+  Future<List<TemplateLease>> templateUpdateChoices(TemplateLease source) =>
+      _write((db, guard) async {
+        await _checkLease(db, source);
+        final repo = ref.read(plannerRepositoryProvider);
+        final choices = <TemplateLease>[];
+        for (final saved in await repo.readAll()) {
+          if (saved.isUnavailable || saved.structure == null) continue;
+          final row = await repo.snapshot(saved.syncId!);
+          if (row == null) continue;
+          try {
+            await repo.checkTemplate(row);
+          } on StateError {
+            continue; // Deferred/quarantined entries cannot be destinations.
+          }
+          choices.add(
+            TemplateLease(
+              source.epoch,
+              source.accountId,
+              source.deviceId,
+              source.offlineAccess,
+              row,
+            ),
+          );
+        }
+        await _checkLease(db, source);
+        return choices;
+      });
+
+  Future<void> saveTemplate(
+    TemplateLease lease,
+    StructuredPlan plan, {
+    required String name,
+  }) => _write((db, guard) async {
+    await _checkLease(db, lease);
+    PlannerRepository.validateTemplate(name, plan);
+    final repo = ref.read(plannerRepositoryProvider);
+    if (lease.baseline == null) {
+      await repo.savePlan(
+        nazwa: name.trim(),
+        cwiczeniaIds: plan.exerciseIds,
+        cel: 'Własny szablon',
+        structure: plan,
+      );
+    } else {
+      await repo.updateTemplate(lease.baseline!, name: name, plan: plan);
+    }
+  });
+
+  Future<void> deleteTemplate(TemplateLease lease) => _write((db, guard) async {
+    await _checkLease(db, lease);
+    if (lease.baseline == null) throw StateError('Brak zapisanego szablonu.');
+    await ref.read(plannerRepositoryProvider).deleteTemplate(lease.baseline!);
+  });
+
+  Future<void> startTemplate(TemplateLease lease, List<Exercise> catalog) =>
+      startSaved(lease.baseline?.syncId ?? '', catalog, lease: lease);
 
   Future<T> _write<T>(
     Future<T> Function(AppDatabase db, bool Function() guard) action,
@@ -56,6 +166,7 @@ class PlannerWorkflow {
         final after = await db.syncDao.readState();
         if (!guard() ||
             cache?.accountId != after?.accountId ||
+            cache?.deviceId != after?.deviceId ||
             cache?.offlineAccess != after?.offlineAccess) {
           throw StateError('Pamięć konta zmieniła się.');
         }
@@ -86,10 +197,12 @@ class PlannerWorkflow {
 
   /// Resolve UUID again inside the guarded transaction. No generator fallback
   /// or silent dropping of unavailable catalog exercises.
-  Future<void> startSaved(String syncId, List<Exercise> catalog) => _write((
-    db,
-    guard,
-  ) async {
+  Future<void> startSaved(
+    String syncId,
+    List<Exercise> catalog, {
+    TemplateLease? lease,
+  }) => _write((db, guard) async {
+    if (lease != null) await _checkLease(db, lease);
     final saved = await ref.read(plannerRepositoryProvider).getBySyncId(syncId);
     if (saved == null || saved.isUnavailable) {
       throw StateError('Plan jest niedostępny.');

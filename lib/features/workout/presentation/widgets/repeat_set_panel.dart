@@ -4,16 +4,20 @@ import '../../providers/workout_providers.dart';
 import '../../domain/workout_repeat.dart';
 
 class RepeatSetPanel extends ConsumerWidget {
-  const RepeatSetPanel({super.key});
+  const RepeatSetPanel({super.key, this.extras = const []});
+  final List<Widget> extras;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeWorkoutProvider),
         target = active.repeatTarget;
     if (target == null) {
-      return const Center(
-        child: Text(
-          'Wszystkie cele mają zapisane serie. Możesz zakończyć sesję.',
-        ),
+      return ListView(
+        children: [
+          const Text(
+            'Wszystkie cele mają zapisane serie. Możesz zakończyć sesję.',
+          ),
+          ...extras,
+        ],
       );
     }
     final exercise = active.selectedExercises
@@ -28,12 +32,19 @@ class RepeatSetPanel extends ConsumerWidget {
       key: ValueKey('${active.sessionSyncId}:${active.repeatCompletedCount}'),
       target: target,
       index: active.repeatCompletedCount,
+      extras: extras,
     );
   }
 }
 
 class _RepeatForm extends ConsumerStatefulWidget {
-  const _RepeatForm({super.key, required this.target, required this.index});
+  const _RepeatForm({
+    super.key,
+    required this.target,
+    required this.index,
+    required this.extras,
+  });
+  final List<Widget> extras;
   final RepeatSetTarget target;
   final int index;
   @override
@@ -186,6 +197,7 @@ class _RepeatFormState extends ConsumerState<_RepeatForm> {
                 },
           child: const Text('Zapisz tę serię'),
         ),
+        ...widget.extras,
       ],
     );
   }

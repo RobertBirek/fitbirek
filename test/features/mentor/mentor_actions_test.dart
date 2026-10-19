@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../helpers/recorded_workout_fixture.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:fitbirek_training/features/progress/prs/data/prs_repository.dart';
@@ -568,7 +569,9 @@ void main() {
       final notifier = container.read(activeWorkoutProvider.notifier);
       await notifier.startSession();
       final sessionId = container.read(activeWorkoutProvider).sessionId!;
+      await seedRecordedWorkoutSet(db, sessionId);
       await WorkoutRepository(db).finishSession(sessionId, DateTime.now());
+      final beforeSets = await db.select(db.setsLog).get();
       final before = await db.syncDao.pendingOperations();
 
       expect(
@@ -598,7 +601,7 @@ void main() {
             ),
         MentorActionResult.unavailable,
       );
-      expect(await db.select(db.setsLog).get(), isEmpty);
+      expect(await db.select(db.setsLog).get(), beforeSets);
       expect(await db.syncDao.pendingOperations(), hasLength(before.length));
     },
   );

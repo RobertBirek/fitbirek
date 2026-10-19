@@ -8,6 +8,9 @@ import '../widgets/repeat_workout_dialog.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/database/app_database.dart';
 import '../../data/workout_repository.dart';
+import '../../../planner/presentation/widgets/save_as_template_button.dart';
+import '../widgets/session_delete_button.dart';
+import '../../domain/workout_progress.dart';
 
 /// Podsumowanie zakończonej sesji treningowej.
 class SessionSummaryPage extends ConsumerStatefulWidget {
@@ -83,6 +86,14 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage> {
               <String>{};
           return Column(
             children: [
+              Text(
+                WorkoutProgress.from(
+                  liveSetIds: sets.map((s) => s.syncId),
+                  guidance: g,
+                ).label,
+              ),
+              SaveAsTemplateButton(sessionId: sessionId),
+              SessionDeleteButton(sessionId: sessionId),
               if (session.dataKoniec != null)
                 OutlinedButton.icon(
                   icon: const Icon(Icons.repeat),

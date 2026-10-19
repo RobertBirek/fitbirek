@@ -17,6 +17,7 @@ import 'package:fitbirek_training/features/mentor/voice/mentor_voice.dart';
 import 'package:fitbirek_training/features/mentor/providers/mentor_actions.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
 import 'package:fitbirek_training/core/models/exercise.dart';
+import 'package:fitbirek_training/features/planner/presentation/pages/template_editor_page.dart';
 
 const exercise = Exercise(
   id: 'cw001',
@@ -38,6 +39,12 @@ const exercise = Exercise(
 );
 
 class ActionsFake implements MentorActions {
+  @override
+  Future<TemplateEditorSeed?> prepareTemplate(
+    MentorProposal proposal, {
+    required String accountId,
+    required int? expectedSessionId,
+  }) async => null;
   int calls = 0;
   double? weight;
   int? repetitions;

@@ -198,6 +198,7 @@ class WorkoutGuidance {
                 'workSeconds',
                 'restSeconds',
                 'transitionSeconds',
+                'weightKg',
               }.contains(k),
             )) {
           throw const FormatException('Nieobsługiwane cele');

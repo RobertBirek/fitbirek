@@ -51,7 +51,7 @@ void main() {
           ),
         );
         final uuid = (await db.workoutDao.getSession(id))!.syncId;
-        if (recorded > 0) {
+        {
           await repo.logSet(
             sessionId: id,
             exerciseId: 'saved',
@@ -106,6 +106,14 @@ void main() {
           .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
       final id = await repo.startSession(accountId: 'a');
       final uuid = (await db.workoutDao.getSession(id))!.syncId;
+      await repo.logSet(
+        sessionId: id,
+        exerciseId: 'saved',
+        exerciseNamePl: 'Wykonane',
+        setNumber: 1,
+        seconds: 5,
+        accountId: 'a',
+      );
       final before = (await db.syncDao.pendingOperations())
           .map((e) => e.toJson())
           .toList();
@@ -142,6 +150,14 @@ void main() {
             .into(db.syncState)
             .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
         id = await WorkoutRepository(db).startSession(accountId: 'a');
+        await WorkoutRepository(db).logSet(
+          sessionId: id,
+          exerciseId: 'saved',
+          exerciseNamePl: 'Wykonane',
+          setNumber: 1,
+          seconds: 5,
+          accountId: 'a',
+        );
       });
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -207,6 +223,14 @@ void main() {
           .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
       final id = await repo.startSession(accountId: 'a');
       final uuid = (await db.workoutDao.getSession(id))!.syncId;
+      await repo.logSet(
+        sessionId: id,
+        exerciseId: 'saved',
+        exerciseNamePl: 'Wykonane',
+        setNumber: 1,
+        seconds: 5,
+        accountId: 'a',
+      );
       final before = (await db.syncDao.pendingOperations())
           .map((e) => e.toJson())
           .toList();

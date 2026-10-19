@@ -272,6 +272,14 @@ void main() {
         'UPDATE workout_sessions SET guidance_json = ?',
         ['{broken'],
       );
+      await WorkoutRepository(db).logSet(
+        sessionId: id,
+        exerciseId: 'yoga',
+        exerciseNamePl: 'Wykonane',
+        setNumber: 1,
+        seconds: 5,
+        accountId: 'a',
+      );
       expect(await n.resumeSession(uuid), isFalse);
       expect(await n.finishPendingSession(uuid), id);
       expect((await db.workoutDao.getSession(id))!.dataKoniec, isNotNull);

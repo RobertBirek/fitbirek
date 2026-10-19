@@ -7,6 +7,8 @@ import '../../auth/providers/auth_providers.dart';
 import '../../exercises/providers/exercises_providers.dart';
 import '../../workout/providers/workout_providers.dart';
 import '../data/mentor_models.dart';
+import '../../planner/providers/planner_providers.dart';
+import '../../planner/presentation/pages/template_editor_page.dart';
 
 enum MentorActionResult { applied, alreadyApplied, unavailable }
 
@@ -28,6 +30,49 @@ class MentorActions {
   int _authGeneration = 0;
   bool _disposed = false;
   final Map<String, Future<MentorActionResult>> _pendingStarts = {};
+
+  Future<TemplateEditorSeed?> prepareTemplate(
+    MentorProposal proposal, {
+    required String accountId,
+    required int? expectedSessionId,
+  }) async {
+    final generation = _authGeneration;
+    bool guard() =>
+        !_disposed &&
+        generation == _authGeneration &&
+        _ownsAccount(accountId) &&
+        _ref.read(activeWorkoutProvider).sessionId == expectedSessionId;
+    if (!guard() ||
+        proposal.kind != MentorProposalKind.createTemplate ||
+        !proposal.isSafeToConfirm ||
+        !await _hasBoundAccount(accountId) ||
+        !guard()) {
+      return null;
+    }
+    try {
+      final workflow = _ref.read(plannerWorkflowProvider);
+      final lease = await workflow.openTemplate();
+      if (!guard()) return null;
+      await _ref.read(exerciseCatalogMetadataProvider.future);
+      if (!guard()) return null;
+      final catalog = _ref.read(allExercisesProvider).requireValue;
+      final plan = proposal.template!.toPlan(
+        catalog,
+        _ref.read(exerciseFilterEngineProvider),
+      );
+      await workflow.validateTemplateLease(lease);
+      if (!guard() || !await _hasBoundAccount(accountId) || !guard()) {
+        return null;
+      }
+      return TemplateEditorSeed(
+        plan,
+        name: proposal.template!.name,
+        lease: lease,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
 
   Future<MentorActionResult> confirm(
     MentorProposal proposal, {
@@ -92,6 +137,9 @@ class MentorActions {
 
     final syncId = _syncId(proposal, accountId);
     switch (proposal.kind) {
+      case MentorProposalKind.createTemplate:
+        // Templates can ONLY open a detached editor, never use the write path.
+        return MentorActionResult.unavailable;
       case MentorProposalKind.startWorkout:
         Exercise? exercise;
         if (proposal.exerciseId != null) {

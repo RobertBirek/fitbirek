@@ -20,7 +20,8 @@ final mentorVoiceProvider = Provider.autoDispose<MentorVoice>((ref) {
 });
 
 class MentorPage extends ConsumerStatefulWidget {
-  const MentorPage({super.key});
+  const MentorPage({super.key, this.templatePrompt = false});
+  final bool templatePrompt;
   @override
   ConsumerState<MentorPage> createState() => _MentorPageState();
 }
@@ -165,6 +166,17 @@ class _MentorPageState extends ConsumerState<MentorPage>
     super.initState();
     _voice = ref.read(mentorVoiceProvider);
     WidgetsBinding.instance.addObserver(this);
+    if (widget.templatePrompt) _prefillTemplate();
+  }
+
+  void _prefillTemplate() {
+    _input.text = 'Ułóż szablon: Poranne rozciąganie ogólne 15 min';
+  }
+
+  @override
+  void didUpdateWidget(covariant MentorPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.templatePrompt && !oldWidget.templatePrompt) _prefillTemplate();
   }
 
   @override
@@ -182,7 +194,9 @@ class _MentorPageState extends ConsumerState<MentorPage>
     if (_router?.routeInformationProvider.value.uri.path != '/today') {
       _cleanup();
     } else if (mounted) {
-      setState(() {});
+      setState(() {
+        if (widget.templatePrompt && _input.text.isEmpty) _prefillTemplate();
+      });
     }
   }
 
@@ -442,7 +456,16 @@ class _MentorPageState extends ConsumerState<MentorPage>
     }
   }
 
-  Future<void> _confirm(MentorProposal proposal) async {
+  Future<void> _confirm(
+    MentorProposal proposal, {
+    required String? sourceAccount,
+    required int sourceGeneration,
+  }) async {
+    if (sourceAccount == null ||
+        sourceAccount != ref.read(authStateProvider).accountId ||
+        sourceGeneration != _generation) {
+      return;
+    }
     if (!proposal.isSafeToConfirm) {
       _notice('Ta propozycja wymaga doprecyzowania.');
       return;
@@ -457,6 +480,29 @@ class _MentorPageState extends ConsumerState<MentorPage>
         .firstOrNull;
     if (proposal.kind == MentorProposalKind.logSet && exercise == null) {
       _notice('Ćwiczenie nie jest dostępne w katalogu.');
+      return;
+    }
+    if (proposal.kind == MentorProposalKind.createTemplate) {
+      if (accountId == null) return;
+      final seed = await ref
+          .read(mentorActionsProvider)
+          .prepareTemplate(
+            proposal,
+            accountId: accountId,
+            expectedSessionId: sessionId,
+          );
+      if (!mounted ||
+          generation != _generation ||
+          ref.read(activeWorkoutProvider).sessionId != sessionId) {
+        return;
+      }
+      if (seed == null) {
+        _notice(
+          'Szablon niedostępny. Sprawdź konto i aktualny katalog lub ułóż go samodzielnie.',
+        );
+        return;
+      }
+      context.push('/workout/templates/new', extra: seed);
       return;
     }
     var weight = '${proposal.weightKg ?? 0}';
@@ -541,6 +587,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
   }
 
   String _proposalLabel(MentorProposal p) => switch (p.kind) {
+    MentorProposalKind.createTemplate => 'Otworzyć szablon do edycji?',
     MentorProposalKind.startWorkout => 'Rozpocząć nowy trening?',
     MentorProposalKind.navigateExercises => 'Otworzyć bazę ćwiczeń?',
     MentorProposalKind.logSet => 'Zapisać serię: ${p.weightKg} kg × ${p.reps}?',
@@ -555,6 +602,8 @@ class _MentorPageState extends ConsumerState<MentorPage>
       if (previous != next) _cleanup();
     });
     final settings = ref.watch(mentorSettingsProvider);
+    final proposalAccount = ref.watch(authStateProvider).accountId;
+    final proposalGeneration = _generation;
     final state = ref.watch(mentorConversationProvider);
     ref.listen(mentorConversationProvider, _conversationChanged);
     final enabled =
@@ -649,6 +698,18 @@ class _MentorPageState extends ConsumerState<MentorPage>
                       onPressed: () => context.go('/today/classic'),
                       child: const Text('Klasyczny trening (offline)'),
                     ),
+                    if (widget.templatePrompt) ...[
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'Opisz nazwę i cel szablonu. Wysłanie używa limitu i może kosztować. Propozycja otworzy edytor; niczego nie zapisze ani nie rozpocznie. Bez konfiguracji Mentora ułóż szablon samodzielnie.',
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/workout/templates/new'),
+                        child: const Text('Ułóż szablon samodzielnie'),
+                      ),
+                    ],
                     if (ref.watch(activeWorkoutProvider).isActive)
                       TextButton(
                         onPressed: () => context.go('/workout/session'),
@@ -798,7 +859,11 @@ class _MentorPageState extends ConsumerState<MentorPage>
                                     : null,
                                 onProposal: message.proposal == null
                                     ? null
-                                    : () => _confirm(message.proposal!),
+                                    : () => _confirm(
+                                        message.proposal!,
+                                        sourceAccount: proposalAccount,
+                                        sourceGeneration: proposalGeneration,
+                                      ),
                               );
                             },
                           ),

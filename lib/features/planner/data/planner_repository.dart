@@ -5,6 +5,8 @@ import '../../../core/database/app_database.dart';
 import '../../../core/sync/sync_models.dart';
 import '../domain/structured_plan.dart';
 import 'plan_sync_payload.dart';
+import '../../../core/sync/sync_quarantine.dart';
+import '../../../core/sync/sync_store.dart';
 
 /// Prosty model zapisanego planu treningowego (do wyświetlenia w historii).
 class SavedPlan {
@@ -38,6 +40,80 @@ class SavedPlan {
 class PlannerRepository {
   PlannerRepository(this._db);
   final AppDatabase _db;
+
+  Future<WorkoutPlanData?> snapshot(String syncId) =>
+      (_db.select(_db.workoutPlans)
+            ..where((p) => p.syncId.equals(syncId) & p.deletedAtUtc.isNull()))
+          .getSingleOrNull();
+
+  /// A deferred remote version is a conflict even if the visible row is unchanged.
+  Future<void> checkTemplate(WorkoutPlanData baseline) async {
+    final current = await snapshot(baseline.syncId);
+    final deferred =
+        await (_db.select(_db.syncDeferredRecords)..where(
+              (r) =>
+                  r.entityType.equals('workoutPlan') &
+                  r.entityId.equals(baseline.syncId),
+            ))
+            .get();
+    final account = (await _db.syncDao.readState())?.accountId;
+    final held = await SyncQuarantine(
+      _db,
+      SyncStore(_db),
+    ).heldKeys(account ?? '');
+    if (current != baseline ||
+        deferred.isNotEmpty ||
+        held.contains('workoutPlan:${baseline.syncId}')) {
+      throw StateError(
+        'Szablon zmienił się lub oczekuje na synchronizację. Formularz zachowano; otwórz aktualną wersję ponownie.',
+      );
+    }
+  }
+
+  Future<void> updateTemplate(
+    WorkoutPlanData baseline, {
+    required String name,
+    required StructuredPlan plan,
+  }) => _db.transaction(() async {
+    await checkTemplate(baseline);
+    validateTemplate(name, plan);
+    final now = DateTime.now().toUtc();
+    await (_db.update(
+      _db.workoutPlans,
+    )..where((p) => p.id.equals(baseline.id))).write(
+      WorkoutPlansCompanion(
+        nazwa: Value(name.trim()),
+        cwiczeniaIds: Value(jsonEncode(plan.exerciseIds)),
+        structureJson: Value(jsonEncode(plan.toJson())),
+        updatedAtUtc: Value(now),
+      ),
+    );
+    await _db.syncDao.enqueueUpsert(
+      entityType: SyncEntityType.workoutPlan,
+      entityId: baseline.syncId,
+      baseVersion: baseline.syncVersion,
+      payload: _payload(
+        nazwa: name.trim(),
+        cwiczeniaIds: plan.exerciseIds,
+        cel: baseline.cel,
+        dataUtworzenia: baseline.dataUtworzenia,
+        structure: plan.toJson(),
+      ),
+    );
+  });
+
+  Future<void> deleteTemplate(WorkoutPlanData baseline) =>
+      _db.transaction(() async {
+        await checkTemplate(baseline);
+        await deletePlan(baseline.id);
+      });
+
+  static void validateTemplate(String name, StructuredPlan plan) {
+    if (name.trim().isEmpty || plan.blocks.isEmpty) {
+      throw const FormatException('Podaj nazwę i co najmniej jedno ćwiczenie.');
+    }
+    StructuredPlan.validateJson(plan.toJson(), exerciseIds: plan.exerciseIds);
+  }
 
   Future<int> savePlan({
     required String nazwa,

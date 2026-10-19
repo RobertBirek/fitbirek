@@ -8,6 +8,7 @@ import 'package:fitbirek_training/core/sync/sync_models.dart';
 import 'package:fitbirek_training/core/sync/sync_store.dart';
 import 'package:fitbirek_training/features/workout/data/workout_repository.dart';
 import 'dart:async';
+import '../helpers/recorded_workout_fixture.dart';
 import 'package:fitbirek_training/core/services/backup_service.dart';
 import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
 import 'package:fitbirek_training/features/onboarding/providers/user_profile_provider.dart';
@@ -81,6 +82,7 @@ void main() {
     };
     await sync.synchronize();
     final first = api.requests.single.single;
+    await seedRecordedWorkoutSet(db, id);
     await repo.finishSession(id, DateTime.now());
     expect(await db.syncDao.pendingOperations(), hasLength(2));
     api.onPush = null;
@@ -239,6 +241,7 @@ void main() {
       final repo = WorkoutRepository(db);
       final id = await repo.startSession();
       await repo.startSession();
+      await seedRecordedWorkoutSet(db, id);
       var calls = 0;
       api.onPush = (ops) async {
         calls++;
@@ -424,6 +427,7 @@ void main() {
         (await db.workoutDao.getSession(id))!.syncId,
         5,
       );
+      await seedRecordedWorkoutSet(db, id);
       await repo.finishSession(id, DateTime.now());
       final row = (await db.workoutDao.getSession(id))!;
       await SyncStore(db).version(SyncEntityType.workoutSession, row.syncId, 1);
@@ -682,6 +686,7 @@ void main() {
       api.onPush = (_) async => throw Exception('offline');
       await sync.synchronize();
       final attempted = api.requests.single.single;
+      await seedRecordedWorkoutSet(db, id);
       await repo.finishSession(id, DateTime.now());
       await (db.update(db.syncOutbox)..where((o) => o.attempted.equals(false)))
           .write(SyncOutboxCompanion(createdAtUtc: Value(DateTime(2000))));

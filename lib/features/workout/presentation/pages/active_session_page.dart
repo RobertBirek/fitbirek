@@ -23,6 +23,9 @@ import '../../../exercises/providers/exercise_variants_providers.dart';
 import '../../../exercises/providers/filter_presets_providers.dart';
 import '../../../exercises/presentation/widgets/own_variants.dart';
 import '../../../auth/providers/auth_providers.dart';
+import '../widgets/session_finish_button.dart';
+import '../widgets/session_progress_text.dart';
+import '../widgets/session_delete_button.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
 /// ciężar/powtórzenia - plank, wall-sit, dead-hang itp.
@@ -30,6 +33,11 @@ import '../../../auth/providers/auth_providers.dart';
 /// Wartość 'Izometria' (nie 'Izometryczne') zgodna z realną bazą 316
 /// ćwiczeń (Excel BAZA_GLOWNA, kolumna Typ) od [0.8.0].
 const _typyIzometryczne = {'Izometria', 'time'};
+
+double? _newTargetWeight(Map draft, PlanPrescription? target) =>
+    ['weight', 'reps', 'seconds'].any((key) => '${draft[key] ?? ''}'.isNotEmpty)
+    ? null
+    : target?.weightKg;
 
 /// Aktywna sesja treningowa: wybór ćwiczeń, logowanie serii, timer przerw.
 class ActiveSessionPage extends ConsumerStatefulWidget {
@@ -60,46 +68,10 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
       appBar: AppBar(
         title: const Text('Aktywny trening'),
         actions: [
+          if (active.sessionId != null)
+            SessionDeleteButton(sessionId: active.sessionId!, compact: true),
           if (active.isActive || active.selectedExercises.isNotEmpty)
-            TextButton(
-              onPressed: () async {
-                final id = active.sessionId;
-                final note = TextEditingController();
-                final finish = await showDialog<bool>(
-                  context: context,
-                  builder: (c) => AlertDialog(
-                    title: const Text('Zakończyć trening?'),
-                    content: TextField(
-                      controller: note,
-                      maxLength: 500,
-                      decoration: const InputDecoration(
-                        labelText: 'Krótka notatka (opcjonalna)',
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(c, false),
-                        child: const Text('Wróć'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(c, true),
-                        child: const Text('Zakończ'),
-                      ),
-                    ],
-                  ),
-                );
-                final text = note.text;
-                note.dispose();
-                if (finish != true) return;
-                await ref
-                    .read(activeWorkoutProvider.notifier)
-                    .finishSession(note: text);
-                if (context.mounted) {
-                  context.go(id == null ? '/workout' : '/workout/summary/$id');
-                }
-              },
-              child: const Text('Zakończ'),
-            ),
+            const SessionFinishButton(),
         ],
       ),
       body: SafeArea(
@@ -118,19 +90,44 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
                         ),
                       ),
                     ),
-                  if (active.repeat == null)
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: PrimaryButton(
-                        label: 'Dodaj ćwiczenie z bazy',
-                        icon: Icons.add,
-                        outlined: true,
-                        onPressed: () => context.push('/exercises'),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: PrimaryButton(
+                      label: 'Dodaj ćwiczenie z bazy',
+                      icon: Icons.add,
+                      outlined: true,
+                      onPressed: () => context.push('/exercises'),
                     ),
+                  ),
                   Expanded(
                     child: active.repeat != null
-                        ? const RepeatSetPanel()
+                        ? RepeatSetPanel(
+                            extras: [
+                              if (active.sessionId != null)
+                                SessionProgressText(
+                                  sessionId: active.sessionId!,
+                                  repeat: active.repeat,
+                                  repeatCompleted: List<String>.from(
+                                    active.draft['repeatCompleted'] as List? ??
+                                        [],
+                                  ),
+                                ),
+                              if (active.selectedExercises.any(
+                                (e) => active.isExtraExercise(e.id),
+                              ))
+                                const Text('Dodatkowe ćwiczenia'),
+                              for (final e in active.selectedExercises.where(
+                                (e) => active.isExtraExercise(e.id),
+                              ))
+                                _ExerciseLogCard(
+                                  key: ValueKey(
+                                    'extra:${active.sessionSyncId}:${e.id}',
+                                  ),
+                                  exercise: e,
+                                  extra: true,
+                                ),
+                            ],
+                          )
                         : active.guidance != null
                         ? _guided(context, active)
                         : active.selectedExercises.isEmpty
@@ -139,16 +136,19 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
                               'Wybierz ćwiczenia, aby zacząć logować serie',
                             ),
                           )
-                        : ListView.builder(
+                        : ListView(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: active.selectedExercises.length,
-                            itemBuilder: (context, i) {
-                              final ex = active.selectedExercises[i];
-                              return _ExerciseLogCard(
-                                key: ValueKey(ex.id),
-                                exercise: ex,
-                              );
-                            },
+                            children: [
+                              for (final ex in active.selectedExercises)
+                                _ExerciseLogCard(
+                                  key: ValueKey(ex.id),
+                                  exercise: ex,
+                                ),
+                              if (active.sessionId != null)
+                                SessionProgressText(
+                                  sessionId: active.sessionId!,
+                                ),
+                            ],
                           ),
                   ),
                 ],
@@ -170,6 +170,8 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (active.sessionId != null)
+          SessionProgressText(sessionId: active.sessionId!, guidance: g),
         Text(
           '${block.section.label} • blok ${slot + 1}/${g.plan.blocks.length}',
           style: Theme.of(context).textTheme.titleLarge,
@@ -358,10 +360,30 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       (_typyIzometryczne.contains(widget.exercise.typ) ? 'time' : 'reps');
   bool get _isIsometric => _tracking != 'reps';
   String? get _side => _entry?.unilateral == true ? _selectedSide : null;
+  double? get _templateWeight {
+    final active = ref.read(activeWorkoutProvider);
+    return widget.guided
+        ? active.guidance?.plan.blocks[active.currentSlot].prescription.weightKg
+        : null;
+  }
+
   bool get _usesWeight =>
-      !_isIsometric &&
-      (!widget.exercise.sprzet.contains('Masa własna') ||
-          widget.exercise.sprzet.any(const {'Hantle', 'Sandbag'}.contains));
+      _templateWeight != null ||
+      (!_isIsometric &&
+          (!widget.exercise.sprzet.contains('Masa własna') ||
+              widget.exercise.sprzet.any(
+                const {'Hantle', 'Sandbag'}.contains,
+              )));
+
+  double? get _enteredWeight => _usesWeight
+      ? double.tryParse(_weightController.text.replaceAll(',', '.'))
+      : null;
+  bool get _validWeight =>
+      !_usesWeight ||
+      _weightController.text.isEmpty ||
+      (_enteredWeight != null &&
+          _enteredWeight!.isFinite &&
+          _enteredWeight! >= 0);
 
   FixedLoadRequest get _progressionRequest {
     final parsed = double.tryParse(_weightController.text.replaceAll(',', '.'));
@@ -410,7 +432,8 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       _repsController.text = '${draft['reps'] ?? target?.reps ?? ''}';
       _secondsController.text =
           '${draft['seconds'] ?? (target == null || target.tracking == 'reps' ? '' : target.workSeconds)}';
-      _weightController.text = '${draft['weight'] ?? ''}';
+      _weightController.text =
+          '${draft['weight'] ?? _newTargetWeight(draft, target) ?? ''}';
       _selectedSide = draft['side'] is String
           ? draft['side'] as String
           : 'both';
@@ -476,7 +499,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     _loadingForm = true;
     try {
       _weightController.text =
-          '${draft['weight'] ?? (_usesWeight && definition?['loadKg'] != null ? definition!['loadKg'] : '')}';
+          '${draft['weight'] ?? (_usesWeight && definition?['loadKg'] != null ? definition!['loadKg'] : _newTargetWeight(draft, target) ?? '')}';
       _repsController.text = '${draft['reps'] ?? target?.reps ?? ''}';
       _secondsController.text =
           '${draft['seconds'] ?? (target == null || target.tracking == 'reps' ? '' : target.workSeconds)}';
@@ -883,6 +906,11 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
 
   Future<void> _startIsometricStopwatch() async {
     if (!_validVariant()) return;
+    if (!_validWeight) {
+      _invalidSet();
+      return;
+    }
+    final weight = _enteredWeight;
     final side = _side;
     final variantId = _variantId, variantLabel = _variantLabel;
     final notifier = ref.read(activeWorkoutProvider.notifier);
@@ -893,6 +921,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             variantId: variantId,
             variantLabel: variantLabel,
             extra: widget.extra,
+            weightKg: weight,
           )
         : null;
     if (_durable && origin == null) return;
@@ -903,6 +932,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     if (seconds == null || seconds <= 0) return;
     if (_durable && !notifier.isIntervalCurrent(origin!)) return;
     await _recordSet(
+      weightKg: weight,
       seconds: seconds,
       side: side,
       variantId: variantId,
@@ -913,6 +943,10 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   Future<void> _startIntervals() async {
     if (_intervalBusy) return;
     if (!_validVariant()) return;
+    if (!_validWeight) {
+      _invalidSet();
+      return;
+    }
     final notifier = ref.read(activeWorkoutProvider.notifier);
     final origin = notifier.captureInterval(
       exercise: widget.exercise,
@@ -921,6 +955,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       variantId: _variantId,
       variantLabel: _variantLabel,
       extra: widget.extra,
+      weightKg: _enteredWeight,
     );
     if (origin == null) return;
     setState(() => _intervalBusy = true);
@@ -1010,11 +1045,12 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   Future<void> _logTimedSet() async {
     if (!_validVariant()) return;
     final seconds = int.tryParse(_secondsController.text);
-    if (seconds == null || seconds <= 0) {
+    if (seconds == null || seconds <= 0 || !_validWeight) {
       _invalidSet();
       return;
     }
     await _recordSet(
+      weightKg: _enteredWeight,
       seconds: seconds,
       side: _side,
       variantId: _variantId,
@@ -1108,6 +1144,12 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             _progression(),
             const SizedBox(height: 12),
             if (_isIsometric) ...[
+              if (_usesWeight)
+                TextField(
+                  controller: _weightController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(labelText: 'Ciężar (kg)'),
+                ),
               if (_tracking == 'rounds')
                 PrimaryButton(
                   label: _intervalBusy

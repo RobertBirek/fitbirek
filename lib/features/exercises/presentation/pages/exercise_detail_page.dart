@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
-import '../../../../core/widgets/primary_button.dart';
 import '../exercise_illustrations.dart';
 import '../../providers/exercises_providers.dart';
-import '../../../workout/providers/workout_providers.dart';
+import '../../../workout/presentation/widgets/start_workout_button.dart';
 import '../widgets/own_variants.dart';
 
 /// Szczegóły ćwiczenia: wskazówki, błędy, progresja/regresja.
@@ -98,18 +96,7 @@ class ExerciseDetailPage extends ConsumerWidget {
                 _section('Regresja', ex.regresja),
                 OwnVariants(exercise: ex),
                 const SizedBox(height: 20),
-                PrimaryButton(
-                  label: 'Rozpocznij trening z tym ćwiczeniem',
-                  icon: Icons.play_arrow,
-                  onPressed: () async {
-                    final notifier = ref.read(activeWorkoutProvider.notifier);
-                    if (!ref.read(activeWorkoutProvider).isActive) {
-                      await notifier.startSession();
-                    }
-                    notifier.addExercise(ex);
-                    if (context.mounted) context.go('/workout/session');
-                  },
-                ),
+                StartWorkoutButton(exercise: ex),
               ],
             ),
           ),

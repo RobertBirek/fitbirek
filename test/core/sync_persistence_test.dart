@@ -6,6 +6,7 @@ import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/sync/sync_service.dart';
 import 'package:fitbirek_training/features/workout/data/workout_repository.dart';
 import 'sync_service_test.dart' show FakeSyncApi;
+import '../helpers/recorded_workout_fixture.dart';
 
 void main() {
   test(
@@ -28,6 +29,7 @@ void main() {
       db = AppDatabase.forTesting(NativeDatabase(file));
       sync = SyncService(db, api);
       await sync.bindAccount('account');
+      await seedRecordedWorkoutSet(db, id);
       await WorkoutRepository(db).finishSession(id, DateTime.now());
       expect(await db.syncDao.pendingOperations(), hasLength(2));
       api.onPush = null;

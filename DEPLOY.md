@@ -3,7 +3,26 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current API + web **1.16.0+29 deployed 2026-10-19**: API/sender at
+Current API + web **1.17.0+31 deployed 2026-10-19**: API/sender at
+**18:08:35/36 UTC**, web at **18:08:49 UTC**. Workout templates, guarded session
+deletion/empty finish, plan progress, extra exercises during repeat and Mentor
+template proposals. **1130 Flutter tests**, analysis, isolated Chromium acceptance
+and **467 backend tests** passed; fresh backup and isolated restore passed.
+Alembic remains **0010**, Drift **13**, no dependency or production configuration
+change. Public health and **443/443 package hashes** passed; PostgreSQL/Caddy and
+domain counts unchanged. Source is an intentional dirty tree based on `62ae4c8`;
+not committed or pushed. Details, exact images and rollback:
+[release 1.17.0+31](docs/releases/2026-10-19-api-web-1.17.0-31.md).
+
+Previous web **1.16.1+30 deployed 2026-10-19 08:54:45 UTC**, web-only hotfix
+for catalog start and unfinished sessions without a local draft. API/sender
+remain at 1.16.0. Fresh backup and isolated restore passed; no production
+migration, API/sender/PostgreSQL/Caddy restart. **1065 Flutter tests** and
+**21 focused browser checks** passed before deployment; public443 hashes passed.
+Evidence and exact dirty-tree source manifest:
+[web hotfix 1.16.1+30](docs/releases/2026-10-19-web-1.16.1-30.md).
+
+Previous API + web **1.16.0+29 deployed 2026-10-19**: API/sender at
 **06:52:11 UTC**, web at **06:52:36 UTC**, after a fresh verified backup,
 isolated restore and serialized migrate (Alembic **0010**, Drift **13**).
 Built from clean source `b2bffc558380781ffdcc1acc0453225333e4ad60`;

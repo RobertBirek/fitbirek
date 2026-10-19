@@ -1,4 +1,11 @@
-enum MentorProposalKind { startWorkout, logSet, navigateExercises }
+import 'mentor_template.dart';
+
+enum MentorProposalKind {
+  startWorkout,
+  logSet,
+  navigateExercises,
+  createTemplate,
+}
 
 class MentorProposal {
   const MentorProposal({
@@ -7,6 +14,7 @@ class MentorProposal {
     this.exerciseId,
     this.weightKg,
     this.reps,
+    this.template,
   });
 
   final String id;
@@ -14,8 +22,10 @@ class MentorProposal {
   final String? exerciseId;
   final double? weightKg;
   final int? reps;
+  final MentorTemplate? template;
 
   bool get isSafeToConfirm => switch (kind) {
+    MentorProposalKind.createTemplate => template != null,
     MentorProposalKind.startWorkout => true,
     MentorProposalKind.navigateExercises => true,
     MentorProposalKind.logSet =>
@@ -35,11 +45,15 @@ class MentorProposal {
       'start_workout' => MentorProposalKind.startWorkout,
       'log_set' => MentorProposalKind.logSet,
       'navigate_exercises' => MentorProposalKind.navigateExercises,
+      'create_template' => MentorProposalKind.createTemplate,
       _ => throw const FormatException('Nieprawidłowa propozycja mentora.'),
     };
     return MentorProposal(
       id: json['id'] as String,
       kind: kind,
+      template: kind == MentorProposalKind.createTemplate
+          ? MentorTemplate.fromJson(json)
+          : null,
       exerciseId: json['exercise_id'] as String?,
       weightKg: (json['weight_kg'] as num?)?.toDouble(),
       reps: json['reps'] as int?,
@@ -235,7 +249,8 @@ class MentorContextSelection {
   final MentorContextWeightOption? weight;
   final MentorContextNoteOption? note;
 
-  bool get isEmpty => !training && !profile && !appleHealth && weight == null && note == null;
+  bool get isEmpty =>
+      !training && !profile && !appleHealth && weight == null && note == null;
 
   Map<String, Object?> toJson() => {
     'training': training,

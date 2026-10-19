@@ -126,6 +126,15 @@ void main() {
     test(
       'rejects captured origin after $action without new session or writes',
       () async {
+        if (action == 'finish' || action == 'new session') {
+          await WorkoutRepository(db).logSet(
+            sessionId: container.read(activeWorkoutProvider).sessionId!,
+            exerciseId: 'previous',
+            exerciseNamePl: 'Wykonane',
+            setNumber: 1,
+            seconds: 1,
+          );
+        }
         final origin = notifier.captureInterval(exercise: exercise)!;
         switch (action) {
           case 'discard':
@@ -157,7 +166,10 @@ void main() {
           ),
           isFalse,
         );
-        expect(await db.workoutDao.getAllSets(), isEmpty);
+        expect(
+          await db.workoutDao.getAllSets(),
+          hasLength(action == 'finish' || action == 'new session' ? 1 : 0),
+        );
         expect(
           (await db.syncDao.pendingOperations())
               .map((s) => s.toJson())
@@ -171,7 +183,12 @@ void main() {
     test(
       '$action while first round awaits rolls back entire batch and outbox',
       () async {
-        await notifier.finishSession();
+        // This is setup cleanup, not a successful finish of empty execution.
+        await db.workoutDao.updateSession(
+          container.read(activeWorkoutProvider).sessionId!,
+          WorkoutSessionsCompanion(deletedAtUtc: Value(DateTime.now())),
+        );
+        notifier.discardSession();
         container.dispose();
         final repo = PausedRoundRepository(db);
         container = ProviderContainer(
@@ -190,7 +207,10 @@ void main() {
         await repo.entered.future;
         Future<void>? finishing;
         if (action == 'finish') {
-          finishing = notifier.finishSession();
+          finishing = expectLater(
+            notifier.finishSession(),
+            throwsA(isA<EmptyWorkoutSession>()),
+          );
         } else {
           notifier.discardSession();
         }
@@ -219,7 +239,11 @@ void main() {
   test(
     'logout epoch changes during transaction; full batch/outbox rolled back without HTTP reads',
     () async {
-      await notifier.finishSession();
+      await db.workoutDao.updateSession(
+        container.read(activeWorkoutProvider).sessionId!,
+        WorkoutSessionsCompanion(deletedAtUtc: Value(DateTime.now())),
+      );
+      notifier.discardSession();
       container.dispose();
       final repo = PausedRoundRepository(db);
       final api = IntervalAuthRepository();

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '../helpers/recorded_workout_fixture.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -198,6 +199,7 @@ void main() {
             ),
           );
       final row = await db.select(db.workoutSessions).getSingle();
+      await seedRecordedWorkoutSet(db, row.id);
       await WorkoutRepository(db).finishSession(row.id, DateTime.now());
       await WorkoutRepository(db).startSession();
       api.page = {'cursor': 1, 'changes': []};

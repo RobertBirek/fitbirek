@@ -6,6 +6,39 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.17.0+31] — 2026-10-19
+
+### Added
+- Własne szablony treningów: kolejność ćwiczeń, cele powtórzeń/czasu i opcjonalny
+  ciężar, edycja oraz kopia sesji do nowego lub istniejącego szablonu.
+- Postęp wykonania, dodatkowe ćwiczenia w powtarzanym treningu i potwierdzane
+  usuwanie sesji z seriami. Pusty trening można zapisać jako szablon lub odrzucić,
+  lecz nie oznaczyć jako wykonany bez zapisanej serii.
+- Mentor może proponować strukturalny szablon do ręcznego podglądu i zapisu;
+  wejście z listy jedynie wypełnia szkic, bez automatycznego płatnego wysłania.
+
+### Deployment Notes
+- API przed webem; bez zmian Drift13, Alembic0010, zależności i Web SQLite.
+- Rzeczywisty płatny dostawca Mentora oraz fizyczne telefony wymagają odrębnej
+  akceptacji; testy kontrolowanego dostawcy nie potwierdzają tych integracji.
+
+---
+
+## [1.16.1+30] — 2026-10-19
+
+### Fixed
+- Start treningu z kartoteki ćwiczenia obsługuje niedokończoną sesję zamiast
+  kończyć się nieobsłużonym błędem. Wybrane ćwiczenie przechodzi do jawnego
+  odzyskiwania; dodanie po wznowieniu wymaga potwierdzonej akcji użytkownika.
+- Zakładka Trening pokazuje również niezakończone sesje bez szkicu. Można je
+  świadomie zakończyć z zachowaniem zapisanych serii, bez doliczania nieobecności.
+  Inne niedokończone sesje pozostają widoczne także podczas aktywnego treningu.
+- Wspólna akcja rozpoczęcia/dodania ma blokadę podwójnego kliknięcia, obsługę
+  ładowania i błędów oraz ochronę przed spóźnioną zmianą konta. Ćwiczenie bazowe
+  nie wymaga tworzenia własnego wariantu.
+
+---
+
 ## [1.16.0+29] — 2026-10-19
 
 ### Added
