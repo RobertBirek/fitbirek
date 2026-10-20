@@ -44,4 +44,5 @@ To katalog, nie program dla konkretnego wieku/choroby. Dawki są ostrożnymi
 przykładami redakcyjnymi, źródła potwierdzają technikę, nie indywidualną
 kwalifikację. Prowadzący powinien ocenić zadania z partnerem. Dla nowych ID
 brak zatwierdzonych ilustracji: istniejący placeholder, bez podmieniania obrazów
-innych ruchów. Brak deploy — zmiany są lokalne.
+innych ruchów. Wdrożenie web 1.19.0+34 i granice weryfikacji opisuje
+`docs/releases/2026-10-20-web-1.19.0-34.md`.

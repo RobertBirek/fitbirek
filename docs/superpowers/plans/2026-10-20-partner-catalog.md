@@ -24,3 +24,13 @@ Stan początkowy: czysta feat/frontend-usability. Narzędzia Flutter tylko w kon
 - Pierwszy pełny Flutter suite: 1343 PASS, 1 FAIL (`catalog_prescription_test.dart`: historyczna asercja 369 zamiast aktualnych 408). To nie błąd produktu; zachowano wszystkie testy dawek i budżetów, zaktualizowano tylko oczekiwaną liczebność. Log `tests.log`.
 - Końcowy przebieg po korekcie: focused `catalog_prescription_test.dart` PASS, format 6 plików / 0 zmian, analiza No issues found (85.6 s), pełny Flutter suite **1345 PASS, 0 FAIL** (6:48). Nowa kopia źródła, Flutter 3.35.4 / Dart 3.9.2; logi `*-final.log` w tym samym katalogu. Bez pomijania testów. Końcowy kontener zakończył się `FINAL_ALL_PASS`, exit 0.
 - `dart tools/generate_app_version.dart --check`: exit 0; wersja bez zmian, brak wydania. Bez commit/push/deploy; zmiany pozostają na `feat/partner-exercise-catalog`.
+
+## Późniejsza, osobno autoryzowana publikacja
+
+Po powyższej lokalnej akceptacji użytkownik polecił commit, push do main i deploy.
+Źródło wydania 1.19.0+34: `cc7582c`, fast-forward main i push bez force.
+Kanoniczny build runtime: ponownie 1345 Flutter PASS, analyze/version check PASS.
+22 Chromium checks oraz publiczne 443/443 hashy PASS. Tylko web, start
+2026-10-20 19:32:52 UTC, weryfikacja 19:33:35 UTC. Powyższe wzmianki
+„bez publikacji” są historycznym stanem wykonania lokalnego, nie bieżącym.
+Szczegóły: `docs/releases/2026-10-20-web-1.19.0-34.md`.

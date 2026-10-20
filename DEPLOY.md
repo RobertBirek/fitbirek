@@ -3,7 +3,18 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.18.1+33 deployed 2026-10-20 16:03:17 UTC**, healthy at
+Current web **1.19.0+34 deployed 2026-10-20 19:32:52 UTC**, public verification
+**19:33:35 UTC**. Catalog 408 exercises, including 16 general partner tasks;
+partner opt-in required by generators. Clean build source **cc7582c**, pushed to
+`main` by fast-forward, including previously deployed schedule/frontend history.
+**1345 Flutter**, **49 data**, **22 offline-worker** and **22 Chromium checks**
+PASS; public **443/443 package hashes** match. Fresh backup and isolated restore
+PASS. API/sender remain **1.18.0**; PostgreSQL/Caddy/configuration/data unchanged,
+no production migration. New catalog entries have text, not approved artwork.
+Evidence, exact images, rollback and limits:
+[web release 1.19.0+34](docs/releases/2026-10-20-web-1.19.0-34.md).
+
+Previous web **1.18.1+33 deployed 2026-10-20 16:03:17 UTC**, healthy at
 **16:03:48 UTC**, public verification **16:04:03 UTC**. API/sender remain
 **1.18.0**, without restart; PostgreSQL/Caddy also unchanged. Settings/frontend
 usability fixes, clean build source `d9d7216` on `feat/frontend-usability`.
