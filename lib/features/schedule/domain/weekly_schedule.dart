@@ -1,5 +1,6 @@
 import 'package:uuid/uuid.dart';
 import '../../../core/sync/user_collections.dart';
+import 'activity_schedule.dart';
 
 /// Calendar arithmetic uses UTC only as a neutral Gregorian calculator, never
 /// as the instant corresponding to a local midnight (DST days need not be 24h).
@@ -46,11 +47,44 @@ class ScheduleOccurrence {
     required this.name,
     required this.ruleSnapshot,
     this.sessionSyncId,
+    this.time,
+    this.activityType = ActivityType.fitbirek,
+    this.durationMinutes,
+    this.externalCompleted = false,
+    this.sourceRevision,
   });
-  final String id, ruleId, planSyncId, name;
+  final String id, ruleId, name;
+  final String? planSyncId, time;
+  final ActivityType activityType;
+  final int? durationMinutes;
+  final bool externalCompleted;
+  bool get isCompleted => externalCompleted || sessionSyncId != null;
+  bool get isActivity => ruleSnapshot.containsKey('activityType');
   final CalendarDay originalDate, date;
   final Map<String, dynamic> ruleSnapshot;
   final String? sessionSyncId;
+
+  /// Local optimistic baseline, not a wire field. Canonical strings retain an
+  /// immutable copy of the full source rule and previous override envelopes,
+  /// including timestamps/unknown fields and explicit absence of either entry.
+  /// A move away and back must not renew a confirmation already on screen.
+  final String? sourceRevision;
+
+  String get mutationBaseline => UserCollections.canonical({
+    'id': id,
+    'ruleId': ruleId,
+    'originalDate': originalDate.value,
+    'date': date.value,
+    'planSyncId': planSyncId,
+    'name': name,
+    'ruleSnapshot': ruleSnapshot,
+    'sessionSyncId': sessionSyncId,
+    'time': time,
+    'activityType': activityType.name,
+    'durationMinutes': durationMinutes,
+    'externalCompleted': externalCompleted,
+    'sourceRevision': sourceRevision,
+  });
 }
 
 class WeeklySchedule {
@@ -79,7 +113,34 @@ class WeeklySchedule {
       CalendarDay.parse(r['effectiveFromDate'] as String);
     }
 
-    if (e['kind'] == 'rule') {
+    if (e['kind'] == 'activityRule') {
+      validateActivityFields(e);
+    } else if (e['kind'] == 'activityOverride') {
+      if (!UserCollections.isUuid(e['ruleId']) ||
+          e['originalDate'] is! String ||
+          e['movedDate'] is! String ||
+          e['ruleSnapshot'] is! Map ||
+          !['planned', 'completed'].contains(e['state'])) {
+        bad();
+      }
+      final snapshot = e['ruleSnapshot'] as Map;
+      validateActivityFields(snapshot);
+      final original = CalendarDay.parse(e['originalDate'] as String);
+      CalendarDay.parse(e['movedDate'] as String);
+      if (!(snapshot['weekdays'] as List).contains(original.weekday) ||
+          original.compareTo(
+                CalendarDay.parse(snapshot['effectiveFromDate'] as String),
+              ) <
+              0 ||
+          e['id'] != occurrenceId(e['ruleId'] as String, original)) {
+        bad();
+      }
+      if (e['state'] == 'completed' && snapshot['activityType'] == 'fitbirek'
+          ? !UserCollections.isUuid(e['sessionSyncId'])
+          : e['sessionSyncId'] != null) {
+        bad();
+      }
+    } else if (e['kind'] == 'rule') {
       rule(e);
     } else if (e['kind'] == 'override') {
       if (!UserCollections.isUuid(e['ruleId']) ||
@@ -119,7 +180,15 @@ class WeeklySchedule {
       throw ArgumentError('Wybierz najwyżej rok.');
     }
     final overrides = {
-      for (final e in entries.where((e) => e['kind'] == 'override'))
+      for (final e in entries.where(
+        (e) => ['override', 'activityOverride'].contains(e['kind']),
+      ))
+        e['id'] as String: e,
+    };
+    final sourceRules = {
+      for (final e in entries.where(
+        (e) => ['rule', 'activityRule'].contains(e['kind']),
+      ))
         e['id'] as String: e,
     };
     final result = <String, ScheduleOccurrence>{};
@@ -130,26 +199,57 @@ class WeeklySchedule {
     }) => ScheduleOccurrence(
       id: occurrenceId(rule['id'] as String, original),
       ruleId: rule['id'] as String,
+      sourceRevision: UserCollections.canonical({
+        'rule': sourceRules[rule['id']],
+        'override': override,
+      }),
       originalDate: original,
       date: override == null
           ? original
           : CalendarDay.parse(override['movedDate'] as String),
-      planSyncId: rule['planSyncId'] as String,
+      planSyncId: rule['planSyncId'] as String?,
+      time: rule['time'] as String?,
+      activityType: rule['activityType'] == 'external'
+          ? ActivityType.external
+          : ActivityType.fitbirek,
+      durationMinutes: rule['durationMinutes'] as int?,
+      externalCompleted:
+          rule['activityType'] == 'external' &&
+          override?['state'] == 'completed',
       name: override?['name'] as String? ?? rule['name'] as String,
-      ruleSnapshot: {
-        'planSyncId': rule['planSyncId'],
-        'weekday': rule['weekday'],
-        'effectiveFromDate': rule['effectiveFromDate'],
-      },
+      ruleSnapshot: rule.containsKey('activityType')
+          ? {
+              for (final key in rule.keys.where(
+                (k) => ![
+                  'id',
+                  'name',
+                  'kind',
+                  'createdAtUtc',
+                  'updatedAtUtc',
+                  'deletedAtUtc',
+                ].contains(k),
+              ))
+                key: rule[key],
+            }
+          : {
+              'planSyncId': rule['planSyncId'],
+              'weekday': rule['weekday'],
+              'effectiveFromDate': rule['effectiveFromDate'],
+            },
       sessionSyncId: override?['state'] == 'completed'
-          ? override!['sessionSyncId'] as String
+          ? override!['sessionSyncId'] as String?
           : null,
     );
     for (final r in entries.where(
-      (e) => e['kind'] == 'rule' && e['deletedAtUtc'] == null,
+      (e) =>
+          ['rule', 'activityRule'].contains(e['kind']) &&
+          e['deletedAtUtc'] == null &&
+          e['enabled'] != false,
     )) {
       for (var d = first; d.compareTo(last) <= 0; d = d.plus(1)) {
-        if (d.weekday != r['weekday'] ||
+        if ((r['kind'] == 'rule'
+                ? d.weekday != r['weekday']
+                : !(r['weekdays'] as List).contains(d.weekday)) ||
             d.compareTo(CalendarDay.parse(r['effectiveFromDate'] as String)) <
                 0) {
           continue;
@@ -172,7 +272,9 @@ class WeeklySchedule {
     }
     return result.values.toList()..sort((a, b) {
       final c = a.date.compareTo(b.date);
-      return c == 0 ? a.id.compareTo(b.id) : c;
+      if (c != 0) return c;
+      final time = (a.time ?? '99:99').compareTo(b.time ?? '99:99');
+      return time == 0 ? a.id.compareTo(b.id) : time;
     });
   }
 }

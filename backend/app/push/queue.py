@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 from app.config import settings
 from app.push.models import PushDelivery, PushIncident, PushSenderState, PushSubscription
+from app.push.activity_schedule import events as activity_events, profile, valid_job
 
 
 WARSAW = ZoneInfo("Europe/Warsaw")
@@ -47,13 +48,19 @@ async def schedule(database, now=None):
     if not settings.push_enabled:
         return
     now = now or await database.scalar(select(func.clock_timestamp()))
-    for category, key, due in due_events(now):
-        subscriptions = await database.scalars(select(PushSubscription).where(
-            PushSubscription.categories[category].as_boolean().is_(True),
-            PushSubscription.vapid_public_key == settings.push_vapid_public_key,
-        ))
-        for subscription in subscriptions:
+    subscriptions = await database.scalars(select(PushSubscription).where(
+        PushSubscription.vapid_public_key == settings.push_vapid_public_key,
+    ))
+    for subscription in subscriptions:
+        suppressed, dynamic = activity_events(await profile(database, subscription.user_id), now)
+        for category, key, due in due_events(now):
+            if category in suppressed or not subscription.categories.get(category, False):
+                continue
             await enqueue(database, subscription, key, category, now, due + timedelta(minutes=15))
+        for event in dynamic:
+            if subscription.categories.get(event['category'], False):
+                await enqueue(database, subscription, event['key'], event['category'], now,
+                              event['due'] + timedelta(minutes=15), title=event['title'], body=event['body'])
     # Keep seven days of dedup tombstones; never catch up that far.
     await database.execute(delete(PushDelivery).where(PushDelivery.expires_at < now - timedelta(days=7)))
     await database.commit()
@@ -87,7 +94,7 @@ async def deliver_one(database, send):
         job.state = "expired"
     elif obsolete_incident or subscription.vapid_public_key != settings.push_vapid_public_key or (
         job.category != "test" and not subscription.categories.get(job.category, False)
-    ):
+    ) or not await valid_job(database, subscription, job, now):
         job.state = "cancelled"
     else:
         job.attempts += 1

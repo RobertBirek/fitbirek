@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:fitbirek_training/features/schedule/providers/activity_reminder_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,6 +83,7 @@ void main() {
       await auth.bootstrap();
       final c = ProviderContainer(
         overrides: [
+          activityReminderSyncProvider.overrideWith((ref) => Stream.value('')),
           appDatabaseProvider.overrideWithValue(db),
           authStateProvider.overrideWith((ref) => auth),
           syncServiceProvider.overrideWith((ref) => sync),

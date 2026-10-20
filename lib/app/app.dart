@@ -5,13 +5,15 @@ import 'router.dart';
 import 'theme.dart';
 import 'database_bootstrap.dart';
 import '../features/settings/providers/settings_provider.dart';
+import '../features/schedule/providers/activity_reminder_provider.dart';
 
 class FitBirekApp extends StatelessWidget {
   const FitBirekApp({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      const DatabaseBootstrap(child: _ReadyApp());
+  Widget build(BuildContext context) => const DatabaseBootstrap(
+    child: ActivityReminderBootstrap(child: _ReadyApp()),
+  );
 }
 
 class _ReadyApp extends ConsumerWidget {

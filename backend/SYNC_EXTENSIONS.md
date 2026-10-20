@@ -111,6 +111,8 @@ daty harmonogramu to lokalne dni kalendarza. Semantyka, limity kolekcji,
 tombstone'y wpisów i deterministyczne scalanie per ID należą do klienta.
 Backend przechowuje opaque JSON jako całą wartość, również dla przyszłych
 wersji: nie rozwija reguł, nie scala wpisów i nie weryfikuje powiązań planów/sesji.
+Dotyczy to ścieżki **sync**. Osobny read-only adapter push opisany poniżej
+waliduje obsługiwany v1 przed zaplanowaniem powiadomień; nie naprawia JSON.
 Omission zachowuje również uprzednio zapisany `weeklySchedule: null`;
 jawny `null` czyści kolekcję, a obecna wartość zastępuje ją w całości.
 
@@ -118,6 +120,95 @@ Backend nie waliduje semantyki kolekcji, nazw, parametrów ani wersji mapy guida
 nadal stosuje istniejący kontrakt JSON (w tym zakaz NaN/Infinity) i limity batcha.
 Pełna walidacja, wznowienie treningu, podsumowanie i porównania wariantów
 pozostają do implementacji w kliencie.
+
+### Aktywności i sender push — 2026-10-19
+
+`activityRule` i `activityOverride` rozszerzają tę samą kolekcję v1, bez migracji
+SQL/API. Przykład deterministycznej reguły migracji dla profilu
+`11111111-1111-4111-8111-111111111111`:
+
+```json
+{
+  "weeklySchedule": {"version": 1, "entries": [{
+    "id": "35b8d306-15f4-523a-abab-775435cba2d6",
+    "name": "Karate", "kind": "activityRule",
+    "createdAtUtc": "2026-10-19T12:00:00.000Z",
+    "updatedAtUtc": "2026-10-19T12:00:00.000Z",
+    "activityType": "external", "weekdays": [2, 4],
+    "time": "20:00", "timeZone": "Europe/Warsaw",
+    "durationMinutes": null, "planSyncId": null,
+    "effectiveFromDate": "1970-01-01", "enabled": true,
+    "reminderEnabled": true, "reminderMinutesBefore": 30,
+    "legacySource": "legacyKarate"
+  }]}
+}
+```
+
+`activityType` external/fitbirek, niepuste unikalne weekdays ISO1..7, time HH:mm,
+Warsaw, duration opcjonalne1..1440, reminder lead0..1440, jawne bool enabled /
+reminderEnabled. Nowy wpis domyślnie reminderEnabled=false. planSyncId nullable
+UUID wyłącznie dla FitBirek. effectiveFromDate / originalDate / movedDate są
+ścisłymi dniami gregoriańskimi YYYY-MM-DD. Koperta: UUID, nazwa1..80 Unicode,
+UTC timestamps, opcjonalny tombstone; <=500 wpisów /262144B UTF-8.
+
+Wyjątek `activityOverride` ma `ruleId`, `originalDate`, `movedDate`,
+`state: planned|completed` oraz pełny `ruleSnapshot` pól aktywności (bez koperty
+i nazwy). ID=UUIDv5(ruleId,originalDate). Np. dla powyższej reguły i2026-10-20
+ID=`dab2733d-181d-52b4-8be0-f782084ea8c7`. Completed FitBirek wymaga sessionSyncId
+UUID; external completed i każdy planned mają brak/NULL sessionSyncId.
+
+Przykładowy wpis przenoszący pojedyncze wystąpienie (w tej samej entries):
+
+```json
+{
+  "id": "dab2733d-181d-52b4-8be0-f782084ea8c7",
+  "name": "Karate", "kind": "activityOverride",
+  "createdAtUtc": "2026-10-19T12:00:00.000Z",
+  "updatedAtUtc": "2026-10-19T12:00:00.000Z",
+  "ruleId": "35b8d306-15f4-523a-abab-775435cba2d6",
+  "originalDate": "2026-10-20", "movedDate": "2026-10-21",
+  "state": "planned", "sessionSyncId": null,
+  "ruleSnapshot": {
+    "activityType": "external", "weekdays": [2, 4],
+    "time": "20:00", "timeZone": "Europe/Warsaw",
+    "durationMinutes": null, "planSyncId": null,
+    "effectiveFromDate": "1970-01-01", "enabled": true,
+    "reminderEnabled": true, "reminderMinutesBefore": 30,
+    "legacySource": "legacyKarate"
+  }
+}
+```
+
+`app/push/activity_schedule.py` czyta wyłącznie żywy profil z `SyncRecord.user_id`
+równym `PushSubscription.user_id`; przy >1 żywym profilu nie wybiera arbitralnie.
+Unknown/malformed v1 nie tworzy dynamicznych zadań i nie modyfikuje profilu.
+Obowiązuje schema whitelist rodzajów, limity i plain nazwy bez kontrolnych znaków.
+Sender uwzględnia enabled/reminderEnabled, tombstone i planned/moved/completed
+wyjątki. Nie tworzy sesji ani fikcyjnych wykonań, nie sprawdza dowodu sesji
+w celu przywrócenia reminderów completed. Zapisany completed zawsze wycisza.
+
+Deterministyczne markery: UUIDv5(namespace=**profile UUID**,
+name=`FitBirek/activity/legacyKarate` albo `FitBirek/activity/legacyTraining`).
+Dla przykładowego profilu trening ma ID=`c3dd0563-ff7a-52e7-b366-0a010e74db5f`.
+Obecność markera **także tombstone'a** wyłącza odpowiedni stary event; edycja
+ma tombstone markera+nowy UUID. Bez markera pozostaje dotychczasowy fallback
+karate wt/czw19:30 i training codziennie18:00, z istniejącą zgodą kategorii.
+Pola legacySource same w sobie nie zastępują sprawdzenia deterministycznego ID.
+
+Wire category keys nadal karate=external, training=fitbirek; mood/operations
+bez zmiany. Instalacja musi mieć aktywną subskrypcję i zgodę kategorii; reguła
+ma dodatkowy niezależny opt-in. Push queue używa event key `activity:SHA256`
+(profil+pełna rewizja reguły/wyjątku+originalDate, zawiera czas i lead), a UNIQUE
+installationId/eventKey deduplikuje dostawę. TTL15min liczone od due, bez catchup.
+Przed każdą próbą sender ponownie czyta profil i sprawdza event+zgodę;
+zmieniony/usunięty/przesunięty/zaliczony termin anuluje stare zadanie.
+Kolejkowane legacy również anuluje po pojawieniu się markera.
+
+Warsaw: lead odejmowany od chwili UTC startu, może przejść przez północ/DST.
+Nieistniejące wiosenne HH:mm pomijamy, jesienną podwójną godzinę wybieramy raz,
+pierwszy instant (fold0). Plain payload title<=80/body<=160 dla activity events;
+worker nadal przyjmuje tylko allowlist tras same-origin, bez query/fragmentów
+i URL z prywatnych danych. Transport SSRF/DNS pinning/VAPID/retry bez zmiany.
 
 Pull nadal publikuje tylko dotychczasowe typy encji, z dodatkowymi kluczami
 payloadu. Nie wprowadza więc nieznanego typu blokującego kursor starego klienta.

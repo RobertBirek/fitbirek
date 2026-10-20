@@ -343,7 +343,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     }
   }
 
-  Future<void> startSession({WorkoutGuidance? guidance}) async {
+  Future<void> startSession({
+    WorkoutGuidance? guidance,
+    bool Function()? isCurrent,
+  }) async {
     if (state.isActive && _ownsAuthority) return;
     final generation = ++_generation;
     _lastDraftSnapshot = null;
@@ -358,6 +361,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     bool current() =>
         mounted &&
         generation == _generation &&
+        (isCurrent?.call() ?? true) &&
         authority.epoch == epoch &&
         (authority.state == null || authority.state!.isSignedIn);
     _intervalClosing = false;

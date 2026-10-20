@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:fitbirek_training/features/exercises/providers/filter_presets_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -375,6 +376,8 @@ Future<void> mount(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        // Conversation-only fixture: no bound local training database.
+        filterPresetsAccountProvider.overrideWith((ref) => Stream.value(null)),
         authStateProvider.overrideWith((ref) => auth ?? AuthFake()),
         mentorApiProvider.overrideWith((ref) {
           ref.watch(authStateProvider);

@@ -610,8 +610,10 @@ class BackupService {
         }
       }
 
-      if (e['kind'] == 'rule') replace(e, 'planSyncId', plans);
-      if (e['kind'] == 'override') {
+      if (['rule', 'activityRule'].contains(e['kind'])) {
+        replace(e, 'planSyncId', plans);
+      }
+      if (['override', 'activityOverride'].contains(e['kind'])) {
         replace(e['ruleSnapshot'] as Map, 'planSyncId', plans);
         replace(e, 'sessionSyncId', sessions);
       }

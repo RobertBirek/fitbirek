@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart' show ValueNotifier;
+import 'package:flutter/foundation.dart' show ValueNotifier, kIsWeb;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
@@ -11,6 +11,7 @@ import '../../exercises/providers/exercises_providers.dart';
 
 import '../../../core/api/api_client.dart';
 import '../../../core/push/push_provider.dart';
+import '../../../core/providers/notification_provider.dart';
 import '../data/auth_repository.dart';
 
 enum AuthStatus { loading, signedOut, signedIn }
@@ -305,7 +306,19 @@ final StateNotifierProvider<AuthController, AuthState> authStateProvider =
         preparePush: (account) async {
           await ref.read(pushClientProvider).status(account);
         },
-        disablePush: () => ref.read(pushClientProvider).logout(),
+        disablePush: () async {
+          await Future.wait<void>([
+            ref.read(pushClientProvider).logout(),
+            if (!kIsWeb)
+              ref
+                  .read(notificationServiceProvider)
+                  .replaceActivities(
+                    [],
+                    isCurrent: () => true,
+                    migrated: false,
+                  ),
+          ]);
+        },
       );
       final authority = ref.read(cachedAuthWriteAuthorityProvider);
       final removeListener = controller.addListener(authority._observe);

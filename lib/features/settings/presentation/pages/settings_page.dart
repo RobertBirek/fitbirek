@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import '../../../schedule/providers/activity_reminder_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -189,10 +190,14 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ListTile(
                   leading: const Icon(Icons.offline_bolt_outlined),
                   title: const Text('Tryb offline'),
-                  subtitle: const Text('Sprawdź zasoby i jawnie przygotuj pakiet'),
+                  subtitle: const Text(
+                    'Sprawdź zasoby i jawnie przygotuj pakiet',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const OfflinePage()),
+                    MaterialPageRoute<void>(
+                      builder: (_) => const OfflinePage(),
+                    ),
                   ),
                 ),
                 ListTile(
@@ -212,6 +217,11 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   title: const Text('Generator planu treningowego'),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.push('/settings/planner'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.event_repeat),
+                  title: const Text('Harmonogram aktywności'),
+                  onTap: () => context.push('/settings/activities'),
                 ),
                 ListTile(
                   leading: const Icon(Icons.forum_outlined),
@@ -273,19 +283,56 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 if (!kIsWeb)
                   SwitchListTile(
                     secondary: const Icon(Icons.sports_martial_arts_outlined),
-                    title: const Text('Przypomnienie o karate'),
-                    subtitle: const Text('Wtorek i czwartek, 19:30'),
+                    title: const Text('Aktywności zewnętrzne — powiadomienia'),
+                    subtitle: const Text(
+                      'Zgoda urządzenia; terminy i osobny opt-in w Harmonogramie',
+                    ),
                     value: settings.notifKarate,
-                    onChanged: notifier.setNotifKarate,
+                    onChanged: (value) async {
+                      try {
+                        await notifier.setNotifKarate(value);
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('$e')));
+                        }
+                      }
+                    },
                   ),
                 if (!kIsWeb)
                   SwitchListTile(
                     secondary: const Icon(Icons.fitness_center_outlined),
-                    title: const Text('Przypomnienie o treningu'),
-                    subtitle: const Text('Codziennie, 18:00'),
+                    title: const Text('Treningi FitBirek — powiadomienia'),
+                    subtitle: const Text(
+                      'Zgoda urządzenia; terminy i osobny opt-in w Harmonogramie',
+                    ),
                     value: settings.notifWorkout,
-                    onChanged: notifier.setNotifWorkout,
+                    onChanged: (value) async {
+                      try {
+                        await notifier.setNotifWorkout(value);
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text('$e')));
+                        }
+                      }
+                    },
                   ),
+                ListTile(
+                  title: const Text('Stan przypomnień harmonogramu'),
+                  subtitle: Text(
+                    ref.watch(activityReminderSyncProvider).valueOrNull ??
+                        'Sprawdzanie migracji i przypomnień…',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.refresh),
+                    tooltip: 'Ponów migrację i przypomnienia',
+                    onPressed: () =>
+                        ref.invalidate(activityReminderSyncProvider),
+                  ),
+                ),
                 if (!kIsWeb)
                   SwitchListTile(
                     secondary: const Icon(Icons.mood_outlined),

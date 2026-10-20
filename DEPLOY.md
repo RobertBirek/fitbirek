@@ -3,7 +3,19 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current API + web **1.17.0+31 deployed 2026-10-19**: API/sender at
+Current API + web **1.18.0+32 deployed 2026-10-20**: sender/API at
+**04:45:33/34 UTC**, web at **04:45:47 UTC**, public verification **04:46:27 UTC**.
+Recurring external/FitBirek activities, shared Today/week schedule and guarded
+legacy reminder migration. **1200 Flutter**, **510 backend**, **10 worker tests**
+and **31 actual isolated Chromium checks** passed. Fresh backup with old image IDs,
+isolated restore and serialized migrate passed. Alembic **0010**, Drift **13**,
+no dependency/configuration changes. Public health and **443/443 package hashes**
+passed; PostgreSQL/Caddy and domain counts unchanged. No production login/domain
+writes, actual push delivery or paid AI tests. Dirty source based on `ea18195`,
+no commit/push. Evidence, limitations and exact rollback images:
+[release 1.18.0+32](docs/releases/2026-10-20-api-web-1.18.0-32.md).
+
+Previous API + web **1.17.0+31 deployed 2026-10-19**: API/sender at
 **18:08:35/36 UTC**, web at **18:08:49 UTC**. Workout templates, guarded session
 deletion/empty finish, plan progress, extra exercises during repeat and Mentor
 template proposals. **1130 Flutter tests**, analysis, isolated Chromium acceptance

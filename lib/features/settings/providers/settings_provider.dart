@@ -95,12 +95,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       notifMood: notifMood,
     );
 
-    // Re-zastosuj harmonogram przy starcie (np. po restarcie urządzenia
-    // exact alarmy Androida mogłyby zostać wyczyszczone poza BOOT_COMPLETED
-    // receiver, więc lepiej odtworzyć je jawnie przy każdym starcie appki).
+    // Mood remains independent. Activity reminders are migrated/reconciled by
+    // the account-bound adapter, never resurrect fixed IDs 100/101/200 here.
     await _notificationService.init();
-    if (notifKarate) await _notificationService.setKarateReminder(true);
-    if (notifWorkout) await _notificationService.setWorkoutReminder(true);
     if (notifMood) await _notificationService.setMoodCheckReminder(true);
   }
 
@@ -150,25 +147,24 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     await prefs.setString(_PrefKeys.gongSound, value);
   }
 
-  /// Włącza/wyłącza przypomnienie karate (wt/czw 19:30). Przy włączaniu
-  /// żąda uprawnienia do notyfikacji (Android 13+) - jeśli użytkownik
-  /// odmówi, przełącznik i tak zostaje ustawiony (harmonogram po prostu
-  /// nie wyświetli notyfikacji do momentu przyznania uprawnienia w
-  /// ustawieniach systemowych).
+  /// Installation category opt-in, only called by an explicit settings gesture.
+  /// The legacy preference key is kept; no fixed recurring alarm is scheduled.
   Future<void> setNotifKarate(bool value) async {
-    if (value) await _notificationService.requestPermission();
+    if (value && !await _notificationService.requestPermission()) {
+      throw StateError('Nie przyznano uprawnień do powiadomień.');
+    }
     state = state.copyWith(notifKarate: value);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_PrefKeys.notifKarate, value);
-    await _notificationService.setKarateReminder(value);
   }
 
   Future<void> setNotifWorkout(bool value) async {
-    if (value) await _notificationService.requestPermission();
+    if (value && !await _notificationService.requestPermission()) {
+      throw StateError('Nie przyznano uprawnień do powiadomień.');
+    }
     state = state.copyWith(notifWorkout: value);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_PrefKeys.notifWorkout, value);
-    await _notificationService.setWorkoutReminder(value);
   }
 
   Future<void> setNotifMood(bool value) async {

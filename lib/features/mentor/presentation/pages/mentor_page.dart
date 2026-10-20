@@ -12,6 +12,7 @@ import '../../providers/mentor_actions.dart';
 import '../widgets/mentor_context_composer.dart';
 import '../../voice/mentor_voice.dart';
 import '../../../auth/providers/auth_providers.dart';
+import '../../../schedule/presentation/widgets/today_schedule.dart';
 
 final mentorVoiceProvider = Provider.autoDispose<MentorVoice>((ref) {
   final voice = MentorVoice();
@@ -697,6 +698,10 @@ class _MentorPageState extends ConsumerState<MentorPage>
                     TextButton(
                       onPressed: () => context.go('/today/classic'),
                       child: const Text('Klasyczny trening (offline)'),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: TodaySchedule(),
                     ),
                     if (widget.templatePrompt) ...[
                       const Padding(

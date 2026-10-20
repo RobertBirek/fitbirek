@@ -10,6 +10,7 @@ import '../../../onboarding/providers/user_profile_provider.dart';
 import '../../../workout/providers/workout_providers.dart';
 import '../../../workout/providers/session_recovery_provider.dart';
 import '../../../workout/data/workout_repository.dart';
+import '../../../schedule/presentation/widgets/today_schedule.dart';
 
 /// Dotychczasowy ekran Dziś pozostaje dostępny jako w pełni offline klasyka.
 class ClassicTodayPage extends ConsumerWidget {
@@ -78,6 +79,8 @@ class ClassicTodayPage extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             const MoodQuickEntryCard(),
+            const SizedBox(height: 16),
+            const TodaySchedule(),
             const SizedBox(height: 16),
             const HealthTodaySection(),
           ],

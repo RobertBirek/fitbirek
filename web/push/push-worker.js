@@ -54,6 +54,15 @@ self.addEventListener('push', (event) => {
   const category = payload?.category;
   let body = Object.prototype.hasOwnProperty.call(messages, category)
     ? messages[category] : 'Masz nowe powiadomienie FitBirek.';
+  let title = 'FitBirek';
+  const plain = (value, limit) => typeof value === 'string' &&
+    [...value].length >= 1 && [...value].length <= limit && !/[\u0000-\u001f\u007f-\u009f]/u.test(value);
+  if ((category === 'karate' || category === 'training') &&
+      typeof payload?.eventId === 'string' && payload.eventId.startsWith('activity:') &&
+      plain(payload.title, 80) && plain(payload.body, 160)) {
+    title = payload.title;
+    body = payload.body;
+  }
   const incidents = { backup: 'Kopia zapasowa', restore: 'Test odtwarzania', stale_backup: 'Aktualność kopii', api: 'API' };
   if (category === 'operations' && Object.prototype.hasOwnProperty.call(incidents, payload?.incident)) {
     body = `${incidents[payload.incident]}: ${payload.recovery === true ? 'powrót do działania' : 'wykryto problem'}.`;
@@ -66,7 +75,7 @@ self.addEventListener('push', (event) => {
     if (!state?.enabled || state.installationId !== payload?.installationId) return;
     if (!Number.isFinite(payload.expiresAt) || payload.expiresAt <= Date.now()) return;
     if (category !== 'test' && !state.categories?.[category]) return;
-    await self.registration.showNotification('FitBirek', {
+    await self.registration.showNotification(title, {
       body,
       tag,
       renotify: false,

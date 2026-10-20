@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/providers/auth_providers.dart';
 import 'push_provider.dart';
+import '../../features/schedule/providers/activity_reminder_provider.dart';
 
 class PushSettingsTile extends ConsumerStatefulWidget {
   const PushSettingsTile({super.key});
@@ -39,6 +40,13 @@ class _PushSettingsTileState extends ConsumerState<PushSettingsTile> {
     bool test = false,
   }) async {
     if (!mounted) return;
+    final authority = ref.read(cachedAuthWriteAuthorityProvider);
+    final epoch = authority.epoch;
+    final account = ref.read(authStateProvider).accountId;
+    bool current() =>
+        mounted &&
+        authority.epoch == epoch &&
+        ref.read(authStateProvider).accountId == account;
     setState(() {
       _busy = true;
       _message = null;
@@ -47,7 +55,7 @@ class _PushSettingsTileState extends ConsumerState<PushSettingsTile> {
       // Do not await anything before invoking action: enable requests browser
       // permission synchronously within the original button gesture.
       final result = await action();
-      if (!mounted) return;
+      if (!current()) return;
       setState(() {
         if (test) {
           _message =
@@ -63,8 +71,9 @@ class _PushSettingsTileState extends ConsumerState<PushSettingsTile> {
           }
         }
       });
+      ref.invalidate(activityReminderSyncProvider);
     } catch (_) {
-      if (mounted) {
+      if (current()) {
         setState(() {
           _message = test
               ? 'Test niedostępny. Sprawdź połączenie i odczekaj 60 sekund przed kolejną próbą.'
@@ -72,12 +81,27 @@ class _PushSettingsTileState extends ConsumerState<PushSettingsTile> {
         });
       }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (current()) setState(() => _busy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authStateProvider, (previous, next) {
+      if (previous == next) return;
+      setState(() {
+        _status = {};
+        _categories = {
+          'karate': false,
+          'training': false,
+          'mood': false,
+          'operations': false,
+        };
+        _message = null;
+        _busy = true;
+      });
+      if (next.isSignedIn) Future<void>.microtask(_refresh);
+    });
     final enabled = _status['enabled'] == true;
     final server = _status['server'] as Map? ?? {};
     final ready = server['deliveryAvailable'] == true;
@@ -119,8 +143,8 @@ class _PushSettingsTileState extends ConsumerState<PushSettingsTile> {
           ),
         ),
         for (final entry in const {
-          'karate': 'Karate — wtorek i czwartek, 19:30',
-          'training': 'Trening — codziennie, 18:00',
+          'karate': 'Aktywności zewnętrzne — harmonogram',
+          'training': 'Treningi FitBirek — harmonogram',
           'mood': 'Samopoczucie — codziennie, 20:30',
           'operations': 'Alarmy techniczne i powrót do działania',
         }.entries)

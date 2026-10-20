@@ -1,5 +1,53 @@
 # Rytm tygodnia — harmonogram zapisanych planów
 
+## Aktywności i migracja przypomnień (2026-10-19)
+
+Ta sama kolekcja v1 obsługuje `activityRule` / `activityOverride` obok starych
+rule/override. Dokładny wire sample, walidacja sendera i obliczone przykładowe
+UUID znajdują się w `backend/SYNC_EXTENSIONS.md` → „Aktywności i sender push”.
+Schema Drift13/Alembic0010, zależności i Web SQLite bez zmian.
+
+- `activity_repository.dart`: `seedLegacy(ActivitySnapshot lease, karate: bool,
+  training: bool, isCurrent:)` zapisuje brakujące deterministyczne wpisy w jednej
+  guarded transakcji. Używa namespace **profileSyncId**, nazw
+  `FitBirek/activity/legacyKarate` / `FitBirek/activity/legacyTraining`.
+  Całe entries (z tombstone'ami) to markery; nie odtwarzamy usuniętych/edytowanych
+  reguł. No-op nie enqueue'uje. Istniejące attempted operacje zachowują bajty/CAS.
+- Karate wt/czw20:00, lead30; trening codziennie18:00, lead0; effectiveFromDate
+  1970-01-01. enabled/reminderEnabled od znanego starego opt-in, false nie staje
+  się true. Stare pref keys notif_karate/notif_workout pozostają jako **native
+  category consent**, nie są usuwane. Równoległy seed dwóch urządzeń scala się
+  istniejącym LWW per ID, nie dodaje następnych UUID.
+- `activity_migration.dart` przechwytuje konto/epoch/profil **przed HTTP**.
+  PWA czyta zgodę tej instalacji przez istniejący PushClient.status, nigdy przez
+  prywatny cache prefs. Nieznany/offline status nie jest false: brak zapisu
+  markerów, jawny komunikat pending i ręczny retry. Stary push działa do markera.
+  Sieć nie jest oczekiwana w SQLite transaction; deferred/hold/quarantine blokuje
+  migrację także przy obecnych już markerach. Nie żądamy uprawnień automatycznie.
+- `activity_reminder_provider.dart`: bootstrap aplikacji, zmiany profilu/sync,
+  binding/offline lock, powrót aplikacji i odświeżenie co10min przeliczają adapter.
+  Stan i jawny retry w Ustawieniach; kategorie opisują harmonogram. Nowe reguły
+  zawsze domyślnie reminderEnabled=false, niezależnie od zgody kategorii.
+- Native: **one-shot horyzont7dni**, max60 alarmów harmonogramu /64 wszystkich.
+  Nie jest to bezterminowy scheduler: trzeba otworzyć aplikację co najmniej raz
+  w tygodniu. Jawny błąd limitu/uprawnień/kolizji, bez cichego obcięcia listy.
+  InexactAllowWhileIdle może zostać opóźnione przez system. Zmiana/wykonanie/
+  przesunięcie terminu anuluje stare pending i tworzy aktualne. Nie ma weekly
+  repeat, który odtworzyłby zaliczone wystąpienie. DST: luka pomijana, fold0 raz.
+- Native IDs:1000+int(first7hex(UUID wystąpienia)); kolizja jest odrzucana, nie
+  nadpisuje innego alarmu. Payload `activity:occurrenceUUID` umożliwia odczyt
+  własnych pending IDs po restarcie. Anulujemy wyłącznie własne IDs, nigdy
+  cancelAll/mood300. Stare100/101/200 kasujemy dopiero po guarded zgodnej migracji
+  i udanym replanowaniu; SettingsNotifier już ich nie nakłada przy starcie.
+  Logout od razu unieważnia guard i wywołuje bounded cleanup także z auth hook.
+- Backend kategoriami pozostają karate/training; marker (również tombstone)
+  wyłącza tylko odpowiadający stary event. Rewalidacja tuż przed wysyłką, dedup
+  reguła+originalDate+pełna rewizja/czas+instalacja, TTL15min. Worker przyjmuje
+  bounded plain title/body, a cel pozostaje na istniejącej allowliście same-origin.
+
+Fizyczne dostarczenie Android/iOS i prawdziwy PWA/provider wymagają osobnej
+akceptacji. Mockowane testy platformy/HTTP nie są dowodem dostarczenia.
+
 ## Pliki i granice
 
 - `lib/features/schedule/{domain,data,providers,presentation}/` i focused testy

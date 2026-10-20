@@ -6,6 +6,14 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.18.0+32] — 2026-10-20
+
+### Added
+- Harmonogram aktywności zewnętrznych i treningów FitBirek: edycja dni, godziny,
+  opcjonalnego szablonu i przypomnień, wspólne terminy w Dziś i tygodniu.
+- Migracja dawnych ustawień karate/treningu bez nowych zgód; przypomnienia
+  zależne od zgód instalacji. Zapis harmonogramu nie tworzy wykonanego treningu.
+
 ## [1.17.0+31] — 2026-10-19
 
 ### Added

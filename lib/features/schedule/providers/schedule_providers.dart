@@ -7,10 +7,18 @@ import '../../exercises/providers/filter_presets_providers.dart';
 import '../../planner/data/planner_repository.dart';
 import '../../planner/providers/planner_providers.dart';
 import '../data/schedule_repository.dart';
+import '../data/activity_repository.dart';
 import '../domain/weekly_schedule.dart';
 
 final scheduleRepositoryProvider = Provider<ScheduleRepository>(
   (ref) => ScheduleRepository(
+    ref.watch(appDatabaseProvider),
+    authority: ref.watch(cachedAuthWriteAuthorityProvider),
+  ),
+);
+
+final activityRepositoryProvider = Provider<ActivityRepository>(
+  (ref) => ActivityRepository(
     ref.watch(appDatabaseProvider),
     authority: ref.watch(cachedAuthWriteAuthorityProvider),
   ),

@@ -201,6 +201,7 @@ class PlannerWorkflow {
     String syncId,
     List<Exercise> catalog, {
     TemplateLease? lease,
+    bool Function()? isCurrent,
   }) => _write((db, guard) async {
     if (lease != null) await _checkLease(db, lease);
     final saved = await ref.read(plannerRepositoryProvider).getBySyncId(syncId);
@@ -211,9 +212,10 @@ class PlannerWorkflow {
     if (saved.cwiczeniaIds.any((id) => !byId.containsKey(id))) {
       throw StateError('Co najmniej jedno ćwiczenie planu jest niedostępne.');
     }
+    bool current() => guard() && (isCurrent?.call() ?? true);
     await _start(
       [for (final id in saved.cwiczeniaIds) byId[id]!],
-      guard,
+      current,
       plan: saved.structure,
     );
   });
@@ -232,6 +234,7 @@ class PlannerWorkflow {
     final notifier = ref.read(activeWorkoutProvider.notifier);
     await notifier.startSession(
       guidance: plan == null ? null : WorkoutGuidance.start(plan),
+      isCurrent: guard,
     );
     if (!guard() || !ref.read(activeWorkoutProvider).isActive) {
       throw StateError('Start anulowany.');

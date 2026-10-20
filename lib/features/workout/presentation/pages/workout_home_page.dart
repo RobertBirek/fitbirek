@@ -28,6 +28,11 @@ class WorkoutHomePage extends ConsumerWidget {
           children: [
             const StartWorkoutButton(),
             OutlinedButton.icon(
+              onPressed: () => context.push('/schedule'),
+              icon: const Icon(Icons.event_repeat),
+              label: const Text('Harmonogram aktywności'),
+            ),
+            OutlinedButton.icon(
               onPressed: () => context.push('/workout/templates'),
               icon: const Icon(Icons.list_alt),
               label: const Text('Moje szablony'),

@@ -24,6 +24,9 @@ import '../features/planner/presentation/pages/planner_page.dart';
 import '../features/planner/presentation/pages/templates_page.dart';
 import '../features/planner/presentation/pages/template_editor_page.dart';
 import '../features/schedule/presentation/schedule_page.dart';
+import '../features/schedule/presentation/activity_list_page.dart';
+import '../features/schedule/presentation/activity_editor_page.dart';
+import '../features/schedule/domain/activity_schedule.dart';
 import '../features/mentor/presentation/pages/mentor_page.dart';
 import '../features/mentor/presentation/pages/mentor_settings_page.dart';
 
@@ -195,6 +198,26 @@ GoRouter createRouter({
                 path: '/settings',
                 builder: (context, state) => const SettingsPage(),
                 routes: [
+                  GoRoute(
+                    path: 'activities',
+                    builder: (context, state) => const ActivityListPage(),
+                    routes: [
+                      GoRoute(
+                        path: 'new',
+                        builder: (context, state) => ActivityEditorPage(
+                          type: state.uri.queryParameters['type'] == 'fitbirek'
+                              ? ActivityType.fitbirek
+                              : ActivityType.external,
+                        ),
+                      ),
+                      GoRoute(
+                        path: ':id/edit',
+                        builder: (context, state) => ActivityEditorPage(
+                          ruleId: state.pathParameters['id'],
+                        ),
+                      ),
+                    ],
+                  ),
                   GoRoute(
                     path: 'edit-profile',
                     builder: (context, state) => const EditProfilePage(),
