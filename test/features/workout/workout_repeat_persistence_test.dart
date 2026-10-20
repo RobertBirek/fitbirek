@@ -618,47 +618,91 @@ void main() {
       expect((await db.select(db.workoutSessions).get()).length, 1);
     },
   );
-  testWidgets('preview has two explicit choices and confirm alone starts', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: c,
-        child: MaterialApp(home: RepeatWorkoutDialog(sessionId: source)),
-      ),
+  for (final pauseWrite in [false, true]) {
+    testWidgets(
+      'preview has two explicit choices and confirm alone starts (paused=$pauseWrite)',
+      (tester) async {
+        final paused = await tester.runAsync(
+          () async => pauseWrite ? PausedRepeatRepository(db) : null,
+        );
+        if (paused != null) {
+          c.dispose();
+          c = ProviderContainer(
+            overrides: [
+              appDatabaseProvider.overrideWithValue(db),
+              workoutRepositoryProvider.overrideWithValue(paused),
+            ],
+          );
+          addTearDown(() {
+            if (!paused.release.isCompleted) paused.release.complete();
+          });
+        }
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: c,
+            child: MaterialApp(home: RepeatWorkoutDialog(sessionId: source)),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Oryginalny plan (snapshot)'), findsOneWidget);
+        expect(
+          find.text('Potwierdzone wykonanie (wszystkie serie)'),
+          findsOneWidget,
+        );
+        await tester.runAsync(() async {
+          await tester.tap(
+            find.text('Potwierdzone wykonanie (wszystkie serie)'),
+          );
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+        });
+        await tester.pumpAndSettle();
+        expect(find.textContaining('RPE poprzednio: 9'), findsNWidgets(2));
+        expect(c.read(activeWorkoutProvider).isActive, isFalse);
+        expect(
+          await tester
+              .runAsync(() => db.select(db.workoutSessions).get())
+              .then((s) => s!.length),
+          1,
+        );
+        // Wait for the real asynchronous DB/restore result, not elapsed wall time.
+        // pumpAndSettle cannot flush Drift cleanup timers in the real async zone.
+        late Completer<void> started;
+        await tester.runAsync(() async {
+          // Completers must also belong to the real async zone, not FakeAsync.
+          started = Completer<void>();
+          final subscription = c.listen(activeWorkoutProvider, (_, next) {
+            if (next.isActive && !started.isCompleted) started.complete();
+          });
+          addTearDown(subscription.close);
+          await tester.tap(find.text('Rozpocznij nową sesję'));
+          if (paused != null) {
+            await paused.entered.future;
+          } else {
+            await started.future;
+          }
+        });
+        if (paused != null) {
+          await tester.pump();
+          expect(find.byType(LinearProgressIndicator), findsOneWidget);
+          expect(c.read(activeWorkoutProvider).isActive, isFalse);
+          await tester.runAsync(() async {
+            paused.release.complete();
+            await started.future;
+          });
+        }
+        await tester.pumpAndSettle();
+        expect(c.read(activeWorkoutProvider).isActive, isTrue);
+        expect(
+          await tester.runAsync(
+            () => repo.getSetsForSession(
+              c.read(activeWorkoutProvider).sessionId!,
+            ),
+          ),
+          isEmpty,
+        );
+      },
     );
-    await tester.pumpAndSettle();
-    expect(find.text('Oryginalny plan (snapshot)'), findsOneWidget);
-    expect(
-      find.text('Potwierdzone wykonanie (wszystkie serie)'),
-      findsOneWidget,
-    );
-    await tester.runAsync(() async {
-      await tester.tap(find.text('Potwierdzone wykonanie (wszystkie serie)'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pumpAndSettle();
-    expect(find.textContaining('RPE poprzednio: 9'), findsNWidgets(2));
-    expect(c.read(activeWorkoutProvider).isActive, isFalse);
-    expect(
-      await tester
-          .runAsync(() => db.select(db.workoutSessions).get())
-          .then((s) => s!.length),
-      1,
-    );
-    await tester.runAsync(() async {
-      await tester.tap(find.text('Rozpocznij nową sesję'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pumpAndSettle();
-    expect(c.read(activeWorkoutProvider).isActive, isTrue);
-    expect(
-      await tester.runAsync(
-        () => repo.getSetsForSession(c.read(activeWorkoutProvider).sessionId!),
-      ),
-      isEmpty,
-    );
-  });
+  }
   testWidgets(
     'per-set prefill advances only after explicit log, RPE stays empty',
     (tester) async {
