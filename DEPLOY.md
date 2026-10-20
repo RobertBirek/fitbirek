@@ -3,15 +3,20 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Prepared web **1.18.1+33 on 2026-10-20 — BLOCKED, NOT DEPLOYED**:
-clean source `4f763e5`, analysis/version check passed, but the canonical build
-ended **1341 Flutter PASS / 1 FAIL** (repeat-preview widget timeout, also
-reproduced twice in focused runs). Fresh backup and isolated restore passed.
-No serving rollout, production migration, configuration change or push.
-**Current production remains API + web 1.18.0+32** below. Evidence and limits:
-[blocked web release 1.18.1+33](docs/releases/2026-10-20-web-1.18.1-33.md).
+Current web **1.18.1+33 deployed 2026-10-20 16:03:17 UTC**, healthy at
+**16:03:48 UTC**, public verification **16:04:03 UTC**. API/sender remain
+**1.18.0**, without restart; PostgreSQL/Caddy also unchanged. Settings/frontend
+usability fixes, clean build source `d9d7216` on `feat/frontend-usability`.
+**1343 Flutter tests**, analysis/version check, **15 isolated Chromium checks**
+and **22 offline-worker tests** passed. Fresh backup **15:43:29 UTC**, isolated
+restore with existing migrator PASS; no production migration/configuration
+change. Alembic **0010**, Drift **13**, **443/443 public package hashes** matched.
+The earlier blocked attempt and its FAIL remain archived, not relabelled PASS.
+No production login/domain writes, actual push/paid AI or physical-phone tests;
+no push/merge. Evidence, rollback and limits:
+[web release 1.18.1+33](docs/releases/2026-10-20-web-1.18.1-33.md).
 
-Current API + web **1.18.0+32 deployed 2026-10-20**: sender/API at
+Previous API + web **1.18.0+32 deployed 2026-10-20**: sender/API at
 **04:45:33/34 UTC**, web at **04:45:47 UTC**, public verification **04:46:27 UTC**.
 Recurring external/FitBirek activities, shared Today/week schedule and guarded
 legacy reminder migration. **1200 Flutter**, **510 backend**, **10 worker tests**
