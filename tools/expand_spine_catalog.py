@@ -42,7 +42,7 @@ def main():
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     before = converter.convert()
-    if len(before) not in (363, EXPECTED_COUNT):
+    if len(before) < 363:
         raise ValueError('Expected baseline 363 or completed spine expansion')
     names = json.loads(MAPPING_PATH.read_text(encoding='utf-8'))
     execution = json.loads(INPUT_PATH.read_text(encoding='utf-8'))
@@ -71,7 +71,7 @@ def main():
         checked_append(names, eid, a['pl'])
         checked_append(execution['exercises'], eid,
                        {k: a[k] for k in ('conditions', 'positions')})
-    validate_classification(execution, {f'cw{n:03d}' for n in range(1, EXPECTED_COUNT + 1)})
+    validate_classification(execution, {f'cw{n:03d}' for n in range(1, max(len(before), EXPECTED_COUNT) + 1)})
     outputs = {MAPPING_PATH: names, INPUT_PATH: execution, SOURCE_PATH: ledger()}
     texts = {path: json.dumps(value, ensure_ascii=False, indent=2) + '\n'
              for path, value in outputs.items()}

@@ -7,7 +7,8 @@ import re
 
 import xlsx_to_json as converter
 from build_execution_conditions import validate_classification
-from spine_additions import EXPECTED_COUNT, validate_preservation
+from spine_additions import validate_preservation
+from partner_additions import EXPECTED_COUNT
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / 'assets/data/exercise_catalog_metadata.json'
@@ -103,7 +104,7 @@ def validate():
     names = load(ROOT / 'tools/source_data/exercise_names_pl.json')
     require(names == {e['id']: e['nazwaPl'] for e in data}, 'Names mapping differs')
     print(f'Catalog OK: {len(data)} exercises; cw001–cw316 legacy and cw001–cw363 baseline unchanged; '
-          f'{len(data) - 316} source-mapped additions, including {len(data) - 363} spine additions; '
+          f'{len(data) - 316} source-mapped additions; '
           'metadata and sources complete')
 
 

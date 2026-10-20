@@ -12529,5 +12529,1415 @@
     "regresja": "Stań bliżej ściany i skróć cofnięcie bioder",
     "zrodlo": "https://www.peakrxtherapy.com/blog/hip-hinging-101",
     "ulubione": false
+  },
+  {
+    "id": "cw370",
+    "nazwaPl": "Wstawanie z krzesła",
+    "nazwaEn": "Sit to stand",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Sit to stand",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Ustaw stabilne krzesło przy ścianie",
+      "Usiądź bliżej krawędzi, stopy płasko",
+      "Pochyl tułów z bioder i wstań",
+      "Powoli usiądź bez opadania",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Opadanie na siedzisko",
+      "Zapadanie kolan do środka"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Wyższe siedzisko i pomoc dłoni",
+    "zrodlo": "https://www.nhs.uk/live-well/exercise/strength-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw371",
+    "nazwaPl": "Odwodzenie prostej nogi w staniu z podparciem",
+    "nazwaEn": "Supported standing hip abduction",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Supported standing hip abduction",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Zabezpiecz krzesło przy ścianie, chwyć oparcie",
+      "Stań prosto",
+      "Unieś nogę w bok bez obrotu miednicy",
+      "Spokojnie opuść i zmień stronę",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Przechylanie tułowia",
+      "Wymachiwanie nogą"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mniejszy zakres i obie dłonie na podporze",
+    "zrodlo": "https://www.uhsussex.nhs.uk/resources/standing-exercises",
+    "ulubione": false
+  },
+  {
+    "id": "cw372",
+    "nazwaPl": "Prostowanie biodra w staniu z podparciem",
+    "nazwaEn": "Supported standing hip extension",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": [
+      "Tył uda",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Supported standing hip extension",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Zabezpiecz krzesło przed przesuwaniem",
+      "Przytrzymaj oparcie",
+      "Przesuń prostą nogę nieznacznie za siebie",
+      "Wróć bez przeprostu pleców",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Wyginanie lędźwi",
+      "Pochylanie tułowia"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Krótszy ruch bez wysokiego unoszenia nogi",
+    "zrodlo": "https://www.uhsussex.nhs.uk/resources/standing-exercises",
+    "ulubione": false
+  },
+  {
+    "id": "cw373",
+    "nazwaPl": "Odwodzenie prostej nogi w leżeniu bokiem",
+    "nazwaEn": "Side lying straight leg abduction",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Side lying straight leg abduction",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Połóż się na boku z podpartą głową",
+      "Ugnij dolną nogę",
+      "Unieś prostą górną nogę bez obracania bioder",
+      "Powoli opuść i zmień bok",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Obracanie palców ku sufitowi",
+      "Kołysanie tułowiem"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Niższe uniesienie",
+    "zrodlo": "https://orthoinfo.aaos.org/en/recovery/hip-conditioning-program",
+    "ulubione": false
+  },
+  {
+    "id": "cw374",
+    "nazwaPl": "Przywodzenie dolnej nogi w leżeniu bokiem",
+    "nazwaEn": "Side lying lower leg adduction",
+    "partiaGlowna": "Przywodziciele uda",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Side lying lower leg adduction",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Połóż się na boku",
+      "Przełóż ugiętą górną nogę przed dolną, stopa oparta",
+      "Dolną nogę unieś nieznacznie",
+      "Opuść i zmień bok",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Przetaczanie na plecy",
+      "Szarpanie"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mały ruch bez bólu pachwiny",
+    "zrodlo": "https://orthoinfo.aaos.org/en/recovery/hip-conditioning-program",
+    "ulubione": false
+  },
+  {
+    "id": "cw375",
+    "nazwaPl": "Uginanie nogi z gumą w leżeniu na brzuchu",
+    "nazwaEn": "Prone band hamstring curl",
+    "partiaGlowna": "Tył uda",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Prone band hamstring curl",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Zamocuj gumę nisko od strony stóp i zabezpiecz mocowanie przy kostce",
+      "Połóż się na brzuchu",
+      "Zbliż piętę do pośladka zginając kolano",
+      "Powoli wyprostuj bez unoszenia uda",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Wyginanie pleców",
+      "Odrywanie uda",
+      "Niepewny zaczep"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Słabsza guma i krótszy zakres",
+    "zrodlo": "https://www.acefitness.org/resources/everyone/exercise-library/131/prone-lying-hamstrings-curl/",
+    "ulubione": false
+  },
+  {
+    "id": "cw376",
+    "nazwaPl": "Prostowanie kolana z gumą w siadzie",
+    "nazwaEn": "Seated band knee extension",
+    "partiaGlowna": "Przód uda",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Krzesło",
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Seated band knee extension",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Usiądź na stabilnym krześle z podpartym udem",
+      "Zabezpiecz gumę przy kostce i nieruchomym zaczepie za sobą",
+      "Wyprostuj kolano w wygodnym zakresie",
+      "Powoli wróć",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Podrzucanie nogi",
+      "Odrywanie uda",
+      "Przesuwanie siedziska przez gumę"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Ruch bez gumy",
+    "zrodlo": "https://musclewiki.com/exercise/band-leg-extension",
+    "ulubione": false
+  },
+  {
+    "id": "cw377",
+    "nazwaPl": "Wyprost bioder z przeciąganiem gumy między nogami",
+    "nazwaEn": "Band pull through",
+    "partiaGlowna": "Pośladki, Tył uda",
+    "partieWspierajace": [
+      "Brzuch",
+      "Plecy"
+    ],
+    "sprzet": [
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Band pull through",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Zabezpiecz niski zaczep za plecami",
+      "Stań tyłem i chwyć gumę między nogami",
+      "Cofnij biodra przy miękkich kolanach",
+      "Wyprostuj biodra do pionu bez odchylenia w tył",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Przysiad zamiast ruchu bioder",
+      "Przeprost lędźwi"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Słabsza guma lub cofanie bioder do ściany cw369",
+    "zrodlo": "https://musclewiki.com/exercise/band-pullthrough",
+    "ulubione": false
+  },
+  {
+    "id": "cw378",
+    "nazwaPl": "Przywodzenie nogi z gumą w staniu",
+    "nazwaEn": "Standing band hip adduction",
+    "partiaGlowna": "Przywodziciele uda",
+    "partieWspierajace": [
+      "Pośladki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Gumy oporowe",
+      "Krzesło"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Standing band hip adduction",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Zabezpiecz krzesło i niski zaczep gumy",
+      "Stań bokiem, guma przy kostce bliższej zaczepowi",
+      "Przyciągnij tę nogę ku środkowi ciała",
+      "Powoli odprowadź bez obrotu tułowia",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Szarpanie nogą",
+      "Obracanie miednicy"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Słabsza guma i mały zakres",
+    "zrodlo": "https://library.theprehabguys.com/vimeo-video/standing-hip-adduction-band",
+    "ulubione": false
+  },
+  {
+    "id": "cw379",
+    "nazwaPl": "Uginanie nóg na ślizgaczach",
+    "nazwaEn": "Sliding leg curl",
+    "partiaGlowna": "Tył uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Ślizgacze"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Sliding leg curl",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Sprawdź zgodność ślizgaczy z podłogą i wolny tor ruchu",
+      "Połóż się na plecach, pięty na ślizgaczach",
+      "Unieś biodra",
+      "Powoli odsuń i przyciągnij pięty utrzymując kontrolę miednicy",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Gwałtowny poślizg",
+      "Wyginanie pleców",
+      "Kontynuowanie mimo skurczu"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Krótki ruch obunóż, bez pełnego wyprostu",
+    "zrodlo": "https://www.muscleandfitness.com/exercise/workouts/leg-exercises/sliding-leg-curl",
+    "ulubione": false
+  },
+  {
+    "id": "cw380",
+    "nazwaPl": "Pilates — setka z rytmiczną pracą ramion",
+    "nazwaEn": "Pilates Hundred",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Zginacze bioder"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Wytrzymałość",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Pilates Hundred",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach z ugiętymi nogami",
+      "Unieś głowę i łopatki tylko przy swobodnej szyi",
+      "Wykonuj małe ruchy ramion przy bokach",
+      "Oddychaj rytmicznie i odpocznij przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Napinanie szyi",
+      "Zatrzymywanie oddechu",
+      "Wyginanie pleców"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Głowa i stopy na podłodze, krótsza seria",
+    "zrodlo": "https://pilatesology.com/pilatesology-encyclopedia-hundred/",
+    "ulubione": false
+  },
+  {
+    "id": "cw381",
+    "nazwaPl": "Pilates — krążenia jedną nogą w leżeniu",
+    "nazwaEn": "Pilates single leg circles",
+    "partiaGlowna": "Zginacze bioder",
+    "partieWspierajace": [
+      "Brzuch",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Pilates single leg circles",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach, ramiona przy bokach",
+      "Unieś jedną nogę",
+      "Zataczaj małe koła w obie strony bez ruchu miednicy",
+      "Opuść nogę i zmień stronę",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Kołysanie biodrami",
+      "Forsowanie pachwiny"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Ugnij kolano drugiej nogi i zmniejsz koła",
+    "zrodlo": "https://onlinepilatesclasses.com/pilates-exercises/mat-exercises/mat-single-leg-circles",
+    "ulubione": false
+  },
+  {
+    "id": "cw382",
+    "nazwaPl": "Pilates — naprzemienne wydłużanie nóg",
+    "nazwaEn": "Pilates single leg stretch",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Zginacze bioder"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Pilates single leg stretch",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Połóż się na plecach i unieś głowę z łopatkami",
+      "Przybliż jedno ugięte kolano, drugą nogę wydłuż wysoko po skosie",
+      "Spokojnie zmieniaj nogi",
+      "Utrzymuj tułów bez kołysania i odpoczywaj z głową na macie",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Szarpanie kolanem",
+      "Ciągnięcie szyją",
+      "Noga zbyt nisko"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Krótszy ruch, noga prostowana wyżej",
+    "zrodlo": "https://onlinepilatesclasses.com/pilates-exercises/mat-exercises/mat-single-leg-stretch",
+    "ulubione": false
+  },
+  {
+    "id": "cw383",
+    "nazwaPl": "Pilates — wydłużanie obu nóg i ramion",
+    "nazwaEn": "Pilates double leg stretch",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Zginacze bioder"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Pilates double leg stretch",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Z leżenia przybliż ugięte nogi do tułowia, głowa i łopatki lekko uniesione",
+      "Wydłuż nogi wysoko po skosie i ramiona za głowę",
+      "Zatocz ramionami łuk i ugnij nogi",
+      "Zachowaj kontrolę pleców bez zatrzymywania oddechu",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Przeprost lędźwi",
+      "Napinanie szyi"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Krótszy zasięg, nogi wyżej lub martwy robak cw179",
+    "zrodlo": "https://onlinepilatesclasses.com/pilates-exercises/mat-exercises/mat-double-leg-stretch",
+    "ulubione": false
+  },
+  {
+    "id": "cw384",
+    "nazwaPl": "Pilates — piła w siadzie",
+    "nazwaEn": "Pilates Saw",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Plecy",
+      "Tył uda"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Pilates Saw",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Usiądź w niewielkim rozkroku, ramiona rozłożone",
+      "Obróć tułów i sięgnij do przeciwnej stopy",
+      "Wróć do pionu i zmień stronę",
+      "Nie przesuwaj bioder ani nie forsuj skłonu",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Ruch bioder",
+      "Szarpanie skłonu",
+      "Nadmierny skręt szyi"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Ugięte kolana, wyższy siad i mniejszy skręt; przy zaleconym zakazie zgięcia lub rotacji wymaga indywidualnego doboru",
+    "zrodlo": "https://onlinepilatesclasses.com/pilates-exercises/mat-exercises/mat-saw",
+    "ulubione": false
+  },
+  {
+    "id": "cw385",
+    "nazwaPl": "Wysuwanie i cofanie łopatek w klęku podpartym",
+    "nazwaEn": "Quadruped scapular protraction retraction",
+    "partiaGlowna": "Mięsień zębaty przedni, Plecy",
+    "partieWspierajace": [
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Quadruped scapular protraction retraction",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Ustaw dłonie pod barkami, kolana pod biodrami",
+      "Utrzymuj proste łokcie",
+      "Pozwól klatce lekko opaść między ramionami",
+      "Odepchnij podłoże oddalając łopatki bez ruchu lędźwi",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Zginanie łokci jak w pompce",
+      "Zapadanie lędźwi"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mały ruch lub wykonanie przy ścianie",
+    "zrodlo": "https://gmb.io/joint-mobility",
+    "ulubione": false
+  },
+  {
+    "id": "cw386",
+    "nazwaPl": "Krążenia obręczy barkowej w klęku podpartym",
+    "nazwaEn": "Quadruped shoulder circles",
+    "partiaGlowna": "Mięsień zębaty przedni, Plecy",
+    "partieWspierajace": [
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Quadruped shoulder circles",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Przyjmij klęk podparty z prostymi ramionami",
+      "Połącz małe unoszenie, cofanie, opuszczanie i wysuwanie obręczy barkowej",
+      "Wykonaj płynne koło",
+      "Zmień kierunek bez kołysania całym tułowiem",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Duży ruch tułowia",
+      "Praca mimo bólu nadgarstków"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Osobne wysuwanie i cofanie łopatek cw385",
+    "zrodlo": "https://gmb.io/joint-mobility",
+    "ulubione": false
+  },
+  {
+    "id": "cw387",
+    "nazwaPl": "Cofanie bioder w klęku z nogą wyprostowaną w bok",
+    "nazwaEn": "Straight leg adductor rock back",
+    "partiaGlowna": "Przywodziciele uda",
+    "partieWspierajace": [
+      "Tył uda"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Straight leg adductor rock back",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Przyjmij klęk podparty",
+      "Wyprostuj jedną nogę w bok",
+      "Cofnij biodra ku pięcie nogi podporowej bez zaokrąglania pleców",
+      "Wróć i zmień stronę bez dociskania pachwiny",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Zaokrąglanie pleców",
+      "Forsowanie zakresu"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mniejszy rozkrok i krótszy ruch",
+    "zrodlo": "https://theprehabguys.com/vimeo-video/quadruped-dynamic-long-adductor-stretch/",
+    "ulubione": false
+  },
+  {
+    "id": "cw388",
+    "nazwaPl": "Stanie tandemowe przy podporze",
+    "nazwaEn": "Supported tandem stand",
+    "partiaGlowna": "Łydki, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Mięśnie stóp"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Izometria",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Supported tandem stand",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Zabezpiecz krzesło przy ścianie i miej oparcie w zasięgu dłoni",
+      "Ustaw piętę jednej stopy przed palcami drugiej",
+      "Patrz przed siebie i oddychaj",
+      "Zamień ustawienie stóp po spokojnym wyjściu z pozycji",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Zamykanie oczu",
+      "Brak zabezpieczenia przy chwiejności"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Rozsuń stopy na boki i trzymaj podporę",
+    "zrodlo": "https://roh.nhs.uk/services-information/therapy/otago-strength-and-balance-exercises",
+    "ulubione": false
+  },
+  {
+    "id": "cw389",
+    "nazwaPl": "Chód pięta–palce przy podporze",
+    "nazwaEn": "Heel to toe walk",
+    "partiaGlowna": "Łydki, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Mięśnie stóp"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Heel to toe walk",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Wybierz wolny tor przy stabilnej ścianie",
+      "Idź powoli ustawiając piętę przed palcami drugiej stopy",
+      "Patrz przed siebie",
+      "Zatrzymaj się przed zawróceniem, w razie chwiejności przerwij",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Pośpiech",
+      "Patrzenie wyłącznie pod nogi"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Szerszy tor, dotykanie ściany dłonią",
+    "zrodlo": "https://www.nhs.uk/live-well/exercise/balance-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw390",
+    "nazwaPl": "Zgarnianie ręcznika palcami stopy",
+    "nazwaEn": "Toe towel curls",
+    "partiaGlowna": "Mięśnie stóp",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Krzesło",
+      "Ręcznik"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Toe towel curls",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Usiądź ze stopą na małym ręczniku",
+      "Zginając palce przyciągnij materiał pod stopę",
+      "Rozluźnij stopę",
+      "Powtórz bez przesuwania całej nogi, potem zmień stopę",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Przesuwanie nogi",
+      "Mocniejsze zaciskanie przy skurczu"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Cieńszy ręcznik i mniej materiału",
+    "zrodlo": "https://orthoinfo.aaos.org/recovery/foot-and-ankle-conditioning-program/",
+    "ulubione": false
+  },
+  {
+    "id": "cw391",
+    "nazwaPl": "Krótka stopa — aktywacja łuku w siadzie",
+    "nazwaEn": "Seated short foot exercise",
+    "partiaGlowna": "Mięśnie stóp",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Seated short foot exercise",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Usiądź ze stopą płasko",
+      "Oprzyj piętę i przodostopie",
+      "Delikatnie skróć stopę zbliżając podstawę palucha ku pięcie bez podwijania palców",
+      "Rozluźnij po małym napięciu i zmień stopę",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Podwijanie palców",
+      "Rolowanie na zewnętrzną krawędź"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mniejsza siła i krótka pauza",
+    "zrodlo": "https://www.nhsinform.scot/illnesses-and-conditions/muscle-bone-and-joints/leg-and-foot-problems-and-conditions/exercises-for-foot-conditions",
+    "ulubione": false
+  },
+  {
+    "id": "cw392",
+    "nazwaPl": "Ruch stopy na zewnątrz przeciw gumie",
+    "nazwaEn": "Banded ankle eversion",
+    "partiaGlowna": "Mięśnie strzałkowe",
+    "partieWspierajace": [
+      "Mięśnie stóp"
+    ],
+    "sprzet": [
+      "Krzesło",
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Banded ankle eversion",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "Usiądź z podpartą nogą",
+      "Zabezpiecz gumę na przodostopiu tak, by opór przeciwdziałał ruchowi na zewnątrz",
+      "Utrzymując kolano nieruchomo odchyl przodostopie na zewnątrz",
+      "Powoli wróć bez wymuszania zakresu",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu"
+    ],
+    "czesteBledy": [
+      "Obracanie całej nogi w biodrze",
+      "Guma zsuwająca się ze stopy"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mały ruch bez gumy",
+    "zrodlo": "https://www.leicspart.nhs.uk/wp-content/uploads/2022/07/474-ankle-exercises.pdf",
+    "ulubione": false
+  },
+  {
+    "id": "cw393",
+    "nazwaPl": "Deska z dotknięciem dłoni — w parach",
+    "nazwaEn": "Partner plank hand tap",
+    "partiaGlowna": "Brzuch, Mięsień zębaty przedni",
+    "partieWspierajace": [
+      "Barki",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Partner"
+    ],
+    "typ": "Izometria",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Partner plank hand tap",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: ustaw podpór naprzeciw partnera, dłonie pod barkami",
+      "B: ustaw taki sam podpór w odległości lekkiego kontaktu dłoni",
+      "Oboje naprzemiennie dotknijcie dłoni partnera i odłóżcie ją",
+      "Utrzymujcie nieruchome biodra, kontakt bez uderzania",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Obracanie bioder",
+      "Sięganie za daleko",
+      "Próby przewracania partnera"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Podpór na kolanach; warianty po opanowaniu: pompka przed kontaktem lub gąsienica do podporu",
+    "zrodlo": "https://www.healthline.com/health/fitness-exercise/partner-workouts",
+    "ulubione": false
+  },
+  {
+    "id": "cw394",
+    "nazwaPl": "Przysiad plecami do siebie — w parach",
+    "nazwaEn": "Back to back partner squat",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Back to back partner squat",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: oprzyj plecy o partnera i ustal równy nacisk",
+      "B: przyjmij stabilne ustawienie stóp i potwierdź gotowość",
+      "Oboje na sygnał wykonajcie płytki przysiad",
+      "Wróćcie razem do stania, nie odchodźcie nagle",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Nierówne tempo",
+      "Zbyt duża różnica masy lub wzrostu",
+      "Nagłe odejście"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mały zakres; wariant: krótkie utrzymanie półprzysiadu; przy niedopasowaniu wykonujcie niezależne przysiady naprzeciw siebie",
+    "zrodlo": "https://www.mobilesport.ch/aktuell/kraeftigen-oberschenkel-vorne-ruecken-an-ruecken/",
+    "ulubione": false
+  },
+  {
+    "id": "cw395",
+    "nazwaPl": "Lustro ruchowe — w parach",
+    "nazwaEn": "Partner movement mirror",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Łydki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner movement mirror",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: prowadź powolne kroki i płytkie przysiady bez pozycji walki",
+      "B: odwzorowuj ruch z zachowaniem odstępu",
+      "Pozostańcie w wyznaczonej wolnej strefie",
+      "Zmieńcie prowadzącego na ustalony sygnał",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Nagłe trudne ruchy",
+      "Cofanie poza wolną strefę"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Tylko kroki boczne w marszu",
+    "zrodlo": "https://www.westernracquet.com/blog/fun-partner-workouts-to-try",
+    "ulubione": false
+  },
+  {
+    "id": "cw396",
+    "nazwaPl": "Przemieszczanie na gest — w parach",
+    "nazwaEn": "Partner wave direction drill",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Łydki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner wave direction drill",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: pokazuj wcześniej uzgodnione kierunki",
+      "B: odpowiadaj krótkimi krokami i wracaj do środka",
+      "Wyznaczcie strefę hamowania bez przeszkód",
+      "Zmieniajcie role, na początku bez szybkiego biegu tyłem",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Sygnały zbyt szybkie",
+      "Brak miejsca na hamowanie"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Tylko lewo i prawo w marszu",
+    "zrodlo": "https://www.nsca.com/education/articles/kinetic-select/5-reaction-drills-to-build-quickness/",
+    "ulubione": false
+  },
+  {
+    "id": "cw397",
+    "nazwaPl": "Chwyt piłki przed drugim odbiciem — w parach",
+    "nazwaEn": "Partner ball drop catch",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Łydki",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner ball drop catch",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: upuszczaj małą odbijającą piłkę w wolnej strefie",
+      "B: reaguj i łap przed drugim odbiciem",
+      "Ustalcie dystans bez ryzyka zderzenia",
+      "Nie rzucaj się na podłogę, nieudaną próbę odpuść",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Wbieganie na partnera",
+      "Nurkowanie za piłką"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Mniejsza odległość i zapowiedź upuszczenia",
+    "zrodlo": "https://www.nsca.com/education/articles/kinetic-select/5-reaction-drills-to-build-quickness/",
+    "ulubione": false
+  },
+  {
+    "id": "cw398",
+    "nazwaPl": "Krok boczny z chwytem piłki — w parach",
+    "nazwaEn": "Partner shuffle reaction catch",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Łydki",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner shuffle reaction catch",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: łagodnie podaj miękką piłkę na lewo lub prawo B",
+      "B: przesuń się krokiem dostawnym, złap i odeślij",
+      "Utrzymujcie bezpieczny dystans i wolny tor",
+      "Po serii zamieńcie role",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Podania poza zasięg",
+      "Krzyżowanie nóg w pośpiechu"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Zapowiedziana strona i krótki dystans",
+    "zrodlo": "https://www.nsca.com/education/articles/kinetic-select/5-reaction-drills-to-build-quickness/",
+    "ulubione": false
+  },
+  {
+    "id": "cw399",
+    "nazwaPl": "Podania na jednej nodze — w parach",
+    "nazwaEn": "Partner single leg ball toss",
+    "partiaGlowna": "Pośladki, Łydki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Przedramiona",
+      "Mięśnie stóp"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner single leg ball toss",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: stań stabilnie na jednej nodze z lekką miękką piłką",
+      "B: przyjmij takie samo ustawienie i pokaż gotowe dłonie",
+      "Wymieniajcie łagodne podania w zasięg dłoni",
+      "Zmieńcie nogi, odstaw stopę przed utratą równowagi",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Ciężka piłka",
+      "Ratowanie równowagi za wszelką cenę"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Palce drugiej stopy na podłodze",
+    "zrodlo": "https://www.silversneakers.com/blog/partner-workout-total-body-strength-exercises-2",
+    "ulubione": false
+  },
+  {
+    "id": "cw400",
+    "nazwaPl": "Podania sprzed klatki — w parach",
+    "nazwaEn": "Partner chest pass",
+    "partiaGlowna": "Klatka piersiowa, Triceps",
+    "partieWspierajace": [
+      "Barki",
+      "Brzuch",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner chest pass",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: trzymaj miękką lekką piłkę przy klatce",
+      "B: pokaż gotowe dłonie",
+      "A podaje oburącz, B amortyzuje chwyt uginając ramiona i odsyła",
+      "Nie rzucajcie w twarz, zaczynajcie od łagodnych podań",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Podanie bez gotowości odbierającego",
+      "Sztywne łokcie przy chwycie"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Lżejsza piłka i krótszy dystans",
+    "zrodlo": "https://www.healthline.com/health/fitness-exercise/partner-workouts",
+    "ulubione": false
+  },
+  {
+    "id": "cw401",
+    "nazwaPl": "Wykrok z podaniem piłki — w parach",
+    "nazwaEn": "Partner lunge chest pass",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Klatka piersiowa",
+      "Triceps",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Partner lunge chest pass",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: wykonaj kontrolowany wykrok i podaj lekką piłkę",
+      "B: odbierz stojąc stabilnie",
+      "Poczekajcie aż A wróci do pozycji",
+      "Teraz B wykonuje wykrok i podaje, zachowajcie odstęp bez wchodzenia na siebie",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Jednoczesne wchodzenie na siebie",
+      "Podanie przed stabilizacją"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Sam krok lub płytki wykrok",
+    "zrodlo": "https://www.acefitness.org/resources/everyone/exercise-library/264/medicine-ball-lunge-to-chest-pass",
+    "ulubione": false
+  },
+  {
+    "id": "cw402",
+    "nazwaPl": "Krok dostawny z podaniami — w parach",
+    "nazwaEn": "Partner side shuffle ball toss",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Łydki",
+      "Klatka piersiowa",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner side shuffle ball toss",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: rozpocznij spokojny krok dostawny z lekką piłką",
+      "B: przemieszczaj się równolegle naprzeciw",
+      "Wymieniajcie łagodne podania przed klatkę",
+      "Zwolnijcie przed wspólną zmianą kierunku",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Rzuty za plecy",
+      "Rozbieganie partnerów",
+      "Nagłe zmiany kierunku"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Zatrzymujcie się na każde podanie",
+    "zrodlo": "https://www.acefitness.org/resources/pros/expert-articles/6194/6-calorie-blasting-partner-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw403",
+    "nazwaPl": "Przysiad z przekazaniem piłki — w parach",
+    "nazwaEn": "Partner squat ball handoff",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Barki"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner squat ball handoff",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: trzymaj lekką piłkę przy klatce",
+      "B: stań naprzeciw w zasięgu przekazania",
+      "Oboje wykonajcie przysiad i wróćcie do stania",
+      "A przekazuje piłkę do dłoni B bez rzutu i puszcza po potwierdzeniu chwytu",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Puszczanie zbyt wcześnie",
+      "Piłka daleko od tułowia"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Płytki przysiad lub wstawanie ze stabilnych krzeseł",
+    "zrodlo": "https://www.silversneakers.com/blog/partner-workout-total-body-strength-exercises-2",
+    "ulubione": false
+  },
+  {
+    "id": "cw404",
+    "nazwaPl": "Przekazywanie piłki w siadzie plecami do siebie — w parach",
+    "nazwaEn": "Seated back to back partner ball pass",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Plecy",
+      "Barki"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka"
+    ],
+    "typ": "Mobilność",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Seated back to back partner ball pass",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: usiądź stabilnie z ugiętymi kolanami i piłką",
+      "B: usiądź plecami do A",
+      "Obróćcie tułowia i przekażcie piłkę z rąk do rąk, potem na drugą stronę",
+      "Zmieńcie kierunek, nie szarpcie, przy ograniczeniu skrętów wybierzcie zwykłe podania",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Forsowanie skrętu",
+      "Szarpanie piłki",
+      "Przesuwanie bioder"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Lekka piłka i mały skręt; wariant stojący w półprzysiadzie tylko bez dyskomfortu",
+    "zrodlo": "https://www.goldsgym.com/blog/partner-workout",
+    "ulubione": false
+  },
+  {
+    "id": "cw405",
+    "nazwaPl": "Wiosłowanie gumą z oporem partnera — w parach",
+    "nazwaEn": "Partner anchored band row",
+    "partiaGlowna": "Plecy",
+    "partieWspierajace": [
+      "Biceps",
+      "Przedramiona",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner",
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner anchored band row",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: stań stabilnie i trzymaj pewnie środek gumy przed sobą",
+      "B: chwyć uchwyty, przyjmij stabilny wykrok i przyciągnij łokcie ku tyłowi",
+      "B powoli prostuje ramiona, A utrzymuje stały opór",
+      "Zmieniajcie role dopiero po rozluźnieniu gumy",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Odchylanie tułowia",
+      "Szarpanie",
+      "Nagłe puszczanie gumy"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Słabsza guma; przy niepewnym chwycie użyj właściwego nieruchomego zaczepu",
+    "zrodlo": "https://www.healthline.com/health/fitness-exercise/partner-workouts",
+    "ulubione": false
+  },
+  {
+    "id": "cw406",
+    "nazwaPl": "Wyciskanie gumy z partnerem za plecami — w parach",
+    "nazwaEn": "Partner anchored band chest press",
+    "partiaGlowna": "Klatka piersiowa, Triceps",
+    "partieWspierajace": [
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner",
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner anchored band chest press",
+    "seriexPowtorzenia": "1 x 4-6",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: stabilizuj gumę za plecami B, poza linią twarzy",
+      "B: trzymaj uchwyty z gumą poniżej pach i przyjmij wykrok",
+      "B wypycha uchwyty przed klatkę i powoli cofa",
+      "A nie zmienia nagle oporu, zmiana ról po rozluźnieniu",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Guma przy szyi",
+      "Wyginanie pleców",
+      "Utrata chwytu"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Słabsza guma lub nieruchomy zaczep zamiast partnera",
+    "zrodlo": "https://www.healthline.com/health/fitness-exercise/partner-workouts",
+    "ulubione": false
+  },
+  {
+    "id": "cw407",
+    "nazwaPl": "Ruch po przekątnej z gumą — w parach",
+    "nazwaEn": "Partner band woodchop",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "Barki",
+      "Pośladki"
+    ],
+    "sprzet": [
+      "Partner",
+      "Gumy oporowe"
+    ],
+    "typ": "Siła",
+    "poziom": "Średni",
+    "wzorzecRuchu": "Partner band woodchop",
+    "seriexPowtorzenia": "1 x 4-6 na stronę",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: stabilizuj gumę z boku B poniżej barków",
+      "B: chwyć drugi koniec i prowadź ramiona po krótkiej przekątnej z kontrolowanym obrotem",
+      "Wróć spokojnie bez skręcania kolan",
+      "Zmieńcie stronę i role po rozluźnieniu, nie kierujcie gumy na twarz",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Szarpanie",
+      "Skręt kolan przy nieruchomych stopach",
+      "Kierowanie gumy w twarz"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Słaba guma, mała przekątna poniżej barków",
+    "zrodlo": "https://www.healthline.com/health/fitness-exercise/partner-workouts",
+    "ulubione": false
+  },
+  {
+    "id": "cw408",
+    "nazwaPl": "Chód w półprzysiadzie ze wspólną piłką — w parach",
+    "nazwaEn": "Partner stability ball squat walk",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Partner",
+      "Piłka gimnastyczna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Partner stability ball squat walk",
+    "seriexPowtorzenia": "1 x 10-15 sek",
+    "tempo": "Spokojnie i kontrolowanie, odpocznij po próbie",
+    "kluczoweWskazowki": [
+      "A: oprzyj jedną dłoń o dużą piłkę gimnastyczną na wysokości barku",
+      "B: stań naprzeciw i oprzyj dłoń z drugiej strony",
+      "Przy lekkim wspólnym nacisku przejdźcie do płytkiego półprzysiadu i kroków bocznych",
+      "Zmieńcie ręce i kierunek, nie opierajcie ciężaru ciała na piłce",
+      "Przerwij przy bólu, drętwieniu, zawrotach głowy lub nietypowej duszności",
+      "nie wstrzymuj oddechu",
+      "Ustalcie komendę STOP",
+      "kończcie zadanie razem bez nagłego puszczania oporu",
+      "Dobierzcie trudność do słabszego partnera",
+      "po serii zamieńcie role A i B"
+    ],
+    "czesteBledy": [
+      "Siłowe przepychanie piłki",
+      "Oparcie całego ciężaru",
+      "Nierówne tempo"
+    ],
+    "progresja": "Najpierw popraw kontrolę ruchu; dopiero potem dodaj 1-2 powtórzenia bez bólu",
+    "regresja": "Wyższa pozycja i pozostanie w miejscu",
+    "zrodlo": "https://www.acefitness.org/resources/pros/expert-articles/6194/6-calorie-blasting-partner-exercises/",
+    "ulubione": false
   }
 ]

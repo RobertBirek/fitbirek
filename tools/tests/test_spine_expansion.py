@@ -23,17 +23,18 @@ def baseline(path):
 class SpineExpansionTests(unittest.TestCase):
     def test_six_new_records_and_unchanged_prefix(self):
         data = validate_catalog.load(converter.OUTPUT_PATH)
-        self.assertEqual(len(data), 369)
+        self.assertGreaterEqual(len(data), 369)
         self.assertEqual(data[:363], baseline('assets/data/exercises.json'))
-        self.assertEqual([e['id'] for e in data[363:]], [f'cw{i}' for i in range(364, 370)])
+        self.assertEqual([e['id'] for e in data[363:369]], [f'cw{i}' for i in range(364, 370)])
 
     def test_old_metadata_preserved_except_additive_spine(self):
         old = baseline('assets/data/exercise_catalog_metadata.json')
         new = validate_catalog.load(validate_catalog.METADATA_PATH)
         self.assertEqual(new['styles'][:6], old['styles'])
-        self.assertEqual(new['styles'][6:], [dict(id='spine', label='Kręgosłup — ruch i stabilizacja',
+        self.assertEqual([r for r in new['styles'] if r['id'] == 'spine'], [dict(id='spine', label='Kręgosłup — ruch i stabilizacja',
                                                 aliases=['kręgosłup', 'kregoslup', 'spine'])])
-        for key in ('muscles', 'conditions', 'positions'):
+        self.assertEqual([r for r in new['muscles'] if r['id'] in {m['id'] for m in old['muscles']}], old['muscles'])
+        for key in ('conditions', 'positions'):
             self.assertEqual(new[key], old[key])
         for eid, row in old['exercises'].items():
             actual = copy.deepcopy(new['exercises'][eid])
@@ -114,11 +115,15 @@ class SpineExpansionTests(unittest.TestCase):
                 self.assertEqual(first, {name: path.read_bytes() for name, path in paths.items()})
             with patch.object(sys, 'argv', ['expand_spine_catalog.py', '--check']):
                 expansion.main()
-            self.assertEqual(converter.convert(), validate_catalog.load(converter.OUTPUT_PATH))
+            self.assertEqual(converter.convert(), validate_catalog.load(converter.OUTPUT_PATH)[:369])
             for name, path in paths.items():
                 if not name.endswith('.xlsx'):
-                    self.assertEqual(json.loads(path.read_text()),
-                                     validate_catalog.load(ROOT / 'tools/source_data' / name))
+                    expected = validate_catalog.load(ROOT / 'tools/source_data' / name)
+                    if name == 'exercise_names_pl.json':
+                        expected = {k: v for k, v in expected.items() if int(k[2:]) <= 369}
+                    if name == 'exercise_execution_conditions.json':
+                        expected['exercises'] = {k: v for k, v in expected['exercises'].items() if int(k[2:]) <= 369}
+                    self.assertEqual(json.loads(path.read_text()), expected)
 
     def test_guard_enforces_reviewed_spine_membership_and_definition(self):
         import spine_additions
@@ -130,7 +135,7 @@ class SpineExpansionTests(unittest.TestCase):
             elif mutation == 'missing_member':
                 bad['exercises']['cw179']['styles'].remove('spine')
             elif mutation == 'definition':
-                bad['styles'][-1]['label'] = 'Inna etykieta'
+                next(r for r in bad['styles'] if r['id'] == 'spine')['label'] = 'Inna etykieta'
             else:
                 bad['exercises']['cw365']['tracking'] = 'reps'
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):

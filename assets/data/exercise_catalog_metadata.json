@@ -57,6 +57,23 @@
         "kregoslup",
         "spine"
       ]
+    },
+    {
+      "id": "partner",
+      "label": "W parach",
+      "aliases": [
+        "partner",
+        "partnerskie",
+        "współpraca",
+        "we dwoje"
+      ]
+    },
+    {
+      "id": "pilates",
+      "label": "Pilates",
+      "aliases": [
+        "kontrola tułowia"
+      ]
     }
   ],
   "muscles": [
@@ -222,6 +239,14 @@
       "label": "Mięśnie stóp",
       "aliases": [
         "stopy"
+      ]
+    },
+    {
+      "id": "peroneals",
+      "label": "Mięśnie strzałkowe",
+      "aliases": [
+        "peroneus",
+        "fibularis"
       ]
     },
     {
@@ -9872,6 +9897,1073 @@
         "no_hand_support",
         "no_floor",
         "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw370": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Sit to stand"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw371": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Supported standing hip abduction"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw372": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [
+        "Supported standing hip extension"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw373": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Side lying straight leg abduction"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw374": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Side lying lower leg adduction"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw375": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Prone band hamstring curl"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw376": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Seated band knee extension"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw377": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "back"
+      ],
+      "aliases": [
+        "Band pull through"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw378": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [
+        "Standing band hip adduction"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw379": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Sliding leg curl"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw380": {
+      "styles": [
+        "pilates"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [
+        "Pilates Hundred"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw381": {
+      "styles": [
+        "pilates"
+      ],
+      "primaryMuscles": [
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "glutes"
+      ],
+      "aliases": [
+        "Pilates single leg circles"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw382": {
+      "styles": [
+        "pilates"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [
+        "Pilates single leg stretch"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw383": {
+      "styles": [
+        "pilates"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "hip_flexors"
+      ],
+      "aliases": [
+        "Pilates double leg stretch"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw384": {
+      "styles": [
+        "pilates"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "hamstrings"
+      ],
+      "aliases": [
+        "Pilates Saw"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw385": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "serratus",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Quadruped scapular protraction retraction"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw386": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "serratus",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Quadruped shoulder circles"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw387": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "adductors"
+      ],
+      "secondaryMuscles": [
+        "hamstrings"
+      ],
+      "aliases": [
+        "Straight leg adductor rock back"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw388": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "calves",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "feet"
+      ],
+      "aliases": [
+        "Supported tandem stand"
+      ],
+      "tracking": "time",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw389": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "calves",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "feet"
+      ],
+      "aliases": [
+        "Heel to toe walk"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw390": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "feet"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Toe towel curls"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw391": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "feet"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Seated short foot exercise"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw392": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "peroneals"
+      ],
+      "secondaryMuscles": [
+        "feet"
+      ],
+      "aliases": [
+        "Banded ankle eversion"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw393": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "serratus"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "glutes"
+      ],
+      "aliases": [
+        "Partner plank hand tap"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw394": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Back to back partner squat"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw395": {
+      "styles": [
+        "conditioning",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "abs"
+      ],
+      "aliases": [
+        "Partner movement mirror"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw396": {
+      "styles": [
+        "conditioning",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "abs"
+      ],
+      "aliases": [
+        "Partner wave direction drill"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw397": {
+      "styles": [
+        "conditioning",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "forearms"
+      ],
+      "aliases": [
+        "Partner ball drop catch"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw398": {
+      "styles": [
+        "conditioning",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "forearms"
+      ],
+      "aliases": [
+        "Partner shuffle reaction catch"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw399": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "glutes",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "forearms",
+        "feet"
+      ],
+      "aliases": [
+        "Partner single leg ball toss"
+      ],
+      "tracking": "time",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw400": {
+      "styles": [
+        "conditioning",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "chest",
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs",
+        "forearms"
+      ],
+      "aliases": [
+        "Partner chest pass"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw401": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "chest",
+        "triceps",
+        "abs"
+      ],
+      "aliases": [
+        "Partner lunge chest pass"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw402": {
+      "styles": [
+        "conditioning",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "calves",
+        "chest",
+        "forearms"
+      ],
+      "aliases": [
+        "Partner side shuffle ball toss"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw403": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [
+        "Partner squat ball handoff"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw404": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "back",
+        "shoulders"
+      ],
+      "aliases": [
+        "Seated back to back partner ball pass"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw405": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "back"
+      ],
+      "secondaryMuscles": [
+        "biceps",
+        "forearms",
+        "abs"
+      ],
+      "aliases": [
+        "Partner anchored band row"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw406": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "chest",
+        "triceps"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Partner anchored band chest press"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw407": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "glutes"
+      ],
+      "aliases": [
+        "Partner band woodchop"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw408": {
+      "styles": [
+        "strength",
+        "partner"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Partner stability ball squat walk"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor"
       ],
       "positions": [
         "standing"

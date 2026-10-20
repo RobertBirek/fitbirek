@@ -98,133 +98,140 @@ void main() {
       },
     );
 
-    test(
-      'po rozszerzeniu dopisuje nowe ID do starego prefiksu 316 bez zmiany pól, historii i ulubionych',
-      () async {
-        // Stan urządzenia sprzed rozszerzenia: nigdy nie importowano nowych ID.
-        // Fixture pochodzi z prawdziwego assetu, nie z pełnego importu i DELETE.
-        final legacy = data.where((e) => legacyIds.contains(e['id'])).toList();
-        expect(legacy, hasLength(legacyCount));
-        for (final e in legacy) {
-          await db
-              .into(db.exercises)
+    for (final prefixCount in [316, 369]) {
+      test(
+        'po rozszerzeniu dopisuje nowe ID do starego prefiksu $prefixCount bez zmiany pól, historii i ulubionych',
+        () async {
+          final legacyIds = {
+            for (var i = 1; i <= prefixCount; i++)
+              'cw${i.toString().padLeft(3, '0')}',
+          };
+          // Stan urządzenia sprzed rozszerzenia: nigdy nie importowano nowych ID.
+          // Fixture pochodzi z prawdziwego assetu, nie z pełnego importu i DELETE.
+          final legacy = data
+              .where((e) => legacyIds.contains(e['id']))
+              .toList();
+          expect(legacy, hasLength(prefixCount));
+          for (final e in legacy) {
+            await db
+                .into(db.exercises)
+                .insert(
+                  ExercisesCompanion.insert(
+                    id: e['id'] as String,
+                    nazwaPl: e['nazwaPl'] as String,
+                    nazwaEn: e['nazwaEn'] as String,
+                    partiaGlowna: e['partiaGlowna'] as String,
+                    partieWspierajace: jsonEncode(e['partieWspierajace']),
+                    sprzet: jsonEncode(e['sprzet']),
+                    typ: e['typ'] as String,
+                    poziom: e['poziom'] as String,
+                    wzorzecRuchu: e['wzorzecRuchu'] as String,
+                    seriexPowtorzenia: e['seriexPowtorzenia'] as String,
+                    tempo: e['tempo'] as String,
+                    kluczoweWskazowki: jsonEncode(e['kluczoweWskazowki']),
+                    czesteBledy: jsonEncode(e['czesteBledy']),
+                    progresja: e['progresja'] as String,
+                    regresja: e['regresja'] as String,
+                    zrodlo: e['zrodlo'] as String,
+                  ),
+                );
+          }
+          // Lokalne pola niebędące nazwą PL również nie mogą zostać odświeżone.
+          await (db.update(
+            db.exercises,
+          )..where((t) => t.id.equals('cw001'))).write(
+            const ExercisesCompanion(
+              nazwaEn: Value('Local English push-up'),
+              tempo: Value('4-2-1-0'),
+              zrodlo: Value('Lokalna notatka o źródle'),
+            ),
+          );
+          await repo.toggleFavorite('cw001', true);
+          await repo.toggleFavorite('cw316', true);
+          await repo.toggleFavorite('cw002', true);
+          await repo.toggleFavorite('cw002', false);
+
+          final startedAt = DateTime.utc(2026, 10, 1, 10);
+          final sessionId = await db
+              .into(db.workoutSessions)
               .insert(
-                ExercisesCompanion.insert(
-                  id: e['id'] as String,
-                  nazwaPl: e['nazwaPl'] as String,
-                  nazwaEn: e['nazwaEn'] as String,
-                  partiaGlowna: e['partiaGlowna'] as String,
-                  partieWspierajace: jsonEncode(e['partieWspierajace']),
-                  sprzet: jsonEncode(e['sprzet']),
-                  typ: e['typ'] as String,
-                  poziom: e['poziom'] as String,
-                  wzorzecRuchu: e['wzorzecRuchu'] as String,
-                  seriexPowtorzenia: e['seriexPowtorzenia'] as String,
-                  tempo: e['tempo'] as String,
-                  kluczoweWskazowki: jsonEncode(e['kluczoweWskazowki']),
-                  czesteBledy: jsonEncode(e['czesteBledy']),
-                  progresja: e['progresja'] as String,
-                  regresja: e['regresja'] as String,
-                  zrodlo: e['zrodlo'] as String,
+                WorkoutSessionsCompanion.insert(
+                  dataStart: startedAt,
+                  dataKoniec: Value(startedAt.add(const Duration(minutes: 20))),
+                  czasTrwaniaSekund: const Value(1200),
+                  notatka: const Value('Historia sprzed rozszerzenia katalogu'),
+                  syncVersion: const Value(7),
                 ),
               );
-        }
-        // Lokalne pola niebędące nazwą PL również nie mogą zostać odświeżone.
-        await (db.update(
-          db.exercises,
-        )..where((t) => t.id.equals('cw001'))).write(
-          const ExercisesCompanion(
-            nazwaEn: Value('Local English push-up'),
-            tempo: Value('4-2-1-0'),
-            zrodlo: Value('Lokalna notatka o źródle'),
-          ),
-        );
-        await repo.toggleFavorite('cw001', true);
-        await repo.toggleFavorite('cw316', true);
-        await repo.toggleFavorite('cw002', true);
-        await repo.toggleFavorite('cw002', false);
+          for (final id in ['cw001', 'cw316']) {
+            await db
+                .into(db.setsLog)
+                .insert(
+                  SetsLogCompanion.insert(
+                    sesjaId: sessionId,
+                    cwiczenieId: id,
+                    nazwaCwiczeniaPl: 'Historyczna nazwa $id',
+                    numerSerii: 1,
+                    ciezarKg: const Value(12.5),
+                    powtorzenia: const Value(8),
+                    rpe: const Value(7),
+                    timestamp: Value(startedAt.add(const Duration(minutes: 5))),
+                    // Stara historia bez side zachowuje swoje dotychczasowe znaczenie.
+                    syncVersion: const Value(4),
+                  ),
+                );
+          }
+          final before = await db.exercisesDao.getAll();
+          expect(before.map((e) => e.id).toSet(), legacyIds);
+          expect(await repo.getById('cw${prefixCount + 1}'), isNull);
+          final sessions = await db.select(db.workoutSessions).get();
+          final sets = await db.select(db.setsLog).get();
+          final favorites = await db.select(db.exerciseFavorites).get();
+          final outbox = await db.select(db.syncOutbox).get();
 
-        final startedAt = DateTime.utc(2026, 10, 1, 10);
-        final sessionId = await db
-            .into(db.workoutSessions)
-            .insert(
-              WorkoutSessionsCompanion.insert(
-                dataStart: startedAt,
-                dataKoniec: Value(startedAt.add(const Duration(minutes: 20))),
-                czasTrwaniaSekund: const Value(1200),
-                notatka: const Value('Historia sprzed rozszerzenia katalogu'),
-                syncVersion: const Value(7),
-              ),
-            );
-        for (final id in ['cw001', 'cw316']) {
-          await db
-              .into(db.setsLog)
-              .insert(
-                SetsLogCompanion.insert(
-                  sesjaId: sessionId,
-                  cwiczenieId: id,
-                  nazwaCwiczeniaPl: 'Historyczna nazwa $id',
-                  numerSerii: 1,
-                  ciezarKg: const Value(12.5),
-                  powtorzenia: const Value(8),
-                  rpe: const Value(7),
-                  timestamp: Value(startedAt.add(const Duration(minutes: 5))),
-                  // Stara historia bez side zachowuje swoje dotychczasowe znaczenie.
-                  syncVersion: const Value(4),
-                ),
-              );
-        }
-        final before = await db.exercisesDao.getAll();
-        expect(before.map((e) => e.id).toSet(), legacyIds);
-        expect(await repo.getById('cw317'), isNull);
-        final sessions = await db.select(db.workoutSessions).get();
-        final sets = await db.select(db.setsLog).get();
-        final favorites = await db.select(db.exerciseFavorites).get();
-        final outbox = await db.select(db.syncOutbox).get();
+          await repo.syncFromAssets();
 
-        await repo.syncFromAssets();
+          final after = await db.exercisesDao.getAll();
+          expect(after, hasLength(data.length));
+          expect(
+            after.map((e) => e.id).toSet(),
+            data.map((e) => e['id']).toSet(),
+          );
+          expect(
+            {
+              for (final row in after.where((e) => legacyIds.contains(e.id)))
+                row.id: row,
+            },
+            {for (final row in before) row.id: row},
+          );
+          final additions = data.where((e) => !legacyIds.contains(e['id']));
+          expect(additions, isNotEmpty);
+          for (final e in additions) {
+            final imported = await repo.getById(e['id'] as String);
+            expect(imported, isNotNull, reason: e['id'] as String);
+            expect(imported!.toJson(), e, reason: e['id'] as String);
+          }
+          expect(await db.select(db.workoutSessions).get(), sessions);
+          expect(await db.select(db.setsLog).get(), sets);
+          expect(await db.select(db.exerciseFavorites).get(), favorites);
+          expect(await db.select(db.syncOutbox).get(), outbox);
+          expect((await repo.getById('cw001'))!.ulubione, isTrue);
+          expect((await repo.getById('cw316'))!.ulubione, isTrue);
+          expect((await repo.getById('cw002'))!.ulubione, isFalse);
 
-        final after = await db.exercisesDao.getAll();
-        expect(after, hasLength(data.length));
-        expect(
-          after.map((e) => e.id).toSet(),
-          data.map((e) => e['id']).toSet(),
-        );
-        expect(
-          {
-            for (final row in after.where((e) => legacyIds.contains(e.id)))
-              row.id: row,
-          },
-          {for (final row in before) row.id: row},
-        );
-        final additions = data.where((e) => !legacyIds.contains(e['id']));
-        expect(additions, isNotEmpty);
-        for (final e in additions) {
-          final imported = await repo.getById(e['id'] as String);
-          expect(imported, isNotNull, reason: e['id'] as String);
-          expect(imported!.toJson(), e, reason: e['id'] as String);
-        }
-        expect(await db.select(db.workoutSessions).get(), sessions);
-        expect(await db.select(db.setsLog).get(), sets);
-        expect(await db.select(db.exerciseFavorites).get(), favorites);
-        expect(await db.select(db.syncOutbox).get(), outbox);
-        expect((await repo.getById('cw001'))!.ulubione, isTrue);
-        expect((await repo.getById('cw316'))!.ulubione, isTrue);
-        expect((await repo.getById('cw002'))!.ulubione, isFalse);
-
-        final changes =
+          final changes =
+              (await db.customSelect('SELECT total_changes() AS n').getSingle())
+                  .read<int>('n');
+          await repo.syncFromAssets();
+          expect(await db.exercisesDao.getAll(), after);
+          expect(
             (await db.customSelect('SELECT total_changes() AS n').getSingle())
-                .read<int>('n');
-        await repo.syncFromAssets();
-        expect(await db.exercisesDao.getAll(), after);
-        expect(
-          (await db.customSelect('SELECT total_changes() AS n').getSingle())
-              .read<int>('n'),
-          changes,
-        );
-      },
-    );
-
+                .read<int>('n'),
+            changes,
+          );
+        },
+      );
+    }
     test(
       'dopisuje brakujące, zachowuje rekord spoza katalogu i nie zapisuje ponownie',
       () async {

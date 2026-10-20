@@ -124,6 +124,10 @@ VALID_SPRZET = {
     "Ręcznik",
     "Sandbag",
     "Kółko do brzucha",
+    "Partner",
+    "Piłka",
+    "Piłka gimnastyczna",
+    "Ślizgacze",
 }
 
 # Rozszerzony enum typów - 1:1 z wartościami z Excela (musi być zgodny z

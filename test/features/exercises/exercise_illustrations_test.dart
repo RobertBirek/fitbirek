@@ -390,7 +390,12 @@ void main() {
     final catalogIds = catalog
         .map((exercise) => (exercise as Map<String, dynamic>)['id'] as String)
         .toSet();
-    expect(illustratedExerciseIds, catalogIds);
+    // New text-reviewed catalog entries have no reviewed artwork yet. Preserve
+    // exact coverage of the original illustrations, not fabricated substitutions.
+    expect(catalogIds.difference(illustratedExerciseIds), {
+      for (var n = 370; n <= 408; n++) 'cw$n',
+    });
+    expect(illustratedExerciseIds.difference(catalogIds), isEmpty);
 
     for (final id in illustratedExerciseIds) {
       expect(
@@ -428,7 +433,7 @@ void main() {
     expect(exerciseIllustrationAsset('cw253'), 'assets/exercises/cw253.webp');
   });
 
-  test('returns no illustration for an unknown exercise', () {
+  test('returns no illustration for a text-only catalog exercise', () {
     expect(exerciseIllustrationAsset('cw370'), isNull);
   });
 

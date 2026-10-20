@@ -22,6 +22,10 @@ class AppConstants {
     'Ręcznik',
     'Sandbag',
     'Kółko do brzucha',
+    'Partner',
+    'Piłka',
+    'Piłka gimnastyczna',
+    'Ślizgacze',
   ];
 
   /// Predefiniowane czasy przerwy między seriami (sekundy).

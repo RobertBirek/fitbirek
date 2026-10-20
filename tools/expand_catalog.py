@@ -37,6 +37,7 @@ def workbook_row(a):
 
 
 def ledger():
+    from partner_additions import SOURCES as PARTNER_SOURCES, source_records
     result = {
         'reviewedOn': '2026-10-16',
         'method': 'Read publisher text; original Polish descriptions; conservative equipment adaptation, no copied prose. Source validates movement, not individualized load or medical suitability.',
@@ -64,6 +65,13 @@ def ledger():
     }
     result['sources'].update(SPINE_SOURCES)
     result['exercises'].update(source_exercises())
+    result['sources'].update({
+        'partner_expansion_' + key: {
+            'url': url,
+            'verifiedSections': '2026-10-20 conversation research: named movement instructions/snippets; original Polish adaptation, not medical suitability or individualized dosage.',
+        } for key, url in PARTNER_SOURCES.items()
+    })
+    result['exercises'].update(source_records())
     return result
 
 

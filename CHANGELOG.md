@@ -6,6 +6,18 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.19.0+34] — 2026-10-20
+
+### Added
+- Katalog 408 ćwiczeń: 23 indywidualne i 16 ogólnorozwojowych zadań w parach,
+  źródła, role partnerów, błędy, regresje i wskazówki bezpieczeństwa offline.
+- Filtry „W parach” i „Pilates”; jawne wymaganie partnera chroni generatory
+  treningów solo. Zachowano wszystkie 369 wcześniejszych rekordów i ich ID.
+
+### Deployment Notes
+- Wydanie wyłącznie web, bez migracji i zmian API; nowe ćwiczenia mają opisy,
+  ale nie mają jeszcze zatwierdzonych ilustracji.
+
 ## [1.18.1+33] — 2026-10-20
 
 ### Fixed

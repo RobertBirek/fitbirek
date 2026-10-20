@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_catalog_metadata
 import validate_catalog
 import build_execution_conditions as execution
-from spine_additions import EXPECTED_COUNT
+from partner_additions import EXPECTED_COUNT
 
 ROOT = Path(__file__).resolve().parents[2]
 CONDITIONS = {
@@ -67,7 +67,8 @@ class ExecutionConditionsTests(unittest.TestCase):
         old = {k: copy.deepcopy(v) for k, v in self.meta.items()
                if k not in ('conditions', 'positions')}
         # Project the historical 363-entry contract, not a new replacement hash.
-        old['styles'] = [x for x in old['styles'] if x['id'] != 'spine']
+        old['styles'] = [x for x in old['styles'] if x['id'] not in {'spine', 'partner', 'pilates'}]
+        old['muscles'] = [x for x in old['muscles'] if x['id'] != 'peroneals']
         old['exercises'] = {k: v for k, v in old['exercises'].items() if int(k[2:]) <= 363}
         for entry in old['exercises'].values():
             entry['styles'] = [x for x in entry['styles'] if x != 'spine']

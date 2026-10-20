@@ -153,7 +153,8 @@ def validate_preservation(data, meta):
     if digest(data[:PREFIX_COUNT]) != PREFIX_SHA256:
         raise ValueError('Chronione rekordy cw001–cw363 zostały zmienione')
     old = copy.deepcopy(meta)
-    old['styles'] = [r for r in old['styles'] if r['id'] != 'spine']
+    old['styles'] = [r for r in old['styles'] if r['id'] not in {'spine', 'partner', 'pilates'}]
+    old['muscles'] = [r for r in old['muscles'] if r['id'] != 'peroneals']
     old['exercises'] = {eid: row for eid, row in old['exercises'].items()
                         if int(eid[2:]) <= PREFIX_COUNT}
     for row in old['exercises'].values():

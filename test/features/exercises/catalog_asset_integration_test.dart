@@ -5,6 +5,9 @@ import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_met
 import 'package:fitbirek_training/features/exercises/domain/exercise_filter_engine.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
+import 'package:fitbirek_training/features/planner/domain/plan_generator.dart';
+import 'package:fitbirek_training/core/models/user_profile.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -32,9 +35,9 @@ void main() {
   });
 
   test(
-    'real offline index covers all 369 exercises with known classifications',
+    'real offline index covers all 408 exercises with known classifications',
     () {
-      expect(exercises, hasLength(369));
+      expect(exercises, hasLength(408));
       for (final exercise in exercises) {
         final entry = metadata.entryFor(exercise.id);
         expect(entry, isNotNull, reason: exercise.id);
@@ -45,6 +48,55 @@ void main() {
           engine.musclesFor(exercise).every(metadata.muscles.containsKey),
           isTrue,
         );
+      }
+    },
+  );
+
+  test(
+    'partner collection is searchable and excluded from solo generators',
+    () {
+      final partnerIds = {for (var n = 393; n <= 408; n++) 'cw$n'};
+      for (final filters in [
+        const ExerciseFilters(styles: {'partner'}),
+        const ExerciseFilters(query: 'w parach'),
+        const ExerciseFilters(query: 'partnerskie'),
+      ]) {
+        expect(
+          engine.filter(exercises, filters).map((e) => e.id).toSet(),
+          partnerIds,
+        );
+      }
+      final equipment = exercises.expand((e) => e.sprzet).toSet()
+        ..remove('Partner');
+      final solo = StructuredPlanGenerator.candidates(
+        allExercises: exercises,
+        engine: engine,
+        criteria: const ExerciseFilters(),
+        equipment: equipment.toList(),
+        level: 'Zaawansowany',
+      );
+      expect(solo, isNotEmpty);
+      expect(solo.any((e) => partnerIds.contains(e.id)), isFalse);
+      expect(
+        StructuredPlanGenerator.candidates(
+          allExercises: exercises,
+          engine: engine,
+          criteria: const ExerciseFilters(styles: {'partner'}),
+          equipment: [...equipment, 'Partner'],
+          level: 'Zaawansowany',
+        ).map((e) => e.id).toSet(),
+        partnerIds,
+      );
+      for (final goal in CelTreningowy.values) {
+        final plan = PlanGenerator.generate(
+          wszystkieCwiczenia: exercises
+              .where((e) => partnerIds.contains(e.id))
+              .toList(),
+          cel: goal,
+          poziom: 'Zaawansowany',
+          dostepnySprzet: equipment.toList(),
+        );
+        expect(plan, isEmpty);
       }
     },
   );
