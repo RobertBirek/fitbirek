@@ -42,7 +42,17 @@ wykonania; wariant nie dziedziczy gwarancji filtrów dla innej pozycji.
 
 To katalog, nie program dla konkretnego wieku/choroby. Dawki są ostrożnymi
 przykładami redakcyjnymi, źródła potwierdzają technikę, nie indywidualną
-kwalifikację. Prowadzący powinien ocenić zadania z partnerem. Dla nowych ID
-brak zatwierdzonych ilustracji: istniejący placeholder, bez podmieniania obrazów
-innych ruchów. Wdrożenie web 1.19.0+34 i granice weryfikacji opisuje
+kwalifikację. Prowadzący powinien ocenić zadania z partnerem. W wydaniu web
+1.19.0+34 nowe ID mają placeholder, bez podmieniania obrazów innych ruchów.
+Wdrożenie i granice weryfikacji opisuje
 `docs/releases/2026-10-20-web-1.19.0-34.md`.
+
+## Ilustracje — lokalne uzupełnienie gotowe
+
+Rejestr, testy i pliki obejmują lokalnie wszystkie 408 ID, w tym 39 nowych
+dedykowanych ilustracji `cw370–cw408`. Sprawdzono zgodność ID i dekodowanie
+512×512, przeprowadzono przegląd obrazów oraz Docker verification:
+1346 testów PASS, analiza bez problemów. Nie jest to zmiana wydania produkcyjnego.
+Źródła i sceny: `docs/exercise-illustrations-2026-10-20-results.md`.
+Bieżący bilans i historia:
+`docs/exercise-illustrations-status.md`.

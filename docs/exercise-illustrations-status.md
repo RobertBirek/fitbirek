@@ -1,11 +1,32 @@
 # Status ilustracji ćwiczeń
 
-Stan na 2026-10-17, produkcyjna wersja webowa 1.14.0+27.
+## Stan bieżący — 2026-10-20 (uzupełnienie lokalne gotowe)
+
+Katalog obejmuje **408 ćwiczeń**. Wydanie web **1.19.0+34** zachowuje
+**369 wydanych ilustracji (`cw001–cw369`)**; nowe `cw370–cw408` (39 ćwiczeń)
+wydano wtedy jako wpisy tekstowe z placeholderem, bez ilustracji:
+[dowody wydania](releases/2026-10-20-web-1.19.0-34.md).
+
+Lokalny rejestr, pliki i testy obejmują **408 ilustracji = 369 wydanych +
+39 lokalnych niewydanych, 0 brakujących**. Wygenerowano i obejrzano wszystkie
+nowe `cw370–cw408`; wcześniejsze 369 plików pozostało identycznych bajtowo.
+[Sceny, źródła, korekty i koszty](exercise-illustrations-2026-10-20-results.md).
+
+Testy wymagają dokładnej zgodności ID katalogu, rejestru, plików WebP i manifestu
+assetów oraz dekodowania każdego z 408 oczekiwanych obrazów jako 512×512.
+Potwierdzono etap TDD RED przed zmianą rejestru (brak `cw370`) i końcowy GREEN:
+Docker verification zaliczył **1346 testów**, analizę bez problemów i kontrolę
+wersji. Niezależny przegląd obrazów i integracji: bez problemów HIGH/MEDIUM.
+Nie wykonano nowego wydania ani wdrożenia.
+
+## Historia wydanych ilustracji
+
+Stan historyczny na 2026-10-17, produkcyjna wersja webowa 1.14.0+27.
 Wszystkie369 ilustracji sprawdzono publicznie (HTTP, MIME i SHA-256),
 w tym sześć nowych; poprzednie363 zachowano bez zmian.
 [Aktualne dowody](releases/2026-10-17-api-web-1.14.0-27.md).
 
-Katalog lokalny obejmuje **369 ćwiczeń i 369 ilustracji**:
+Ówczesny katalog lokalny obejmował **369 ćwiczeń i 369 ilustracji**:
 **369 publicznie wydanych, 0 lokalnych niewydanych, 0 brakujących**.
 Nowe `cw364–cw369` wydano w1.14.0+27;
 [przegląd, źródła i koszt](spine-illustrations-2026-10-16.md).

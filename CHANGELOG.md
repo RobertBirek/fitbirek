@@ -6,6 +6,18 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.19.1+35] — 2026-10-20
+
+### Fixed
+- Uzupełniono ilustracje 39 nowych ćwiczeń `cw370–cw408`, w tym 16 zadań
+  partnerskich. Wszystkie 408 ćwiczeń ma teraz dedykowaną ilustrację.
+- Testy sprawdzają kompletność katalogu, rejestru, manifestu i plików oraz
+  dekodowanie każdej ilustracji w rozmiarze 512×512.
+
+### Deployment Notes
+- Wydanie wyłącznie web, bez zmian API, schematów danych i zależności.
+  Nowe obrazy są częścią aktualizowanego pakietu offline.
+
 ## [1.19.0+34] — 2026-10-20
 
 ### Added

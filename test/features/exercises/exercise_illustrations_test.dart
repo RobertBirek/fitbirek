@@ -379,6 +379,45 @@ void main() {
     'cw367',
     'cw368',
     'cw369',
+    'cw370',
+    'cw371',
+    'cw372',
+    'cw373',
+    'cw374',
+    'cw375',
+    'cw376',
+    'cw377',
+    'cw378',
+    'cw379',
+    'cw380',
+    'cw381',
+    'cw382',
+    'cw383',
+    'cw384',
+    'cw385',
+    'cw386',
+    'cw387',
+    'cw388',
+    'cw389',
+    'cw390',
+    'cw391',
+    'cw392',
+    'cw393',
+    'cw394',
+    'cw395',
+    'cw396',
+    'cw397',
+    'cw398',
+    'cw399',
+    'cw400',
+    'cw401',
+    'cw402',
+    'cw403',
+    'cw404',
+    'cw405',
+    'cw406',
+    'cw407',
+    'cw408',
   };
 
   test('registry contains exactly the illustration assets in the catalog', () {
@@ -390,12 +429,8 @@ void main() {
     final catalogIds = catalog
         .map((exercise) => (exercise as Map<String, dynamic>)['id'] as String)
         .toSet();
-    // New text-reviewed catalog entries have no reviewed artwork yet. Preserve
-    // exact coverage of the original illustrations, not fabricated substitutions.
-    expect(catalogIds.difference(illustratedExerciseIds), {
-      for (var n = 370; n <= 408; n++) 'cw$n',
-    });
-    expect(illustratedExerciseIds.difference(catalogIds), isEmpty);
+    expect(catalog, hasLength(expectedIllustrationIds.length));
+    expect(catalogIds, expectedIllustrationIds);
 
     for (final id in illustratedExerciseIds) {
       expect(
@@ -414,7 +449,21 @@ void main() {
         .map((file) => file.uri.pathSegments.last)
         .toSet();
 
-    expect(files, illustratedExerciseIds.map((id) => '$id.webp').toSet());
+    expect(files, expectedIllustrationIds.map((id) => '$id.webp').toSet());
+  });
+
+  test('asset manifest includes every expected catalog illustration', () async {
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final illustrationAssets = manifest
+        .listAssets()
+        .where((path) => path.startsWith('assets/exercises/'))
+        .where((path) => path.endsWith('.webp'))
+        .toSet();
+
+    expect(
+      illustrationAssets,
+      expectedIllustrationIds.map((id) => 'assets/exercises/$id.webp').toSet(),
+    );
   });
 
   test('maps 90/90 hip stretch to its illustration asset', () {
@@ -433,8 +482,10 @@ void main() {
     expect(exerciseIllustrationAsset('cw253'), 'assets/exercises/cw253.webp');
   });
 
-  test('returns no illustration for a text-only catalog exercise', () {
-    expect(exerciseIllustrationAsset('cw370'), isNull);
+  test('returns no illustration for unknown exercise IDs', () {
+    for (final id in ['cw409', 'cw000', '', 'custom-exercise']) {
+      expect(exerciseIllustrationAsset(id), isNull, reason: id);
+    }
   });
 
   test('maps cw265 to its illustration asset', () {
@@ -462,7 +513,7 @@ void main() {
   });
 
   test('loads and decodes every illustration as 512x512', () async {
-    for (final id in illustratedExerciseIds) {
+    for (final id in expectedIllustrationIds) {
       final data = await rootBundle.load('assets/exercises/$id.webp');
       final codec = await ui.instantiateImageCodec(
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
