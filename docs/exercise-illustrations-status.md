@@ -1,14 +1,14 @@
 # Status ilustracji ćwiczeń
 
-## Stan bieżący — 2026-10-20 (uzupełnienie lokalne gotowe)
+## Stan bieżący — 2026-10-20 (wydano 1.19.1+35)
 
 Katalog obejmuje **408 ćwiczeń**. Wydanie web **1.19.0+34** zachowuje
 **369 wydanych ilustracji (`cw001–cw369`)**; nowe `cw370–cw408` (39 ćwiczeń)
 wydano wtedy jako wpisy tekstowe z placeholderem, bez ilustracji:
 [dowody wydania](releases/2026-10-20-web-1.19.0-34.md).
 
-Lokalny rejestr, pliki i testy obejmują **408 ilustracji = 369 wydanych +
-39 lokalnych niewydanych, 0 brakujących**. Wygenerowano i obejrzano wszystkie
+Rejestr, pliki i testy obejmują **408 ilustracji = 408 wydanych +
+0 lokalnych niewydanych, 0 brakujących**. Wygenerowano i obejrzano wszystkie
 nowe `cw370–cw408`; wcześniejsze 369 plików pozostało identycznych bajtowo.
 [Sceny, źródła, korekty i koszty](exercise-illustrations-2026-10-20-results.md).
 
@@ -17,7 +17,9 @@ assetów oraz dekodowania każdego z 408 oczekiwanych obrazów jako 512×512.
 Potwierdzono etap TDD RED przed zmianą rejestru (brak `cw370`) i końcowy GREEN:
 Docker verification zaliczył **1346 testów**, analizę bez problemów i kontrolę
 wersji. Niezależny przegląd obrazów i integracji: bez problemów HIGH/MEDIUM.
-Nie wykonano nowego wydania ani wdrożenia.
+Wydano web **1.19.1+35**: publiczne **482/482 SHA-256 i długości**, w tym
+408 ilustracji, zgodne z kandydatem. Backup i izolowany restore PASS;
+API, PostgreSQL i Caddy bez zmian. [Raport wdrożenia](releases/2026-10-20-web-1.19.1-35.md).
 
 ## Historia wydanych ilustracji
 

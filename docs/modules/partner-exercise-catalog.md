@@ -47,12 +47,14 @@ kwalifikację. Prowadzący powinien ocenić zadania z partnerem. W wydaniu web
 Wdrożenie i granice weryfikacji opisuje
 `docs/releases/2026-10-20-web-1.19.0-34.md`.
 
-## Ilustracje — lokalne uzupełnienie gotowe
+## Ilustracje — wydane w 1.19.1+35
 
-Rejestr, testy i pliki obejmują lokalnie wszystkie 408 ID, w tym 39 nowych
+Rejestr, testy i pliki obejmują wszystkie 408 ID, w tym 39 nowych
 dedykowanych ilustracji `cw370–cw408`. Sprawdzono zgodność ID i dekodowanie
 512×512, przeprowadzono przegląd obrazów oraz Docker verification:
-1346 testów PASS, analiza bez problemów. Nie jest to zmiana wydania produkcyjnego.
+1346 testów PASS, analiza bez problemów. Wydano web 1.19.1+35: publiczne
+482/482 pliki pakietu, w tym 408 ilustracji, zgodne bajtowo z kandydatem.
+Dowody: `docs/releases/2026-10-20-web-1.19.1-35.md`.
 Źródła i sceny: `docs/exercise-illustrations-2026-10-20-results.md`.
 Bieżący bilans i historia:
 `docs/exercise-illustrations-status.md`.

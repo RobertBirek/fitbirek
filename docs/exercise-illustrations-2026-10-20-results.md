@@ -140,3 +140,13 @@ assetów. Zadanie generowania nie uruchamiało testów ani wdrożenia.
   pozostają aktualne; `cw397` wymaga tekstu dla dynamiki odbicia.
 - Bilans: **408 lokalnych / 369 wydanych / 39 niewydanych / 0 brakujących**.
   Bez commita, pusha, zmiany wersji i wdrożenia.
+
+## Późniejsze wydanie — 1.19.1+35
+
+Po osobnym poleceniu użytkownika wykonano commit `f1457ca`, push do `main`
+i wdrożenie samego webu o 21:06:56 UTC. Powtórny kanoniczny build runtime:
+1346 testów PASS, analiza i kontrola wersji PASS. Publicznie zweryfikowano
+482/482 pliki pakietu, w tym wszystkie 408 ilustracji. Bilans po wydaniu:
+408 wydanych / 0 niewydanych / 0 brakujących. Backup i izolowany restore PASS;
+API, PostgreSQL i Caddy bez zmian. Szczegóły i ograniczenia:
+`docs/releases/2026-10-20-web-1.19.1-35.md`.

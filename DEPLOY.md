@@ -3,7 +3,17 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.19.0+34 deployed 2026-10-20 19:32:52 UTC**, public verification
+Current web **1.19.1+35 deployed 2026-10-20 21:06:56 UTC**, public verification
+**21:07:32 UTC**. All **408 exercises have illustrations**, including 39 newly
+generated images; previous 369 image files unchanged. Clean pushed source
+**f1457ca** on `main`. **1346 Flutter tests**, analysis/version checks and
+**482/482 public package hashes** PASS. Fresh backup and isolated restore PASS.
+API/sender remain **1.18.0**, with PostgreSQL/Caddy also unchanged; no production
+migration or configuration changes. Physical-phone and existing-PWA update
+acceptance remain pending. Evidence, exact images, backup and rollback:
+[web release 1.19.1+35](docs/releases/2026-10-20-web-1.19.1-35.md).
+
+Previous web **1.19.0+34 deployed 2026-10-20 19:32:52 UTC**, public verification
 **19:33:35 UTC**. Catalog 408 exercises, including 16 general partner tasks;
 partner opt-in required by generators. Clean build source **cc7582c**, pushed to
 `main` by fast-forward, including previously deployed schedule/frontend history.
