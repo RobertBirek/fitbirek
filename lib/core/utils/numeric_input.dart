@@ -10,13 +10,15 @@ double? parseDecimal(String text) {
   return value != null && value.isFinite ? value : null;
 }
 
+bool isPositiveFinite(double value) => value.isFinite && value > 0;
+
 String? validateMeasurement(String? text, {bool optional = false}) {
   if ((text ?? '').trim().isEmpty) {
     return optional ? null : 'Wpisz wartość.';
   }
   final value = parseDecimal(text!);
   if (value == null) return 'Wpisz poprawną liczbę.';
-  return value > 0 ? null : 'Wpisz wartość większą od zera.';
+  return isPositiveFinite(value) ? null : 'Wpisz wartość większą od zera.';
 }
 
 String? validateTestResult(String? text, TypTestu type) {

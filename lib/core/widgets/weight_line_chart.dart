@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 import '../models/weight_entry.dart';
 import '../utils/formatters.dart';
+import '../utils/chart_time_axis.dart';
 
 /// Wykres liniowy wagi w czasie na podstawie historii pomiarów.
 ///
@@ -17,7 +18,7 @@ class WeightLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (measurements.length < 2) {
+    if (measurements.isEmpty) {
       return const _NotEnoughDataPlaceholder(
         message: 'Dodaj przynajmniej 2 pomiary, żeby zobaczyć trend wagi',
       );
@@ -25,10 +26,11 @@ class WeightLineChart extends StatelessWidget {
 
     // Sortuj od najstarszego do najnowszego - wykres czyta się od lewej.
     final sorted = [...measurements]..sort((a, b) => a.data.compareTo(b.data));
+    final axis = ChartTimeAxis(sorted.first.data, sorted.last.data);
 
     final spots = <FlSpot>[
       for (var i = 0; i < sorted.length; i++)
-        FlSpot(i.toDouble(), sorted[i].wagaKg),
+        FlSpot(axis.x(sorted[i].data), sorted[i].wagaKg),
     ];
 
     final minY = sorted.map((m) => m.wagaKg).reduce((a, b) => a < b ? a : b);
@@ -37,108 +39,145 @@ class WeightLineChart extends StatelessWidget {
     final chartMinY = (minY - 1).floorToDouble();
     final chartMaxY = (maxY + 1).ceilToDouble();
 
-    return SizedBox(
-      height: 220,
-      child: LineChart(
-        LineChartData(
-          minY: chartMinY,
-          maxY: chartMaxY,
-          gridData: FlGridData(
-            show: true,
-            drawVerticalLine: false,
-            horizontalInterval: ((chartMaxY - chartMinY) / 4).clamp(
-              1,
-              double.infinity,
-            ),
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.grey.withValues(alpha: 0.15),
-              strokeWidth: 1,
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          titlesData: FlTitlesData(
-            topTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            rightTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 40,
-                getTitlesWidget: (value, meta) => Text(
-                  value.toStringAsFixed(0),
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ),
-            ),
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                reservedSize: 28,
-                interval: (sorted.length / 4).clamp(1, double.infinity),
-                getTitlesWidget: (value, meta) {
-                  final index = value.round();
-                  if (index < 0 || index >= sorted.length) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      Formatters.dayMonth(sorted[index].data),
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (sorted.length < 2)
+          const Text('Dodaj przynajmniej 2 pomiary, żeby zobaczyć trend wagi')
+        else
+          ExcludeSemantics(
+            child: SizedBox(
+              height: 220,
+              child: LineChart(
+                LineChartData(
+                  minX: 0,
+                  maxX: axis.maxX,
+                  minY: chartMinY,
+                  maxY: chartMaxY,
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    horizontalInterval: ((chartMaxY - chartMinY) / 4).clamp(
+                      1,
+                      double.infinity,
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
-          lineTouchData: LineTouchData(
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
-                final m = sorted[spot.x.round()];
-                return LineTooltipItem(
-                  '${Formatters.weight(m.wagaKg)}\n${Formatters.date(m.data)}\n${m.source ?? 'Pomiar ręczny'}',
-                  const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+                    getDrawingHorizontalLine: (value) => FlLine(
+                      color: Colors.grey.withValues(alpha: 0.15),
+                      strokeWidth: 1,
+                    ),
                   ),
-                );
-              }).toList(),
-            ),
-          ),
-          lineBarsData: [
-            LineChartBarData(
-              spots: spots,
-              isCurved: true,
-              curveSmoothness: 0.25,
-              color: FitBirekColors.accent,
-              barWidth: 3,
-              dotData: FlDotData(
-                show: sorted.length <= 30,
-                getDotPainter: (spot, percent, bar, index) =>
-                    FlDotCirclePainter(
-                      radius: 3,
-                      color: FitBirekColors.accent,
-                      strokeWidth: 0,
+                  borderData: FlBorderData(show: false),
+                  titlesData: FlTitlesData(
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
-              ),
-              belowBarData: BarAreaData(
-                show: true,
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    FitBirekColors.accent.withValues(alpha: 0.25),
-                    FitBirekColors.accent.withValues(alpha: 0.0),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) => Text(
+                          value.toStringAsFixed(0),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 28,
+                        interval: (axis.maxX / 4).clamp(1, double.infinity),
+                        getTitlesWidget: (value, meta) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Text(
+                              Formatters.dayMonth(axis.date(value)),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  lineTouchData: LineTouchData(
+                    touchTooltipData: LineTouchTooltipData(
+                      getTooltipItems: (touchedSpots) => touchedSpots.map((
+                        spot,
+                      ) {
+                        final m = sorted[spot.spotIndex];
+                        return LineTooltipItem(
+                          '${Formatters.weight(m.wagaKg)}\n${Formatters.date(m.data)} ${Formatters.time(m.data)}\n${m.source ?? 'Pomiar ręczny'}',
+                          const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: spots,
+                      isCurved: false,
+                      curveSmoothness: 0.25,
+                      color: FitBirekColors.accent,
+                      barWidth: 3,
+                      dotData: FlDotData(
+                        show: sorted.length <= 30,
+                        getDotPainter: (spot, percent, bar, index) =>
+                            FlDotCirclePainter(
+                              radius: 3,
+                              color: FitBirekColors.accent,
+                              strokeWidth: 0,
+                            ),
+                      ),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            FitBirekColors.accent.withValues(alpha: 0.25),
+                            FitBirekColors.accent.withValues(alpha: 0.0),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        const SizedBox(height: 16),
+        Text('Historia wagi', style: Theme.of(context).textTheme.titleSmall),
+        for (final m in sorted.reversed.take(5))
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              '${Formatters.date(m.data)} ${Formatters.time(m.data)} • ${Formatters.weight(m.wagaKg)} • ${m.source ?? 'Pomiar ręczny'}',
+            ),
+          ),
+        if (sorted.length > 5)
+          ExpansionTile(
+            title: const Text('Starsze pomiary'),
+            children: [
+              for (final m in sorted.reversed.skip(5))
+                ListTile(
+                  title: Text(
+                    '${Formatters.date(m.data)} ${Formatters.time(m.data)} • ${Formatters.weight(m.wagaKg)} • ${m.source ?? 'Pomiar ręczny'}',
+                  ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 }

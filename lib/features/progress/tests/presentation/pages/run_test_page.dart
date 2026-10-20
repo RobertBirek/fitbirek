@@ -72,7 +72,24 @@ class _RunTestPageState extends ConsumerState<RunTestPage> {
                     selected: _selected == t,
                     onSelected: _saving
                         ? null
-                        : (_) => setState(() => _selected = t),
+                        : (_) {
+                            if (_selected == t) return;
+                            final hadDraft = _wynikController.text.isNotEmpty;
+                            setState(() {
+                              _selected = t;
+                              _wynikController.clear();
+                              _formKey.currentState?.reset();
+                            });
+                            if (hadDraft) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Szkic wyniku został wyczyszczony po zmianie testu.',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                   );
                 }).toList(),
               ),

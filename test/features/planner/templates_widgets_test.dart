@@ -136,6 +136,10 @@ void main() {
         await tester.pumpAndSettle();
         // Exercise the real session-read button with a transition in the narrow
         // gap after its final read/check and before editor initialization.
+        if (find.text('Akcje treningu').evaluate().isNotEmpty) {
+          await tester.tap(find.text('Akcje treningu'));
+          await tester.pumpAndSettle();
+        }
         await tester.tap(find.text('Zapisz jako szablon'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Nowy szablon'));
@@ -217,6 +221,10 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        if (find.text('Akcje treningu').evaluate().isNotEmpty) {
+          await tester.tap(find.text('Akcje treningu'));
+          await tester.pumpAndSettle();
+        }
         await tester.tap(find.text('Zapisz jako szablon'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Docelowy'));
@@ -388,6 +396,10 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      if (find.text('Akcje treningu').evaluate().isNotEmpty) {
+        await tester.tap(find.text('Akcje treningu'));
+        await tester.pumpAndSettle();
+      }
       await tester.tap(find.text('Zapisz jako szablon'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Nowy szablon'));

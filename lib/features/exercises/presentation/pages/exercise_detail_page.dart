@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
+import '../../../../core/widgets/content_layout.dart';
+import '../../../../core/widgets/recovery_message.dart';
 import '../exercise_illustrations.dart';
 import '../../providers/exercises_providers.dart';
 import '../../../workout/presentation/widgets/start_workout_button.dart';
@@ -15,13 +17,22 @@ class ExerciseDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allExercises = ref.watch(allExercisesProvider);
     final catalog = ref.watch(exerciseCatalogMetadataProvider);
+    Widget unavailable(String message) => Scaffold(
+      appBar: AppBar(title: const Text('Szczegóły ćwiczenia')),
+      body: RecoveryMessage(
+        message: message,
+        onRetry: () => ref.invalidate(allExercisesProvider),
+        backLabel: 'Wróć do bazy ćwiczeń',
+        backLocation: '/exercises',
+      ),
+    );
 
     return allExercises.when(
       data: (list) {
         final ex = list.where((e) => e.id == exerciseId).firstOrNull;
         if (ex == null) {
-          return const Scaffold(
-            body: Center(child: Text('Ćwiczenie nie znalezione')),
+          return unavailable(
+            'Ćwiczenie nie znalezione. Wróć do bazy lub ponów odczyt.',
           );
         }
         final illustrationAsset = exerciseIllustrationAsset(ex.id);
@@ -32,6 +43,11 @@ class ExerciseDetailPage extends ConsumerWidget {
             title: Text(ex.nazwaPl),
             actions: [
               IconButton(
+                tooltip: ex.ulubione
+                    ? 'Usuń z ulubionych'
+                    : 'Dodaj do ulubionych',
+                isSelected: ex.ulubione,
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 icon: Icon(
                   ex.ulubione ? Icons.star : Icons.star_border,
                   color: ex.ulubione ? FitBirekColors.accent : null,
@@ -43,68 +59,87 @@ class ExerciseDetailPage extends ConsumerWidget {
             ],
           ),
           body: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    Chip(label: Text(ex.partiaGlowna)),
-                    Chip(label: Text(ex.poziom)),
-                    Chip(label: Text(ex.typ)),
-                  ],
-                ),
-                if (illustrationAsset != null) ...[
-                  const SizedBox(height: 16),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      illustrationAsset,
-                      semanticLabel: 'Ilustracja ćwiczenia ${ex.nazwaPl}',
-                      fit: BoxFit.cover,
+            child: ContentLayout(
+              child: ListView(
+                padding: ContentLayout.pagePadding(context),
+                children: [
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      Chip(label: Text(ex.partiaGlowna)),
+                      Chip(label: Text(ex.poziom)),
+                      Chip(label: Text(ex.typ)),
+                    ],
+                  ),
+                  if (illustrationAsset != null) ...[
+                    const SizedBox(height: 16),
+                    Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 360,
+                          maxHeight: 360,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            illustrationAsset,
+                            semanticLabel: 'Ilustracja ćwiczenia ${ex.nazwaPl}',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
+                  const SizedBox(height: 16),
+                  if (catalog.isLoading) const LinearProgressIndicator(),
+                  if (catalog.hasError)
+                    const Text(
+                      'Klasyfikacja niedostępna — pokazano dane podstawowe.',
+                    ),
+                  if (entry != null) ...[
+                    _section(
+                      'Mięśnie główne',
+                      entry.primaryMuscles
+                          .map(metadata!.muscleLabel)
+                          .join(', '),
+                    ),
+                    _section(
+                      'Mięśnie wspierające',
+                      entry.secondaryMuscles
+                          .map(metadata.muscleLabel)
+                          .join(', '),
+                    ),
+                  ] else ...[
+                    _section(
+                      'Partia główna (dane podstawowe)',
+                      ex.partiaGlowna,
+                    ),
+                    _section(
+                      'Partie wspierające (dane podstawowe)',
+                      ex.partieWspierajace.join(', '),
+                    ),
+                  ],
+                  _section('Seria x powtórzenia', ex.seriexPowtorzenia),
+                  _section('Tempo', ex.tempo),
+                  _section('Sprzęt', ex.sprzet.join(', ')),
+                  _sectionList('Kluczowe wskazówki', ex.kluczoweWskazowki),
+                  _sectionList('Częste błędy', ex.czesteBledy),
+                  _section('Progresja', ex.progresja),
+                  _section('Regresja', ex.regresja),
+                  OwnVariants(exercise: ex),
+                  const SizedBox(height: 20),
+                  StartWorkoutButton(exercise: ex),
                 ],
-                const SizedBox(height: 16),
-                if (catalog.isLoading) const LinearProgressIndicator(),
-                if (catalog.hasError)
-                  const Text(
-                    'Klasyfikacja niedostępna — pokazano dane podstawowe.',
-                  ),
-                if (entry != null) ...[
-                  _section(
-                    'Mięśnie główne',
-                    entry.primaryMuscles.map(metadata!.muscleLabel).join(', '),
-                  ),
-                  _section(
-                    'Mięśnie wspierające',
-                    entry.secondaryMuscles.map(metadata.muscleLabel).join(', '),
-                  ),
-                ] else ...[
-                  _section('Partia główna (dane podstawowe)', ex.partiaGlowna),
-                  _section(
-                    'Partie wspierające (dane podstawowe)',
-                    ex.partieWspierajace.join(', '),
-                  ),
-                ],
-                _section('Seria x powtórzenia', ex.seriexPowtorzenia),
-                _section('Tempo', ex.tempo),
-                _section('Sprzęt', ex.sprzet.join(', ')),
-                _sectionList('Kluczowe wskazówki', ex.kluczoweWskazowki),
-                _sectionList('Częste błędy', ex.czesteBledy),
-                _section('Progresja', ex.progresja),
-                _section('Regresja', ex.regresja),
-                OwnVariants(exercise: ex),
-                const SizedBox(height: 20),
-                StartWorkoutButton(exercise: ex),
-              ],
+              ),
             ),
           ),
         );
       },
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, st) => Scaffold(body: Center(child: Text('Błąd: $e'))),
+      loading: () => Scaffold(
+        appBar: AppBar(title: const Text('Szczegóły ćwiczenia')),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, st) => unavailable('Nie udało się wczytać ćwiczenia.'),
     );
   }
 

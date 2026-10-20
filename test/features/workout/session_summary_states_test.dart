@@ -27,6 +27,63 @@ class SummaryRepository extends WorkoutRepository {
 
 void main() {
   testWidgets(
+    'many sets text200 short viewport has one scroll and retains warning',
+    (tester) async {
+      await initializeDateFormatting('pl_PL');
+      tester.view.physicalSize = const Size(320, 420);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final db = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(db.close);
+      final repo = SummaryRepository(db);
+      final id = await repo.startSession();
+      await db.workoutDao.updateSession(
+        id,
+        const WorkoutSessionsCompanion(guidanceJson: Value('broken')),
+      );
+      final date = DateTime.utc(2026);
+      repo.result.complete([
+        for (var i = 1; i <= 30; i++)
+          SetLogData(
+            id: i,
+            syncId: '$i',
+            syncVersion: 1,
+            updatedAtUtc: date,
+            sesjaId: id,
+            cwiczenieId: 'cw001',
+            nazwaCwiczeniaPl: 'Pompki',
+            numerSerii: i,
+            timestamp: date,
+          ),
+      ]);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            workoutRepositoryProvider.overrideWithValue(repo),
+          ],
+          child: MaterialApp(
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: SessionSummaryPage(sessionId: id),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byType(Scrollable), findsOneWidget);
+      expect(find.textContaining('Plan niedostępny'), findsOneWidget);
+      await tester.drag(find.byType(Scrollable), const Offset(0, -20000));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('seria 30').hitTestable(), findsOneWidget);
+    },
+  );
+  testWidgets(
     'read error stops loading; rebuild does not reload; explicit retry and history',
     (tester) async {
       await initializeDateFormatting('pl_PL');

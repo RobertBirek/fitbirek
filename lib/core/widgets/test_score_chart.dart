@@ -5,6 +5,7 @@ import '../../app/theme.dart';
 import '../database/app_database.dart';
 import '../models/fitness_test.dart';
 import '../utils/formatters.dart';
+import '../utils/chart_time_axis.dart';
 
 /// Wykres liniowy wyniku (score 0-100) testu sprawnościowego w czasie,
 /// z możliwością przełączania typu testu przez ChoiceChip.
@@ -120,7 +121,7 @@ class _TestScoreChartState extends State<TestScoreChart> {
             child: Semantics(
               container: true,
               child: Text(
-                '${wynik.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(wynik.data)} • score ${wynik.score}/100',
+                '${wynik.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(wynik.data)} ${Formatters.time(wynik.data)} • score ${wynik.score}/100',
               ),
             ),
           ),
@@ -166,15 +167,18 @@ class _ScoreChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final axisColor = Theme.of(context).colorScheme.onSurfaceVariant;
+    final axis = ChartTimeAxis(history.first.data, history.last.data);
     final spots = <FlSpot>[
       for (var i = 0; i < history.length; i++)
-        FlSpot(i.toDouble(), history[i].score.toDouble()),
+        FlSpot(axis.x(history[i].data), history[i].score.toDouble()),
     ];
 
     return SizedBox(
       height: 200,
       child: LineChart(
         LineChartData(
+          minX: 0,
+          maxX: axis.maxX,
           minY: 0,
           maxY: 100,
           gridData: FlGridData(
@@ -209,16 +213,12 @@ class _ScoreChart extends StatelessWidget {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 28,
-                interval: (history.length / 4).clamp(1, double.infinity),
+                interval: (axis.maxX / 4).clamp(1, double.infinity),
                 getTitlesWidget: (value, meta) {
-                  final index = value.round();
-                  if (index < 0 || index >= history.length) {
-                    return const SizedBox.shrink();
-                  }
                   return Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      Formatters.dayMonth(history[index].data),
+                      Formatters.dayMonth(axis.date(value)),
                       style: TextStyle(fontSize: 10, color: axisColor),
                     ),
                   );
@@ -229,9 +229,9 @@ class _ScoreChart extends StatelessWidget {
           lineTouchData: LineTouchData(
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
-                final r = history[spot.x.round()];
+                final r = history[spot.spotIndex];
                 return LineTooltipItem(
-                  '${r.wynik.toStringAsFixed(1)} ${typ.jednostka}\nscore ${r.score} • ${Formatters.date(r.data)}',
+                  '${r.wynik.toStringAsFixed(1)} ${typ.jednostka}\nscore ${r.score} • ${Formatters.date(r.data)} ${Formatters.time(r.data)}',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -243,7 +243,7 @@ class _ScoreChart extends StatelessWidget {
           lineBarsData: [
             LineChartBarData(
               spots: spots,
-              isCurved: true,
+              isCurved: false,
               curveSmoothness: 0.25,
               color: FitBirekColors.success,
               barWidth: 3,

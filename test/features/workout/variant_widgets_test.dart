@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:fitbirek_training/app/theme.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +21,7 @@ import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
 import '../../core/profile_collections_sync_test.dart' show saveProfile;
 import 'session_tracking_test.dart' show exercise;
 import 'package:drift/drift.dart' show Value;
+import '../../helpers/min_interactive_target.dart';
 
 void main() {
   testWidgets(
@@ -110,6 +113,89 @@ void main() {
         await db.close();
       });
       await tester.pumpAndSettle();
+      debugDefaultTargetPlatformOverride = TargetPlatform.linux;
+      final targetSemantics = tester.ensureSemantics();
+      try {
+        for (final width in [1280.0, 375.0, 320.0]) {
+          for (final scale in [1.0, 2.0]) {
+            tester.view.physicalSize = Size(width, 1000);
+            tester.view.devicePixelRatio = 1;
+            await tester.pumpWidget(
+              UncontrolledProviderScope(
+                container: c,
+                child: MaterialApp(
+                  theme: FitBirekTheme.dark,
+                  builder: (context, child) => MediaQuery(
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.linear(scale),
+                      viewInsets: EdgeInsets.only(bottom: scale == 2 ? 180 : 0),
+                    ),
+                    child: child!,
+                  ),
+                  home: const ActiveSessionPage(),
+                ),
+              ),
+            );
+            await tester.pumpAndSettle();
+            tester
+                .state<ScrollableState>(
+                  find
+                      .byWidgetPredicate(
+                        (w) =>
+                            w is Scrollable &&
+                            w.axisDirection == AxisDirection.down,
+                      )
+                      .first,
+                )
+                .position
+                .jumpTo(0);
+            await tester.pumpAndSettle();
+            final target = find.widgetWithText(
+              OutlinedButton,
+              'Wariant: Bazowy ▾',
+            );
+            await tester.scrollUntilVisible(
+              target,
+              150,
+              scrollable: find
+                  .byWidgetPredicate(
+                    (w) =>
+                        w is Scrollable &&
+                        w.axisDirection == AxisDirection.down,
+                  )
+                  .first,
+            );
+            await tester.pumpAndSettle();
+            expectMinInteractiveTarget(tester, target);
+          }
+        }
+      } finally {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+        targetSemantics.dispose();
+        debugDefaultTargetPlatformOverride = null;
+      }
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: c,
+          child: const MaterialApp(home: ActiveSessionPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final semantics = tester.ensureSemantics();
+      final variantButton = find.descendant(
+        of: find.byTooltip('Wariant wykonania'),
+        matching: find.byType(OutlinedButton),
+      );
+      expect(variantButton, findsOneWidget);
+      expect(tester.getSize(variantButton).height, greaterThanOrEqualTo(48));
+      expect(
+        tester.getSemantics(variantButton).label,
+        contains('Wariant: Bazowy'),
+      );
+      semantics.dispose();
       await tester.tap(find.byTooltip('Wariant wykonania'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Pauza 2 s').last);

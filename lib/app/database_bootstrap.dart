@@ -21,7 +21,9 @@ class DatabaseBootstrap extends ConsumerWidget {
       title: 'FitBirek',
       debugShowCheckedModeBanner: false,
       theme: FitBirekTheme.dark,
-      home: Scaffold(
+      // This gate must not create a temporary Navigator: its navigation
+      // messages consume Flutter Web's initial URL before GoRouter exists.
+      builder: (context, _) => Scaffold(
         body: SafeArea(
           child: Center(
             child: SingleChildScrollView(

@@ -1,376 +1,204 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import '../../../schedule/providers/activity_reminder_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../../../app/constants.dart';
 import '../../../../app/app_version.g.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/providers/database_provider.dart';
-import '../../providers/settings_provider.dart';
-import '../../../auth/providers/auth_providers.dart';
 import '../../../../core/sync/sync_status_tile.dart';
-import '../../../../core/push/push_settings_tile.dart';
-import '../../../health/presentation/widgets/health_integration_tile.dart';
+import '../../../auth/providers/auth_providers.dart';
 import '../../../offline/presentation/offline_page.dart';
+import '../../providers/settings_provider.dart';
+import '../widgets/settings_section.dart';
 
-/// Ekran Ustawienia: profil, motyw, dźwięk, wibracje, backup, o aplikacji.
-class SettingsPage extends ConsumerStatefulWidget {
+class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   @override
-  ConsumerState<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends ConsumerState<SettingsPage> {
-  bool _isProcessing = false;
-
-  Future<void> _handleExport() async {
-    final messenger = ScaffoldMessenger.of(context);
-    setState(() => _isProcessing = true);
-
-    try {
-      final backupService = ref.read(backupServiceProvider);
-      final bytes = await backupService.exportToBytes();
-      final fileName = backupService.suggestedFileName();
-
-      final xFile = XFile.fromData(
-        bytes,
-        name: fileName,
-        mimeType: 'application/json',
-      );
-
-      await Share.shareXFiles(
-        [xFile],
-        text: 'FitBirek - backup danych treningowych',
-        subject: fileName,
-      );
-
-      if (!mounted) return;
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Eksport gotowy - wybierz gdzie zapisać.'),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('Eksport nie powiódł się: $e'),
-          backgroundColor: FitBirekColors.danger,
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
-    }
-  }
-
-  Future<void> _handleImport() async {
-    final messenger = ScaffoldMessenger.of(context);
-
-    // Krok 1: ostrzeżenie - import ZASTĘPUJE wszystkie dane.
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Uwaga: import zastąpi dane'),
-        content: const Text(
-          'Import wczyta dane z pliku backupu i CAŁKOWICIE ZASTĄPI '
-          'wszystkie obecne dane w aplikacji (profil, historia treningów, '
-          'pomiary, rekordy, plany). Ta operacja jest nieodwracalna.\n\n'
-          'Apple Zdrowie pozostaje bez zmian: próbki z kopii nie są '
-          'odtwarzane, importów ani oczekujących usunięć nie kasujemy. '
-          'Na nowym urządzeniu importy pobierze synchronizacja bieżącego konta.\n\n'
-          'Kontynuować?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Anuluj'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: FitBirekColors.danger,
-            ),
-            child: const Text('Zastąp dane'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-    if (!mounted) return;
-
-    setState(() => _isProcessing = true);
-
-    try {
-      // withData: true jest KRYTYCZNE na Web - tam nie ma dostępu do
-      // ścieżek plików, tylko do bajtów w pamięci.
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json'],
-        withData: true,
-      );
-
-      if (result == null || result.files.isEmpty) {
-        setState(() => _isProcessing = false);
-        return;
-      }
-
-      final bytes = result.files.first.bytes;
-      if (bytes == null) {
-        if (!mounted) return;
-        messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Nie udało się odczytać pliku.'),
-            backgroundColor: FitBirekColors.danger,
-          ),
-        );
-        setState(() => _isProcessing = false);
-        return;
-      }
-
-      final backupService = ref.read(backupServiceProvider);
-      final importResult = await backupService.importFromBytes(bytes);
-
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(importResult.message),
-          backgroundColor: importResult.success
-              ? FitBirekColors.success
-              : FitBirekColors.danger,
-          duration: const Duration(seconds: 5),
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text('Import nie powiódł się: $e'),
-          backgroundColor: FitBirekColors.danger,
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
+    final db = ref.watch(appDatabaseProvider);
+    void logout() => ref.read(authStateProvider.notifier).logout();
+    SettingsLink link(
+      String title,
+      IconData icon,
+      String path, {
+      String? subtitle,
+    }) => SettingsLink(
+      title: title,
+      icon: icon,
+      subtitle: subtitle,
+      onTap: () => context.push('/settings/$path'),
+    );
+
+    final training = SettingsSection(
+      title: 'Trening i profil',
+      children: [
+        link('Edytuj profil', Icons.person_outline, 'edit-profile'),
+        link(
+          'Generator planu treningowego',
+          Icons.auto_awesome_outlined,
+          'planner',
+        ),
+        link(
+          'Kalkulator kalorii/makro',
+          Icons.calculate_outlined,
+          'calculator',
+        ),
+        link(
+          'Mentor treningowy',
+          Icons.forum_outlined,
+          'mentor',
+          subtitle: 'Prywatność, głos i połączenia AI',
+        ),
+      ],
+    );
+    final app = SettingsSection(
+      title: 'Aplikacja',
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: DropdownButtonFormField<ThemeMode>(
+            key: ValueKey(settings.themeMode),
+            isExpanded: true,
+            decoration: const InputDecoration(labelText: 'Motyw'),
+            initialValue: settings.themeMode,
+            items: const [
+              DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+              DropdownMenuItem(value: ThemeMode.dark, child: Text('Ciemny')),
+              DropdownMenuItem(value: ThemeMode.light, child: Text('Jasny')),
+            ],
+            onChanged: (mode) {
+              if (mode != null) notifier.setThemeMode(mode);
+            },
+          ),
+        ),
+        SwitchListTile(
+          title: const Text('Dźwięk gongu'),
+          value: settings.soundEnabled,
+          onChanged: notifier.setSoundEnabled,
+        ),
+        SwitchListTile(
+          title: const Text('Wibracje'),
+          value: settings.vibrationEnabled,
+          onChanged: notifier.setVibrationEnabled,
+        ),
+        link(
+          'Powiadomienia',
+          Icons.notifications_outlined,
+          'notifications',
+          subtitle: 'Uprawnienia, kategorie i przypomnienia',
+        ),
+      ],
+    );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ustawienia')),
-      body: SafeArea(
-        child: Stack(
+      appBar: AppBar(
+        title: const Text(
+          'Ustawienia',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+      ),
+      body: SettingsPageLayout(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ListView(
+            SettingsSection(
               children: [
                 StreamBuilder(
-                  stream: ref
-                      .read(appDatabaseProvider)
-                      .select(ref.read(appDatabaseProvider).syncOutbox)
-                      .watch(),
+                  stream: db.select(db.syncOutbox).watch(),
                   builder: (context, snapshot) {
                     final sync = ref.watch(syncServiceProvider);
                     return SyncStatusTile(
                       status: sync.status,
                       pending: snapshot.data?.length ?? 0,
                       onRetry: sync.synchronize,
-                      onLogout: () =>
-                          ref.read(authStateProvider.notifier).logout(),
+                      onLogout: logout,
+                      showLogout: false,
                     );
                   },
                 ),
-                ListTile(
-                  leading: const Icon(Icons.offline_bolt_outlined),
-                  title: const Text('Tryb offline'),
-                  subtitle: const Text(
-                    'Sprawdź zasoby i jawnie przygotuj pakiet',
+              ],
+            ),
+            const SizedBox(height: 24),
+            SettingsSection(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      left: BorderSide(color: FitBirekColors.accent, width: 4),
+                    ),
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  child: link(
+                    'Harmonogram aktywności',
+                    Icons.event_repeat,
+                    'activities',
+                    subtitle: 'Dni, godziny, treningi i przypomnienia',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns =
+                    constraints.maxWidth >= 760 &&
+                    MediaQuery.textScalerOf(context).scale(16) < 24;
+                if (!columns) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [training, const SizedBox(height: 24), app],
+                  );
+                }
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: training),
+                    const SizedBox(width: 24),
+                    Expanded(child: app),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 24),
+            SettingsSection(
+              title: 'Dane i integracje',
+              children: [
+                SettingsLink(
+                  title: 'Tryb offline',
+                  icon: Icons.offline_bolt_outlined,
+                  subtitle: 'Sprawdź zasoby i jawnie przygotuj pakiet',
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => const OfflinePage(),
                     ),
                   ),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: const Text('Edytuj profil'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/settings/edit-profile'),
+                link(
+                  'Kopia zapasowa i przywracanie',
+                  Icons.save_outlined,
+                  'backup',
                 ),
-                ListTile(
-                  leading: const Icon(Icons.calculate_outlined),
-                  title: const Text('Kalkulator kalorii/makro'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/settings/calculator'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.auto_awesome_outlined),
-                  title: const Text('Generator planu treningowego'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/settings/planner'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.event_repeat),
-                  title: const Text('Harmonogram aktywności'),
-                  onTap: () => context.push('/settings/activities'),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.forum_outlined),
-                  title: const Text('Mentor treningowy'),
-                  subtitle: const Text('Prywatność, głos i połączenia AI'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/settings/mentor'),
-                ),
-                const Divider(),
-                ListTile(
-                  title: const Text('Motyw'),
-                  subtitle: Text(switch (settings.themeMode) {
-                    ThemeMode.dark => 'Ciemny',
-                    ThemeMode.light => 'Jasny',
-                    ThemeMode.system => 'Systemowy',
-                  }),
-                  trailing: DropdownButton<ThemeMode>(
-                    value: settings.themeMode,
-                    items: const [
-                      DropdownMenuItem(
-                        value: ThemeMode.system,
-                        child: Text('System'),
-                      ),
-                      DropdownMenuItem(
-                        value: ThemeMode.dark,
-                        child: Text('Ciemny'),
-                      ),
-                      DropdownMenuItem(
-                        value: ThemeMode.light,
-                        child: Text('Jasny'),
-                      ),
-                    ],
-                    onChanged: (m) =>
-                        m != null ? notifier.setThemeMode(m) : null,
-                  ),
-                ),
-                SwitchListTile(
-                  title: const Text('Dźwięk gongu'),
-                  value: settings.soundEnabled,
-                  onChanged: notifier.setSoundEnabled,
-                ),
-                SwitchListTile(
-                  title: const Text('Wibracje'),
-                  value: settings.vibrationEnabled,
-                  onChanged: notifier.setVibrationEnabled,
-                ),
-                const Divider(),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Text(
-                    'Powiadomienia',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                if (kIsWeb) const PushSettingsTile(),
-                if (!kIsWeb)
-                  SwitchListTile(
-                    secondary: const Icon(Icons.sports_martial_arts_outlined),
-                    title: const Text('Aktywności zewnętrzne — powiadomienia'),
-                    subtitle: const Text(
-                      'Zgoda urządzenia; terminy i osobny opt-in w Harmonogramie',
-                    ),
-                    value: settings.notifKarate,
-                    onChanged: (value) async {
-                      try {
-                        await notifier.setNotifKarate(value);
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('$e')));
-                        }
-                      }
-                    },
-                  ),
-                if (!kIsWeb)
-                  SwitchListTile(
-                    secondary: const Icon(Icons.fitness_center_outlined),
-                    title: const Text('Treningi FitBirek — powiadomienia'),
-                    subtitle: const Text(
-                      'Zgoda urządzenia; terminy i osobny opt-in w Harmonogramie',
-                    ),
-                    value: settings.notifWorkout,
-                    onChanged: (value) async {
-                      try {
-                        await notifier.setNotifWorkout(value);
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text('$e')));
-                        }
-                      }
-                    },
-                  ),
-                ListTile(
-                  title: const Text('Stan przypomnień harmonogramu'),
-                  subtitle: Text(
-                    ref.watch(activityReminderSyncProvider).valueOrNull ??
-                        'Sprawdzanie migracji i przypomnień…',
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.refresh),
-                    tooltip: 'Ponów migrację i przypomnienia',
-                    onPressed: () =>
-                        ref.invalidate(activityReminderSyncProvider),
-                  ),
-                ),
-                if (!kIsWeb)
-                  SwitchListTile(
-                    secondary: const Icon(Icons.mood_outlined),
-                    title: const Text('Dziennik samopoczucia'),
-                    subtitle: const Text('Codziennie, 20:30'),
-                    value: settings.notifMood,
-                    onChanged: notifier.setNotifMood,
-                  ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.upload_file_outlined),
-                  title: const Text('Eksport danych (JSON)'),
-                  subtitle: const Text(
-                    'Zapisz kopię zapasową wszystkich danych',
-                  ),
-                  enabled: !_isProcessing,
-                  onTap: _isProcessing ? null : _handleExport,
-                ),
-                ListTile(
-                  leading: const Icon(Icons.download_outlined),
-                  title: const Text('Import danych (JSON)'),
-                  subtitle: const Text(
-                    'Przywróć dane z kopii zapasowej (zastąpi obecne dane)',
-                  ),
-                  enabled: !_isProcessing,
-                  onTap: _isProcessing ? null : _handleImport,
-                ),
-                const Divider(),
-                const AppInfoTile(),
-                const Divider(),
-                const HealthIntegrationTile(),
+                link('Apple Zdrowie', Icons.favorite_border, 'health'),
               ],
             ),
-            if (_isProcessing)
-              Container(
-                color: Colors.black.withValues(alpha: 0.4),
-                child: const Center(child: CircularProgressIndicator()),
-              ),
+            const SizedBox(height: 24),
+            const SettingsSection(children: [AppInfoTile()]),
+            const SizedBox(height: 24),
+            SettingsSection(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Wyloguj'),
+                  subtitle: const Text(
+                    'Dane pozostaną przypisane do tego konta',
+                  ),
+                  onTap: logout,
+                ),
+              ],
+            ),
           ],
         ),
       ),

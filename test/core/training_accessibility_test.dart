@@ -392,14 +392,14 @@ void main() {
           find.textContaining('Najnowszy wynik: 20.0 powt'),
           findsOneWidget,
         );
-        final first = find.text('12.0 powt • 01.10.2026 • score 10/100');
-        final last = find.text('20.0 powt • 03.10.2026 • score 30/100');
+        final first = find.text('12.0 powt • 01.10.2026 00:00 • score 10/100');
+        final last = find.text('20.0 powt • 03.10.2026 00:00 • score 30/100');
         expect(
           tester.getTopLeft(first).dy,
           lessThan(tester.getTopLeft(last).dy),
         );
         expect(
-          find.bySemanticsLabel('12.0 powt • 01.10.2026 • score 10/100'),
+          find.bySemanticsLabel('12.0 powt • 01.10.2026 00:00 • score 10/100'),
           findsOneWidget,
         );
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);

@@ -58,6 +58,20 @@ class MentorConversationState {
   );
 }
 
+/// A confirmed result of this send, not merely the last item in the history.
+/// Only a newly allocated chat operation with a previously unseen answer may
+/// carry the optional voice intent. Reconciliation/replay never authorizes TTS.
+class MentorSendResult {
+  const MentorSendResult({
+    required this.sessionId,
+    required this.reply,
+    required this.newReply,
+  });
+  final String sessionId;
+  final MentorMessage reply;
+  final bool newReply;
+}
+
 class MentorConversation extends StateNotifier<MentorConversationState> {
   MentorConversation(this._api, this._registry)
     : super(const MentorConversationState());
@@ -100,20 +114,20 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
     }
   }
 
-  Future<void> send(
+  Future<MentorSendResult?> send(
     String text, {
     bool regenerate = false,
     MentorContextSelection? context,
     int? settingsRevision,
   }) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty || trimmed.length > 2000 || state.loading) return;
+    if (trimmed.isEmpty || trimmed.length > 2000 || state.loading) return null;
     if (state.sessionId == null) {
       await openLatest();
-      if (!mounted) return;
+      if (!mounted) return null;
     }
     final id = state.sessionId;
-    if (id == null) return;
+    if (id == null) return null;
     final generation = ++_generation;
     final local = MentorMessage(
       id: 'local-${_uuid.v4()}',
@@ -135,12 +149,16 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
         selection: context?.toJson() ?? const {},
         regenerate: regenerate,
       );
-      if (!_valid(generation)) return;
+      if (!_valid(generation)) return null;
       if (operation.response != null) {
         final messages = await _api.messages(id);
-        if (!_valid(generation)) return;
+        if (!_valid(generation)) return null;
         state = state.copyWith(messages: messages, loading: false);
-        return;
+        return MentorSendResult(
+          sessionId: id,
+          reply: operation.response!,
+          newReply: false,
+        );
       }
       if (operation.state != 'new' && operation.state != 'unknown') {
         throw const MentorException('result_unavailable');
@@ -155,7 +173,7 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
           context: context,
         );
       } on MentorContextSelectionUnavailable {
-        if (!_valid(generation)) return;
+        if (!_valid(generation)) return null;
         // Never forget an earlier ambiguous paid attempt, even if its retry
         // now encounters a stale selector before reserve.
         var cleaned = false;
@@ -165,7 +183,7 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
         } catch (_) {
           // Storage failure is fail-closed: retain the ledger protection.
         }
-        if (!_valid(generation)) return;
+        if (!_valid(generation)) return null;
         state = state.copyWith(
           messages: state.messages.where((m) => m.id != local.id).toList(),
           loading: false,
@@ -177,21 +195,27 @@ class MentorConversation extends StateNotifier<MentorConversationState> {
                   ? ' Nie udało się wyczyścić lokalnego wpisu operacji; jego ochrona pozostaje aktywna.'
                   : ' Wynik wcześniejszej próby pozostaje nieznany; jej rejestr został zachowany. Nowa operacja wymaga osobnego potwierdzenia limitu i kosztu.'}',
         );
-        return;
+        return null;
       }
-      if (generation != _generation || !mounted) return;
+      if (generation != _generation || !mounted) return null;
+      final newReply =
+          operation.state == 'new' &&
+          reply.isAssistant &&
+          !state.messages.any((message) => message.id == reply.id);
       state = state.copyWith(
         messages: [...state.messages, reply],
         loading: false,
       );
+      return MentorSendResult(sessionId: id, reply: reply, newReply: newReply);
     } catch (_) {
-      if (generation != _generation || !mounted) return;
+      if (generation != _generation || !mounted) return null;
       state = state.copyWith(
         messages: state.messages.where((m) => m.id != local.id).toList(),
         loading: false,
         error:
             'Najpierw sprawdzamy wynik na serwerze. Ponów tę samą treść bez nowego kosztu. Nowe generowanie wymaga potwierdzenia limitu i kosztu.',
       );
+      return null;
     }
   }
 

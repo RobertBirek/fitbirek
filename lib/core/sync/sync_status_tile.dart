@@ -8,16 +8,19 @@ class SyncStatusTile extends StatelessWidget {
     required this.pending,
     required this.onRetry,
     required this.onLogout,
+    this.showLogout = true,
   });
   final SyncStatus status;
   final int pending;
   final VoidCallback onRetry;
   final VoidCallback onLogout;
+  final bool showLogout;
 
   @override
   Widget build(BuildContext context) => Column(
     children: [
       ListTile(
+        titleAlignment: ListTileTitleAlignment.top,
         leading: const Icon(Icons.sync),
         title: Text(switch (status) {
           SyncStatus.idle => 'Synchronizacja gotowa',
@@ -42,12 +45,13 @@ class SyncStatusTile extends StatelessWidget {
           icon: const Icon(Icons.refresh),
         ),
       ),
-      ListTile(
-        leading: const Icon(Icons.logout),
-        title: const Text('Wyloguj'),
-        subtitle: const Text('Dane pozostaną przypisane do tego konta'),
-        onTap: onLogout,
-      ),
+      if (showLogout)
+        ListTile(
+          leading: const Icon(Icons.logout),
+          title: const Text('Wyloguj'),
+          subtitle: const Text('Dane pozostaną przypisane do tego konta'),
+          onTap: onLogout,
+        ),
     ],
   );
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/widgets/content_layout.dart';
+import '../../../../core/widgets/recovery_message.dart';
 import '../../../exercises/providers/exercises_providers.dart';
 import '../../providers/planner_providers.dart';
 
@@ -77,81 +79,89 @@ class _TemplatesPageState extends ConsumerState<TemplatesPage> {
         .watch(savedPlansProvider)
         .when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) =>
-              Center(child: Text('Nie można odczytać szablonów: $e')),
-          data: (plans) => ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              FilledButton.icon(
-                onPressed: busy
-                    ? null
-                    : () => context.push('/workout/templates/new'),
-                icon: const Icon(Icons.add),
-                label: const Text('Nowy szablon'),
-              ),
-              OutlinedButton.icon(
-                onPressed: busy
-                    ? null
-                    : () => context.go('/today', extra: 'template'),
-                icon: const Icon(Icons.auto_awesome),
-                label: const Text('Utwórz szablon z Mentorem'),
-              ),
-              if (plans.isEmpty)
-                const Text('Ułóż własny szablon bez rozpoczynania treningu.'),
-              for (final plan in plans)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          plan.nazwa,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(
-                          plan.structureError ??
-                              (plan.structure == null
-                                  ? 'Starszy plan — brak zapisanych celów.'
-                                  : '${plan.cwiczeniaIds.length} ćwiczeń · czas ESTYMOWANY ${(plan.structure!.estimatedSeconds / 60).ceil()} min'),
-                        ),
-                        Wrap(
-                          spacing: 8,
-                          children: [
-                            TextButton(
-                              onPressed:
-                                  busy ||
-                                      plan.isUnavailable ||
-                                      plan.syncId == null
-                                  ? null
-                                  : () => context.push(
-                                      '/workout/templates/${plan.syncId}/edit',
-                                    ),
-                              child: const Text('Edytuj'),
-                            ),
-                            TextButton(
-                              onPressed:
-                                  busy ||
-                                      plan.isUnavailable ||
-                                      plan.syncId == null ||
-                                      !ref.watch(allExercisesProvider).hasValue
-                                  ? null
-                                  : () => act(plan.syncId!, delete: false),
-                              child: const Text('Start'),
-                            ),
-                            TextButton(
-                              onPressed: busy || plan.syncId == null
-                                  ? null
-                                  : () => act(plan.syncId!, delete: true),
-                              child: const Text('Usuń'),
-                            ),
-                          ],
-                        ),
-                      ],
+          error: (e, _) => RecoveryMessage(
+            message: 'Nie można odczytać szablonów.',
+            onRetry: () => ref.invalidate(savedPlansProvider),
+            backLabel: 'Wróć do treningów',
+            backLocation: '/workout',
+          ),
+          data: (plans) => ContentLayout(
+            child: ListView(
+              padding: ContentLayout.pagePadding(context),
+              children: [
+                FilledButton.icon(
+                  onPressed: busy
+                      ? null
+                      : () => context.push('/workout/templates/new'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Nowy szablon'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: busy
+                      ? null
+                      : () => context.go('/today', extra: 'template'),
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('Utwórz szablon z Mentorem'),
+                ),
+                if (plans.isEmpty)
+                  const Text('Ułóż własny szablon bez rozpoczynania treningu.'),
+                for (final plan in plans)
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            plan.nazwa,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Text(
+                            plan.structureError ??
+                                (plan.structure == null
+                                    ? 'Starszy plan — brak zapisanych celów.'
+                                    : '${plan.cwiczeniaIds.length} ćwiczeń · czas ESTYMOWANY ${(plan.structure!.estimatedSeconds / 60).ceil()} min'),
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            children: [
+                              TextButton(
+                                onPressed:
+                                    busy ||
+                                        plan.isUnavailable ||
+                                        plan.syncId == null
+                                    ? null
+                                    : () => context.push(
+                                        '/workout/templates/${plan.syncId}/edit',
+                                      ),
+                                child: const Text('Edytuj'),
+                              ),
+                              TextButton(
+                                onPressed:
+                                    busy ||
+                                        plan.isUnavailable ||
+                                        plan.syncId == null ||
+                                        !ref
+                                            .watch(allExercisesProvider)
+                                            .hasValue
+                                    ? null
+                                    : () => act(plan.syncId!, delete: false),
+                                child: const Text('Start'),
+                              ),
+                              TextButton(
+                                onPressed: busy || plan.syncId == null
+                                    ? null
+                                    : () => act(plan.syncId!, delete: true),
+                                child: const Text('Usuń'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
   );

@@ -6,6 +6,19 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.18.1+33] — 2026-10-20
+
+### Fixed
+- Czytelniejsze Ustawienia z osobnymi ekranami powiadomień, kopii zapasowej
+  i Apple Zdrowie; bez zmiany uprawnień ani automatycznych operacji.
+- Walidacja profilu zachowuje ułamki i obsługuje przecinek dziesiętny;
+  zmiana typu testu czyści niepasujący szkic wyniku.
+- Responsywne formularze, szablony i podsumowania, cele dotykowe co najmniej
+  48 px, czytelny fallback Mentora oraz wykresy z rzeczywistymi odstępami dat.
+
+### Deployment Notes
+- Wydanie wyłącznie web; API pozostaje 1.18.0, bez zmian schematów i zależności.
+
 ## [1.18.0+32] — 2026-10-20
 
 ### Added

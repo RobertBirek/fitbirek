@@ -134,6 +134,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
   Timer? _timer, _ttl;
   GoRouter? _router;
   bool _recording = false;
+  bool _voiceDraft = false;
   bool _opened = false;
   String? _playing;
   String? _recordingRequestId;
@@ -211,6 +212,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
     _voice.stopPlayback();
     _voice.dispose();
     _input.clear();
+    _voiceDraft = false;
     ref.read(mentorApiProvider).cancel();
     ref.invalidate(mentorApiProvider);
     if (mounted) {
@@ -264,7 +266,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
 
   Future<void> _send({
     bool regenerate = false,
-    bool autoPlayReply = false,
+    bool? autoPlayReply,
     MentorContextSelection? context,
     int? settingsRevision,
   }) async {
@@ -279,31 +281,50 @@ class _MentorPageState extends ConsumerState<MentorPage>
         settings?.consentText != true) {
       return;
     }
-    final generation = _generation;
     final text = _input.text;
+    final trimmed = text.trim();
+    if (trimmed.isEmpty || trimmed.length > 2000) return;
+    final generation = _generation;
+    final account = ref.read(authStateProvider).accountId;
+    final voiceGeneration = _voiceGeneration;
+    final conversation = ref.read(mentorConversationProvider.notifier);
+    final playReply = autoPlayReply ?? _voiceDraft;
     if (regenerate && !await _confirmRegeneration()) return;
-    if (!mounted || generation != _generation) return;
-    await ref
-        .read(mentorConversationProvider.notifier)
-        .send(
-          text,
-          regenerate: regenerate,
-          context: context,
-          settingsRevision: settingsRevision,
-        );
-    if (mounted &&
-        generation == _generation &&
-        _input.text == text &&
-        ref.read(mentorConversationProvider).error == null) {
+    if (!mounted || generation != _generation || _input.text != text) return;
+    final result = await conversation.send(
+      text,
+      regenerate: regenerate,
+      context: context,
+      settingsRevision: settingsRevision,
+    );
+    if (!mounted ||
+        generation != _generation ||
+        account != ref.read(authStateProvider).accountId ||
+        !identical(
+          conversation,
+          ref.read(mentorConversationProvider.notifier),
+        ) ||
+        result == null ||
+        result.sessionId != ref.read(mentorConversationProvider).sessionId) {
+      return;
+    }
+    if (_input.text == text) {
       _input.clear();
+      setState(() => _voiceDraft = false);
     }
-    if (!autoPlayReply || !mounted || generation != _generation) return;
-    final state = ref.read(mentorConversationProvider);
-    if (state.error != null) return;
-    final replies = state.messages.where((message) => message.isAssistant);
-    if (replies.isNotEmpty) {
-      await _play(replies.last, autoStart: true);
+    final currentSettings = ref.read(mentorSettingsProvider).valueOrNull;
+    if (!playReply ||
+        !result.newReply ||
+        voiceGeneration != _voiceGeneration ||
+        !_foreground ||
+        currentSettings?.available != true ||
+        currentSettings?.consentText != true ||
+        currentSettings?.consentVoice != true ||
+        currentSettings?.elevenLabsConfigured != true ||
+        !_voice.supported) {
+      return;
     }
+    await _play(result.reply, autoStart: true);
   }
 
   Future<void> _composeContext() async {
@@ -340,8 +361,11 @@ class _MentorPageState extends ConsumerState<MentorPage>
             );
         if (mounted && generation == _voiceGeneration) {
           _input.text = text;
-          setState(() => _voiceBusy = false);
-          await _send(autoPlayReply: true);
+          setState(() {
+            _voiceBusy = false;
+            _voiceDraft = true;
+          });
+          _latest();
         }
       } else {
         final api = ref.read(mentorVoiceApiProvider);
@@ -661,6 +685,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
                             sessionId) {
                       _stopVoice();
                       _input.clear();
+                      _voiceDraft = false;
                       await ref
                           .read(mentorConversationProvider.notifier)
                           .deleteCurrent();
@@ -674,6 +699,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
                 ? null
                 : () {
                     _input.clear();
+                    _voiceDraft = false;
                     _stopVoice();
                     ref
                         .read(mentorConversationProvider.notifier)
@@ -688,288 +714,398 @@ class _MentorPageState extends ConsumerState<MentorPage>
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Flexible(
-              flex: 2,
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    TextButton(
-                      onPressed: () => context.go('/today/classic'),
-                      child: const Text('Klasyczny trening (offline)'),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: TodaySchedule(),
-                    ),
-                    if (widget.templatePrompt) ...[
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'Opisz nazwę i cel szablonu. Wysłanie używa limitu i może kosztować. Propozycja otworzy edytor; niczego nie zapisze ani nie rozpocznie. Bez konfiguracji Mentora ułóż szablon samodzielnie.',
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () => context.push('/workout/templates/new'),
-                        child: const Text('Ułóż szablon samodzielnie'),
-                      ),
-                    ],
-                    if (ref.watch(activeWorkoutProvider).isActive)
-                      TextButton(
-                        onPressed: () => context.go('/workout/session'),
-                        child: const Text('Wznów aktywny trening'),
-                      ),
-                    if (!_voice.supported)
-                      const Text('Użyj klawiatury lub dyktowania systemowego.'),
-                    if (_recording) Text('Nagrywanie: $_seconds / 30 s'),
-                    if (_playing != null)
-                      TextButton(
-                        onPressed: () {
-                          _voice.play().catchError((Object _) {
-                            if (mounted) {
-                              _notice('Głos wygasł. Przygotuj go ponownie.');
-                            }
-                          });
-                        },
-                        child: const Text('Odtwórz'),
-                      ),
-                    TextButton(
-                      onPressed: _stopVoice,
-                      child: const Text('Stop'),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: FitBirekColors.accent.withValues(alpha: .12),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Text(
-                        'Spokojnie, konkretnie i bez oceniania. Zanim zapiszę trening lub serię, zawsze poproszę o potwierdzenie.',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Wrap(
-                        spacing: 8,
-                        children: [
-                          for (final prompt in const [
-                            'Mam mało czasu — ułóż krótki trening.',
-                            'Dziś mam dużo energii.',
-                            'Pomóż mi zaplanować trening na dziś.',
-                          ])
-                            ActionChip(
-                              label: Text(prompt),
-                              onPressed: () => _input.text = prompt,
-                            ),
-                        ],
-                      ),
-                    ),
-                    if (!enabled)
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'Mentor wymaga połączenia, zapisanego klucza OpenAI i zgody na tekst. Trening klasyczny działa offline.',
-                                ),
-                                TextButton(
-                                  onPressed: () =>
-                                      context.push('/settings/mentor'),
-                                  child: const Text(
-                                    'Otwórz ustawienia mentora',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: !enabled
-                  ? Center(
-                      child: OutlinedButton.icon(
-                        onPressed: () => context.go('/today/classic'),
-                        icon: const Icon(Icons.fitness_center),
-                        label: const Text('Klasyczny trening (offline)'),
-                      ),
-                    )
-                  : state.loading && state.messages.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
-                  : NotificationListener<ScrollNotification>(
-                      onNotification: (notification) {
-                        // Real offset activity, not ScrollMetricsNotification:
-                        // covers drag, wheel, keyboard and external jumpTo.
-                        if (notification is ScrollStartNotification &&
-                            !_startingScroll) {
-                          _autoScrolling = false;
-                          _scrollIntent++;
-                        } else if (notification is ScrollUpdateNotification &&
-                            !_autoScrolling &&
-                            notification.scrollDelta != 0) {
-                          _scrollIntent++;
-                        }
-                        if (notification is ScrollEndNotification &&
-                            _newReply &&
-                            _nearEnd) {
-                          setState(() => _newReply = false);
-                        }
-                        return false;
-                      },
-                      child: SingleChildScrollView(
-                        key: const ValueKey('mentor-messages'),
-                        controller: _messages,
-                        padding: const EdgeInsets.all(16),
-                        // History is capped at 40 messages by the API. Eager
-                        // layout gives an exact end even for unequal bubbles.
-                        child: Column(
-                          children: List.generate(
-                            state.messages.length + (state.loading ? 1 : 0),
-                            (index) {
-                              if (index == state.messages.length) {
-                                return const Padding(
-                                  padding: EdgeInsets.all(12),
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text('Mentor odpowiada…'),
-                                  ),
-                                );
-                              }
-                              final message = state.messages[index];
-                              return _MessageBubble(
-                                message: message,
-                                playing: _playing == message.id,
-                                onPlay:
-                                    message.isAssistant &&
-                                        !_voiceBusy &&
-                                        !_recording &&
-                                        settings.valueOrNull?.consentVoice ==
-                                            true &&
-                                        settings
-                                                .valueOrNull
-                                                ?.elevenLabsConfigured ==
-                                            true &&
-                                        _voice.supported
-                                    ? () => _play(message)
-                                    : null,
-                                onProposal: message.proposal == null
-                                    ? null
-                                    : () => _confirm(
-                                        message.proposal!,
-                                        sourceAccount: proposalAccount,
-                                        sourceGeneration: proposalGeneration,
-                                      ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-            ),
-            if (enabled && _newReply)
-              Semantics(
-                liveRegion: true,
-                child: TextButton.icon(
-                  onPressed: () => _latest(),
-                  icon: const Icon(Icons.arrow_downward),
-                  label: const Text('Nowa odpowiedź'),
-                ),
-              ),
-            if (state.error != null)
-              Flexible(
-                flex: 2,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 960),
+            child: !enabled
+                ? ListView(
+                    padding: const EdgeInsets.all(16),
                     children: [
-                      Text(
-                        state.error!,
-                        style: const TextStyle(color: FitBirekColors.danger),
-                      ),
-                      if (enabled)
-                        TextButton(
-                          onPressed: state.loading
-                              ? null
-                              : () => _send(regenerate: true),
-                          child: const Text(_regenerateLabel),
+                      _availability(settings),
+                      if (widget.templatePrompt) ...[
+                        _templateHelp(),
+                        TextField(
+                          controller: _input,
+                          maxLength: 2000,
+                          maxLines: 4,
+                          decoration: const InputDecoration(
+                            labelText: 'Szkic szablonu',
+                          ),
                         ),
+                      ],
+                      const SizedBox(height: 24),
+                      const TodaySchedule(),
                     ],
-                  ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-              child: Row(
-                children: [
-                  if (_voice.supported)
-                    IconButton(
-                      tooltip: _recording
-                          ? 'Zakończ nagranie'
-                          : 'Nagraj wiadomość',
-                      icon: Icon(_recording ? Icons.stop_circle : Icons.mic),
-                      color: _recording ? FitBirekColors.danger : null,
-                      onPressed:
-                          state.loading ||
-                              !enabled ||
-                              _voiceBusy ||
-                              settings.valueOrNull?.consentVoice != true ||
-                              settings.valueOrNull?.elevenLabsConfigured != true
-                          ? null
-                          : _record,
+                  )
+                : LayoutBuilder(
+                    builder: (context, constraints) => Column(
+                      children: [
+                        Expanded(
+                          child: state.loading && state.messages.isEmpty
+                              ? const Center(child: CircularProgressIndicator())
+                              : NotificationListener<ScrollNotification>(
+                                  onNotification: (notification) {
+                                    // Real offset activity, not ScrollMetricsNotification:
+                                    // covers drag, wheel, keyboard and external jumpTo.
+                                    if (notification
+                                            is ScrollStartNotification &&
+                                        !_startingScroll) {
+                                      _autoScrolling = false;
+                                      _scrollIntent++;
+                                    } else if (notification
+                                            is ScrollUpdateNotification &&
+                                        !_autoScrolling &&
+                                        notification.scrollDelta != 0) {
+                                      _scrollIntent++;
+                                    }
+                                    if (notification is ScrollEndNotification &&
+                                        _newReply &&
+                                        _nearEnd) {
+                                      setState(() => _newReply = false);
+                                    }
+                                    return false;
+                                  },
+                                  child: SingleChildScrollView(
+                                    key: const ValueKey('mentor-messages'),
+                                    controller: _messages,
+                                    padding: const EdgeInsets.all(16),
+                                    // History is capped at 40 messages by the API. Eager
+                                    // layout gives an exact end even for unequal bubbles.
+                                    child: Column(
+                                      children: [
+                                        _overview(),
+                                        if (widget.templatePrompt)
+                                          _templateHelp(),
+                                        ...List.generate(
+                                          state.messages.length +
+                                              (state.loading ? 1 : 0),
+                                          (index) {
+                                            if (index ==
+                                                state.messages.length) {
+                                              return const Padding(
+                                                padding: EdgeInsets.all(12),
+                                                child: Align(
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Text(
+                                                    'Mentor odpowiada…',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                            final message =
+                                                state.messages[index];
+                                            return _MessageBubble(
+                                              message: message,
+                                              playing: _playing == message.id,
+                                              onPlay:
+                                                  message.isAssistant &&
+                                                      !_voiceBusy &&
+                                                      !_recording &&
+                                                      settings
+                                                              .valueOrNull
+                                                              ?.consentVoice ==
+                                                          true &&
+                                                      settings
+                                                              .valueOrNull
+                                                              ?.elevenLabsConfigured ==
+                                                          true &&
+                                                      _voice.supported
+                                                  ? () => _play(message)
+                                                  : null,
+                                              onProposal:
+                                                  message.proposal == null
+                                                  ? null
+                                                  : () => _confirm(
+                                                      message.proposal!,
+                                                      sourceAccount:
+                                                          proposalAccount,
+                                                      sourceGeneration:
+                                                          proposalGeneration,
+                                                    ),
+                                            );
+                                          },
+                                        ),
+                                        if (_recording)
+                                          Text('Nagrywanie: $_seconds / 30 s'),
+                                        if (_voiceBusy)
+                                          const Text('Przetwarzanie głosu…'),
+                                        if (_playing != null)
+                                          TextButton(
+                                            onPressed: () => _voice
+                                                .play()
+                                                .catchError((Object _) {
+                                                  if (mounted) {
+                                                    _notice(
+                                                      'Głos wygasł. Przygotuj go ponownie.',
+                                                    );
+                                                  }
+                                                }),
+                                            child: const Text('Odtwórz'),
+                                          ),
+                                        if (_voiceDraft)
+                                          const Text(
+                                            'Sprawdź transkrypcję i wybierz Wyślij',
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                        ),
+                        if (enabled && _newReply)
+                          Semantics(
+                            liveRegion: true,
+                            child: TextButton.icon(
+                              onPressed: () => _latest(),
+                              icon: const Icon(Icons.arrow_downward),
+                              label: const Text('Nowa odpowiedź'),
+                            ),
+                          ),
+                        if (state.error != null)
+                          Flexible(
+                            flex: 2,
+                            child: SingleChildScrollView(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    state.error!,
+                                    style: const TextStyle(
+                                      color: FitBirekColors.danger,
+                                    ),
+                                  ),
+                                  if (enabled)
+                                    TextButton(
+                                      onPressed: state.loading
+                                          ? null
+                                          : () => _send(regenerate: true),
+                                      child: const Text(_regenerateLabel),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: _input,
+                                maxLength: 2000,
+                                minLines: 1,
+                                maxLines:
+                                    constraints.maxHeight < 500 ||
+                                        MediaQuery.viewInsetsOf(
+                                              context,
+                                            ).bottom >
+                                            0
+                                    ? 1
+                                    : 3,
+                                textInputAction: TextInputAction.send,
+                                onChanged: (value) {
+                                  if (_voiceDraft && value.trim().isEmpty) {
+                                    setState(() => _voiceDraft = false);
+                                  }
+                                },
+                                onSubmitted: (_) => _send(),
+                                decoration: const InputDecoration(
+                                  counterText: '',
+                                  hintText: 'Napisz do mentora…',
+                                  hintMaxLines: 1,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  if (_recording ||
+                                      _voiceBusy ||
+                                      _playing != null)
+                                    IconButton(
+                                      tooltip: 'Stop',
+                                      constraints: const BoxConstraints(
+                                        minWidth: 48,
+                                        minHeight: 48,
+                                      ),
+                                      onPressed: _stopVoice,
+                                      icon: const Icon(Icons.cancel_outlined),
+                                    ),
+                                  if (_voice.supported)
+                                    IconButton(
+                                      constraints: const BoxConstraints(
+                                        minWidth: 48,
+                                        minHeight: 48,
+                                      ),
+                                      tooltip: _recording
+                                          ? 'Zakończ nagranie'
+                                          : 'Nagraj wiadomość',
+                                      icon: Icon(
+                                        _recording
+                                            ? Icons.stop_circle
+                                            : Icons.mic,
+                                      ),
+                                      color: _recording
+                                          ? FitBirekColors.danger
+                                          : null,
+                                      onPressed:
+                                          state.loading ||
+                                              !enabled ||
+                                              _voiceBusy ||
+                                              settings
+                                                      .valueOrNull
+                                                      ?.consentVoice !=
+                                                  true ||
+                                              settings
+                                                      .valueOrNull
+                                                      ?.elevenLabsConfigured !=
+                                                  true
+                                          ? null
+                                          : _record,
+                                    ),
+                                  if (_voiceDraft)
+                                    IconButton(
+                                      tooltip: 'Anuluj transkrypcję',
+                                      constraints: const BoxConstraints(
+                                        minWidth: 48,
+                                        minHeight: 48,
+                                      ),
+                                      onPressed: () => setState(() {
+                                        _input.clear();
+                                        _voiceDraft = false;
+                                      }),
+                                      icon: const Icon(Icons.close),
+                                    ),
+                                  const Spacer(),
+                                  const SizedBox(width: 8),
+                                  ValueListenableBuilder<TextEditingValue>(
+                                    valueListenable: _input,
+                                    builder: (context, value, child) =>
+                                        IconButton.outlined(
+                                          constraints: const BoxConstraints(
+                                            minWidth: 48,
+                                            minHeight: 48,
+                                          ),
+                                          tooltip:
+                                              'Dodaj kontekst do tej wiadomości',
+                                          onPressed:
+                                              state.loading ||
+                                                  !enabled ||
+                                                  value.text.trim().isEmpty
+                                              ? null
+                                              : _composeContext,
+                                          icon: child!,
+                                        ),
+                                    child: const Icon(Icons.tune),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton.filled(
+                                    constraints: const BoxConstraints(
+                                      minWidth: 48,
+                                      minHeight: 48,
+                                    ),
+                                    tooltip: 'Wyślij',
+                                    onPressed: state.loading || !enabled
+                                        ? null
+                                        : () => _send(),
+                                    icon: const Icon(Icons.send),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  Expanded(
-                    child: TextField(
-                      controller: _input,
-                      maxLength: 2000,
-                      minLines: 1,
-                      maxLines: MediaQuery.viewInsetsOf(context).bottom > 0
-                          ? 2
-                          : 4,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _send(),
-                      decoration: const InputDecoration(
-                        counterText: '',
-                        hintText: 'Napisz do mentora…',
-                      ),
-                    ),
                   ),
-                  const SizedBox(width: 8),
-                  ValueListenableBuilder<TextEditingValue>(
-                    valueListenable: _input,
-                    builder: (context, value, child) => IconButton.outlined(
-                      tooltip: 'Dodaj kontekst do tej wiadomości',
-                      onPressed:
-                          state.loading || !enabled || value.text.trim().isEmpty
-                          ? null
-                          : _composeContext,
-                      icon: child!,
-                    ),
-                    child: const Icon(Icons.tune),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton.filled(
-                    tooltip: 'Wyślij',
-                    onPressed: state.loading || !enabled ? null : () => _send(),
-                    icon: const Icon(Icons.send),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+
+  Widget _availability(AsyncValue<MentorSettings> settings) {
+    final value = settings.valueOrNull;
+    final reason = settings.isLoading
+        ? 'Sprawdzanie konfiguracji Mentora…'
+        : settings.hasError
+        ? 'Nie można odczytać konfiguracji. Sprawdź połączenie i spróbuj ponownie.'
+        : value?.available != true
+        ? 'Brak konfiguracji usługi.'
+        : value?.openAiConfigured != true
+        ? 'Dodaj klucz OpenAI w ustawieniach Mentora.'
+        : 'Włącz zgodę na tekst w ustawieniach Mentora.';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(reason, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        TextButton(
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => context.push('/settings/mentor'),
+          child: const Text('Otwórz ustawienia mentora'),
+        ),
+        if (settings.hasError)
+          TextButton(
+            onPressed: () => ref.invalidate(mentorSettingsProvider),
+            child: const Text('Spróbuj ponownie'),
+          ),
+        OutlinedButton(
+          style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => context.go('/today/classic'),
+          child: const Text('Klasyczny trening (offline)'),
+        ),
+      ],
+    );
+  }
+
+  Widget _templateHelp() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        'Opisz nazwę i cel szablonu. Wysłanie używa limitu i może kosztować. Propozycja otworzy edytor; niczego nie zapisze ani nie rozpocznie. Bez konfiguracji Mentora ułóż szablon samodzielnie.',
+      ),
+      TextButton(
+        onPressed: () => context.push('/workout/templates/new'),
+        child: const Text('Ułóż szablon samodzielnie'),
+      ),
+    ],
+  );
+
+  Widget _overview() => ExpansionTile(
+    title: const Text('Plan dnia i podpowiedzi'),
+    children: [
+      const TodaySchedule(),
+      TextButton(
+        onPressed: () => context.go('/today/classic'),
+        child: const Text('Klasyczny trening (offline)'),
+      ),
+      if (ref.watch(activeWorkoutProvider).isActive)
+        TextButton(
+          onPressed: () => context.go('/workout/session'),
+          child: const Text('Wznów aktywny trening'),
+        ),
+      const Text(
+        'Spokojnie, konkretnie i bez oceniania. Zanim zapiszę trening lub serię, zawsze poproszę o potwierdzenie.',
+      ),
+      if (!_voice.supported)
+        const Text('Użyj klawiatury lub dyktowania systemowego.'),
+      Wrap(
+        spacing: 8,
+        children: [
+          for (final prompt in const [
+            'Mam mało czasu — ułóż krótki trening.',
+            'Dziś mam dużo energii.',
+            'Pomóż mi zaplanować trening na dziś.',
+          ])
+            ActionChip(
+              label: Text(prompt),
+              onPressed: () => _input.text = prompt,
+            ),
+        ],
+      ),
+    ],
+  );
 
   Future<void> _history() async {
     final generation = _generation;
@@ -997,6 +1133,7 @@ class _MentorPageState extends ConsumerState<MentorPage>
       if (!mounted || generation != _generation || id == null) return;
       _stopVoice();
       _input.clear();
+      _voiceDraft = false;
       await ref.read(mentorConversationProvider.notifier).open(id);
     } catch (_) {
       if (mounted) _notice('Historia jest teraz niedostępna.');

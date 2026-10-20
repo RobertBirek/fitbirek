@@ -609,10 +609,16 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       children: [
         Tooltip(
           message: 'Wariant wykonania',
-          child: InkWell(
-            onTap: _intervalBusy ? null : _chooseVariant,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Semantics(
+            value: _variantId == null
+                ? 'Bazowy'
+                : selected?['name'] ?? _variantLabel ?? 'Niedostępny',
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(48, 48),
+                visualDensity: VisualDensity.standard,
+              ),
+              onPressed: _intervalBusy ? null : _chooseVariant,
               child: Text(
                 'Wariant: ${_variantId == null ? 'Bazowy' : selected?['name'] ?? _variantLabel ?? 'Niedostępny'} ▾',
               ),

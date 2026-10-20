@@ -122,6 +122,7 @@ MentorSettings settings({bool enabled = true}) =>
     mentorSettings(enabled: enabled);
 
 class ApiFake implements MentorApi {
+  String historyId = 'answer';
   bool lostPaidResponse = false, expiredSpeech = false;
   final ledger = <String, MentorOperation>{};
   final voiceRequestIds = <String>[];
@@ -142,6 +143,7 @@ class ApiFake implements MentorApi {
       speechCalls = 0,
       transcriptions = 0;
   final requestIds = <String>[];
+  final sentTexts = <String>[];
   Completer<MentorMessage>? pending;
   Completer<void>? keyPending;
   bool fail = false;
@@ -203,7 +205,7 @@ class ApiFake implements MentorApi {
   @override
   Future<List<MentorMessage>> messages(String id) async => [
     MentorMessage(
-      id: 'answer',
+      id: historyId,
       role: 'assistant',
       text: 'Odpowiedź mentora',
       createdAt: DateTime(2026),
@@ -219,6 +221,7 @@ class ApiFake implements MentorApi {
     MentorContextSelection? context,
   }) async {
     sends++;
+    sentTexts.add(text);
     requestIds.add(requestId);
     if (lostPaidResponse) {
       ledger[requestId] = MentorOperation(
@@ -324,6 +327,7 @@ Future<void> mount(
   double textScale = 1,
   bool reducedMotion = false,
   double keyboardInset = 0,
+  Future<MentorSettings> Function()? loadSettings,
 }) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -385,7 +389,9 @@ Future<void> mount(
           return api;
         }),
         mentorSettingsProvider.overrideWith(
-          (ref) async => configuredSettings ?? mentorSettings(enabled: enabled),
+          (ref) async => loadSettings != null
+              ? loadSettings()
+              : configuredSettings ?? mentorSettings(enabled: enabled),
         ),
         mentorVoiceProvider.overrideWithValue(voice),
         mentorVoiceApiProvider.overrideWithValue(api),
@@ -447,7 +453,7 @@ void main() {
       expect(api.speechCalls, 2);
       expect(api.voiceRequestIds.toSet().length, 2);
       expect(find.text('Odtwórz'), findsOneWidget);
-      await tester.tap(find.text('Stop'));
+      await tester.tap(find.byTooltip('Stop'));
       await tester.pumpAndSettle();
     },
   );
@@ -819,9 +825,9 @@ void main() {
     },
   );
   testWidgets(
-    'voice turn transcribes, sends, prepares and plays the assistant reply',
+    'voice transcription is editable and sends only the reviewed payload manually',
     (tester) async {
-      final api = ApiFake();
+      final api = ApiFake()..historyId = 'earlier-answer';
       final voice = VoiceFake();
       await mount(tester, api, voice);
 
@@ -831,11 +837,25 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(api.transcriptions, 1);
+      expect(api.sends, 0);
+      expect(api.speechCalls, 0);
+      expect(
+        find.text('Sprawdź transkrypcję i wybierz Wyślij'),
+        findsOneWidget,
+      );
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'Tekst do poprawienia',
+      );
+      await tester.enterText(find.byType(TextField), 'Poprawiona transkrypcja');
+      await tester.tap(find.byTooltip('Wyślij'));
+      await tester.pumpAndSettle();
       expect(api.sends, 1);
+      expect(api.sentTexts, ['Poprawiona transkrypcja']);
       expect(api.speechCalls, 1);
       expect(voice.prepares, 1);
       expect(voice.plays, 1);
-      expect(find.text('Tekst do poprawienia'), findsOneWidget);
+      expect(find.text('Tekst do poprawienia'), findsNothing);
       expect(find.text('Odpowiedź mentora'), findsWidgets);
     },
   );
@@ -857,7 +877,7 @@ void main() {
   testWidgets(
     'voice turn keeps prepared speech for manual playback after autoplay denial',
     (tester) async {
-      final api = ApiFake();
+      final api = ApiFake()..historyId = 'earlier-answer';
       final voice = VoiceFake()..rejectNextPlay = true;
       await mount(tester, api, voice);
 
@@ -866,6 +886,9 @@ void main() {
       await tester.tap(find.byTooltip('Zakończ nagranie'));
       await tester.pumpAndSettle();
 
+      expect(api.sends, 0);
+      await tester.tap(find.byTooltip('Wyślij'));
+      await tester.pumpAndSettle();
       expect(api.speechCalls, 1);
       expect(voice.prepares, 1);
       expect(voice.plays, 1);

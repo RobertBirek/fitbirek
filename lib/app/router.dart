@@ -18,6 +18,9 @@ import '../features/progress/presentation/pages/progress_page.dart';
 import '../features/progress/measurements/presentation/pages/add_measurement_page.dart';
 import '../features/progress/tests/presentation/pages/run_test_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
+import '../features/settings/presentation/pages/settings_notifications_page.dart';
+import '../features/settings/presentation/pages/settings_backup_page.dart';
+import '../features/settings/presentation/pages/settings_health_page.dart';
 import '../features/settings/presentation/pages/edit_profile_page.dart';
 import '../features/calculator/presentation/pages/calculator_page.dart';
 import '../features/planner/presentation/pages/planner_page.dart';
@@ -198,6 +201,19 @@ GoRouter createRouter({
                 path: '/settings',
                 builder: (context, state) => const SettingsPage(),
                 routes: [
+                  GoRoute(
+                    path: 'notifications',
+                    builder: (context, state) =>
+                        const SettingsNotificationsPage(),
+                  ),
+                  GoRoute(
+                    path: 'backup',
+                    builder: (context, state) => const SettingsBackupPage(),
+                  ),
+                  GoRoute(
+                    path: 'health',
+                    builder: (context, state) => const SettingsHealthPage(),
+                  ),
                   GoRoute(
                     path: 'activities',
                     builder: (context, state) => const ActivityListPage(),

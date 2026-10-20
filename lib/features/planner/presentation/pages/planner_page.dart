@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/content_layout.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/constants.dart';
@@ -221,127 +222,134 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
         ],
       ),
       body: SafeArea(
-        child: profile.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('Błąd profilu: $e'),
-          data: (p) => SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (p == null)
-                  const Text(
-                    'Dokończ onboarding, aby generować i uruchamiać plan.',
-                  ),
-                _constraints(_criteria),
-                if (p != null)
-                  Text('Sprzęt z profilu: ${p.dostepnySprzet.join(", ")}'),
-                const Text('Poziom'),
-                Wrap(
-                  spacing: 8,
-                  children: AppConstants.poziomyOpcje
-                      .map(
-                        (v) => ChoiceChip(
-                          label: Text(v),
-                          selected: _level == v,
-                          onSelected: _busy
-                              ? null
-                              : (_) => setState(() {
-                                  _level = v;
-                                  _plan = null;
-                                }),
-                        ),
-                      )
-                      .toList(),
-                ),
-                Text('Budżet: $_minutes min'),
-                Slider(
-                  value: _minutes.toDouble(),
-                  min: 5,
-                  max: 90,
-                  divisions: 85,
-                  onChanged: _busy
-                      ? null
-                      : (v) => setState(() {
-                          _minutes = v.round();
-                          _plan = null;
-                        }),
-                ),
-                if (metadata.valueOrNull == null) ...[
-                  const Text(
-                    'Poczekaj na klasyfikację lub ponów jej ładowanie. Filtry nie zostaną pominięte.',
-                  ),
-                  TextButton(
-                    onPressed: () =>
-                        ref.invalidate(exerciseCatalogMetadataProvider),
-                    child: const Text('Ponów klasyfikację'),
-                  ),
-                ],
-                FilledButton(
-                  onPressed: p == null || _busy
-                      ? null
-                      : () {
-                          try {
-                            _pool(p, _criteria);
-                            _preview(
-                              StructuredPlanGenerator.generate(
-                                allExercises: ref
-                                    .read(allExercisesProvider)
-                                    .requireValue,
-                                engine: ref.read(exerciseFilterEngineProvider),
-                                criteria: _criteria,
-                                equipment: p.dostepnySprzet,
-                                level: _level,
-                                minutes: _minutes,
-                              ),
-                            );
-                          } catch (e) {
-                            setState(() => _message = '$e');
-                          }
-                        },
-                  child: const Text('Wygeneruj plan'),
-                ),
-                if (_message != null)
-                  Text(_message!, key: const Key('planner-message')),
-                if (_plan != null) ..._result(p),
-                const SizedBox(height: 24),
-                const Text('Zapisane plany'),
-                ref
-                    .watch(savedPlansProvider)
-                    .when(
-                      loading: () => const CircularProgressIndicator(),
-                      error: (e, _) => Text('Błąd planów: $e'),
-                      data: (plans) => Column(
-                        children: plans
-                            .map(
-                              (saved) => ListTile(
-                                title: Text(saved.nazwa),
-                                subtitle: Text(
-                                  saved.structureError ??
-                                      (saved.structure == null
-                                          ? 'Stary plan — lista ćwiczeń bez sekcji i celów.'
-                                          : '${saved.cwiczeniaIds.length} ćwiczeń • zapisane sekcje i cele'),
-                                ),
-                                onTap:
-                                    _busy ||
-                                        saved.isUnavailable ||
-                                        saved.structure == null
-                                    ? null
-                                    : () => _preview(saved.structure!),
-                                trailing: IconButton(
-                                  tooltip: 'Usuń plan',
-                                  icon: const Icon(Icons.delete_outline),
-                                  onPressed: _busy
-                                      ? null
-                                      : () =>
-                                            _deletePlan(saved.id, saved.nazwa),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
+        child: ContentLayout(
+          maxWidth: 640,
+          child: profile.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Text('Błąd profilu: $e'),
+            data: (p) => SingleChildScrollView(
+              padding: ContentLayout.pagePadding(context),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (p == null)
+                    const Text(
+                      'Dokończ onboarding, aby generować i uruchamiać plan.',
                     ),
-              ],
+                  _constraints(_criteria),
+                  if (p != null)
+                    Text('Sprzęt z profilu: ${p.dostepnySprzet.join(", ")}'),
+                  const Text('Poziom'),
+                  Wrap(
+                    spacing: 8,
+                    children: AppConstants.poziomyOpcje
+                        .map(
+                          (v) => ChoiceChip(
+                            label: Text(v),
+                            selected: _level == v,
+                            onSelected: _busy
+                                ? null
+                                : (_) => setState(() {
+                                    _level = v;
+                                    _plan = null;
+                                  }),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  Text('Budżet: $_minutes min'),
+                  Slider(
+                    value: _minutes.toDouble(),
+                    min: 5,
+                    max: 90,
+                    divisions: 85,
+                    onChanged: _busy
+                        ? null
+                        : (v) => setState(() {
+                            _minutes = v.round();
+                            _plan = null;
+                          }),
+                  ),
+                  if (metadata.valueOrNull == null) ...[
+                    const Text(
+                      'Poczekaj na klasyfikację lub ponów jej ładowanie. Filtry nie zostaną pominięte.',
+                    ),
+                    TextButton(
+                      onPressed: () =>
+                          ref.invalidate(exerciseCatalogMetadataProvider),
+                      child: const Text('Ponów klasyfikację'),
+                    ),
+                  ],
+                  FilledButton(
+                    onPressed: p == null || _busy
+                        ? null
+                        : () {
+                            try {
+                              _pool(p, _criteria);
+                              _preview(
+                                StructuredPlanGenerator.generate(
+                                  allExercises: ref
+                                      .read(allExercisesProvider)
+                                      .requireValue,
+                                  engine: ref.read(
+                                    exerciseFilterEngineProvider,
+                                  ),
+                                  criteria: _criteria,
+                                  equipment: p.dostepnySprzet,
+                                  level: _level,
+                                  minutes: _minutes,
+                                ),
+                              );
+                            } catch (e) {
+                              setState(() => _message = '$e');
+                            }
+                          },
+                    child: const Text('Wygeneruj plan'),
+                  ),
+                  if (_message != null)
+                    Text(_message!, key: const Key('planner-message')),
+                  if (_plan != null) ..._result(p),
+                  const SizedBox(height: 24),
+                  const Text('Zapisane plany'),
+                  ref
+                      .watch(savedPlansProvider)
+                      .when(
+                        loading: () => const CircularProgressIndicator(),
+                        error: (e, _) => Text('Błąd planów: $e'),
+                        data: (plans) => Column(
+                          children: plans
+                              .map(
+                                (saved) => ListTile(
+                                  title: Text(saved.nazwa),
+                                  subtitle: Text(
+                                    saved.structureError ??
+                                        (saved.structure == null
+                                            ? 'Stary plan — lista ćwiczeń bez sekcji i celów.'
+                                            : '${saved.cwiczeniaIds.length} ćwiczeń • zapisane sekcje i cele'),
+                                  ),
+                                  onTap:
+                                      _busy ||
+                                          saved.isUnavailable ||
+                                          saved.structure == null
+                                      ? null
+                                      : () => _preview(saved.structure!),
+                                  trailing: IconButton(
+                                    tooltip: 'Usuń plan',
+                                    icon: const Icon(Icons.delete_outline),
+                                    onPressed: _busy
+                                        ? null
+                                        : () => _deletePlan(
+                                            saved.id,
+                                            saved.nazwa,
+                                          ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                ],
+              ),
             ),
           ),
         ),

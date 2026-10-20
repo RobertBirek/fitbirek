@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/content_layout.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../auth/providers/auth_providers.dart';
@@ -208,187 +209,194 @@ class _ActivityEditorPageState extends ConsumerState<ActivityEditorPage> {
           widget.ruleId == null ? 'Nowa aktywność' : 'Edytuj aktywność',
         ),
       ),
-      body: _stale
-          ? const Center(
-              child: Text(
-                'Konto zmieniło się. Formularz wyczyszczono. Otwórz go ponownie.',
-              ),
-            )
-          : _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Form(
-              key: _form,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Text(
-                      'Europe/Warsaw • Godzina terminu, nie przypomnienia. Starsza reguła wymaga jawnego wyboru godziny.',
-                    ),
-                    if (_error != null) Text(_error!),
-                    TextFormField(
-                      controller: _name,
-                      decoration: const InputDecoration(labelText: 'Nazwa'),
-                      maxLength: 80,
-                      validator: (v) =>
-                          v == null || v.trim().isEmpty ? 'Podaj nazwę' : null,
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        for (var d = 1; d <= 7; d++)
-                          FilterChip(
-                            label: Text(activityWeekdays[d - 1]),
-                            selected: _days.contains(d),
-                            onSelected: _busy
-                                ? null
-                                : (selected) => setState(() {
-                                    if (selected) {
-                                      _days.add(d);
-                                    } else {
-                                      _days.remove(d);
-                                    }
-                                  }),
-                          ),
-                      ],
-                    ),
-                    TextFormField(
-                      controller: _time,
-                      decoration: InputDecoration(
-                        labelText: 'Godzina HH:mm',
-                        suffixIcon: IconButton(
-                          tooltip: 'Wybierz godzinę',
-                          icon: const Icon(Icons.access_time),
-                          onPressed: _busy
-                              ? null
-                              : () async {
-                                  final parts = _time.text.split(':');
-                                  final hour = parts.length == 2
-                                      ? int.tryParse(parts[0])
-                                      : null;
-                                  final minute = parts.length == 2
-                                      ? int.tryParse(parts[1])
-                                      : null;
-                                  final initial =
-                                      hour != null &&
-                                          hour >= 0 &&
-                                          hour < 24 &&
-                                          minute != null &&
-                                          minute >= 0 &&
-                                          minute < 60
-                                      ? TimeOfDay(hour: hour, minute: minute)
-                                      : const TimeOfDay(hour: 0, minute: 0);
-                                  final time = await showTimePicker(
-                                    context: context,
-                                    initialTime: initial,
-                                  );
-                                  if (time != null && _guard()) {
-                                    setState(
-                                      () => _time.text =
-                                          '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
-                                    );
-                                  }
-                                },
-                        ),
+      body: ContentLayout(
+        maxWidth: 640,
+        child: _stale
+            ? const Center(
+                child: Text(
+                  'Konto zmieniło się. Formularz wyczyszczono. Otwórz go ponownie.',
+                ),
+              )
+            : _loading
+            ? const Center(child: CircularProgressIndicator())
+            : Form(
+                key: _form,
+                child: SingleChildScrollView(
+                  padding: ContentLayout.pagePadding(context),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Europe/Warsaw • Godzina terminu, nie przypomnienia. Starsza reguła wymaga jawnego wyboru godziny.',
                       ),
-                      keyboardType: TextInputType.datetime,
-                      validator: (v) =>
-                          RegExp(
-                            r'^(?:[01]\d|2[0-3]):[0-5]\d$',
-                          ).hasMatch(v ?? '')
-                          ? null
-                          : 'Podaj godzinę HH:mm (00:00–23:59)',
-                    ),
-                    TextFormField(
-                      controller: _duration,
-                      decoration: const InputDecoration(
-                        labelText: 'Czas trwania (min, opcjonalnie)',
+                      if (_error != null) Text(_error!),
+                      TextFormField(
+                        controller: _name,
+                        decoration: const InputDecoration(labelText: 'Nazwa'),
+                        maxLength: 80,
+                        validator: (v) => v == null || v.trim().isEmpty
+                            ? 'Podaj nazwę'
+                            : null,
                       ),
-                      keyboardType: TextInputType.number,
-                      validator: (v) =>
-                          v == null ||
-                              v.isEmpty ||
-                              (int.tryParse(v) != null &&
-                                  int.parse(v) >= 1 &&
-                                  int.parse(v) <= 1440)
-                          ? null
-                          : 'Podaj 1–1440 minut',
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Włączona'),
-                      value: _enabled,
-                      onChanged: _busy
-                          ? null
-                          : (v) => setState(() => _enabled = v),
-                    ),
-                    if (_type == ActivityType.fitbirek)
-                      DropdownButtonFormField<String>(
-                        initialValue: _plan ?? '',
-                        isExpanded: true,
-                        decoration: const InputDecoration(labelText: 'Szablon'),
-                        items: [
-                          const DropdownMenuItem(
-                            value: '',
-                            child: Text('Trening swobodny'),
-                          ),
-                          if (_plan != null &&
-                              !_plans.any((p) => p.syncId == _plan))
-                            DropdownMenuItem(
-                              value: _plan,
-                              child: const Text('Plan niedostępny'),
-                            ),
-                          for (final p in _plans)
-                            DropdownMenuItem(
-                              value: p.syncId,
-                              child: Text(
-                                p.nazwa,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          for (var d = 1; d <= 7; d++)
+                            FilterChip(
+                              label: Text(activityWeekdays[d - 1]),
+                              selected: _days.contains(d),
+                              onSelected: _busy
+                                  ? null
+                                  : (selected) => setState(() {
+                                      if (selected) {
+                                        _days.add(d);
+                                      } else {
+                                        _days.remove(d);
+                                      }
+                                    }),
                             ),
                         ],
+                      ),
+                      TextFormField(
+                        controller: _time,
+                        decoration: InputDecoration(
+                          labelText: 'Godzina HH:mm',
+                          suffixIcon: IconButton(
+                            tooltip: 'Wybierz godzinę',
+                            icon: const Icon(Icons.access_time),
+                            onPressed: _busy
+                                ? null
+                                : () async {
+                                    final parts = _time.text.split(':');
+                                    final hour = parts.length == 2
+                                        ? int.tryParse(parts[0])
+                                        : null;
+                                    final minute = parts.length == 2
+                                        ? int.tryParse(parts[1])
+                                        : null;
+                                    final initial =
+                                        hour != null &&
+                                            hour >= 0 &&
+                                            hour < 24 &&
+                                            minute != null &&
+                                            minute >= 0 &&
+                                            minute < 60
+                                        ? TimeOfDay(hour: hour, minute: minute)
+                                        : const TimeOfDay(hour: 0, minute: 0);
+                                    final time = await showTimePicker(
+                                      context: context,
+                                      initialTime: initial,
+                                    );
+                                    if (time != null && _guard()) {
+                                      setState(
+                                        () => _time.text =
+                                            '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}',
+                                      );
+                                    }
+                                  },
+                          ),
+                        ),
+                        keyboardType: TextInputType.datetime,
+                        validator: (v) =>
+                            RegExp(
+                              r'^(?:[01]\d|2[0-3]):[0-5]\d$',
+                            ).hasMatch(v ?? '')
+                            ? null
+                            : 'Podaj godzinę HH:mm (00:00–23:59)',
+                      ),
+                      TextFormField(
+                        controller: _duration,
+                        decoration: const InputDecoration(
+                          labelText: 'Czas trwania (min, opcjonalnie)',
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (v) =>
+                            v == null ||
+                                v.isEmpty ||
+                                (int.tryParse(v) != null &&
+                                    int.parse(v) >= 1 &&
+                                    int.parse(v) <= 1440)
+                            ? null
+                            : 'Podaj 1–1440 minut',
+                      ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Włączona'),
+                        value: _enabled,
                         onChanged: _busy
                             ? null
-                            : (v) => setState(() => _plan = v == '' ? null : v),
+                            : (v) => setState(() => _enabled = v),
                       ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Przypomnienie'),
-                      value: _reminders,
-                      onChanged: _busy
-                          ? null
-                          : (v) => setState(() => _reminders = v),
-                    ),
-                    const Text(
-                      'Dostarczenie wymaga osobno włączonych uprawnień i kategorii na tym urządzeniu. Ten formularz nie prosi o zgodę.',
-                    ),
-                    TextFormField(
-                      controller: _lead,
-                      decoration: const InputDecoration(
-                        labelText: 'Minuty przed terminem',
+                      if (_type == ActivityType.fitbirek)
+                        DropdownButtonFormField<String>(
+                          initialValue: _plan ?? '',
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Szablon',
+                          ),
+                          items: [
+                            const DropdownMenuItem(
+                              value: '',
+                              child: Text('Trening swobodny'),
+                            ),
+                            if (_plan != null &&
+                                !_plans.any((p) => p.syncId == _plan))
+                              DropdownMenuItem(
+                                value: _plan,
+                                child: const Text('Plan niedostępny'),
+                              ),
+                            for (final p in _plans)
+                              DropdownMenuItem(
+                                value: p.syncId,
+                                child: Text(
+                                  p.nazwa,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                          ],
+                          onChanged: _busy
+                              ? null
+                              : (v) =>
+                                    setState(() => _plan = v == '' ? null : v),
+                        ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Przypomnienie'),
+                        value: _reminders,
+                        onChanged: _busy
+                            ? null
+                            : (v) => setState(() => _reminders = v),
                       ),
-                      keyboardType: TextInputType.number,
-                      validator: (v) =>
-                          int.tryParse(v ?? '') != null &&
-                              int.parse(v!) >= 0 &&
-                              int.parse(v) <= 1440
-                          ? null
-                          : 'Podaj 0–1440 minut',
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: _busy || _lease == null ? null : _save,
-                      child: const Text('Zapisz'),
-                    ),
-                    TextButton(
-                      onPressed: _busy ? null : () => context.pop(),
-                      child: const Text('Anuluj'),
-                    ),
-                  ],
+                      const Text(
+                        'Dostarczenie wymaga osobno włączonych uprawnień i kategorii na tym urządzeniu. Ten formularz nie prosi o zgodę.',
+                      ),
+                      TextFormField(
+                        controller: _lead,
+                        decoration: const InputDecoration(
+                          labelText: 'Minuty przed terminem',
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (v) =>
+                            int.tryParse(v ?? '') != null &&
+                                int.parse(v!) >= 0 &&
+                                int.parse(v) <= 1440
+                            ? null
+                            : 'Podaj 0–1440 minut',
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        onPressed: _busy || _lease == null ? null : _save,
+                        child: const Text('Zapisz'),
+                      ),
+                      TextButton(
+                        onPressed: _busy ? null : () => context.pop(),
+                        child: const Text('Anuluj'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 }

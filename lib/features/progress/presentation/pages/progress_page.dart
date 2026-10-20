@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/content_layout.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/utils/formatters.dart';
@@ -24,141 +25,144 @@ class ProgressPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Postępy')),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            OutlinedButton.icon(
-              icon: const Icon(Icons.trending_up),
-              label: const Text('Trendy treningowe'),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const TrainingTrendsPage(),
-                ),
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.monitor_weight_outlined),
-                    label: const Text('Dodaj pomiar'),
-                    onPressed: () => context.push('/progress/add-measurement'),
+        child: ContentLayout(
+          child: ListView(
+            padding: ContentLayout.pagePadding(context),
+            children: [
+              OutlinedButton.icon(
+                icon: const Icon(Icons.trending_up),
+                label: const Text('Trendy treningowe'),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const TrainingTrendsPage(),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.timer_outlined),
-                    label: const Text('Test sprawności'),
-                    onPressed: () => context.push('/progress/run-test'),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Waga w czasie',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Pomiar ręczny + Apple Zdrowie • źródło w dymku i historii',
-            ),
-            measurementsAsync.when(
-              data: (list) => Card(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
-                  child: WeightLineChart(measurements: list),
-                ),
               ),
-              loading: () => const SizedBox(
-                height: 220,
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, st) => Text('Błąd: $e'),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Progres testów sprawnościowych',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            testResultsAsync.when(
-              data: (list) => Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: TestScoreChart(allResults: list),
-                ),
-              ),
-              loading: () => const SizedBox(
-                height: 100,
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, st) => Text('Błąd: $e'),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Rekordy osobiste (PR)',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            const PrRecordsList(),
-            const SizedBox(height: 20),
-            Text(
-              'Pomiary ciała',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            measurementsAsync.when(
-              data: (list) => list.isEmpty
-                  ? const Text(
-                      'Brak pomiarów - dodaj pierwszy pomiar',
-                      style: TextStyle(color: Colors.grey),
-                    )
-                  : Column(
-                      children: list.reversed
-                          .map(
-                            (m) => Card(
-                              margin: const EdgeInsets.only(bottom: 8),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListTile(
-                                    title: Text(Formatters.weight(m.wagaKg)),
-                                    subtitle: Text(
-                                      '${Formatters.date(m.data)} • ${m.source ?? 'Pomiar ręczny'}',
-                                    ),
-                                    trailing: m.sample == null
-                                        ? null
-                                        : HealthSampleDeleteButton(
-                                            sample: m.sample!,
-                                          ),
-                                  ),
-                                  if (m.manual != null && !m.imported)
-                                    ManualMeasurementActions(
-                                      key: ValueKey(m.manual!.syncId),
-                                      measurement: m.manual!,
-                                    ),
-                                ],
-                              ),
-                            ),
-                          )
-                          .toList(),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.monitor_weight_outlined),
+                      label: const Text('Dodaj pomiar'),
+                      onPressed: () =>
+                          context.push('/progress/add-measurement'),
                     ),
-              loading: () => const CircularProgressIndicator(),
-              error: (e, st) => Text('Błąd: $e'),
-            ),
-            const SizedBox(height: 24),
-            const HealthStepsHistory(),
-          ],
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.timer_outlined),
+                      label: const Text('Test sprawności'),
+                      onPressed: () => context.push('/progress/run-test'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Waga w czasie',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Pomiar ręczny + Apple Zdrowie • źródło w dymku i historii',
+              ),
+              measurementsAsync.when(
+                data: (list) => Card(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 16, 16, 8),
+                    child: WeightLineChart(measurements: list),
+                  ),
+                ),
+                loading: () => const SizedBox(
+                  height: 220,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (e, st) => Text('Błąd: $e'),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Progres testów sprawnościowych',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              testResultsAsync.when(
+                data: (list) => Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: TestScoreChart(allResults: list),
+                  ),
+                ),
+                loading: () => const SizedBox(
+                  height: 100,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (e, st) => Text('Błąd: $e'),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Rekordy osobiste (PR)',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              const PrRecordsList(),
+              const SizedBox(height: 20),
+              Text(
+                'Pomiary ciała',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              measurementsAsync.when(
+                data: (list) => list.isEmpty
+                    ? const Text(
+                        'Brak pomiarów - dodaj pierwszy pomiar',
+                        style: TextStyle(color: Colors.grey),
+                      )
+                    : Column(
+                        children: list.reversed
+                            .map(
+                              (m) => Card(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListTile(
+                                      title: Text(Formatters.weight(m.wagaKg)),
+                                      subtitle: Text(
+                                        '${Formatters.date(m.data)} • ${m.source ?? 'Pomiar ręczny'}',
+                                      ),
+                                      trailing: m.sample == null
+                                          ? null
+                                          : HealthSampleDeleteButton(
+                                              sample: m.sample!,
+                                            ),
+                                    ),
+                                    if (m.manual != null && !m.imported)
+                                      ManualMeasurementActions(
+                                        key: ValueKey(m.manual!.syncId),
+                                        measurement: m.manual!,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                loading: () => const CircularProgressIndicator(),
+                error: (e, st) => Text('Błąd: $e'),
+              ),
+              const SizedBox(height: 24),
+              const HealthStepsHistory(),
+            ],
+          ),
         ),
       ),
     );

@@ -22,29 +22,34 @@ class CalculatorPage extends ConsumerWidget {
           }
           final result = BmrCalculator.calculateFull(p);
           return SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                _row(
-                  'BMR (spoczynkowe)',
-                  '${result.bmr.toStringAsFixed(0)} kcal',
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 640),
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    _row(
+                      'BMR (spoczynkowe)',
+                      '${result.bmr.toStringAsFixed(0)} kcal',
+                    ),
+                    _row(
+                      'TDEE (całkowite)',
+                      '${result.tdee.toStringAsFixed(0)} kcal',
+                    ),
+                    _row(
+                      'Cel kaloryczny (${p.cel.label})',
+                      '${result.celKalorii.toStringAsFixed(0)} kcal',
+                    ),
+                    const Divider(height: 32),
+                    _row('Białko', '${result.bialkoG.toStringAsFixed(0)} g'),
+                    _row('Tłuszcz', '${result.tluszczG.toStringAsFixed(0)} g'),
+                    _row(
+                      'Węglowodany',
+                      '${result.weglowodanyG.toStringAsFixed(0)} g',
+                    ),
+                  ],
                 ),
-                _row(
-                  'TDEE (całkowite)',
-                  '${result.tdee.toStringAsFixed(0)} kcal',
-                ),
-                _row(
-                  'Cel kaloryczny (${p.cel.label})',
-                  '${result.celKalorii.toStringAsFixed(0)} kcal',
-                ),
-                const Divider(height: 32),
-                _row('Białko', '${result.bialkoG.toStringAsFixed(0)} g'),
-                _row('Tłuszcz', '${result.tluszczG.toStringAsFixed(0)} g'),
-                _row(
-                  'Węglowodany',
-                  '${result.weglowodanyG.toStringAsFixed(0)} g',
-                ),
-              ],
+              ),
             ),
           );
         },
@@ -56,12 +61,32 @@ class CalculatorPage extends ConsumerWidget {
 
   Widget _row(String label, String value) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
-      ],
+    child: Semantics(
+      label: label,
+      value: value,
+      excludeSemantics: true,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final texts = [
+            Text(label),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.w700)),
+          ];
+          if (constraints.maxWidth < 480 ||
+              MediaQuery.textScalerOf(context).scale(16) > 20) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: texts,
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: texts[0]),
+              const SizedBox(width: 16),
+              texts[1],
+            ],
+          );
+        },
+      ),
     ),
   );
 }

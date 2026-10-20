@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/widgets/content_layout.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../auth/providers/auth_providers.dart';
@@ -73,127 +74,135 @@ class _ActivityListPageState extends ConsumerState<ActivityListPage> {
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Harmonogram aktywności')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          const Text(
-            'Europe/Warsaw • Terminy nie tworzą treningów ani serii automatycznie.',
-          ),
-          TextButton(
-            onPressed: () => context.push('/schedule'),
-            child: const Text('Widok tygodnia'),
-          ),
-          week.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) =>
-                Text('Nie można odczytać harmonogramu. Dane zachowano. $e'),
-            data: (data) {
-              if (data == null) {
-                return const Text(
-                  'Harmonogram wymaga lokalnego dostępu do konta i aktywnego profilu.',
-                );
-              }
-              final rules = data.schedule.entries
-                  .where(
-                    (e) =>
-                        ['rule', 'activityRule'].contains(e['kind']) &&
-                        e['deletedAtUtc'] == null,
-                  )
-                  .map(ActivityRule.fromJson)
-                  .toList();
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (final type in ActivityType.values) ...[
-                    Text(
-                      type == ActivityType.external
-                          ? 'Aktywności zewnętrzne'
-                          : 'Treningi FitBirek',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    FilledButton.tonal(
-                      onPressed: _busy
-                          ? null
-                          : () => context.push(
-                              '/settings/activities/new?type=${type.name}',
-                            ),
-                      child: Text(
+      body: ContentLayout(
+        child: ListView(
+          padding: ContentLayout.pagePadding(context),
+          children: [
+            const Text(
+              'Europe/Warsaw • Terminy nie tworzą treningów ani serii automatycznie.',
+            ),
+            TextButton(
+              onPressed: () => context.push('/schedule'),
+              child: const Text('Widok tygodnia'),
+            ),
+            week.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) =>
+                  Text('Nie można odczytać harmonogramu. Dane zachowano. $e'),
+              data: (data) {
+                if (data == null) {
+                  return const Text(
+                    'Harmonogram wymaga lokalnego dostępu do konta i aktywnego profilu.',
+                  );
+                }
+                final rules = data.schedule.entries
+                    .where(
+                      (e) =>
+                          ['rule', 'activityRule'].contains(e['kind']) &&
+                          e['deletedAtUtc'] == null,
+                    )
+                    .map(ActivityRule.fromJson)
+                    .toList();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final type in ActivityType.values) ...[
+                      Text(
                         type == ActivityType.external
-                            ? 'Dodaj aktywność zewnętrzną'
-                            : 'Dodaj trening FitBirek',
+                            ? 'Aktywności zewnętrzne'
+                            : 'Treningi FitBirek',
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                    ),
-                    if (!rules.any((r) => r.activityType == type))
-                      const Text('Brak aktywności'),
-                    for (final r in rules.where((r) => r.activityType == type))
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                r.name,
-                                style: Theme.of(context).textTheme.titleMedium,
+                      FilledButton.tonal(
+                        onPressed: _busy
+                            ? null
+                            : () => context.push(
+                                '/settings/activities/new?type=${type.name}',
                               ),
-                              Text(
-                                '${r.weekdays.map((d) => activityWeekdays[d - 1]).join(', ')} • ${r.time ?? 'Bez godziny'}${r.durationMinutes == null ? '' : ' • ${r.durationMinutes} min'} • ${r.enabled ? 'Włączona' : 'Wyłączona'}',
-                              ),
-                              if (type == ActivityType.fitbirek)
-                                Text(
-                                  r.planSyncId == null
-                                      ? 'Trening swobodny'
-                                      : data.plans
-                                                .where(
-                                                  (p) =>
-                                                      p.syncId ==
-                                                          r.planSyncId &&
-                                                      !p.isUnavailable,
-                                                )
-                                                .firstOrNull
-                                                ?.nazwa ??
-                                            'Plan niedostępny — wybierz istniejący szablon w edycji.',
-                                ),
-                              if (r.isLegacy)
-                                const Text(
-                                  'Starsza reguła bez godziny. Najpierw edytuj i jawnie wybierz godzinę, aby włączać lub wyłączać.',
-                                ),
-                              Wrap(
-                                spacing: 8,
-                                children: [
-                                  TextButton(
-                                    onPressed: _busy
-                                        ? null
-                                        : () => context.push(
-                                            '/settings/activities/${r.id}/edit',
-                                          ),
-                                    child: const Text('Edytuj'),
-                                  ),
-                                  TextButton(
-                                    onPressed: _busy || r.isLegacy
-                                        ? null
-                                        : () => _change(r),
-                                    child: Text(r.enabled ? 'Wyłącz' : 'Włącz'),
-                                  ),
-                                  TextButton(
-                                    onPressed: _busy
-                                        ? null
-                                        : () => _change(r, delete: true),
-                                    child: const Text('Usuń'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                        child: Text(
+                          type == ActivityType.external
+                              ? 'Dodaj aktywność zewnętrzną'
+                              : 'Dodaj trening FitBirek',
                         ),
                       ),
-                    const SizedBox(height: 24),
+                      if (!rules.any((r) => r.activityType == type))
+                        const Text('Brak aktywności'),
+                      for (final r in rules.where(
+                        (r) => r.activityType == type,
+                      ))
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  r.name,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium,
+                                ),
+                                Text(
+                                  '${r.weekdays.map((d) => activityWeekdays[d - 1]).join(', ')} • ${r.time ?? 'Bez godziny'}${r.durationMinutes == null ? '' : ' • ${r.durationMinutes} min'} • ${r.enabled ? 'Włączona' : 'Wyłączona'}',
+                                ),
+                                if (type == ActivityType.fitbirek)
+                                  Text(
+                                    r.planSyncId == null
+                                        ? 'Trening swobodny'
+                                        : data.plans
+                                                  .where(
+                                                    (p) =>
+                                                        p.syncId ==
+                                                            r.planSyncId &&
+                                                        !p.isUnavailable,
+                                                  )
+                                                  .firstOrNull
+                                                  ?.nazwa ??
+                                              'Plan niedostępny — wybierz istniejący szablon w edycji.',
+                                  ),
+                                if (r.isLegacy)
+                                  const Text(
+                                    'Starsza reguła bez godziny. Najpierw edytuj i jawnie wybierz godzinę, aby włączać lub wyłączać.',
+                                  ),
+                                Wrap(
+                                  spacing: 8,
+                                  children: [
+                                    TextButton(
+                                      onPressed: _busy
+                                          ? null
+                                          : () => context.push(
+                                              '/settings/activities/${r.id}/edit',
+                                            ),
+                                      child: const Text('Edytuj'),
+                                    ),
+                                    TextButton(
+                                      onPressed: _busy || r.isLegacy
+                                          ? null
+                                          : () => _change(r),
+                                      child: Text(
+                                        r.enabled ? 'Wyłącz' : 'Włącz',
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: _busy
+                                          ? null
+                                          : () => _change(r, delete: true),
+                                      child: const Text('Usuń'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 24),
+                    ],
                   ],
-                ],
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

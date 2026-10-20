@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/models/user_profile.dart';
+import '../../../../core/utils/numeric_input.dart';
+import '../../../../core/utils/profile_input.dart';
 import '../../../../core/widgets/primary_button.dart';
 
 /// Ekran 2 onboardingu: formularz danych osobowych.
@@ -42,10 +44,10 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
       text: widget.initialWiek.toString(),
     );
     _wzrostController = TextEditingController(
-      text: widget.initialWzrost.toStringAsFixed(0),
+      text: formatProfileNumber(widget.initialWzrost),
     );
     _wagaController = TextEditingController(
-      text: widget.initialWaga.toStringAsFixed(0),
+      text: formatProfileNumber(widget.initialWaga),
     );
     _cel = widget.initialCel;
   }
@@ -61,9 +63,9 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     widget.onDataChanged(
-      int.parse(_wiekController.text),
-      double.parse(_wzrostController.text),
-      double.parse(_wagaController.text),
+      parseProfileAge(_wiekController.text)!,
+      parseDecimal(_wzrostController.text)!,
+      parseDecimal(_wagaController.text)!,
       _cel,
     );
     widget.onNext();
@@ -81,65 +83,72 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Twoje dane',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Twoje dane',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Potrzebujemy tych informacji, aby dopasować kalkulacje i progres',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 28),
+                    _buildNumberField(
+                      controller: _wiekController,
+                      label: 'Wiek (lata)',
+                      icon: Icons.cake_outlined,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildNumberField(
+                      controller: _wzrostController,
+                      label: 'Wzrost (cm)',
+                      icon: Icons.height,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildNumberField(
+                      controller: _wagaController,
+                      label: 'Waga (kg)',
+                      icon: Icons.monitor_weight_outlined,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Twój cel',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<CelTreningowy>(
+                      initialValue: _cel,
+                      items: CelTreningowy.values
+                          .map(
+                            (c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(c.label),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) => setState(() => _cel = v ?? _cel),
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.flag_outlined),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                    PrimaryButton(label: 'Dalej', onPressed: _submit),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Potrzebujemy tych informacji, aby dopasować kalkulacje i progres',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                ),
-                const SizedBox(height: 28),
-                _buildNumberField(
-                  controller: _wiekController,
-                  label: 'Wiek (lata)',
-                  icon: Icons.cake_outlined,
-                ),
-                const SizedBox(height: 16),
-                _buildNumberField(
-                  controller: _wzrostController,
-                  label: 'Wzrost (cm)',
-                  icon: Icons.height,
-                ),
-                const SizedBox(height: 16),
-                _buildNumberField(
-                  controller: _wagaController,
-                  label: 'Waga (kg)',
-                  icon: Icons.monitor_weight_outlined,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Twój cel',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<CelTreningowy>(
-                  initialValue: _cel,
-                  items: CelTreningowy.values
-                      .map(
-                        (c) => DropdownMenuItem(value: c, child: Text(c.label)),
-                      )
-                      .toList(),
-                  onChanged: (v) => setState(() => _cel = v ?? _cel),
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.flag_outlined),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                PrimaryButton(label: 'Dalej', onPressed: _submit),
-              ],
+              ),
             ),
           ),
         ),
@@ -156,16 +165,9 @@ class _OnboardingProfilePageState extends State<OnboardingProfilePage> {
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'To pole jest wymagane';
-        }
-        final parsed = double.tryParse(value);
-        if (parsed == null || parsed <= 0) {
-          return 'Wpisz poprawną liczbę';
-        }
-        return null;
-      },
+      validator: controller == _wiekController
+          ? validateProfileAge
+          : (value) => validateMeasurement(value),
     );
   }
 }

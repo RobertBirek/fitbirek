@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/formatters.dart';
+import '../../../../core/widgets/content_layout.dart';
 import '../../providers/workout_providers.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../domain/workout_guidance.dart';
@@ -84,35 +85,42 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage> {
           final additional =
               g?.additionalSetIds(sets.map((s) => s.syncId)).toSet() ??
               <String>{};
-          return Column(
-            children: [
-              Text(
-                WorkoutProgress.from(
-                  liveSetIds: sets.map((s) => s.syncId),
-                  guidance: g,
-                ).label,
-              ),
-              SaveAsTemplateButton(sessionId: sessionId),
-              SessionDeleteButton(sessionId: sessionId),
-              if (session.dataKoniec != null)
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.repeat),
-                  label: const Text('Powtórz trening'),
-                  onPressed: () async {
-                    final started = await showDialog<bool>(
-                      context: context,
-                      builder: (_) => RepeatWorkoutDialog(sessionId: sessionId),
-                    );
-                    if (started == true && context.mounted) {
-                      context.go('/workout/session');
-                    }
-                  },
-                ),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
+          return ContentLayout(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: ContentLayout.pagePadding(context),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      WorkoutProgress.from(
+                        liveSetIds: sets.map((s) => s.syncId),
+                        guidance: g,
+                      ).label,
+                    ),
+                    ExpansionTile(
+                      title: const Text('Akcje treningu'),
+                      children: [
+                        SaveAsTemplateButton(sessionId: sessionId),
+                        SessionDeleteButton(sessionId: sessionId),
+                        if (session.dataKoniec != null)
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.repeat),
+                            label: const Text('Powtórz trening'),
+                            onPressed: () async {
+                              final started = await showDialog<bool>(
+                                context: context,
+                                builder: (_) =>
+                                    RepeatWorkoutDialog(sessionId: sessionId),
+                              );
+                              if (started == true && context.mounted) {
+                                context.go('/workout/session');
+                              }
+                            },
+                          ),
+                      ],
+                    ),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (session.notatka?.isNotEmpty == true)
@@ -168,34 +176,31 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage> {
                         ],
                       ],
                     ),
-                  ),
-                ),
-              ),
-              if (sets.isEmpty) const Text('Brak zalogowanych serii'),
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: sets.length,
-                  itemBuilder: (context, i) {
-                    final s = sets[i];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        title: Text(
-                          '${additional.contains(s.syncId) ? 'Dodatkowe • ' : ''}${s.nazwaCwiczeniaPl} - seria ${s.numerSerii}',
-                        ),
-                        subtitle: Text(
-                          '${s.variantId == null ? '' : '${s.variantLabel ?? s.variantId} • '}'
-                          '${s.side == null ? '' : '${const {'left': 'Lewa', 'right': 'Prawa', 'both': 'Obie'}[s.side]} • '}'
-                          '${s.czasSekund != null ? '${s.czasSekund} s' : '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg × '}${s.powtorzenia ?? '-'} powt.'}'
-                          ' (RPE ${s.rpe ?? '-'}) • ${Formatters.time(s.timestamp)}',
-                        ),
+                    if (sets.isEmpty) const Text('Brak zalogowanych serii'),
+                    for (var i = 0; i < sets.length; i++)
+                      Builder(
+                        builder: (context) {
+                          final s = sets[i];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: ListTile(
+                              title: Text(
+                                '${additional.contains(s.syncId) ? 'Dodatkowe • ' : ''}${s.nazwaCwiczeniaPl} - seria ${s.numerSerii}',
+                              ),
+                              subtitle: Text(
+                                '${s.variantId == null ? '' : '${s.variantLabel ?? s.variantId} • '}'
+                                '${s.side == null ? '' : '${const {'left': 'Lewa', 'right': 'Prawa', 'both': 'Obie'}[s.side]} • '}'
+                                '${s.czasSekund != null ? '${s.czasSekund} s' : '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg × '}${s.powtorzenia ?? '-'} powt.'}'
+                                ' (RPE ${s.rpe ?? '-'}) • ${Formatters.time(s.timestamp)}',
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                  ],
                 ),
               ),
-            ],
+            ),
           );
         },
       ),

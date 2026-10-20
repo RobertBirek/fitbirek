@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/providers/auth_providers.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/models/exercise.dart';
+import '../../../../core/widgets/content_layout.dart';
 import '../../../../core/providers/database_provider.dart';
 import '../../../exercises/providers/exercises_providers.dart';
 import '../../../exercises/domain/exercise_filter_engine.dart';
@@ -51,6 +52,7 @@ class _Dose {
       );
   final PlanBlock block;
   final TextEditingController sets, amount, rest, kg;
+  bool expanded = true;
   void dispose() {
     sets.dispose();
     amount.dispose();
@@ -265,6 +267,19 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
   }
 
   Future<void> save() async {
+    if (busy) return;
+    // Pola pozostają zamontowane przy zwijaniu. Otwórz błędne sekcje
+    // przed validate, żeby komunikat nigdy nie został ukryty.
+    setState(() {
+      for (final d in doses) {
+        if (invalidNumber(d.sets.text) != null ||
+            invalidNumber(d.amount.text, maxInteger: amountLimit(d)) != null ||
+            invalidNumber(d.rest.text, zero: true) != null ||
+            invalidNumber(d.kg.text, weight: true) != null) {
+          d.expanded = true;
+        }
+      }
+    });
     if (!form.currentState!.validate() || lease == null) return;
     setState(() {
       busy = true;
@@ -296,6 +311,37 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
     }
   }
 
+  int amountLimit(_Dose d) => d.block.prescription.tracking == 'reps'
+      ? PlanPrescription.maxReps ~/
+            (ref
+                        .read(exerciseCatalogMetadataProvider)
+                        .valueOrNull
+                        ?.entryFor(d.block.exerciseId)
+                        ?.unilateral ==
+                    true
+                ? 2
+                : 1)
+      : PlanPrescription.maxSeconds;
+
+  String? invalidNumber(
+    String? value, {
+    bool zero = false,
+    bool weight = false,
+    int maxInteger = PlanPrescription.maxSeconds,
+  }) {
+    if (weight && (value ?? '').trim().isEmpty) return null;
+    final n = weight
+        ? double.tryParse((value ?? '').replaceAll(',', '.'))
+        : int.tryParse(value ?? '');
+    if (n == null || !n.isFinite || n < (zero || weight ? 0 : 1)) {
+      return 'Podaj ${zero || weight ? 'nieujemną' : 'dodatnią'} liczbę${weight ? '' : ' całkowitą'}.';
+    }
+    if (!weight && n > maxInteger) {
+      return 'Maksymalnie $maxInteger (limit szablonu: 90 min).';
+    }
+    return null;
+  }
+
   Widget number(
     TextEditingController controller,
     String label, {
@@ -309,19 +355,12 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
       enabled: !busy,
       decoration: InputDecoration(labelText: label),
       keyboardType: TextInputType.numberWithOptions(decimal: weight),
-      validator: (value) {
-        if (weight && (value ?? '').trim().isEmpty) return null;
-        final n = weight
-            ? double.tryParse((value ?? '').replaceAll(',', '.'))
-            : int.tryParse(value ?? '');
-        if (n == null || !n.isFinite || n < (zero || weight ? 0 : 1)) {
-          return 'Podaj ${zero || weight ? 'nieujemną' : 'dodatnią'} liczbę${weight ? '' : ' całkowitą'}.';
-        }
-        if (!weight && n > maxInteger) {
-          return 'Maksymalnie $maxInteger (limit szablonu: 90 min).';
-        }
-        return null;
-      },
+      validator: (value) => invalidNumber(
+        value,
+        zero: zero,
+        weight: weight,
+        maxInteger: maxInteger,
+      ),
     ),
   );
   @override
@@ -347,6 +386,162 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
               ).contains(ExerciseFilterEngine.fold(query)),
         )
         .take(20);
+    final selection = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextFormField(
+          controller: name,
+          enabled: !busy,
+          decoration: const InputDecoration(labelText: 'Nazwa szablonu'),
+          validator: (v) => (v ?? '').trim().isEmpty ? 'Podaj nazwę.' : null,
+        ),
+        const SizedBox(height: 16),
+        for (var i = 0; i < doses.length; i++)
+          Card(
+            key: ObjectKey(doses[i]),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    '${i + 1}. ${byId[doses[i].block.exerciseId]?.nazwaPl ?? doses[i].block.exerciseId}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  ListenableBuilder(
+                    listenable: Listenable.merge([
+                      doses[i].sets,
+                      doses[i].amount,
+                      doses[i].kg,
+                      doses[i].rest,
+                    ]),
+                    builder: (context, _) => Text(
+                      '${doses[i].sets.text} × ${doses[i].amount.text}${doses[i].block.prescription.tracking == 'reps' ? ' powt.' : ' s'}${doses[i].kg.text.isEmpty ? '' : ' · ${doses[i].kg.text} kg'} · ${doses[i].rest.text} s przerwy',
+                    ),
+                  ),
+                  Wrap(
+                    children: [
+                      IconButton(
+                        tooltip: 'Przesuń w górę',
+                        constraints: const BoxConstraints(
+                          minWidth: 48,
+                          minHeight: 48,
+                        ),
+                        onPressed: busy || i == 0
+                            ? null
+                            : () => setState(() {
+                                final d = doses.removeAt(i);
+                                doses.insert(i - 1, d);
+                              }),
+                        icon: const Icon(Icons.arrow_upward),
+                      ),
+                      IconButton(
+                        tooltip: 'Przesuń w dół',
+                        constraints: const BoxConstraints(
+                          minWidth: 48,
+                          minHeight: 48,
+                        ),
+                        onPressed: busy || i == doses.length - 1
+                            ? null
+                            : () => setState(() {
+                                final d = doses.removeAt(i);
+                                doses.insert(i + 1, d);
+                              }),
+                        icon: const Icon(Icons.arrow_downward),
+                      ),
+                      IconButton(
+                        tooltip: 'Usuń ćwiczenie',
+                        constraints: const BoxConstraints(
+                          minWidth: 48,
+                          minHeight: 48,
+                        ),
+                        onPressed: busy
+                            ? null
+                            : () => setState(() {
+                                doses.removeAt(i).dispose();
+                              }),
+                        icon: const Icon(Icons.delete_outline),
+                      ),
+                    ],
+                  ),
+                  Semantics(
+                    expanded: doses[i].expanded,
+                    child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(48, 48),
+                        visualDensity: VisualDensity.standard,
+                      ),
+                      onPressed: busy
+                          ? null
+                          : () => setState(
+                              () => doses[i].expanded = !doses[i].expanded,
+                            ),
+                      icon: Icon(
+                        doses[i].expanded
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                      ),
+                      label: const Text('Parametry ćwiczenia'),
+                    ),
+                  ),
+                  Offstage(
+                    offstage: !doses[i].expanded,
+                    child: Column(
+                      children: [
+                        number(doses[i].sets, 'Serie'),
+                        number(
+                          doses[i].amount,
+                          doses[i].block.prescription.tracking == 'reps'
+                              ? 'Powtórzenia'
+                              : 'Sekundy (łącznie obie strony)',
+                          maxInteger: amountLimit(doses[i]),
+                        ),
+                        number(
+                          doses[i].rest,
+                          'Przerwa między seriami (s)',
+                          zero: true,
+                        ),
+                        number(
+                          doses[i].kg,
+                          'Ciężar (kg, opcjonalnie)',
+                          weight: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+    final picker = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          enabled: !busy,
+          decoration: const InputDecoration(labelText: 'Szukaj ćwiczenia'),
+          onChanged: (v) => setState(() => query = v),
+        ),
+        if (catalog.hasError || metadata.hasError)
+          const Text('Nie można wczytać katalogu. Ponów otwarcie edytora.'),
+        if (catalog.isLoading || metadata.isLoading)
+          const LinearProgressIndicator(),
+        for (final e in matches)
+          ListTile(
+            title: Text(e.nazwaPl),
+            trailing: IconButton(
+              tooltip: 'Dodaj ćwiczenie',
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              onPressed: busy || !metadata.hasValue ? null : () => add(e),
+              icon: const Icon(Icons.add),
+            ),
+          ),
+        const Text(
+          'Wyszukiwanie pokazuje do 20 wyników. Zawęź nazwę, aby znaleźć kolejne.',
+        ),
+      ],
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -359,147 +554,93 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
           ? const Center(child: CircularProgressIndicator())
           : Form(
               key: form,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  const Text(
-                    'Cele, nie wykonanie. Czas ESTYMOWANY: 3 s/powtórzenie, obie strony dla ćwiczeń jednostronnych. Limit szablonu: 90 min.',
-                  ),
-                  if (error.isNotEmpty)
-                    Text(
-                      error,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  for (final warning in original?.warnings ?? <String>[])
-                    Text(warning),
-                  if (lease != null) ...[
-                    TextFormField(
-                      controller: name,
-                      enabled: !busy,
-                      decoration: const InputDecoration(
-                        labelText: 'Nazwa szablonu',
-                      ),
-                      validator: (v) =>
-                          (v ?? '').trim().isEmpty ? 'Podaj nazwę.' : null,
-                    ),
-                    for (var i = 0; i < doses.length; i++)
-                      Card(
-                        key: ObjectKey(doses[i]),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                  Expanded(
+                    child: ContentLayout(
+                      maxWidth:
+                          MediaQuery.sizeOf(context).width >= 1000 &&
+                              MediaQuery.textScalerOf(context).scale(16) <= 20
+                          ? 1100
+                          : 640,
+                      child: SingleChildScrollView(
+                        padding: ContentLayout.pagePadding(context),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Text(
+                              'Cele, nie wykonanie. Czas ESTYMOWANY: 3 s/powtórzenie, obie strony dla ćwiczeń jednostronnych. Limit szablonu: 90 min.',
+                            ),
+                            if (error.isNotEmpty)
                               Text(
-                                '${i + 1}. ${byId[doses[i].block.exerciseId]?.nazwaPl ?? doses[i].block.exerciseId}',
+                                error,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
                               ),
-                              Wrap(
-                                children: [
-                                  IconButton(
-                                    tooltip: 'Przesuń w górę',
-                                    onPressed: busy || i == 0
-                                        ? null
-                                        : () => setState(() {
-                                            final d = doses.removeAt(i);
-                                            doses.insert(i - 1, d);
-                                          }),
-                                    icon: const Icon(Icons.arrow_upward),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Przesuń w dół',
-                                    onPressed: busy || i == doses.length - 1
-                                        ? null
-                                        : () => setState(() {
-                                            final d = doses.removeAt(i);
-                                            doses.insert(i + 1, d);
-                                          }),
-                                    icon: const Icon(Icons.arrow_downward),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Usuń ćwiczenie',
-                                    onPressed: busy
-                                        ? null
-                                        : () => setState(() {
-                                            doses.removeAt(i).dispose();
-                                          }),
-                                    icon: const Icon(Icons.delete_outline),
-                                  ),
-                                ],
-                              ),
-                              number(doses[i].sets, 'Serie'),
-                              number(
-                                doses[i].amount,
-                                doses[i].block.prescription.tracking == 'reps'
-                                    ? 'Powtórzenia'
-                                    : 'Sekundy (łącznie obie strony)',
-                                maxInteger:
-                                    doses[i].block.prescription.tracking ==
-                                        'reps'
-                                    ? PlanPrescription.maxReps ~/
-                                          (metadata.valueOrNull
-                                                      ?.entryFor(
-                                                        doses[i]
-                                                            .block
-                                                            .exerciseId,
-                                                      )
-                                                      ?.unilateral ==
-                                                  true
-                                              ? 2
-                                              : 1)
-                                    : PlanPrescription.maxSeconds,
-                              ),
-                              number(
-                                doses[i].rest,
-                                'Przerwa między seriami (s)',
-                                zero: true,
-                              ),
-                              number(
-                                doses[i].kg,
-                                'Ciężar (kg, opcjonalnie)',
-                                weight: true,
+                            for (final warning
+                                in original?.warnings ?? <String>[])
+                              Text(warning),
+                            if (lease != null) ...[
+                              const SizedBox(height: 16),
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  if (MediaQuery.sizeOf(context).width >=
+                                          1000 &&
+                                      MediaQuery.textScalerOf(
+                                            context,
+                                          ).scale(16) <=
+                                          20) {
+                                    return Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(flex: 3, child: selection),
+                                        const SizedBox(width: 24),
+                                        Expanded(flex: 2, child: picker),
+                                      ],
+                                    );
+                                  }
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      selection,
+                                      const Divider(height: 32),
+                                      picker,
+                                    ],
+                                  );
+                                },
                               ),
                             ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (lease != null)
+                    SafeArea(
+                      top: false,
+                      child: ContentLayout(
+                        maxWidth: 640,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: FilledButton(
+                            style: FilledButton.styleFrom(
+                              minimumSize: const Size(48, 48),
+                              visualDensity: VisualDensity.standard,
+                            ),
+                            onPressed:
+                                busy || !catalog.hasValue || !metadata.hasValue
+                                ? null
+                                : save,
+                            child: Text(
+                              busy ? 'Zapisywanie…' : 'Zapisz szablon',
+                            ),
                           ),
                         ),
                       ),
-                    FilledButton(
-                      onPressed: busy || !catalog.hasValue || !metadata.hasValue
-                          ? null
-                          : save,
-                      child: const Text('Zapisz szablon'),
                     ),
-                    const Divider(),
-                    TextField(
-                      enabled: !busy,
-                      decoration: const InputDecoration(
-                        labelText: 'Szukaj ćwiczenia',
-                      ),
-                      onChanged: (v) => setState(() => query = v),
-                    ),
-                    if (catalog.hasError || metadata.hasError)
-                      const Text(
-                        'Nie można wczytać katalogu. Ponów otwarcie edytora.',
-                      ),
-                    if (catalog.isLoading || metadata.isLoading)
-                      const LinearProgressIndicator(),
-                    for (final e in matches)
-                      ListTile(
-                        title: Text(e.nazwaPl),
-                        subtitle: Text(e.id),
-                        trailing: IconButton(
-                          tooltip: 'Dodaj ćwiczenie',
-                          onPressed: busy || !metadata.hasValue
-                              ? null
-                              : () => add(e),
-                          icon: const Icon(Icons.add),
-                        ),
-                      ),
-                    const Text(
-                      'Wyszukiwanie pokazuje do 20 wyników. Zawęź nazwę, aby znaleźć kolejne.',
-                    ),
-                  ],
                 ],
               ),
             ),

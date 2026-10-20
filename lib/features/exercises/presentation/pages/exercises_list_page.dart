@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/constants.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/widgets/empty_state.dart';
+import '../../../../core/widgets/content_layout.dart';
 import '../../providers/exercises_providers.dart';
 import '../../providers/filter_presets_providers.dart';
 import '../../data/filter_presets_repository.dart';
@@ -85,129 +86,145 @@ class _ExercisesListPageState extends ConsumerState<ExercisesListPage> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextField(
-                controller: _search,
-                decoration: InputDecoration(
-                  hintText: 'Szukaj ćwiczenia...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: filters.query.isEmpty
-                      ? null
-                      : IconButton(
-                          tooltip: 'Wyczyść wyszukiwanie',
-                          icon: const Icon(Icons.clear),
-                          onPressed: () => ref
-                              .read(exerciseFiltersProvider.notifier)
-                              .update((f) => f.copyWith(query: '')),
-                        ),
-                ),
-                onChanged: (v) => ref
-                    .read(exerciseFiltersProvider.notifier)
-                    .update((f) => f.copyWith(query: v)),
-              ),
-            ),
-            if (!filters.isEmpty) const _ActiveFilters(),
-            TextButton.icon(
-              icon: const Icon(Icons.auto_awesome),
-              label: const Text('Ułóż trening z tych ćwiczeń'),
-              onPressed: () {
-                ref
-                    .read(plannerEntryCriteriaProvider.notifier)
-                    .state = FilterPreset.decodeFilters(
-                  FilterPreset.encodeFilters(filters),
-                );
-                context.push('/settings/planner');
-              },
-            ),
-            if (catalog.isLoading)
-              const LinearProgressIndicator(
-                semanticsLabel: 'Ładowanie klasyfikacji',
-              ),
-            if (!executionVerified)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Nie można zweryfikować wybranych warunków lub pozycji — dane niedostępne albo niezweryfikowane. Kryteriów nie pominięto; wyniki nie są poszerzane.',
-                ),
-              ),
-            if (filters.hasExecutionFilters && executionVerified)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Wyniki obejmują tylko ćwiczenia z odpowiednimi oznaczeniami. Ćwiczenia bez tych danych, także własne, są pomijane.',
-                ),
-              ),
-            if (catalog.hasError)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
+        child: ContentLayout(
+          child: CustomScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Text(
-                        catalog.valueOrNull == null
-                            ? 'Klasyfikacja niedostępna — filtry stylu i mięśni są czasowo pomijane. Wybory zachowano.'
-                            : 'Klasyfikacja niedostępna do odświeżenia — używane są ostatnie dane.',
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: TextField(
+                        controller: _search,
+                        decoration: InputDecoration(
+                          hintText: 'Szukaj ćwiczenia...',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: filters.query.isEmpty
+                              ? null
+                              : IconButton(
+                                  tooltip: 'Wyczyść wyszukiwanie',
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () => ref
+                                      .read(exerciseFiltersProvider.notifier)
+                                      .update((f) => f.copyWith(query: '')),
+                                ),
+                        ),
+                        onChanged: (v) => ref
+                            .read(exerciseFiltersProvider.notifier)
+                            .update((f) => f.copyWith(query: v)),
                       ),
                     ),
-                    IconButton(
-                      tooltip: 'Ponów klasyfikację',
-                      onPressed: () =>
-                          ref.invalidate(exerciseCatalogMetadataProvider),
-                      icon: const Icon(Icons.refresh),
+                    if (!filters.isEmpty) const _ActiveFilters(),
+                    TextButton.icon(
+                      icon: const Icon(Icons.auto_awesome),
+                      label: const Text('Ułóż trening z tych ćwiczeń'),
+                      onPressed: () {
+                        ref
+                            .read(plannerEntryCriteriaProvider.notifier)
+                            .state = FilterPreset.decodeFilters(
+                          FilterPreset.encodeFilters(filters),
+                        );
+                        context.push('/settings/planner');
+                      },
                     ),
+                    if (catalog.isLoading)
+                      const LinearProgressIndicator(
+                        semanticsLabel: 'Ładowanie klasyfikacji',
+                      ),
+                    if (!executionVerified)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'Nie można zweryfikować wybranych warunków lub pozycji — dane niedostępne albo niezweryfikowane. Kryteriów nie pominięto; wyniki nie są poszerzane.',
+                        ),
+                      ),
+                    if (filters.hasExecutionFilters && executionVerified)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'Wyniki obejmują tylko ćwiczenia z odpowiednimi oznaczeniami. Ćwiczenia bez tych danych, także własne, są pomijane.',
+                        ),
+                      ),
+                    if (catalog.hasError)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                catalog.valueOrNull == null
+                                    ? 'Klasyfikacja niedostępna — filtry stylu i mięśni są czasowo pomijane. Wybory zachowano.'
+                                    : 'Klasyfikacja niedostępna do odświeżenia — używane są ostatnie dane.',
+                              ),
+                            ),
+                            IconButton(
+                              tooltip: 'Ponów klasyfikację',
+                              onPressed: () => ref.invalidate(
+                                exerciseCatalogMetadataProvider,
+                              ),
+                              icon: const Icon(Icons.refresh),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (catalog.isLoading &&
+                        catalog.valueOrNull == null &&
+                        (filters.styles.isNotEmpty ||
+                            filters.muscles.isNotEmpty))
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'Ładowanie klasyfikacji — filtry stylu i mięśni są czasowo pomijane. Wybory zachowano.',
+                        ),
+                      ),
                   ],
                 ),
               ),
-            if (catalog.isLoading &&
-                catalog.valueOrNull == null &&
-                (filters.styles.isNotEmpty || filters.muscles.isNotEmpty))
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'Ładowanie klasyfikacji — filtry stylu i mięśni są czasowo pomijane. Wybory zachowano.',
+              source.when(
+                loading: () => const SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
                 ),
-              ),
-            Expanded(
-              child: source.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Nie udało się wczytać ćwiczeń'),
-                      TextButton(
-                        onPressed: () => ref.invalidate(allExercisesProvider),
-                        child: const Text('Spróbuj ponownie'),
-                      ),
-                    ],
+                error: (_, __) => SliverToBoxAdapter(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Nie udało się wczytać ćwiczeń'),
+                        TextButton(
+                          onPressed: () => ref.invalidate(allExercisesProvider),
+                          child: const Text('Spróbuj ponownie'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 data: (_) => catalog.isLoading && exercises.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
-                    : Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Text('Wyniki: ${exercises.length}'),
+                    ? const SliverToBoxAdapter(
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : SliverMainAxisGroup(
+                        slivers: [
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Text('Wyniki: ${exercises.length}'),
+                            ),
                           ),
-                          Expanded(
-                            child: exercises.isEmpty
-                                ? const EmptyState(
+                          exercises.isEmpty
+                              ? const SliverToBoxAdapter(
+                                  child: EmptyState(
                                     icon: Icons.search_off,
                                     title: 'Brak wyników',
                                     subtitle:
                                         'Zmień filtry lub wyszukiwaną frazę',
-                                  )
-                                : ListView.separated(
-                                    keyboardDismissBehavior:
-                                        ScrollViewKeyboardDismissBehavior
-                                            .onDrag,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                    ),
+                                  ),
+                                )
+                              : SliverPadding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  sliver: SliverList.separated(
                                     itemCount: exercises.length,
                                     separatorBuilder: (_, __) =>
                                         const SizedBox(height: 10),
@@ -252,12 +269,12 @@ class _ExercisesListPageState extends ConsumerState<ExercisesListPage> {
                                       );
                                     },
                                   ),
-                          ),
+                                ),
                         ],
                       ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -480,11 +497,11 @@ class _ActiveFilters extends ConsumerWidget {
           ),
         ),
     ];
-    return SizedBox(
-      height: 52,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
           ...chips(
             f.conditions,

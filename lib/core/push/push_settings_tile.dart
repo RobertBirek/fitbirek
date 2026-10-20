@@ -134,13 +134,20 @@ class _PushSettingsTileState extends ConsumerState<PushSettingsTile> {
             tooltip: 'Odśwież status push',
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'iPhone/iPad: Safari → Udostępnij → Do ekranu początkowego (iOS 16.4+). '
-            'Android/komputer: menu przeglądarki → Zainstaluj aplikację. '
-            'Godziny: Europe/Warsaw. Dostarczenie może być opóźnione przez system.',
-          ),
+        ExpansionTile(
+          key: ValueKey(needsInstall),
+          initiallyExpanded: needsInstall,
+          title: const Text('Jak włączyć powiadomienia na urządzeniu'),
+          children: const [
+            Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Text(
+                'iPhone/iPad: Safari → Udostępnij → Do ekranu początkowego (iOS 16.4+). '
+                'Android/komputer: menu przeglądarki → Zainstaluj aplikację. '
+                'Godziny: Europe/Warsaw. Dostarczenie może być opóźnione przez system.',
+              ),
+            ),
+          ],
         ),
         for (final entry in const {
           'karate': 'Aktywności zewnętrzne — harmonogram',
