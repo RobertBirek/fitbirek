@@ -3,6 +3,14 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
+Prepared web **1.18.1+33 on 2026-10-20 — BLOCKED, NOT DEPLOYED**:
+clean source `4f763e5`, analysis/version check passed, but the canonical build
+ended **1341 Flutter PASS / 1 FAIL** (repeat-preview widget timeout, also
+reproduced twice in focused runs). Fresh backup and isolated restore passed.
+No serving rollout, production migration, configuration change or push.
+**Current production remains API + web 1.18.0+32** below. Evidence and limits:
+[blocked web release 1.18.1+33](docs/releases/2026-10-20-web-1.18.1-33.md).
+
 Current API + web **1.18.0+32 deployed 2026-10-20**: sender/API at
 **04:45:33/34 UTC**, web at **04:45:47 UTC**, public verification **04:46:27 UTC**.
 Recurring external/FitBirek activities, shared Today/week schedule and guarded
