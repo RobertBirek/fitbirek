@@ -3,6 +3,7 @@ import 'package:drift/remote.dart';
 // ignore: depend_on_referenced_packages
 import 'package:stream_channel/stream_channel.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
+import 'legacy_schema.dart';
 
 class OldSchemaClient extends AppDatabase {
   OldSchemaClient(super.e) : super.forTesting();
@@ -15,9 +16,7 @@ class OldSchemaClient extends AppDatabase {
     onCreate: (m) async {
       await m.createAll();
       // Fixture only: previous compiled release's actual schema.
-      await customStatement(
-        'ALTER TABLE user_profiles DROP COLUMN weekly_schedule_json',
-      );
+      await removeV13Columns(this);
     },
     beforeOpen: (_) async {
       opens++;

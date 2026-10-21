@@ -245,6 +245,11 @@ void main() {
     await tester.scrollUntilVisible(
       find.byTooltip('Edytuj pomiar ręczny'),
       300,
+      scrollable: find
+          .byWidgetPredicate(
+            (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+          )
+          .first,
     );
     expect(find.byTooltip('Edytuj pomiar ręczny'), findsOneWidget);
     expect(find.byTooltip('Usuń importowaną próbkę'), findsOneWidget);
@@ -267,7 +272,15 @@ void main() {
     expect(edited.syncId, original.syncId);
     expect(edited.wagaKg, 73.5);
     expect(edited.obwodKlatki, isNull);
-    await tester.scrollUntilVisible(find.byTooltip('Usuń pomiar ręczny'), 200);
+    await tester.scrollUntilVisible(
+      find.byTooltip('Usuń pomiar ręczny'),
+      200,
+      scrollable: find
+          .byWidgetPredicate(
+            (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+          )
+          .first,
+    );
     await tester.tap(find.byTooltip('Usuń pomiar ręczny'));
     await tester.pumpAndSettle();
     expect(find.textContaining('73.5 kg'), findsWidgets);

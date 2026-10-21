@@ -47,7 +47,7 @@ void main() {
     },
   );
   test(
-    'real RPC: old open server must not admit new schema13 client or writes',
+    'real RPC: old open server must not admit new schema14 client or writes',
     () async {
       final raw = sqlite.sqlite3.openInMemory();
       final server = DriftServer(
@@ -150,7 +150,7 @@ void main() {
         raw.dispose();
       });
       await fresh.customSelect('SELECT 1').get();
-      expect(raw.userVersion, 13);
+      expect(raw.userVersion, 14);
       expect(fresh.upgrades, 1);
       expect(await _rows(fresh, 'sync_outbox'), before);
       expect(await _rows(fresh, 'workout_sessions'), sessions);
@@ -181,7 +181,7 @@ void main() {
   test(
     'future schema fails closed before Drift can downgrade user_version',
     () async {
-      final raw = sqlite.sqlite3.openInMemory()..userVersion = 14;
+      final raw = sqlite.sqlite3.openInMemory()..userVersion = 15;
       final db = AppDatabase.forTesting(
         NativeDatabase.opened(raw, closeUnderlyingOnClose: false),
       );
@@ -190,7 +190,7 @@ void main() {
         raw.dispose();
       });
       await expectLater(db.customSelect('SELECT 1').get(), throwsStateError);
-      expect(raw.userVersion, 14);
+      expect(raw.userVersion, 15);
     },
   );
 
@@ -198,7 +198,7 @@ void main() {
     test(
       'future schema over real RPC fails closed, alreadyOpen=$alreadyOpen',
       () async {
-        final raw = sqlite.sqlite3.openInMemory()..userVersion = 14;
+        final raw = sqlite.sqlite3.openInMemory()..userVersion = 15;
         final executor = NativeDatabase.opened(
           raw,
           closeUnderlyingOnClose: false,
@@ -221,11 +221,11 @@ void main() {
           db.customSelect('SELECT 1').get(),
           throwsA(
             isA<DatabaseSchemaMismatch>()
-                .having((e) => e.actual, 'actual', 14)
-                .having((e) => e.expected, 'expected', 13),
+                .having((e) => e.actual, 'actual', 15)
+                .having((e) => e.expected, 'expected', 14),
           ),
         );
-        expect(raw.userVersion, 14);
+        expect(raw.userVersion, 15);
       },
     );
   }
@@ -234,5 +234,5 @@ void main() {
 class _FutureClient extends AppDatabase {
   _FutureClient(super.e) : super.forTesting();
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 }

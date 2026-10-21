@@ -195,7 +195,7 @@ void main() {
                 .first,
           )
           .color!;
-      for (final label in ['25', '1 października']) {
+      for (final label in ['12', '1 października']) {
         final text = tester.widget<Text>(find.text(label).first);
         expect(
           contrast(text.style!.color!, background),
@@ -217,7 +217,9 @@ void main() {
         ),
         inCard: true,
       );
-      final rows = find.textContaining(RegExp(r'^\d+\.0 powt • .* • score '));
+      final rows = find.textContaining(
+        RegExp(r'^\d+\.0 powt • \d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$'),
+      );
       expect(rows, findsNWidgets(5));
       expect(find.textContaining('Najnowszy wynik: 20.0 powt'), findsOneWidget);
       expect(
@@ -280,7 +282,9 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Wyniki 1–2 z 7'), findsOneWidget);
         expect(
-          find.textContaining(RegExp(r'^\d+\.0 powt • .* • score ')),
+          find.textContaining(
+            RegExp(r'^\d+\.0 powt • \d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$'),
+          ),
           findsNWidgets(2),
         );
         await tester.tap(find.text('Plank (czas)'));
@@ -392,14 +396,14 @@ void main() {
           find.textContaining('Najnowszy wynik: 20.0 powt'),
           findsOneWidget,
         );
-        final first = find.text('12.0 powt • 01.10.2026 00:00 • score 10/100');
-        final last = find.text('20.0 powt • 03.10.2026 00:00 • score 30/100');
+        final first = find.text('12.0 powt • 01.10.2026 00:00');
+        final last = find.text('20.0 powt • 03.10.2026 00:00');
         expect(
           tester.getTopLeft(first).dy,
           lessThan(tester.getTopLeft(last).dy),
         );
         expect(
-          find.bySemanticsLabel('12.0 powt • 01.10.2026 00:00 • score 10/100'),
+          find.bySemanticsLabel('12.0 powt • 01.10.2026 00:00'),
           findsOneWidget,
         );
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);

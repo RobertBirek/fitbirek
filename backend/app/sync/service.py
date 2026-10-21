@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.health.contract import HEALTH_SAMPLE_ENTITY_TYPE
 from app.sync.models import SyncChange, SyncOperation, SyncRecord
+from app.sync.fitness_protocols import validate_fitness_payload
 from app.sync.schemas import (
     AcceptedOperation,
     PullResponse,
@@ -26,7 +27,8 @@ from app.sync.schemas import (
 pull_limit = 500
 publisher_lock_key = "sync-change-publisher"
 optional_extension_keys = {
-    "profile": ("filterPresets", "exerciseVariants", "weeklySchedule"),
+    "profile": ("filterPresets", "exerciseVariants", "weeklySchedule", "fitnessProtocols"),
+    "fitnessTest": ("customProtocol",),
     "workoutSession": ("guidance",),
     "workoutSet": ("variantId", "variantLabel", "side"),
     "personalRecord": ("variantId", "variantLabel", "side"),
@@ -109,7 +111,8 @@ def copy_planned_record(record: PlannedRecord) -> PlannedRecord:
 
 def revised_record_payload(operation: PushOperation, record: PlannedRecord) -> dict:
     # Only the stored snapshot is extended, never the attempted operation used
-    # by request_digest. Explicit null is present and therefore clears a value.
+    # by request_digest. Explicit null is present, not an omission; extension
+    # validators below may reject clearing immutable fitness data.
     payload = deepcopy(operation.payload)
     # Server-first rollout: measurement edits may omit data only when the
     # current live record supplies it. Never revise the idempotency input.
@@ -276,7 +279,11 @@ async def push_operations(
             # All identity/hash, server-ownership and CAS checks above operate
             # on the original request. Revision remains inside this transaction
             # and is discarded with the whole batch on any later conflict.
-            record.payload = record.payload if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else revised_record_payload(operation, record)
+            revised = record.payload if operation.entity_type == HEALTH_SAMPLE_ENTITY_TYPE else revised_record_payload(operation, record)
+            validate_fitness_payload(operation.entity_type, revised, record.payload,
+                                     live=record.version > 0 and record.deleted_at is None,
+                                     deleted=operation.deleted)
+            record.payload = revised
             record.version += 1
             record.deleted_at = deleted_at
             record.updated_at = updated_at

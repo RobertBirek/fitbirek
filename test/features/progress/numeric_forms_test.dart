@@ -9,6 +9,7 @@ import 'package:fitbirek_training/features/progress/measurements/presentation/pa
 import 'package:fitbirek_training/features/progress/tests/data/tests_repository.dart';
 import 'package:fitbirek_training/features/progress/tests/providers/tests_providers.dart';
 import 'package:fitbirek_training/features/progress/tests/presentation/pages/run_test_page.dart';
+import 'fitness_ui_support.dart';
 
 class Saves {
   final calls = <Map<Symbol, dynamic>>[];
@@ -17,7 +18,7 @@ class Saves {
   Future<void> save(Invocation invocation) async {
     calls.add(invocation.namedArguments);
     if (pending != null) await pending!.future;
-    if (fail) throw StateError('database unavailable');
+    if (fail) throw Exception('database unavailable');
   }
 }
 
@@ -29,8 +30,27 @@ class MeasurementsFake implements MeasurementsRepository {
 }
 
 class TestsFake implements TestsRepository {
-  TestsFake(this.saves);
+  TestsFake(this.saves, this.leases);
   final Saves saves;
+  final TestsRepository leases;
+  @override
+  Future<FitnessWriteLease> captureLease({
+    String? protocolId,
+    bool Function()? isCurrent,
+  }) => leases.captureLease(protocolId: protocolId, isCurrent: isCurrent);
+  @override
+  Future<void> addLegacyResult(
+    FitnessWriteLease lease, {
+    required dynamic typ,
+    required double value,
+    required DateTime performedAt,
+  }) => saves.save(
+    Invocation.method(
+      #addLegacyResult,
+      [lease],
+      {#typ: typ, #wynik: value, #performedAt: performedAt},
+    ),
+  );
   @override
   dynamic noSuchMethod(Invocation invocation) => saves.save(invocation);
 }
@@ -39,13 +59,17 @@ void main() {
   for (final measurement in [true, false]) {
     final name = measurement ? 'measurement' : 'fitness';
     Future<void> open(WidgetTester tester, Saves saves) async {
+      final fixture = await fitnessUiFixture();
+      addTearDown(fixture.db.close);
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             measurementsRepositoryProvider.overrideWithValue(
               MeasurementsFake(saves),
             ),
-            testsRepositoryProvider.overrideWithValue(TestsFake(saves)),
+            testsRepositoryProvider.overrideWithValue(
+              TestsFake(saves, fixture.repo),
+            ),
           ],
           child: MaterialApp(
             home: Builder(
@@ -75,7 +99,11 @@ void main() {
 
     Future<void> submit(WidgetTester tester) async {
       final button = find.byType(ElevatedButton);
-      await tester.ensureVisible(button);
+      await tester.scrollUntilVisible(
+        button,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(button);
       await tester.pump();
     }
@@ -172,7 +200,12 @@ void main() {
         saves.pending!.complete();
         await tester.pumpAndSettle();
         expect(find.text('12.5'), findsOneWidget);
-        expect(find.textContaining('Spróbuj ponownie'), findsOneWidget);
+        expect(
+          find.textContaining(
+            measurement ? 'Spróbuj ponownie' : 'Nie udało się zapisać',
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
         saves
           ..pending = null

@@ -1,10 +1,16 @@
 import 'dart:convert';
 import '../../features/exercises/domain/filter_preset.dart';
 import '../../features/schedule/domain/weekly_schedule.dart';
+import '../../features/progress/tests/domain/fitness_protocol.dart';
 
 /// Profile-owned versioned collections. Never prune tombstones or malformed data.
 abstract final class UserCollections {
-  static const keys = ['filterPresets', 'exerciseVariants', 'weeklySchedule'];
+  static const keys = [
+    'filterPresets',
+    'exerciseVariants',
+    'weeklySchedule',
+    'fitnessProtocols',
+  ];
   static const maxEntries = 500;
   static const maxBytes = 262144;
   static final _uuid = RegExp(
@@ -23,9 +29,18 @@ abstract final class UserCollections {
       bad();
     }
     final map = Map<String, dynamic>.from(value);
+    if (key == 'fitnessProtocols' &&
+        (map.length != 2 || map['version'] is! int)) {
+      bad();
+    }
     final entries = map['entries'] as List;
-    if (entries.length > maxEntries ||
-        utf8.encode(jsonEncode(map)).length > maxBytes) {
+    int bytes;
+    try {
+      bytes = utf8.encode(jsonEncode(map)).length;
+    } on JsonUnsupportedObjectError {
+      bad();
+    }
+    if (entries.length > maxEntries || bytes > maxBytes) {
       bad();
     }
     final ids = <String>{};
@@ -39,7 +54,14 @@ abstract final class UserCollections {
     for (final raw in entries) {
       if (raw is! Map) bad();
       final e = Map<String, dynamic>.from(raw);
-      if (!isUuid(e['id']) || !ids.add(e['id'] as String)) bad();
+      if (!isUuid(e['id']) ||
+          !ids.add(
+            key == 'fitnessProtocols'
+                ? (e['id'] as String).toLowerCase()
+                : e['id'] as String,
+          )) {
+        bad();
+      }
       final name = e['name'];
       if (name is! String || name.trim().isEmpty || name.runes.length > 80) {
         bad();
@@ -51,7 +73,9 @@ abstract final class UserCollections {
           date(e['deletedAtUtc']).isAfter(updated)) {
         bad();
       }
-      if (key == 'filterPresets') {
+      if (key == 'fitnessProtocols') {
+        FitnessProtocol.fromJson(e);
+      } else if (key == 'filterPresets') {
         if (e['filters'] is! Map) bad();
         FilterPreset.decodeFilters(
           Map<String, dynamic>.from(e['filters'] as Map),
@@ -93,6 +117,32 @@ abstract final class UserCollections {
     return jsonEncode(sorted(v));
   }
 
+  /// A live profile cannot prune old revisions or rewrite their rules. Optional
+  /// nullable rule keys are normalized by the domain parser before comparing.
+  static void requireFitnessPreserved(Object? previous, Object? next) {
+    final a = validate('fitnessProtocols', previous ?? empty());
+    final b = validate('fitnessProtocols', next ?? empty());
+    final byId = {
+      for (final raw in b['entries'] as List)
+        raw['id']: FitnessProtocol.fromJson(
+          Map<String, dynamic>.from(raw as Map),
+        ),
+    };
+    for (final raw in a['entries'] as List) {
+      final old = FitnessProtocol.fromJson(
+        Map<String, dynamic>.from(raw as Map),
+      );
+      final fresh = byId[old.id];
+      if (fresh == null ||
+          !old.hasSameRevisionRules(fresh) ||
+          (old.isArchived && !fresh.isArchived)) {
+        throw const FormatException(
+          'Nie można usunąć ani zmienić dawnych zasad testu. Dane zachowano.',
+        );
+      }
+    }
+  }
+
   static Map<String, dynamic> merge(String key, Object? local, Object? remote) {
     final a = validate(key, local ?? empty());
     final b = validate(key, remote ?? empty());
@@ -104,6 +154,14 @@ abstract final class UserCollections {
       if (old == null) {
         byId[id] = e;
         continue;
+      }
+      if (key == 'fitnessProtocols' &&
+          !FitnessProtocol.fromJson(
+            old,
+          ).hasSameRevisionRules(FitnessProtocol.fromJson(e))) {
+        throw const FormatException(
+          'Konflikt niezmiennych zasad testu. Dane zachowano.',
+        );
       }
       var cmp = DateTime.parse(
         e['updatedAtUtc'] as String,

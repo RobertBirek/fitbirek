@@ -78,6 +78,11 @@ void main() {
       await tester.scrollUntilVisible(
         find.byTooltip('Usuń importowaną próbkę'),
         300,
+        scrollable: find
+            .byWidgetPredicate(
+              (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+            )
+            .first,
       );
       await tester.ensureVisible(find.byTooltip('Usuń importowaną próbkę'));
       await tester.pumpAndSettle();

@@ -9,6 +9,8 @@ import 'package:drift/drift.dart';
 import '../sync/sync_store.dart';
 import '../sync/user_collections.dart';
 import '../../features/workout/domain/workout_guidance.dart';
+import '../../features/progress/tests/domain/fitness_protocol.dart';
+import '../models/fitness_test.dart';
 
 /// Wynik operacji importu - do wyświetlenia użytkownikowi.
 class ImportResult {
@@ -48,7 +50,7 @@ class ImportResult {
 /// nie na dart:io File, więc nie ma rozjazdu platformowego (patrz
 /// ARCHITECTURE.md sekcja o Drift multi-platform dla analogicznego problemu).
 class BackupService {
-  static const int currentSchemaVersion = 2;
+  static const int currentSchemaVersion = 3;
 
   final AppDatabase db;
 
@@ -398,6 +400,9 @@ class BackupService {
         final incoming = json[column] as String?;
         if (!json.containsKey(column)) {
           json[column] = stored;
+        } else if (incoming == null && key == 'fitnessProtocols') {
+          // Rules and tombstones are never erased by NULL or an old backup.
+          json[column] = stored;
         } else if (incoming == null) {
           // NULL in the archive is an explicit intent, unlike a legacy missing
           // key. Carry it into the first wire operation before coalescing.
@@ -543,6 +548,16 @@ class BackupService {
     var n = 0;
     for (final item in list) {
       final row = FitnessTestResultData.fromJson(_withFreshSyncMetadata(item));
+      if (row.customProtocolJson != null || row.typ == 'customFitnessTestV1') {
+        final parsed = CustomFitnessResult.fromRow(row);
+        if (!parsed.isAvailable) {
+          throw const FormatException(
+            'Nieczytelny snapshot wyniku własnego testu.',
+          );
+        }
+      } else if (!TypTestu.values.any((t) => t.name == row.typ)) {
+        throw const FormatException('Nieobsługiwany typ testu w backupie.');
+      }
       await db
           .into(db.fitnessTestResults)
           .insertOnConflictUpdate(row.toCompanion(true));

@@ -7,6 +7,23 @@ import 'profile_payload.dart';
 import '../../features/planner/domain/structured_plan.dart';
 import '../../features/planner/data/plan_sync_payload.dart';
 import '../../features/workout/domain/workout_guidance.dart';
+import '../../features/progress/tests/domain/fitness_protocol.dart';
+
+String _frozenFitnessWrapper(Object? value) {
+  if (value is Map && value['snapshot'] is Map) {
+    try {
+      return UserCollections.canonical({
+        ...value,
+        'snapshot': FitnessProtocol.fromJson(
+          Map<String, dynamic>.from(value['snapshot'] as Map),
+        ).toJson(),
+      });
+    } on FormatException {
+      /* Keep an unreadable historical snapshot byte-semantically frozen. */
+    }
+  }
+  return UserCollections.canonical(value);
+}
 
 /// Maps the wire UUID identity to device-local integer keys. All callers that
 /// apply a page or acknowledgement use a database transaction.
@@ -113,7 +130,10 @@ class SyncStore {
           .map((r) => jsonDecode(r.read<String>('payload_json')) as Map)
           .where((p) => p.containsKey(key))
           .firstOrNull;
-      if (raw == null && latest != null && latest[key] == null) {
+      if (key != 'fitnessProtocols' &&
+          raw == null &&
+          latest != null &&
+          latest[key] == null) {
         merged[key] = null;
         if (remote[key] != null) changed = true;
       } else if (raw != null) {
@@ -298,7 +318,9 @@ class SyncStore {
     // local data even if an older client already stored an invalid structure.
     final planTombstone =
         type == SyncEntityType.workoutPlan && record['deletedAt'] != null;
-    final json = planTombstone
+    final fitnessTombstone =
+        type == SyncEntityType.fitnessTest && record['deletedAt'] != null;
+    final json = planTombstone || fitnessTombstone
         ? Map<String, dynamic>.from(existing!)
         : Map<String, dynamic>.from(record['payload'] as Map);
     json.remove('id');
@@ -327,6 +349,42 @@ class SyncStore {
           json[column] = existing?[column];
         } else {
           final value = json.remove(key);
+          if (key == 'fitnessProtocols' &&
+              record['deletedAt'] == null &&
+              existing?[column] != null) {
+            try {
+              final local = jsonDecode(existing![column] as String);
+              final pending =
+                  await (db.select(db.syncOutbox)..where(
+                        (o) =>
+                            o.entityType.equals('profile') &
+                            o.entityId.equals(id),
+                      ))
+                      .get();
+              // A dirty row includes unpublished revisions: their absence from a
+              // CAS/pull snapshot is not evidence of pruning server history.
+              // Validate the complete per-ID union (including immutable rules),
+              // but retain the ORIGINAL remote record in defer below. Pending
+              // profile operations keep their old CAS base and must merge again
+              // before publishing; neither attempted payload nor digest changes.
+              final preserved = pending.isEmpty
+                  ? value
+                  : UserCollections.merge('fitnessProtocols', local, value);
+              UserCollections.requireFitnessPreserved(local, preserved);
+            } on FormatException {
+              // Keep both rule snapshots and all siblings. A profile-only hold
+              // does not prevent independent records in this pull page applying.
+              record = {
+                ...record,
+                profileCollectionHold:
+                    record[profileCollectionHold] ??
+                    {
+                      'rejectedOperationIds': <String>[],
+                      'quarantinedRecord': record,
+                    },
+              };
+            }
+          }
           if (value != null && record['deletedAt'] == null) {
             try {
               UserCollections.validate(key, value);
@@ -339,6 +397,40 @@ class SyncStore {
           json[column] = value == null ? null : jsonEncode(value);
         }
       }
+    }
+    if (type == SyncEntityType.fitnessTest && !fitnessTombstone) {
+      final oldRaw = existing?['customProtocolJson'] as String?;
+      final oldCustom =
+          oldRaw != null || existing?['typ'] == 'customFitnessTestV1';
+      final payload = record['payload'] as Map;
+      if (oldCustom ||
+          payload.containsKey('customProtocol') ||
+          payload['typ'] == 'customFitnessTestV1') {
+        const fields = {'typ', 'data', 'wynik', 'score', 'customProtocol'};
+        if (payload.keys.any((k) => !fields.contains(k))) {
+          throw const InvalidSyncRecord('Unknown custom fitness result fields');
+        }
+      }
+      if (!json.containsKey('customProtocol') && oldRaw != null) {
+        json['customProtocol'] = jsonDecode(oldRaw);
+      }
+      final custom = json.remove('customProtocol');
+      if (custom != null || json['typ'] == 'customFitnessTestV1') {
+        _wire(() => FitnessProtocol.validateUtcDate(json['data']));
+      }
+      if (oldCustom &&
+          (json['typ'] != 'customFitnessTestV1' ||
+              _frozenFitnessWrapper(custom) !=
+                  _frozenFitnessWrapper(
+                    oldRaw == null ? null : jsonDecode(oldRaw),
+                  ))) {
+        throw const InvalidSyncRecord(
+          'A custom result snapshot cannot change or become legacy',
+        );
+      }
+      // Unknown versions or corrupt snapshots remain raw in the row, isolated
+      // by CustomFitnessResult. No global pull/cursor or history is discarded.
+      json['customProtocolJson'] = custom == null ? null : jsonEncode(custom);
     }
     if ((type == SyncEntityType.workoutSet ||
             type == SyncEntityType.personalRecord) &&
@@ -628,7 +720,36 @@ class SyncStore {
           );
           if (!deleted && !tombstone) {
             for (final key in profileCollectionClears) {
+              if (key == 'fitnessProtocols') {
+                throw const FormatException(
+                  'Nie można wyczyścić historii zasad testów.',
+                );
+              }
               if (!json.containsKey(key)) json[key] = null;
+            }
+          }
+        }
+        if (type == SyncEntityType.fitnessTest) {
+          final raw = json.remove('customProtocolJson') as String?;
+          if (deleted || tombstone) {
+            // A tombstone must also work for unreadable historical raw JSON;
+            // deletion is identity-only, never a forced legacy conversion.
+            await db.syncDao.enqueueDelete(
+              entityType: type,
+              entityId: id,
+              baseVersion: v,
+              payload: const {},
+              preserveLocal: true,
+            );
+            continue;
+          }
+          if (raw != null) json['customProtocol'] = jsonDecode(raw);
+          if (!deleted &&
+              !tombstone &&
+              (raw != null || json['typ'] == 'customFitnessTestV1')) {
+            final p = FitnessProtocol.validateResultPayload(json, stored: true);
+            if (p.metric == FitnessMetric.reps) {
+              json['wynik'] = (json['wynik'] as num).toInt();
             }
           }
         }

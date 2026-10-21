@@ -7,6 +7,7 @@ import '../../sync/sync_models.dart';
 import '../../sync/user_collections.dart';
 import '../app_database.dart';
 import '../tables/sync_tables.dart';
+import '../../../features/progress/tests/domain/fitness_protocol.dart';
 
 part 'sync_dao.g.dart';
 
@@ -71,6 +72,11 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
     final snapshot = Map<String, dynamic>.from(
       jsonDecode(jsonEncode(payload)) as Map,
     );
+    if (entityType == SyncEntityType.fitnessTest &&
+        (snapshot['typ'] == 'customFitnessTestV1' ||
+            snapshot['customProtocol'] != null)) {
+      FitnessProtocol.validateResultPayload(snapshot);
+    }
     if (entityType == SyncEntityType.profile) {
       for (final key in UserCollections.keys) {
         if (snapshot[key] != null) UserCollections.validate(key, snapshot[key]);

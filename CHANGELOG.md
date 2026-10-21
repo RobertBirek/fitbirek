@@ -6,6 +6,23 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.21.0+37] — 2026-10-21
+
+### Added
+- Własne testy dla dowolnego ćwiczenia: karta z ilustracją, warunki próby,
+  jednostka, kierunek poprawy, wersje zasad oraz rzeczywista data i godzina.
+- Wejścia z bazy i karty ćwiczenia, historia porównywalnych wyników bez
+  arbitralnej punktacji; wyniki testów oddzielone od treningów, serii i PR.
+- Nowe sekcje Postępów: Ciało, Testy, Trening; surowe jednostki dawnych testów.
+- Lokalny krój Barlow Condensed do kart wyników, z dołączoną licencją OFL.
+
+### Data And Deployment Notes
+- Drift13→14: dwie nullable kolumny bez przeliczenia starych wyników; backup
+  format3 zachowuje protokoły/snapshoty, nadal czytane są stare formaty1/2.
+- API z ochroną omission nowych rozszerzeń musi poprzedzać web. Bez nowych
+  encji sync, migracji PostgreSQL, zmian zależności i artefaktów Web SQLite.
+- Kandydat lokalny; bez publikacji i danych testowych na kontach produkcyjnych.
+
 ## [1.20.0+36] — 2026-10-21
 
 ### Added

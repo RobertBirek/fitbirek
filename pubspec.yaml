@@ -2,7 +2,7 @@ name: fitbirek_training
 description: "FitBirek - osobisty asystent treningowy do treningow domowych."
 publish_to: 'none'
 
-version: 1.20.0+36
+version: 1.21.0+37
 
 environment:
   sdk: ^3.9.2
@@ -89,8 +89,13 @@ flutter:
     - assets/exercises/
     - assets/sounds/
     - assets/fonts/LICENSE.txt
+    - assets/fonts/fitness_tests/OFL.txt
 
   fonts:
+    - family: FitnessTestDisplay
+      fonts:
+        - asset: assets/fonts/fitness_tests/BarlowCondensed-SemiBold.ttf
+          weight: 600
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter-Regular.ttf

@@ -13,7 +13,8 @@ kluczami istniejącego payloadu JSONB:
 
 | entityType | Klucze zachowywane przy pominięciu |
 | --- | --- |
-| `profile` | `filterPresets`, `exerciseVariants`, `weeklySchedule` |
+| `profile` | `filterPresets`, `exerciseVariants`, `weeklySchedule`, `fitnessProtocols` |
+| `fitnessTest` | `customProtocol` |
 | `workoutSession` | `guidance` |
 | `workoutSet` | `variantId`, `variantLabel`, `side` |
 | `personalRecord` | `variantId`, `variantLabel`, `side` |
@@ -22,7 +23,8 @@ kluczami istniejącego payloadu JSONB:
 Przy zaakceptowanym UPSERT istniejącego, żywego rekordu każdy z tych kluczy
 jest kopiowany z aktualnego snapshotu tylko wtedy, gdy żądanie go **nie zawiera**.
 Jawne `null` zapisuje `null` (wyczyszczenie); obecna wartość zastępuje całą
-poprzednią wartość, bez deep merge. Pozostałe klucze nadal podlegają zwykłemu
+poprzednią wartość, bez deep merge (wyjątek: niezmienne rewizje testów poniżej).
+Pozostałe klucze nadal podlegają zwykłemu
 zastąpieniu payloadu. Nowe rekordy nie dostają wartości domyślnych.
 
 `side` jest chronione tylko dla serii i rekordów osobistych. Jawne `null`
@@ -116,7 +118,7 @@ waliduje obsługiwany v1 przed zaplanowaniem powiadomień; nie naprawia JSON.
 Omission zachowuje również uprzednio zapisany `weeklySchedule: null`;
 jawny `null` czyści kolekcję, a obecna wartość zastępuje ją w całości.
 
-Backend nie waliduje semantyki kolekcji, nazw, parametrów ani wersji mapy guidance;
+Backend nie waliduje semantyki tych trzech kolekcji, nazw, parametrów ani wersji mapy guidance;
 nadal stosuje istniejący kontrakt JSON (w tym zakaz NaN/Infinity) i limity batcha.
 Pełna walidacja, wznowienie treningu, podsumowanie i porównania wariantów
 pozostają do implementacji w kliencie.
@@ -245,3 +247,58 @@ Logi lokalnej weryfikacji:
 Zachowanie wymaga przyszłego, osobno zatwierdzonego wdrożenia API przed
 poleganiem na ochronie omission w nowych klientach. Ta zmiana nie wymaga nowej
 migracji Alembic. Nie stanowi zgody na operacje produkcyjne ani zmiany Compose.
+
+## Własne testy sprawnościowe v1 — 2026-10-21
+
+Kontrakt: `docs/superpowers/specs/2026-10-21-custom-fitness-tests.md`;
+wspólny fixture: `tests/fixtures/fitness_protocol_v1.json` w katalogu repozytorium.
+Walidator `app/sync/fitness_protocols.py` dotyczy wyłącznie dwóch istniejących
+typów encji, bez SQL/migracji, treningów, PR ani fikcyjnych wyników definicji:
+
+- `profile.fitnessProtocols`: opcjonalne/null lub ścisłe `{version:1, entries}`,
+  maksymalnie 500 wpisów wraz z tombstone'ami i 262144 bajty kanonicznego JSON
+  UTF-8. Wpis ma wyłącznie znane pola v1 i maksymalnie 32768 bajtów. Nieznane
+  wersje/pola są odrzucane, nie obcinane. Długości tekstów to punkty Unicode
+  (`len` w Pythonie), nie bajty ani jednostki UTF-16.
+- UUID rewizji/rodziny i opcjonalnego rodzica są niezależne od katalogu oraz
+  kolejności pull. Nie ma FK do innych protokołów, wariantów ani ćwiczeń.
+  Istniejące ID nie mogą zniknąć (także przez pustą kolekcję/null). Dla tego
+  samego ID można zmienić tylko `updatedAtUtc`/`deletedAtUtc`. Zmiana zasad lub
+  nazwy wymaga nowego UUID; gałęzie z niedostępnym rodzicem są dozwolone.
+- `fitnessTest` z markerem `typ: customFitnessTestV1` **lub obecnym kluczem**
+  `customProtocol` wymaga pełnego payloadu z fixture: typ/data/wynik/score oraz
+  `{version:1, protocolId, familyId, snapshot}`. ID muszą zgadzać się ze
+  snapshotem. `score:0` to padding, nie punktacja. Reps to całkowita wartość
+  numeryczna 0..1e9 (18 i18.0 są dozwolone, SQLite REAL nie zmienia semantyki);
+  time/distance to skończone liczby 0..1e9; bool nie jest liczbą wyniku.
+- `loadKg` null lub 0..1000; `loadBasis` null wtedy i tylko wtedy, gdy kg null,
+  w przeciwnym razie total/perImplement. Nullable side nie oznacza both.
+  Snapshot wariantu stosuje dotychczasową kopertę i limity (loadKg >0..1000,
+  pauseSeconds int 0..3600, opcjonalne teksty do 1000 znaków), tylko znane
+  pola i zgodny exerciseId; nie wymaga wariantu w bieżącej kolekcji.
+- Nullable pola protokołu supersedesId/loadKg/loadBasis/side/variantSnapshot/
+  timeLimitSeconds można pominąć: walidacja i porównanie semantyczne traktują
+  omission jak null. Normalizacja jest wyłącznie kopią na potrzeby kontroli;
+  nie zmienia raw payloadu, attempted operacji ani request_digest.
+- Znaczniki czasu to ścisłe momenty gregoriańskie ISO8601 UTC z Z (rok1..9999,
+  opcjonalna część ułamkowa1..6 cyfr), updated>=created,
+  deleted<=updated. Data próby może poprzedzać utworzenie protokołu i nie jest
+  zastępowana czasem synchronizacji. Zakaz przyszłej próby pozostaje kontrolą
+  formularza; backend nie wprowadza ograniczenia dat dla starych wyników.
+
+Walidacja działa **po CAS oraz `revised_record_payload`**. Omission zachowuje
+rozszerzenie z żywego rekordu; attempted payload i jego request_digest pozostają
+nietknięte. Istniejący żywy custom wynik nie może przejść w legacy, wyczyścić
+protokołu ani zmienić zamrożonego wrappera/snapshotu (porównanie kanonicznego
+JSON, bez zależności od kolejności kluczy). Korekty daty/wartości są dozwolone.
+Brak rozszerzenia i markera zachowuje dotychczasową, ogólną akceptację legacy,
+w tym typy z wartościami cm i nieznane payloady. Inne kolekcje pozostają opaque.
+
+Błąd kontraktu daje czytelne HTTP 422 `Invalid fitness extension: ...` i rollback
+całego batcha: bez częściowego SyncRecord, SyncChange ani SyncOperation. DELETE
+pomija walidację custom/profilu, by umożliwić usunięcie nieczytelnej historii;
+nadal obowiązuje generic finite JSON envelope, CAS i idempotencja. Tombstone
+nie dziedziczy rozszerzeń przy jawnym revival, jak dotychczas.
+
+API wymaga osobnego wdrożenia **przed** nowym klientem; ta implementacja nie
+oznacza wdrożenia ani zgody na zmianę produkcji.

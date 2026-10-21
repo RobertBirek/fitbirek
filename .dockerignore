@@ -6,6 +6,7 @@
 !assets/**
 !web/**
 !test/**
+!tests/fixtures/fitness_protocol_v1.json
 !tools/generate_app_version.dart
 !tools/generate_offline_package.dart
 !deploy/docker/**

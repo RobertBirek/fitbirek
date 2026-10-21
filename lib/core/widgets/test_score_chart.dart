@@ -1,5 +1,7 @@
+import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../app/theme.dart';
 import '../database/app_database.dart';
@@ -7,7 +9,7 @@ import '../models/fitness_test.dart';
 import '../utils/formatters.dart';
 import '../utils/chart_time_axis.dart';
 
-/// Wykres liniowy wyniku (score 0-100) testu sprawnościowego w czasie,
+/// Wykres surowego wyniku testu sprawnościowego w jego jednostce,
 /// z możliwością przełączania typu testu przez ChoiceChip.
 ///
 /// Buduje listę typów testów, które mają przynajmniej 1 zapisany wynik, na
@@ -95,10 +97,13 @@ class _TestScoreChartState extends State<TestScoreChart> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Najnowszy wynik: ${historia.last.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(historia.last.data)}',
+          'Najnowszy wynik: ${historia.last.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(historia.last.data.toLocal())} ${Formatters.time(historia.last.data.toLocal())}',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 12),
+        const Text(
+          'Dawny protokół nie został zapisany — wyniki dotychczasowych testów.',
+        ),
         if (historia.length < 2)
           Text(
             'Dodaj przynajmniej 2 wyniki testu "${selected.label}",\nżeby zobaczyć trend',
@@ -121,7 +126,7 @@ class _TestScoreChartState extends State<TestScoreChart> {
             child: Semantics(
               container: true,
               child: Text(
-                '${wynik.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(wynik.data)} ${Formatters.time(wynik.data)} • score ${wynik.score}/100',
+                '${wynik.wynik.toStringAsFixed(1)} ${selected.jednostka} • ${Formatters.date(wynik.data.toLocal())} ${Formatters.time(wynik.data.toLocal())}',
               ),
             ),
           ),
@@ -170,8 +175,42 @@ class _ScoreChart extends StatelessWidget {
     final axis = ChartTimeAxis(history.first.data, history.last.data);
     final spots = <FlSpot>[
       for (var i = 0; i < history.length; i++)
-        FlSpot(axis.x(history[i].data), history[i].score.toDouble()),
+        FlSpot(axis.x(history[i].data), history[i].wynik),
     ];
+    final values = history.map((r) => r.wynik).toList()..sort();
+    final span = values.last - values.first;
+    final padding = span > 0
+        ? span * .15
+        : (values.first.abs() * .15).clamp(1.0, double.infinity);
+    final interval = _rawAxisInterval(
+      (span + padding * 2) / 4,
+      wholeNumbers: typ.jednostka == 'powt',
+    );
+    final minY = ((values.first - padding) / interval).floor() * interval;
+    final maxY = ((values.last + padding) / interval).ceil() * interval;
+    final decimals = math.max(0, -(math.log(interval) / math.ln10).floor());
+    final formatter = NumberFormat(
+      '0${decimals == 0 ? '' : '.${'#' * decimals}'}',
+      'pl_PL',
+    );
+    String label(double value) =>
+        formatter.format(value.abs() < interval * 1e-6 ? 0 : value);
+    final axisStyle = TextStyle(fontSize: 11, color: axisColor);
+    double labelWidth(double value) {
+      final painter = TextPainter(
+        text: TextSpan(text: label(value), style: axisStyle),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      final width = painter.width;
+      painter.dispose();
+      return width;
+    }
+
+    final reservedWidth = math.max(
+      36.0,
+      math.max(labelWidth(minY), labelWidth(maxY)) + 8,
+    );
 
     return SizedBox(
       height: 200,
@@ -179,12 +218,12 @@ class _ScoreChart extends StatelessWidget {
         LineChartData(
           minX: 0,
           maxX: axis.maxX,
-          minY: 0,
-          maxY: 100,
+          minY: minY,
+          maxY: maxY,
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            horizontalInterval: 25,
+            horizontalInterval: interval,
             getDrawingHorizontalLine: (value) => FlLine(
               color: Colors.grey.withValues(alpha: 0.15),
               strokeWidth: 1,
@@ -199,14 +238,17 @@ class _ScoreChart extends StatelessWidget {
               sideTitles: SideTitles(showTitles: false),
             ),
             leftTitles: AxisTitles(
+              axisNameWidget: Text(typ.jednostka),
               sideTitles: SideTitles(
                 showTitles: true,
-                reservedSize: 36,
-                interval: 25,
-                getTitlesWidget: (value, meta) => Text(
-                  value.toStringAsFixed(0),
-                  style: TextStyle(fontSize: 11, color: axisColor),
-                ),
+                reservedSize: reservedWidth,
+                interval: interval,
+                // Do not append extrema next to an almost-equal regular tick
+                // (notably negative fractional ranges in fl_chart).
+                minIncluded: false,
+                maxIncluded: false,
+                getTitlesWidget: (value, meta) =>
+                    Text(label(value), style: axisStyle),
               ),
             ),
             bottomTitles: AxisTitles(
@@ -231,7 +273,7 @@ class _ScoreChart extends StatelessWidget {
               getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
                 final r = history[spot.spotIndex];
                 return LineTooltipItem(
-                  '${r.wynik.toStringAsFixed(1)} ${typ.jednostka}\nscore ${r.score} • ${Formatters.date(r.data)} ${Formatters.time(r.data)}',
+                  '${r.wynik.toStringAsFixed(1)} ${typ.jednostka}\n${Formatters.date(r.data.toLocal())} ${Formatters.time(r.data.toLocal())}',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -273,4 +315,23 @@ class _ScoreChart extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Clean 1/2/5 steps keep fractional raw units distinct without displaying
+/// floating-point noise. Repetition axes never suggest fractional repetitions.
+double _rawAxisInterval(double approximate, {required bool wholeNumbers}) {
+  final magnitude = math
+      .pow(10, (math.log(approximate) / math.ln10).floor())
+      .toDouble();
+  final scaled = approximate / magnitude;
+  final step =
+      (scaled <= 1
+          ? 1
+          : scaled <= 2
+          ? 2
+          : scaled <= 5
+          ? 5
+          : 10) *
+      magnitude;
+  return wholeNumbers ? math.max(1, step) : step;
 }

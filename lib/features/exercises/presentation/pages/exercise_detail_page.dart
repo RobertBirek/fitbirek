@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/widgets/content_layout.dart';
 import '../../../../core/widgets/recovery_message.dart';
@@ -129,6 +130,20 @@ class ExerciseDetailPage extends ConsumerWidget {
                   OwnVariants(exercise: ex),
                   const SizedBox(height: 20),
                   StartWorkoutButton(exercise: ex),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                    ),
+                    onPressed: () => context.push(
+                      Uri(
+                        path: '/progress/run-test',
+                        queryParameters: {'exerciseId': ex.id},
+                      ).toString(),
+                    ),
+                    icon: const Icon(Icons.timer_outlined),
+                    label: const Text('Test sprawnościowy'),
+                  ),
                 ],
               ),
             ),

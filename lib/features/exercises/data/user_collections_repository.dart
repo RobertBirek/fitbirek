@@ -76,6 +76,12 @@ class UserCollectionsRepository {
         'version': 1,
         'entries': entries,
       });
+      if (key == 'fitnessProtocols') {
+        // edit() receives mutable maps, including nested variant snapshots.
+        // Re-decode the immutable row baseline instead of comparing an aliased
+        // collection that the callback could already have changed in memory.
+        UserCollections.requireFitnessPreserved(readRow(row, key), value);
+      }
       final raw = jsonEncode(value);
       await (db.update(
         db.userProfiles,
@@ -88,6 +94,9 @@ class UserCollectionsRepository {
               ? Value(raw)
               : const Value.absent(),
           weeklyScheduleJson: key == 'weeklySchedule'
+              ? Value(raw)
+              : const Value.absent(),
+          fitnessProtocolsJson: key == 'fitnessProtocols'
               ? Value(raw)
               : const Value.absent(),
           updatedAtUtc: Value(DateTime.now().toUtc()),

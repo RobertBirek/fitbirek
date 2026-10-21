@@ -17,6 +17,8 @@ import '../features/workout/presentation/pages/session_summary_page.dart';
 import '../features/progress/presentation/pages/progress_page.dart';
 import '../features/progress/measurements/presentation/pages/add_measurement_page.dart';
 import '../features/progress/tests/presentation/pages/run_test_page.dart';
+import '../features/progress/tests/presentation/pages/protocol_editor_page.dart';
+import '../features/progress/tests/presentation/pages/protocol_detail_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../features/settings/presentation/pages/settings_notifications_page.dart';
 import '../features/settings/presentation/pages/settings_backup_page.dart';
@@ -174,7 +176,9 @@ GoRouter createRouter({
             routes: [
               GoRoute(
                 path: '/progress',
-                builder: (context, state) => const ProgressPage(),
+                builder: (context, state) => ProgressPage(
+                  section: state.uri.queryParameters['section'] ?? 'body',
+                ),
                 routes: [
                   GoRoute(
                     path: 'measurement/:id',
@@ -189,7 +193,36 @@ GoRouter createRouter({
                   ),
                   GoRoute(
                     path: 'run-test',
-                    builder: (context, state) => const RunTestPage(),
+                    builder: (context, state) => RunTestPage(
+                      exerciseId: state.uri.queryParameters['exerciseId'],
+                      protocolId: state.uri.queryParameters['protocolId'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'tests/new',
+                    builder: (context, state) => ProtocolEditorPage(
+                      exerciseId: state.uri.queryParameters['exerciseId'],
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'tests/:protocolId',
+                    builder: (context, state) => ProtocolDetailPage(
+                      protocolId: state.pathParameters['protocolId']!,
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        builder: (context, state) => ProtocolEditorPage(
+                          protocolId: state.pathParameters['protocolId']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'history',
+                        builder: (context, state) => ProtocolDetailPage(
+                          protocolId: state.pathParameters['protocolId']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

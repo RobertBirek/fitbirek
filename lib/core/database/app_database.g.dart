@@ -157,6 +157,17 @@ class $UserProfilesTable extends UserProfiles
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _fitnessProtocolsJsonMeta =
+      const VerificationMeta('fitnessProtocolsJson');
+  @override
+  late final GeneratedColumn<String> fitnessProtocolsJson =
+      GeneratedColumn<String>(
+        'fitness_protocols_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _onboardingZakonczonyMeta =
       const VerificationMeta('onboardingZakonczony');
   @override
@@ -200,6 +211,7 @@ class $UserProfilesTable extends UserProfiles
     filterPresetsJson,
     exerciseVariantsJson,
     weeklyScheduleJson,
+    fitnessProtocolsJson,
     onboardingZakonczony,
     dataUtworzenia,
   ];
@@ -327,6 +339,15 @@ class $UserProfilesTable extends UserProfiles
         ),
       );
     }
+    if (data.containsKey('fitness_protocols_json')) {
+      context.handle(
+        _fitnessProtocolsJsonMeta,
+        fitnessProtocolsJson.isAcceptableOrUnknown(
+          data['fitness_protocols_json']!,
+          _fitnessProtocolsJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('onboarding_zakonczony')) {
       context.handle(
         _onboardingZakonczonyMeta,
@@ -410,6 +431,10 @@ class $UserProfilesTable extends UserProfiles
         DriftSqlType.string,
         data['${effectivePrefix}weekly_schedule_json'],
       ),
+      fitnessProtocolsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fitness_protocols_json'],
+      ),
       onboardingZakonczony: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}onboarding_zakonczony'],
@@ -442,6 +467,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
   final String? filterPresetsJson;
   final String? exerciseVariantsJson;
   final String? weeklyScheduleJson;
+  final String? fitnessProtocolsJson;
   final bool onboardingZakonczony;
   final DateTime dataUtworzenia;
   const UserProfileData({
@@ -459,6 +485,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     this.filterPresetsJson,
     this.exerciseVariantsJson,
     this.weeklyScheduleJson,
+    this.fitnessProtocolsJson,
     required this.onboardingZakonczony,
     required this.dataUtworzenia,
   });
@@ -486,6 +513,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     }
     if (!nullToAbsent || weeklyScheduleJson != null) {
       map['weekly_schedule_json'] = Variable<String>(weeklyScheduleJson);
+    }
+    if (!nullToAbsent || fitnessProtocolsJson != null) {
+      map['fitness_protocols_json'] = Variable<String>(fitnessProtocolsJson);
     }
     map['onboarding_zakonczony'] = Variable<bool>(onboardingZakonczony);
     map['data_utworzenia'] = Variable<DateTime>(dataUtworzenia);
@@ -516,6 +546,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       weeklyScheduleJson: weeklyScheduleJson == null && nullToAbsent
           ? const Value.absent()
           : Value(weeklyScheduleJson),
+      fitnessProtocolsJson: fitnessProtocolsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fitnessProtocolsJson),
       onboardingZakonczony: Value(onboardingZakonczony),
       dataUtworzenia: Value(dataUtworzenia),
     );
@@ -547,6 +580,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       weeklyScheduleJson: serializer.fromJson<String?>(
         json['weeklyScheduleJson'],
       ),
+      fitnessProtocolsJson: serializer.fromJson<String?>(
+        json['fitnessProtocolsJson'],
+      ),
       onboardingZakonczony: serializer.fromJson<bool>(
         json['onboardingZakonczony'],
       ),
@@ -571,6 +607,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       'filterPresetsJson': serializer.toJson<String?>(filterPresetsJson),
       'exerciseVariantsJson': serializer.toJson<String?>(exerciseVariantsJson),
       'weeklyScheduleJson': serializer.toJson<String?>(weeklyScheduleJson),
+      'fitnessProtocolsJson': serializer.toJson<String?>(fitnessProtocolsJson),
       'onboardingZakonczony': serializer.toJson<bool>(onboardingZakonczony),
       'dataUtworzenia': serializer.toJson<DateTime>(dataUtworzenia),
     };
@@ -591,6 +628,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     Value<String?> filterPresetsJson = const Value.absent(),
     Value<String?> exerciseVariantsJson = const Value.absent(),
     Value<String?> weeklyScheduleJson = const Value.absent(),
+    Value<String?> fitnessProtocolsJson = const Value.absent(),
     bool? onboardingZakonczony,
     DateTime? dataUtworzenia,
   }) => UserProfileData(
@@ -614,6 +652,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     weeklyScheduleJson: weeklyScheduleJson.present
         ? weeklyScheduleJson.value
         : this.weeklyScheduleJson,
+    fitnessProtocolsJson: fitnessProtocolsJson.present
+        ? fitnessProtocolsJson.value
+        : this.fitnessProtocolsJson,
     onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
     dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
   );
@@ -647,6 +688,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       weeklyScheduleJson: data.weeklyScheduleJson.present
           ? data.weeklyScheduleJson.value
           : this.weeklyScheduleJson,
+      fitnessProtocolsJson: data.fitnessProtocolsJson.present
+          ? data.fitnessProtocolsJson.value
+          : this.fitnessProtocolsJson,
       onboardingZakonczony: data.onboardingZakonczony.present
           ? data.onboardingZakonczony.value
           : this.onboardingZakonczony,
@@ -673,6 +717,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
           ..write('filterPresetsJson: $filterPresetsJson, ')
           ..write('exerciseVariantsJson: $exerciseVariantsJson, ')
           ..write('weeklyScheduleJson: $weeklyScheduleJson, ')
+          ..write('fitnessProtocolsJson: $fitnessProtocolsJson, ')
           ..write('onboardingZakonczony: $onboardingZakonczony, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
@@ -695,6 +740,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     filterPresetsJson,
     exerciseVariantsJson,
     weeklyScheduleJson,
+    fitnessProtocolsJson,
     onboardingZakonczony,
     dataUtworzenia,
   );
@@ -716,6 +762,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
           other.filterPresetsJson == this.filterPresetsJson &&
           other.exerciseVariantsJson == this.exerciseVariantsJson &&
           other.weeklyScheduleJson == this.weeklyScheduleJson &&
+          other.fitnessProtocolsJson == this.fitnessProtocolsJson &&
           other.onboardingZakonczony == this.onboardingZakonczony &&
           other.dataUtworzenia == this.dataUtworzenia);
 }
@@ -735,6 +782,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
   final Value<String?> filterPresetsJson;
   final Value<String?> exerciseVariantsJson;
   final Value<String?> weeklyScheduleJson;
+  final Value<String?> fitnessProtocolsJson;
   final Value<bool> onboardingZakonczony;
   final Value<DateTime> dataUtworzenia;
   const UserProfilesCompanion({
@@ -752,6 +800,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     this.filterPresetsJson = const Value.absent(),
     this.exerciseVariantsJson = const Value.absent(),
     this.weeklyScheduleJson = const Value.absent(),
+    this.fitnessProtocolsJson = const Value.absent(),
     this.onboardingZakonczony = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   });
@@ -770,6 +819,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     this.filterPresetsJson = const Value.absent(),
     this.exerciseVariantsJson = const Value.absent(),
     this.weeklyScheduleJson = const Value.absent(),
+    this.fitnessProtocolsJson = const Value.absent(),
     this.onboardingZakonczony = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   }) : wiek = Value(wiek),
@@ -792,6 +842,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     Expression<String>? filterPresetsJson,
     Expression<String>? exerciseVariantsJson,
     Expression<String>? weeklyScheduleJson,
+    Expression<String>? fitnessProtocolsJson,
     Expression<bool>? onboardingZakonczony,
     Expression<DateTime>? dataUtworzenia,
   }) {
@@ -812,6 +863,8 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
         'exercise_variants_json': exerciseVariantsJson,
       if (weeklyScheduleJson != null)
         'weekly_schedule_json': weeklyScheduleJson,
+      if (fitnessProtocolsJson != null)
+        'fitness_protocols_json': fitnessProtocolsJson,
       if (onboardingZakonczony != null)
         'onboarding_zakonczony': onboardingZakonczony,
       if (dataUtworzenia != null) 'data_utworzenia': dataUtworzenia,
@@ -833,6 +886,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     Value<String?>? filterPresetsJson,
     Value<String?>? exerciseVariantsJson,
     Value<String?>? weeklyScheduleJson,
+    Value<String?>? fitnessProtocolsJson,
     Value<bool>? onboardingZakonczony,
     Value<DateTime>? dataUtworzenia,
   }) {
@@ -851,6 +905,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
       filterPresetsJson: filterPresetsJson ?? this.filterPresetsJson,
       exerciseVariantsJson: exerciseVariantsJson ?? this.exerciseVariantsJson,
       weeklyScheduleJson: weeklyScheduleJson ?? this.weeklyScheduleJson,
+      fitnessProtocolsJson: fitnessProtocolsJson ?? this.fitnessProtocolsJson,
       onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
       dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
     );
@@ -903,6 +958,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     if (weeklyScheduleJson.present) {
       map['weekly_schedule_json'] = Variable<String>(weeklyScheduleJson.value);
     }
+    if (fitnessProtocolsJson.present) {
+      map['fitness_protocols_json'] = Variable<String>(
+        fitnessProtocolsJson.value,
+      );
+    }
     if (onboardingZakonczony.present) {
       map['onboarding_zakonczony'] = Variable<bool>(onboardingZakonczony.value);
     }
@@ -929,6 +989,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
           ..write('filterPresetsJson: $filterPresetsJson, ')
           ..write('exerciseVariantsJson: $exerciseVariantsJson, ')
           ..write('weeklyScheduleJson: $weeklyScheduleJson, ')
+          ..write('fitnessProtocolsJson: $fitnessProtocolsJson, ')
           ..write('onboardingZakonczony: $onboardingZakonczony, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
@@ -5667,6 +5728,17 @@ class $FitnessTestResultsTable extends FitnessTestResults
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _customProtocolJsonMeta =
+      const VerificationMeta('customProtocolJson');
+  @override
+  late final GeneratedColumn<String> customProtocolJson =
+      GeneratedColumn<String>(
+        'custom_protocol_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     syncId,
@@ -5678,6 +5750,7 @@ class $FitnessTestResultsTable extends FitnessTestResults
     data,
     wynik,
     score,
+    customProtocolJson,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5755,6 +5828,15 @@ class $FitnessTestResultsTable extends FitnessTestResults
         score.isAcceptableOrUnknown(data['score']!, _scoreMeta),
       );
     }
+    if (data.containsKey('custom_protocol_json')) {
+      context.handle(
+        _customProtocolJsonMeta,
+        customProtocolJson.isAcceptableOrUnknown(
+          data['custom_protocol_json']!,
+          _customProtocolJsonMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5800,6 +5882,10 @@ class $FitnessTestResultsTable extends FitnessTestResults
         DriftSqlType.int,
         data['${effectivePrefix}score'],
       )!,
+      customProtocolJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_protocol_json'],
+      ),
     );
   }
 
@@ -5820,6 +5906,7 @@ class FitnessTestResultData extends DataClass
   final DateTime data;
   final double wynik;
   final int score;
+  final String? customProtocolJson;
   const FitnessTestResultData({
     required this.syncId,
     required this.syncVersion,
@@ -5830,6 +5917,7 @@ class FitnessTestResultData extends DataClass
     required this.data,
     required this.wynik,
     required this.score,
+    this.customProtocolJson,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5845,6 +5933,9 @@ class FitnessTestResultData extends DataClass
     map['data'] = Variable<DateTime>(data);
     map['wynik'] = Variable<double>(wynik);
     map['score'] = Variable<int>(score);
+    if (!nullToAbsent || customProtocolJson != null) {
+      map['custom_protocol_json'] = Variable<String>(customProtocolJson);
+    }
     return map;
   }
 
@@ -5861,6 +5952,9 @@ class FitnessTestResultData extends DataClass
       data: Value(data),
       wynik: Value(wynik),
       score: Value(score),
+      customProtocolJson: customProtocolJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customProtocolJson),
     );
   }
 
@@ -5879,6 +5973,9 @@ class FitnessTestResultData extends DataClass
       data: serializer.fromJson<DateTime>(json['data']),
       wynik: serializer.fromJson<double>(json['wynik']),
       score: serializer.fromJson<int>(json['score']),
+      customProtocolJson: serializer.fromJson<String?>(
+        json['customProtocolJson'],
+      ),
     );
   }
   @override
@@ -5894,6 +5991,7 @@ class FitnessTestResultData extends DataClass
       'data': serializer.toJson<DateTime>(data),
       'wynik': serializer.toJson<double>(wynik),
       'score': serializer.toJson<int>(score),
+      'customProtocolJson': serializer.toJson<String?>(customProtocolJson),
     };
   }
 
@@ -5907,6 +6005,7 @@ class FitnessTestResultData extends DataClass
     DateTime? data,
     double? wynik,
     int? score,
+    Value<String?> customProtocolJson = const Value.absent(),
   }) => FitnessTestResultData(
     syncId: syncId ?? this.syncId,
     syncVersion: syncVersion ?? this.syncVersion,
@@ -5917,6 +6016,9 @@ class FitnessTestResultData extends DataClass
     data: data ?? this.data,
     wynik: wynik ?? this.wynik,
     score: score ?? this.score,
+    customProtocolJson: customProtocolJson.present
+        ? customProtocolJson.value
+        : this.customProtocolJson,
   );
   FitnessTestResultData copyWithCompanion(FitnessTestResultsCompanion data) {
     return FitnessTestResultData(
@@ -5935,6 +6037,9 @@ class FitnessTestResultData extends DataClass
       data: data.data.present ? data.data.value : this.data,
       wynik: data.wynik.present ? data.wynik.value : this.wynik,
       score: data.score.present ? data.score.value : this.score,
+      customProtocolJson: data.customProtocolJson.present
+          ? data.customProtocolJson.value
+          : this.customProtocolJson,
     );
   }
 
@@ -5949,7 +6054,8 @@ class FitnessTestResultData extends DataClass
           ..write('typ: $typ, ')
           ..write('data: $data, ')
           ..write('wynik: $wynik, ')
-          ..write('score: $score')
+          ..write('score: $score, ')
+          ..write('customProtocolJson: $customProtocolJson')
           ..write(')'))
         .toString();
   }
@@ -5965,6 +6071,7 @@ class FitnessTestResultData extends DataClass
     data,
     wynik,
     score,
+    customProtocolJson,
   );
   @override
   bool operator ==(Object other) =>
@@ -5978,7 +6085,8 @@ class FitnessTestResultData extends DataClass
           other.typ == this.typ &&
           other.data == this.data &&
           other.wynik == this.wynik &&
-          other.score == this.score);
+          other.score == this.score &&
+          other.customProtocolJson == this.customProtocolJson);
 }
 
 class FitnessTestResultsCompanion
@@ -5992,6 +6100,7 @@ class FitnessTestResultsCompanion
   final Value<DateTime> data;
   final Value<double> wynik;
   final Value<int> score;
+  final Value<String?> customProtocolJson;
   const FitnessTestResultsCompanion({
     this.syncId = const Value.absent(),
     this.syncVersion = const Value.absent(),
@@ -6002,6 +6111,7 @@ class FitnessTestResultsCompanion
     this.data = const Value.absent(),
     this.wynik = const Value.absent(),
     this.score = const Value.absent(),
+    this.customProtocolJson = const Value.absent(),
   });
   FitnessTestResultsCompanion.insert({
     this.syncId = const Value.absent(),
@@ -6013,6 +6123,7 @@ class FitnessTestResultsCompanion
     this.data = const Value.absent(),
     required double wynik,
     this.score = const Value.absent(),
+    this.customProtocolJson = const Value.absent(),
   }) : typ = Value(typ),
        wynik = Value(wynik);
   static Insertable<FitnessTestResultData> custom({
@@ -6025,6 +6136,7 @@ class FitnessTestResultsCompanion
     Expression<DateTime>? data,
     Expression<double>? wynik,
     Expression<int>? score,
+    Expression<String>? customProtocolJson,
   }) {
     return RawValuesInsertable({
       if (syncId != null) 'sync_id': syncId,
@@ -6036,6 +6148,8 @@ class FitnessTestResultsCompanion
       if (data != null) 'data': data,
       if (wynik != null) 'wynik': wynik,
       if (score != null) 'score': score,
+      if (customProtocolJson != null)
+        'custom_protocol_json': customProtocolJson,
     });
   }
 
@@ -6049,6 +6163,7 @@ class FitnessTestResultsCompanion
     Value<DateTime>? data,
     Value<double>? wynik,
     Value<int>? score,
+    Value<String?>? customProtocolJson,
   }) {
     return FitnessTestResultsCompanion(
       syncId: syncId ?? this.syncId,
@@ -6060,6 +6175,7 @@ class FitnessTestResultsCompanion
       data: data ?? this.data,
       wynik: wynik ?? this.wynik,
       score: score ?? this.score,
+      customProtocolJson: customProtocolJson ?? this.customProtocolJson,
     );
   }
 
@@ -6093,6 +6209,9 @@ class FitnessTestResultsCompanion
     if (score.present) {
       map['score'] = Variable<int>(score.value);
     }
+    if (customProtocolJson.present) {
+      map['custom_protocol_json'] = Variable<String>(customProtocolJson.value);
+    }
     return map;
   }
 
@@ -6107,7 +6226,8 @@ class FitnessTestResultsCompanion
           ..write('typ: $typ, ')
           ..write('data: $data, ')
           ..write('wynik: $wynik, ')
-          ..write('score: $score')
+          ..write('score: $score, ')
+          ..write('customProtocolJson: $customProtocolJson')
           ..write(')'))
         .toString();
   }
@@ -10108,6 +10228,7 @@ typedef $$UserProfilesTableCreateCompanionBuilder =
       Value<String?> filterPresetsJson,
       Value<String?> exerciseVariantsJson,
       Value<String?> weeklyScheduleJson,
+      Value<String?> fitnessProtocolsJson,
       Value<bool> onboardingZakonczony,
       Value<DateTime> dataUtworzenia,
     });
@@ -10127,6 +10248,7 @@ typedef $$UserProfilesTableUpdateCompanionBuilder =
       Value<String?> filterPresetsJson,
       Value<String?> exerciseVariantsJson,
       Value<String?> weeklyScheduleJson,
+      Value<String?> fitnessProtocolsJson,
       Value<bool> onboardingZakonczony,
       Value<DateTime> dataUtworzenia,
     });
@@ -10207,6 +10329,11 @@ class $$UserProfilesTableFilterComposer
 
   ColumnFilters<String> get weeklyScheduleJson => $composableBuilder(
     column: $table.weeklyScheduleJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fitnessProtocolsJson => $composableBuilder(
+    column: $table.fitnessProtocolsJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10300,6 +10427,11 @@ class $$UserProfilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get fitnessProtocolsJson => $composableBuilder(
+    column: $table.fitnessProtocolsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get onboardingZakonczony => $composableBuilder(
     column: $table.onboardingZakonczony,
     builder: (column) => ColumnOrderings(column),
@@ -10376,6 +10508,11 @@ class $$UserProfilesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get fitnessProtocolsJson => $composableBuilder(
+    column: $table.fitnessProtocolsJson,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get onboardingZakonczony => $composableBuilder(
     column: $table.onboardingZakonczony,
     builder: (column) => column,
@@ -10432,6 +10569,7 @@ class $$UserProfilesTableTableManager
                 Value<String?> filterPresetsJson = const Value.absent(),
                 Value<String?> exerciseVariantsJson = const Value.absent(),
                 Value<String?> weeklyScheduleJson = const Value.absent(),
+                Value<String?> fitnessProtocolsJson = const Value.absent(),
                 Value<bool> onboardingZakonczony = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => UserProfilesCompanion(
@@ -10449,6 +10587,7 @@ class $$UserProfilesTableTableManager
                 filterPresetsJson: filterPresetsJson,
                 exerciseVariantsJson: exerciseVariantsJson,
                 weeklyScheduleJson: weeklyScheduleJson,
+                fitnessProtocolsJson: fitnessProtocolsJson,
                 onboardingZakonczony: onboardingZakonczony,
                 dataUtworzenia: dataUtworzenia,
               ),
@@ -10468,6 +10607,7 @@ class $$UserProfilesTableTableManager
                 Value<String?> filterPresetsJson = const Value.absent(),
                 Value<String?> exerciseVariantsJson = const Value.absent(),
                 Value<String?> weeklyScheduleJson = const Value.absent(),
+                Value<String?> fitnessProtocolsJson = const Value.absent(),
                 Value<bool> onboardingZakonczony = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => UserProfilesCompanion.insert(
@@ -10485,6 +10625,7 @@ class $$UserProfilesTableTableManager
                 filterPresetsJson: filterPresetsJson,
                 exerciseVariantsJson: exerciseVariantsJson,
                 weeklyScheduleJson: weeklyScheduleJson,
+                fitnessProtocolsJson: fitnessProtocolsJson,
                 onboardingZakonczony: onboardingZakonczony,
                 dataUtworzenia: dataUtworzenia,
               ),
@@ -13039,6 +13180,7 @@ typedef $$FitnessTestResultsTableCreateCompanionBuilder =
       Value<DateTime> data,
       required double wynik,
       Value<int> score,
+      Value<String?> customProtocolJson,
     });
 typedef $$FitnessTestResultsTableUpdateCompanionBuilder =
     FitnessTestResultsCompanion Function({
@@ -13051,6 +13193,7 @@ typedef $$FitnessTestResultsTableUpdateCompanionBuilder =
       Value<DateTime> data,
       Value<double> wynik,
       Value<int> score,
+      Value<String?> customProtocolJson,
     });
 
 class $$FitnessTestResultsTableFilterComposer
@@ -13104,6 +13247,11 @@ class $$FitnessTestResultsTableFilterComposer
 
   ColumnFilters<int> get score => $composableBuilder(
     column: $table.score,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customProtocolJson => $composableBuilder(
+    column: $table.customProtocolJson,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -13161,6 +13309,11 @@ class $$FitnessTestResultsTableOrderingComposer
     column: $table.score,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get customProtocolJson => $composableBuilder(
+    column: $table.customProtocolJson,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FitnessTestResultsTableAnnotationComposer
@@ -13204,6 +13357,11 @@ class $$FitnessTestResultsTableAnnotationComposer
 
   GeneratedColumn<int> get score =>
       $composableBuilder(column: $table.score, builder: (column) => column);
+
+  GeneratedColumn<String> get customProtocolJson => $composableBuilder(
+    column: $table.customProtocolJson,
+    builder: (column) => column,
+  );
 }
 
 class $$FitnessTestResultsTableTableManager
@@ -13255,6 +13413,7 @@ class $$FitnessTestResultsTableTableManager
                 Value<DateTime> data = const Value.absent(),
                 Value<double> wynik = const Value.absent(),
                 Value<int> score = const Value.absent(),
+                Value<String?> customProtocolJson = const Value.absent(),
               }) => FitnessTestResultsCompanion(
                 syncId: syncId,
                 syncVersion: syncVersion,
@@ -13265,6 +13424,7 @@ class $$FitnessTestResultsTableTableManager
                 data: data,
                 wynik: wynik,
                 score: score,
+                customProtocolJson: customProtocolJson,
               ),
           createCompanionCallback:
               ({
@@ -13277,6 +13437,7 @@ class $$FitnessTestResultsTableTableManager
                 Value<DateTime> data = const Value.absent(),
                 required double wynik,
                 Value<int> score = const Value.absent(),
+                Value<String?> customProtocolJson = const Value.absent(),
               }) => FitnessTestResultsCompanion.insert(
                 syncId: syncId,
                 syncVersion: syncVersion,
@@ -13287,6 +13448,7 @@ class $$FitnessTestResultsTableTableManager
                 data: data,
                 wynik: wynik,
                 score: score,
+                customProtocolJson: customProtocolJson,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

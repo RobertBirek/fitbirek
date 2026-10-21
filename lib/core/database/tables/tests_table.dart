@@ -11,4 +11,5 @@ class FitnessTestResults extends Table with SyncMetadata {
   DateTimeColumn get data => dateTime().withDefault(currentDateAndTime)();
   RealColumn get wynik => real()();
   IntColumn get score => integer().withDefault(const Constant(0))();
+  TextColumn get customProtocolJson => text().nullable()();
 }

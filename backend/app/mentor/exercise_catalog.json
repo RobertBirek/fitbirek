@@ -1,7 +1,7 @@
 {
   "sources_sha256": {
-    "exercises.json": "2a5ff3050fa7ed24a69bc4344001bfe64f19d8f03c76a973954cc1fd5bc00a9e",
-    "exercise_catalog_metadata.json": "d00aea5530308d04f875b7ed39ff07deabf5e2ae57dee7685ff6d65b545207f9"
+    "exercises.json": "31eb961b25fe4d4b719a5c32a4efb50a223b3215ed8e67988736001bfea17667",
+    "exercise_catalog_metadata.json": "f2f4fb302b2c6595c4482aba6edc54571c96507ccb40c2ebbb0313db67f5a8f3"
   },
   "exercises": [
     {
@@ -4097,6 +4097,496 @@
         "Masa własna"
       ],
       "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw370",
+      "name": "Wstawanie z krzesła",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw371",
+      "name": "Odwodzenie prostej nogi w staniu z podparciem",
+      "type": "Siła",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw372",
+      "name": "Prostowanie biodra w staniu z podparciem",
+      "type": "Siła",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw373",
+      "name": "Odwodzenie prostej nogi w leżeniu bokiem",
+      "type": "Siła",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw374",
+      "name": "Przywodzenie dolnej nogi w leżeniu bokiem",
+      "type": "Siła",
+      "muscle": "Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw375",
+      "name": "Uginanie nogi z gumą w leżeniu na brzuchu",
+      "type": "Siła",
+      "muscle": "Tył uda",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw376",
+      "name": "Prostowanie kolana z gumą w siadzie",
+      "type": "Siła",
+      "muscle": "Przód uda",
+      "equipment": [
+        "Krzesło",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw377",
+      "name": "Wyprost bioder z przeciąganiem gumy między nogami",
+      "type": "Siła",
+      "muscle": "Pośladki, Tył uda",
+      "equipment": [
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw378",
+      "name": "Przywodzenie nogi z gumą w staniu",
+      "type": "Siła",
+      "muscle": "Przywodziciele uda",
+      "equipment": [
+        "Gumy oporowe",
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw379",
+      "name": "Uginanie nóg na ślizgaczach",
+      "type": "Siła",
+      "muscle": "Tył uda, Pośladki",
+      "equipment": [
+        "Ślizgacze"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw380",
+      "name": "Pilates — setka z rytmiczną pracą ramion",
+      "type": "Wytrzymałość",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw381",
+      "name": "Pilates — krążenia jedną nogą w leżeniu",
+      "type": "Siła",
+      "muscle": "Zginacze bioder",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw382",
+      "name": "Pilates — naprzemienne wydłużanie nóg",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw383",
+      "name": "Pilates — wydłużanie obu nóg i ramion",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw384",
+      "name": "Pilates — piła w siadzie",
+      "type": "Mobilność",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw385",
+      "name": "Wysuwanie i cofanie łopatek w klęku podpartym",
+      "type": "Mobilność",
+      "muscle": "Mięsień zębaty przedni, Plecy",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw386",
+      "name": "Krążenia obręczy barkowej w klęku podpartym",
+      "type": "Mobilność",
+      "muscle": "Mięsień zębaty przedni, Plecy",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw387",
+      "name": "Cofanie bioder w klęku z nogą wyprostowaną w bok",
+      "type": "Mobilność",
+      "muscle": "Przywodziciele uda",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw388",
+      "name": "Stanie tandemowe przy podporze",
+      "type": "Izometria",
+      "muscle": "Łydki, Pośladki",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw389",
+      "name": "Chód pięta–palce przy podporze",
+      "type": "Rozgrzewka",
+      "muscle": "Łydki, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw390",
+      "name": "Zgarnianie ręcznika palcami stopy",
+      "type": "Siła",
+      "muscle": "Mięśnie stóp",
+      "equipment": [
+        "Krzesło",
+        "Ręcznik"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw391",
+      "name": "Krótka stopa — aktywacja łuku w siadzie",
+      "type": "Siła",
+      "muscle": "Mięśnie stóp",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw392",
+      "name": "Ruch stopy na zewnątrz przeciw gumie",
+      "type": "Siła",
+      "muscle": "Mięśnie strzałkowe",
+      "equipment": [
+        "Krzesło",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw393",
+      "name": "Deska z dotknięciem dłoni — w parach",
+      "type": "Izometria",
+      "muscle": "Brzuch, Mięsień zębaty przedni",
+      "equipment": [
+        "Partner"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw394",
+      "name": "Przysiad plecami do siebie — w parach",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw395",
+      "name": "Lustro ruchowe — w parach",
+      "type": "Rozgrzewka",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw396",
+      "name": "Przemieszczanie na gest — w parach",
+      "type": "Rozgrzewka",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw397",
+      "name": "Chwyt piłki przed drugim odbiciem — w parach",
+      "type": "Rozgrzewka",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw398",
+      "name": "Krok boczny z chwytem piłki — w parach",
+      "type": "Rozgrzewka",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw399",
+      "name": "Podania na jednej nodze — w parach",
+      "type": "Siła",
+      "muscle": "Pośladki, Łydki",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw400",
+      "name": "Podania sprzed klatki — w parach",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa, Triceps",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw401",
+      "name": "Wykrok z podaniem piłki — w parach",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw402",
+      "name": "Krok dostawny z podaniami — w parach",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw403",
+      "name": "Przysiad z przekazaniem piłki — w parach",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw404",
+      "name": "Przekazywanie piłki w siadzie plecami do siebie — w parach",
+      "type": "Mobilność",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Partner",
+        "Piłka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw405",
+      "name": "Wiosłowanie gumą z oporem partnera — w parach",
+      "type": "Siła",
+      "muscle": "Plecy",
+      "equipment": [
+        "Partner",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw406",
+      "name": "Wyciskanie gumy z partnerem za plecami — w parach",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa, Triceps",
+      "equipment": [
+        "Partner",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw407",
+      "name": "Ruch po przekątnej z gumą — w parach",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Partner",
+        "Gumy oporowe"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw408",
+      "name": "Chód w półprzysiadzie ze wspólną piłką — w parach",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Partner",
+        "Piłka gimnastyczna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw409",
+      "name": "Uginanie ramion z gryfem łamanym EZ stojąc",
+      "type": "Siła",
+      "muscle": "Biceps",
+      "equipment": [
+        "Gryf łamany EZ"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw410",
+      "name": "Uginanie ramion z gryfem łamanym EZ nachwytem stojąc",
+      "type": "Siła",
+      "muscle": "Przedramiona, Mięsień ramienny",
+      "equipment": [
+        "Gryf łamany EZ"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw411",
+      "name": "Prostowanie ramion z gryfem łamanym EZ w leżeniu na ławce płaskiej",
+      "type": "Siła",
+      "muscle": "Triceps",
+      "equipment": [
+        "Gryf łamany EZ",
+        "Ławeczka"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw412",
+      "name": "Spokojna jazda na rowerze stacjonarnym",
+      "type": "Cardio",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Rower stacjonarny"
+      ],
+      "tracking": "time",
       "unilateral": false
     }
   ]

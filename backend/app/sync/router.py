@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_session
@@ -6,6 +6,7 @@ from app.identity.service import AuthenticatedSession, require_authenticated
 from app.security.csrf import require_csrf
 from app.sync.schemas import PullResponse, PushRequest, PushResponse
 from app.sync.service import pull_changes, push_operations
+from app.sync.fitness_protocols import FitnessValidationError
 
 
 router = APIRouter(prefix="/api/sync", tags=["sync"])
@@ -18,7 +19,10 @@ async def push(
     database: AsyncSession = Depends(get_session),
     authenticated: AuthenticatedSession = Depends(require_csrf),
 ) -> PushResponse:
-    return await push_operations(database, authenticated.account.id, payload.operations)
+    try:
+        return await push_operations(database, authenticated.account.id, payload.operations)
+    except FitnessValidationError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @router.get("/pull", response_model=PullResponse)

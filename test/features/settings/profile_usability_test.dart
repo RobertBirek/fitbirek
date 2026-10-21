@@ -13,6 +13,8 @@ import 'package:fitbirek_training/features/onboarding/providers/user_profile_pro
 import 'package:fitbirek_training/features/settings/presentation/pages/edit_profile_page.dart';
 import 'package:fitbirek_training/features/calculator/presentation/pages/calculator_page.dart';
 import 'package:fitbirek_training/features/progress/tests/presentation/pages/run_test_page.dart';
+import 'package:fitbirek_training/features/progress/tests/providers/tests_providers.dart';
+import '../progress/fitness_ui_support.dart';
 
 final profile = UserProfile(
   imie: 'Test',
@@ -144,9 +146,15 @@ void main() {
   testWidgets('test change clears draft but same choice retains it', (
     tester,
   ) async {
+    final fixture = await fitnessUiFixture();
+    addTearDown(fixture.db.close);
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: RunTestPage())),
+      ProviderScope(
+        overrides: [testsRepositoryProvider.overrideWithValue(fixture.repo)],
+        child: const MaterialApp(home: RunTestPage()),
+      ),
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Plank (czas)'));
     await tester.pump();
     await tester.enterText(find.byType(TextField), '60');

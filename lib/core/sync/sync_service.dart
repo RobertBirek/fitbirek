@@ -321,6 +321,31 @@ class SyncService extends ChangeNotifier {
                       o.entityType == op.entityType &&
                       o.entityId == op.entityId,
                 );
+                if (op.entityType == SyncEntityType.profile &&
+                    later &&
+                    !op.deleted &&
+                    record['deletedAt'] == null) {
+                  final remote = record['payload'] as Map;
+                  final local = await store.row(op.entityType, op.entityId);
+                  final raw = local?['fitnessProtocolsJson'] as String?;
+                  if (raw != null && remote.containsKey('fitnessProtocols')) {
+                    try {
+                      // Preflight before deleting the definitively rejected
+                      // request: valid unpublished forks can defer normally,
+                      // but a real same-UUID collision must keep attempted/raw
+                      // evidence in the existing explicit profile hold.
+                      UserCollections.merge(
+                        'fitnessProtocols',
+                        jsonDecode(raw),
+                        remote['fitnessProtocols'],
+                      );
+                    } on FormatException {
+                      await store.holdProfileConflict(record, op.operationId);
+                      blocked = true;
+                      return;
+                    }
+                  }
+                }
                 final deletedSession =
                     op.entityType == SyncEntityType.workoutSession &&
                     record['deletedAt'] != null &&
@@ -338,7 +363,8 @@ class SyncService extends ChangeNotifier {
                   try {
                     for (final key in UserCollections.keys) {
                       final raw = local?['${key}Json'] as String?;
-                      if (raw == null &&
+                      if (key != 'fitnessProtocols' &&
+                          raw == null &&
                           op.payload.containsKey(key) &&
                           op.payload[key] == null) {
                         merged[key] = null;

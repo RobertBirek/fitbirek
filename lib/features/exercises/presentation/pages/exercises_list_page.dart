@@ -241,26 +241,52 @@ class _ExercisesListPageState extends ConsumerState<ExercisesListPage> {
                                           subtitle: Text(
                                             '${ex.partiaGlowna} • ${ex.poziom}',
                                           ),
-                                          trailing: IconButton(
-                                            tooltip: ex.ulubione
-                                                ? 'Usuń z ulubionych'
-                                                : 'Dodaj do ulubionych',
-                                            icon: Icon(
-                                              ex.ulubione
-                                                  ? Icons.star
-                                                  : Icons.star_border,
-                                              color: ex.ulubione
-                                                  ? FitBirekColors.accent
-                                                  : Colors.grey,
-                                            ),
-                                            onPressed: () => ref
-                                                .read(
-                                                  exercisesRepositoryProvider,
-                                                )
-                                                .toggleFavorite(
-                                                  ex.id,
-                                                  !ex.ulubione,
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              IconButton(
+                                                tooltip: ex.ulubione
+                                                    ? 'Usuń z ulubionych'
+                                                    : 'Dodaj do ulubionych',
+                                                icon: Icon(
+                                                  ex.ulubione
+                                                      ? Icons.star
+                                                      : Icons.star_border,
+                                                  color: ex.ulubione
+                                                      ? FitBirekColors.accent
+                                                      : Colors.grey,
                                                 ),
+                                                onPressed: () => ref
+                                                    .read(
+                                                      exercisesRepositoryProvider,
+                                                    )
+                                                    .toggleFavorite(
+                                                      ex.id,
+                                                      !ex.ulubione,
+                                                    ),
+                                              ),
+                                              PopupMenuButton<String>(
+                                                tooltip:
+                                                    'Więcej opcji ćwiczenia',
+                                                onSelected: (_) => context.push(
+                                                  Uri(
+                                                    path: '/progress/run-test',
+                                                    queryParameters: {
+                                                      'exerciseId': ex.id,
+                                                    },
+                                                  ).toString(),
+                                                ),
+                                                itemBuilder: (_) => const [
+                                                  PopupMenuItem(
+                                                    value: 'fitness',
+                                                    height: 48,
+                                                    child: Text(
+                                                      'Test sprawnościowy',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
                                           onTap: () => context.push(
                                             '/exercises/${ex.id}',
