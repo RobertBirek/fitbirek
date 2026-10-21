@@ -3,7 +3,20 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.19.1+35 deployed 2026-10-20 21:06:56 UTC**, public verification
+Current web **1.20.0+36 deployed 2026-10-21 08:10:49 UTC**, public verification
+**08:11:24 UTC**. Catalog **412**, three EZ-bar exercises and stationary bike,
+four new illustrations; previous 408 records/metadata/images unchanged. Clean
+pushed source **8f4ff6a**. **1348 Flutter PASS**, analysis/version/build PASS;
+public **486/486 hashes and lengths** match. Fresh backup and isolated restore
+0010 PASS; only web recreated, API/sender remain1.18.0 and PG/Caddy unchanged.
+Separate authorized personal import at **08:21:56 UTC**: seven plans, four
+18:00 rules replacing one generic evening rule, eight ACK; morning/karate,
+history, non-schedule profile fields and notification consents preserved.
+Evening reminders remain disabled. No production migration or auth test.
+Exact artifacts, backup, import boundaries and rollback caveat:
+[web release 1.20.0+36](docs/releases/2026-10-21-web-1.20.0-36.md).
+
+Previous web **1.19.1+35 deployed 2026-10-20 21:06:56 UTC**, public verification
 **21:07:32 UTC**. All **408 exercises have illustrations**, including 39 newly
 generated images; previous 369 image files unchanged. Clean pushed source
 **f1457ca** on `main`. **1346 Flutter tests**, analysis/version checks and

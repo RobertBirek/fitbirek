@@ -1,6 +1,6 @@
 # Ćwiczenia indywidualne i w parach
 
-## Lokalne rozszerzenie EZ i rowerek — 2026-10-21
+## Rozszerzenie EZ i rowerek — wydano 1.20.0+36, 2026-10-21
 
 `tools/ez_additions.py` → `tools/expand_ez_catalog.py` → ten sam XLSX →
 `tools/xlsx_to_json.py` → `tools/build_catalog_metadata.py`. Nowe ID to
@@ -14,8 +14,10 @@ Chroniony prefiks 408 ma własny SHA256 w konwerterze. Replay z historycznego
 408-wpisowego fixture i ponowna generacja są testowane, stare zakresy testów
 partnerskich pozostają ograniczone do cw370–cw408. Licznik bieżącej walidacji
 to 412; nie zmienia to historycznych hashy. Rejestr ilustracji obejmuje nowe ID,
-a pliki tworzy niezależny proces. Stan publikacji i osobistych szablonów należy
-potwierdzić osobno — lokalne dopisanie katalogu nie instaluje planów na koncie.
+a pliki tworzy niezależny proces. Publikację katalogu412 i 486 plików pakietu
+potwierdzono publicznie; osobiste szablony zapisano osobnym autoryzowanym krokiem.
+Samo dopisanie katalogu nie instaluje planów na innych kontach.
+Dowody: `docs/releases/2026-10-21-web-1.20.0-36.md`.
 
 ## Dane i odtwarzanie
 

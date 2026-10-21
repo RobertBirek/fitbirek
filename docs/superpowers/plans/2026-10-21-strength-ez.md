@@ -57,7 +57,8 @@ Wynik Task 3: siedem szablonów w prywatnym dry-pack-v3.json; A/B/C mają
 63:30 / 55:24 / 59:27. Własne 19 testów PASS, rzeczywisty CAS dwóch sesji,
 review CLEAR po dodaniu warunków uchwytu/siły dla neutralnego podciągania.
 Finalny pakiet v3 przeszedł kodeki Dart; własne 19 testów powtórzono z PASS.
-Nie utworzono osobistego journala; apply pozostaje bezwarunkowo zablokowane.
+Historyczny stan przed publikacją: nie utworzono osobistego journala, a apply
+było bezwarunkowo zablokowane. Późniejszy zatwierdzony zapis opisano poniżej.
 
 ## Task 4: Końcowa weryfikacja i przekazanie
 
@@ -67,9 +68,11 @@ Nie utworzono osobistego journala; apply pozostaje bezwarunkowo zablokowane.
 - [x] Nie przedstawiać lokalnego katalogu/pakietu jako już działającego na koncie.
 
 Końcowy przegląd całości CLEAR dla lokalnego kandydata. Publikacja, backup
-wydania, zmiana ogólnej reguły 18:00 i zapis nowych planów nadal NIEWYKONANE;
-uzyskały już osobne potwierdzenie użytkownika „tak” (2026-10-21), a wykonanie
-publikacji i zapisu jest w toku. Szczegóły artefaktu i ograniczeń:
+wydania, zmiana ogólnej reguły 18:00 i zapis nowych planów uzyskały osobne
+potwierdzenie użytkownika „tak” (2026-10-21). Wykonano commit/push8f4ff6a,
+backup/restore, wdrożenie i publiczne486/486 PASS, a potem jeden batch8ACK
+osobistych planów, profil20→21, niezależna weryfikacja i zachowanie innych danych.
+Dowody: `docs/releases/2026-10-21-web-1.20.0-36.md`. Historyczny kandydat:
 `docs/releases/2026-10-21-web-1.20.0-36-candidate.md`.
 
 ## Ustalenia wykonawcze
