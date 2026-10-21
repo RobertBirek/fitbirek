@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_catalog_metadata
 import validate_catalog
 import build_execution_conditions as execution
-from partner_additions import EXPECTED_COUNT
+from ez_additions import EXPECTED_COUNT
 
 ROOT = Path(__file__).resolve().parents[2]
 CONDITIONS = {

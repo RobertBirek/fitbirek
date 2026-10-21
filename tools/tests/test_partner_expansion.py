@@ -34,9 +34,9 @@ class PartnerExpansionTests(unittest.TestCase):
 
     def test_append_and_partner_requirements(self):
         data = json.loads((ROOT / 'assets/data/exercises.json').read_text())
-        self.assertEqual(len(data), 408)
+        self.assertGreaterEqual(len(data), 408)
         meta = json.loads((ROOT / 'assets/data/exercise_catalog_metadata.json').read_text())
-        partners = data[392:]
+        partners = data[392:408]
         self.assertEqual(len(partners), 16)
         for row in partners:
             self.assertIn('Partner', row['sprzet'])
@@ -49,8 +49,8 @@ class PartnerExpansionTests(unittest.TestCase):
 
     def test_new_records_complete(self):
         data = json.loads((ROOT / 'assets/data/exercises.json').read_text())
-        self.assertEqual([r['id'] for r in data[369:]], [f'cw{n}' for n in range(370, 409)])
-        for row in data[369:]:
+        self.assertEqual([r['id'] for r in data[369:408]], [f'cw{n}' for n in range(370, 409)])
+        for row in data[369:408]:
             self.assertGreaterEqual(len(row['kluczoweWskazowki']), 4)
             self.assertTrue(row['czesteBledy'])
             self.assertTrue(row['regresja'])

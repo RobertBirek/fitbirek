@@ -1,5 +1,22 @@
 # Ćwiczenia indywidualne i w parach
 
+## Lokalne rozszerzenie EZ i rowerek — 2026-10-21
+
+`tools/ez_additions.py` → `tools/expand_ez_catalog.py` → ten sam XLSX →
+`tools/xlsx_to_json.py` → `tools/build_catalog_metadata.py`. Nowe ID to
+cw409 (uginanie EZ podchwytem), cw410 (nachwytem), cw411 (triceps na ławce
+płaskiej) i cw412 (spokojny rowerek, tracking czasu). Sprzęt EZ nie jest
+hantlami ani domyślną sztangą; cw411 wymaga też `Ławeczka`. Rowerek wymaga
+jawnego `Rower stacjonarny`. Oba generatory sprawdzają wszystkie wymagania.
+Ciężar EZ oznacza sumę gryfu i talerzy, nigdy wartość na rękę.
+
+Chroniony prefiks 408 ma własny SHA256 w konwerterze. Replay z historycznego
+408-wpisowego fixture i ponowna generacja są testowane, stare zakresy testów
+partnerskich pozostają ograniczone do cw370–cw408. Licznik bieżącej walidacji
+to 412; nie zmienia to historycznych hashy. Rejestr ilustracji obejmuje nowe ID,
+a pliki tworzy niezależny proces. Stan publikacji i osobistych szablonów należy
+potwierdzić osobno — lokalne dopisanie katalogu nie instaluje planów na koncie.
+
 ## Dane i odtwarzanie
 
 Rozszerzenie 2026-10-20: `cw370–cw392` (23 indywidualne), `cw393–cw408`

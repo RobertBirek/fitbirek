@@ -38,6 +38,7 @@ def workbook_row(a):
 
 def ledger():
     from partner_additions import SOURCES as PARTNER_SOURCES, source_records
+    from ez_additions import SOURCES as EZ_SOURCES, VERIFIED, source_records as ez_records
     result = {
         'reviewedOn': '2026-10-16',
         'method': 'Read publisher text; original Polish descriptions; conservative equipment adaptation, no copied prose. Source validates movement, not individualized load or medical suitability.',
@@ -72,6 +73,19 @@ def ledger():
         } for key, url in PARTNER_SOURCES.items()
     })
     result['exercises'].update(source_records())
+    result['sources'].update({
+        'ez_expansion_' + key: {'url': url, 'verifiedSections': VERIFIED[key]}
+        for key, url in EZ_SOURCES.items()
+    })
+    result['exercises'].update(ez_records())
+    result['equipment'].update({
+        'Gryf łamany EZ': {
+            'url': EZ_SOURCES['ez_curl'],
+            'verified': 'Angled EZ bar grip; load logged as total bar plus plates, not per hand. Secure collars; equipment limit is not prescribed load.'},
+        'Rower stacjonarny': {
+            'url': EZ_SOURCES['stationary_bike'],
+            'verified': 'Stationary bike with adjusted seat and handlebar reach; slight knee bend, easy seated pedaling. Not a treadmill or outdoor-bike substitute.'},
+    })
     return result
 
 

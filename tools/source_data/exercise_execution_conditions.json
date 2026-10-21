@@ -4948,6 +4948,58 @@
       "positions": [
         "standing"
       ]
+    },
+    "cw409": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw410": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw411": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw412": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     }
   }
 }

@@ -13,6 +13,8 @@ class AppConstants {
   static const List<String> dostepnySprzetOpcje = [
     'Masa własna',
     'Hantle',
+    'Gryf łamany EZ',
+    'Rower stacjonarny',
     'Ławeczka',
     'Drążek',
     'Gumy oporowe',

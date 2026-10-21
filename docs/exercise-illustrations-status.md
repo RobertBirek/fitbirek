@@ -1,6 +1,18 @@
 # Status ilustracji ćwiczeń
 
-## Stan bieżący — 2026-10-20 (wydano 1.19.1+35)
+## Stan bieżący — 2026-10-21 (kandydat 1.20.0+36)
+
+Lokalnie **412 ćwiczeń i 412 ilustracji = 408 wydanych + 4 niewydane,
+0 brakujących**. Nowe `cw409–cw411` to gryf łamany EZ, `cw412` to rowerek
+stacjonarny. Wszystkie wcześniejsze 408 rekordów/metadanych i obrazów zachowano.
+[Źródła ilustracji i koszt](ez-illustrations-2026-10-21-results.md).
+
+Kanoniczny kandydat runtime: **1348 Flutter tests PASS**, analiza bez problemów,
+kontrola wersji i kompilacja PASS. Pakiet offline: **486 plików / 47 823 677 B**.
+Niezależny przegląd katalogu i czterech obrazów: brak HIGH/MEDIUM. Nie wykonano
+commita, pusha ani wdrożenia; produkcja nadal 1.19.1+35 z 408 pozycjami.
+
+## Poprzednie wydanie — 2026-10-20 (1.19.1+35)
 
 Katalog obejmuje **408 ćwiczeń**. Wydanie web **1.19.0+34** zachowuje
 **369 wydanych ilustracji (`cw001–cw369`)**; nowe `cw370–cw408` (39 ćwiczeń)

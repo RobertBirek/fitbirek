@@ -140,7 +140,7 @@ void main() {
   test(
     'all current catalog budgets, explicit spine and no filter broadening',
     () {
-      expect(catalog, hasLength(408));
+      expect(catalog, hasLength(412));
       for (final filters in [
         const ExerciseFilters(),
         const ExerciseFilters(styles: {'spine'}),

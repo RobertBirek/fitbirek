@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     before = converter.convert()
-    if len(before) not in (369, EXPECTED_COUNT):
+    if len(before) != 369 and len(before) < EXPECTED_COUNT:
         raise ValueError('Expected unchanged baseline 369 or completed expansion')
     labels = {i: label for i, label, _ in MUSCLES}
     names = json.loads(MAPPING_PATH.read_text())
@@ -57,7 +57,8 @@ def main():
             if args.check and eid not in mapping:
                 raise ValueError(f'Missing input: {eid}')
             mapping[eid] = value
-    validate_classification(execution, {f'cw{n:03d}' for n in range(1, EXPECTED_COUNT + 1)})
+    total = max(len(before), EXPECTED_COUNT)
+    validate_classification(execution, {f'cw{n:03d}' for n in range(1, total + 1)})
     texts = {p: json.dumps(v, ensure_ascii=False, indent=2) + '\n'
              for p, v in [(MAPPING_PATH, names), (INPUT_PATH, execution), (SOURCE_PATH, ledger())]}
     if args.check:
@@ -93,7 +94,7 @@ def main():
             if path.read_text() != text:
                 path.write_text(text)
     wb.close()
-    print(f'Partner expansion OK: {added} rows appended; {EXPECTED_COUNT} total')
+    print(f'Partner expansion OK: {added} rows appended; {total} total')
 
 
 if __name__ == '__main__':

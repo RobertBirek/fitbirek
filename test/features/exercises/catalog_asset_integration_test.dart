@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fitbirek_training/app/constants.dart';
 
 import 'package:fitbirek_training/core/models/exercise.dart';
 import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
@@ -35,9 +36,9 @@ void main() {
   });
 
   test(
-    'real offline index covers all 408 exercises with known classifications',
+    'real offline index covers all 412 exercises with known classifications',
     () {
-      expect(exercises, hasLength(408));
+      expect(exercises, hasLength(412));
       for (final exercise in exercises) {
         final entry = metadata.entryFor(exercise.id);
         expect(entry, isNotNull, reason: exercise.id);
@@ -97,6 +98,94 @@ void main() {
           dostepnySprzet: equipment.toList(),
         );
         expect(plan, isEmpty);
+      }
+    },
+  );
+
+  test('EZ has distinct equipment and both generators require every item', () {
+    const ez = 'Gryf łamany EZ';
+    expect(AppConstants.dostepnySprzetOpcje, contains(ez));
+    final selected = engine.filter(
+      exercises,
+      const ExerciseFilters(sprzet: {ez}),
+    );
+    expect(selected.map((e) => e.id).toSet(), {'cw409', 'cw410', 'cw411'});
+    for (final exercise in selected) {
+      expect(exercise.sprzet, exercise.id == 'cw411' ? [ez, 'Ławeczka'] : [ez]);
+      expect(metadata.entryFor(exercise.id)!.tracking, 'reps');
+      expect(metadata.entryFor(exercise.id)!.unilateral, isFalse);
+      for (final equipment in <List<String>>[
+        ['Hantle', 'Sztanga', 'Ławeczka'],
+        [ez],
+        [ez, 'Ławeczka'],
+      ]) {
+        final allowed = exercise.sprzet.every(equipment.contains);
+        final candidates = StructuredPlanGenerator.candidates(
+          allExercises: [exercise],
+          engine: engine,
+          criteria: const ExerciseFilters(),
+          equipment: equipment,
+          level: 'Zaawansowany',
+        );
+        expect(
+          candidates.isNotEmpty,
+          allowed,
+          reason: '${exercise.id}: $equipment',
+        );
+        for (final goal in CelTreningowy.values) {
+          final plan = PlanGenerator.generate(
+            wszystkieCwiczenia: [exercise],
+            cel: goal,
+            poziom: 'Zaawansowany',
+            dostepnySprzet: equipment,
+          );
+          expect(
+            plan.isNotEmpty,
+            allowed,
+            reason: '${exercise.id}: $equipment',
+          );
+        }
+      }
+    }
+  });
+
+  test(
+    'easy bike is timed and unavailable without explicit bike equipment',
+    () {
+      const bike = 'Rower stacjonarny';
+      expect(AppConstants.dostepnySprzetOpcje, contains(bike));
+      final selected = engine.filter(
+        exercises,
+        const ExerciseFilters(sprzet: {bike}),
+      );
+      expect(selected.map((e) => e.id), ['cw412']);
+      expect(metadata.entryFor('cw412')!.tracking, 'time');
+      expect(metadata.entryFor('cw412')!.unilateral, isFalse);
+      for (final equipment in <List<String>>[
+        [],
+        ['Bieżnia'],
+        [bike],
+      ]) {
+        final allowed = equipment.contains(bike);
+        expect(
+          StructuredPlanGenerator.candidates(
+            allExercises: selected,
+            engine: engine,
+            criteria: const ExerciseFilters(),
+            equipment: equipment,
+            level: 'Zaawansowany',
+          ).isNotEmpty,
+          allowed,
+        );
+        for (final goal in CelTreningowy.values) {
+          final plan = PlanGenerator.generate(
+            wszystkieCwiczenia: selected,
+            cel: goal,
+            poziom: 'Zaawansowany',
+            dostepnySprzet: equipment,
+          );
+          expect(plan.isNotEmpty, allowed);
+        }
       }
     },
   );

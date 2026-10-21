@@ -67,6 +67,7 @@ import sys
 from pathlib import Path
 
 from spine_additions import PREFIX_COUNT, PREFIX_SHA256
+from ez_additions import PREFIX_COUNT as EZ_PREFIX_COUNT, PREFIX_SHA256 as EZ_PREFIX_SHA256
 
 try:
     import openpyxl
@@ -115,6 +116,8 @@ SPRZET_ALIASY = {
 VALID_SPRZET = {
     "Masa własna",
     "Hantle",
+    "Gryf łamany EZ",
+    "Rower stacjonarny",
     "Ławeczka",
     "Drążek",
     "Gumy oporowe",
@@ -275,6 +278,11 @@ def convert() -> list[dict]:
     prefix = json.dumps(result[:PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
     if hashlib.sha256(prefix).hexdigest() != PREFIX_SHA256:
         raise ValueError("Chronione rekordy cw001–cw363 zostały zmienione")
+
+    if len(result) >= EZ_PREFIX_COUNT:
+        ez_prefix = json.dumps(result[:EZ_PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
+        if hashlib.sha256(ez_prefix).hexdigest() != EZ_PREFIX_SHA256:
+            raise ValueError("Chronione rekordy cw001–cw408 zostały zmienione")
 
     return result
 

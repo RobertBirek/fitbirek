@@ -418,6 +418,10 @@ void main() {
     'cw406',
     'cw407',
     'cw408',
+    'cw409',
+    'cw410',
+    'cw411',
+    'cw412',
   };
 
   test('registry contains exactly the illustration assets in the catalog', () {
@@ -483,7 +487,7 @@ void main() {
   });
 
   test('returns no illustration for unknown exercise IDs', () {
-    for (final id in ['cw409', 'cw000', '', 'custom-exercise']) {
+    for (final id in ['cw413', 'cw000', '', 'custom-exercise']) {
       expect(exerciseIllustrationAsset(id), isNull, reason: id);
     }
   });

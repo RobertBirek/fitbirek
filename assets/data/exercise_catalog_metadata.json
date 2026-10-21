@@ -10968,6 +10968,116 @@
       "positions": [
         "standing"
       ]
+    },
+    "cw409": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "biceps"
+      ],
+      "secondaryMuscles": [
+        "brachialis",
+        "forearms"
+      ],
+      "aliases": [
+        "Standing EZ bar curl"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw410": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "forearms",
+        "brachialis"
+      ],
+      "secondaryMuscles": [
+        "biceps"
+      ],
+      "aliases": [
+        "Standing reverse grip EZ bar curl"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw411": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "triceps"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Lying EZ bar triceps extension on flat bench"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw412": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "calves"
+      ],
+      "aliases": [
+        "Easy stationary cycling"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
     }
   },
   "conditions": [

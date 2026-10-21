@@ -9,6 +9,14 @@
     "Kółko do brzucha": {
       "url": "https://www.sport-shop.pl/walek-kolko-podwojne-do-cwiczen-mata-pod-kolana-gymtek-podwojne-mata-czarne-p-170878.html",
       "verified": "Double wheel, two side handles, knee mat; no foot straps or assisted return listed. Both hands stay on handles; no feet-on-wheel or single-arm exercises."
+    },
+    "Gryf łamany EZ": {
+      "url": "https://www.muscleandstrength.com/exercises/ez-bar-curl.html",
+      "verified": "Angled EZ bar grip; load logged as total bar plus plates, not per hand. Secure collars; equipment limit is not prescribed load."
+    },
+    "Rower stacjonarny": {
+      "url": "https://www.arthritis.org/health-wellness/healthy-living/physical-activity/other-activities/benefits-of-stationary-biking",
+      "verified": "Stationary bike with adjusted seat and handlebar reach; slight knee bend, easy seated pedaling. Not a treadmill or outdoor-bike substitute."
     }
   },
   "contextOnly": [
@@ -285,6 +293,26 @@
     "partner_expansion_seated_pass": {
       "url": "https://www.goldsgym.com/blog/partner-workout",
       "verifiedSections": "2026-10-20 conversation research: named movement instructions/snippets; original Polish adaptation, not medical suitability or individualized dosage."
+    },
+    "ez_expansion_ez_curl": {
+      "url": "https://www.muscleandstrength.com/exercises/ez-bar-curl.html",
+      "verifiedSections": "2026-10-21 Exa publisher extraction: EZ Bar Curl Instructions 1–5 and Tips; underhand shoulder-width grip, fixed elbows, no swing, slow lowering. Original Polish adaptation."
+    },
+    "ez_expansion_ez_reverse_curl": {
+      "url": "https://www.muscleandstrength.com/exercises/ez-bar-reverse-grip-barbell-curl.html",
+      "verifiedSections": "2026-10-21 Exa publisher extraction: Reverse Grip Barbell Curl (EZ Bar) Instructions 1–4 and Tips; pronated grip, fixed upper arms, slow controlled movement. Forearms / brachialis with biceps support."
+    },
+    "ez_expansion_ez_extension": {
+      "url": "https://www.endomondo.com/exercise/ez-bar-lying-triceps-extension",
+      "verifiedSections": "2026-10-21 full page read via Exa: How To Do 1–5, Tips From Expert, Equipment, People With Elbow Pain. Flat bench, angled grip, fixed upper arms, controlled lowering beyond forehead, breathing. No analgesic promise or copied dosage."
+    },
+    "ez_expansion_stationary_bike": {
+      "url": "https://www.arthritis.org/health-wellness/healthy-living/physical-activity/other-activities/benefits-of-stationary-biking",
+      "verifiedSections": "2026-10-21 Exa publisher extraction: Check your form, Start small, Know when to back off; seat/reach, slight knee bend, easy low resistance and gradual duration, stop sharp pain. Not an individual arthritis prescription."
+    },
+    "ez_expansion_talk_test": {
+      "url": "https://www.nhs.uk/live-well/exercise/exercise-guidelines/physical-activity-guidelines-for-adults-aged-19-to-64/",
+      "verifiedSections": "2026-10-21 NHS page read: What counts as moderate aerobic activity; conversation possible, unlike vigorous exercise. Easy conversational pace here is an editorial lower-intensity choice, not an age or heart-rate prescription."
     }
   },
   "exercises": {
@@ -655,6 +683,22 @@
     "cw408": {
       "source": "partner_expansion_partner_ace",
       "movement": "Partner stability ball squat walk"
+    },
+    "cw409": {
+      "source": "ez_expansion_ez_curl",
+      "movement": "Standing EZ bar curl"
+    },
+    "cw410": {
+      "source": "ez_expansion_ez_reverse_curl",
+      "movement": "Standing reverse grip EZ bar curl"
+    },
+    "cw411": {
+      "source": "ez_expansion_ez_extension",
+      "movement": "Lying EZ bar triceps extension on flat bench"
+    },
+    "cw412": {
+      "source": "ez_expansion_stationary_bike",
+      "movement": "Easy stationary cycling"
     }
   },
   "excluded": [

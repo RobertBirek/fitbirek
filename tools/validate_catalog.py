@@ -8,7 +8,7 @@ import re
 import xlsx_to_json as converter
 from build_execution_conditions import validate_classification
 from spine_additions import validate_preservation
-from partner_additions import EXPECTED_COUNT
+from ez_additions import EXPECTED_COUNT
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / 'assets/data/exercise_catalog_metadata.json'

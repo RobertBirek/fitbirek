@@ -6,6 +6,20 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.20.0+36] — 2026-10-21
+
+### Added
+- Trzy ćwiczenia z gryfem łamanym EZ: uginanie podchwytem, uginanie nachwytem
+  i prostowanie przedramion w leżeniu na ławce.
+- Spokojna jazda na rowerze stacjonarnym jako osobna pozycja cardio.
+- Opcje sprzętu „Gryf łamany EZ” i „Rower stacjonarny”, metadane i ilustracje
+  czterech nowych pozycji. Dotychczasowe 408 ćwiczeń pozostaje bez zmian.
+
+### Deployment Notes
+- Wydanie wyłącznie web, bez migracji, zmian API i zależności.
+  Osobiste szablony oraz harmonogram nie są automatycznie instalowane u innych
+  użytkowników; ich zapis następuje osobno, po publikacji wymaganego katalogu.
+
 ## [1.19.1+35] — 2026-10-20
 
 ### Fixed
