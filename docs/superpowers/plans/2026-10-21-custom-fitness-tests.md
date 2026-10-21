@@ -211,3 +211,18 @@ commitu źródeł i push; następnie świeży backup ze starymi IDs, izolowany r
 nowym migratorem, serializowany migrate oraz API/sender przed webem. Dane domenowe,
 hasło, powiadomienia, Caddy, sieci i PostgreSQL runtime bez zmian. Powyższe zapisy
 braku zgody/publikacji dokumentują poprzedni etap, nie nową autoryzację.
+
+## Publikacja wykonana po zgodzie
+
+- Source commit af9b608e0809e5db741c260dc4fd61fb627a84c2 wypchnięty do main,
+  czysty przy backupie. Verbatim upstream OFL ma jedną końcową spację; zachowano
+  oficjalny hash licencji zamiast edytować jej treść. Pozostały staged diff clean.
+- Świeży backup20261021T162505462708Z ze starymi IDs i clean SHA; izolowany
+  restore nowym migratorem oraz serializowany production migrate0010 PASS.
+- API/sender zweryfikowane16:25:46 UTC przed webem; web1.21.0+37 healthy
+ 16:26:22 UTC, niezależny postcheck PASS. Dane, PG/Caddy/ingress/Compose i28
+  współdzielonych hostów bez zmian. Bez domenowych zapisów/loginu/push/AI.
+- Parent public audit488/488 hashów i długości PASS, dokładne version/package,
+  zdrowie, nagłówki Wasm/workerów i SPA fallback PASS. Nie deklarowano iPhone'a.
+- Raport bieżącego wydania:docs/releases/2026-10-21-api-web-1.21.0-37.md;
+  DEPLOY zaktualizowany. Raport kandydata zachowany jako historyczny zapis.

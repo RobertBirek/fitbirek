@@ -1,6 +1,9 @@
 # Kandydat1.21.0+37 — własne testy sprawnościowe
 
-**Status: lokalny kandydat, nie wdrożono.** Produkcja pozostaje1.20.0+36.
+**Historyczny zapis kandydata przed publikacją.** Ten dokładny kandydat został
+następnie wdrożony po osobnej zgodzie; bieżący wynik i dowody opisuje
+[raport wdrożenia](2026-10-21-api-web-1.21.0-37.md). Poniższe ograniczenia stanu
+produkcji dotyczą momentu zatwierdzania kandydata, nie aktualnego wdrożenia.
 Użytkownik udzielił osobnej zgody na commit/push i wdrożenie API→web po końcowej
 weryfikacji. Ten dokument opisuje niezmienny kandydat i dowody przed publikacją;
 wynik rzeczywistego wdrożenia zostanie zapisany osobno. Brak zgody na produkcyjne

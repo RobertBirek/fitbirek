@@ -3,7 +3,24 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.20.0+36 deployed 2026-10-21 08:10:49 UTC**, public verification
+Current API/sender + web **1.21.0+37 deployed 2026-10-21**, API/sender ready
+**16:25:46 UTC**, web ready **16:26:22 UTC**. Versioned custom fitness tests,
+exercise cards/illustrations, actual performed date/time, raw history and
+Body/Tests/Training sections. Clean pushed source **af9b608**, **1432 Flutter
+PASS** (one UTC DST skip, separate Warsaw PASS), **618 backend PASS**, clean
+analysis and release build. Fresh backup, isolated restore and serialized
+migrate PASS; Alembic stays **0010**, local Drift **14**, backup format **3**.
+API omission/snapshot support preceded web. Domain fingerprints/counts, PG,
+Caddy, ingress, Compose and28 shared hosts unchanged. No production login,
+domain-writing smoke, push delivery or paid AI. Physical iPhone/VoiceOver
+acceptance pending. Full public asset audit is recorded in the deployment report:
+[API/web1.21.0+37](docs/releases/2026-10-21-api-web-1.21.0-37.md).
+If an old PWA blocks the local schema upgrade, close **all** FitBirek tabs/windows
+and fully exit/reopen the browser/PWA using the same profile; do not clear
+IndexedDB, site data or pending operations. Rolling web back does not undo
+Drift14 or make old clients safe for new protocol snapshots.
+
+Previous web **1.20.0+36 deployed 2026-10-21 08:10:49 UTC**, public verification
 **08:11:24 UTC**. Catalog **412**, three EZ-bar exercises and stationary bike,
 four new illustrations; previous 408 records/metadata/images unchanged. Clean
 pushed source **8f4ff6a**. **1348 Flutter PASS**, analysis/version/build PASS;
