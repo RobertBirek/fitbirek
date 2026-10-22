@@ -3,7 +3,22 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current API/sender + web **1.21.0+37 deployed 2026-10-21**, API/sender ready
+Current web **1.22.0+38 deployed 2026-10-22 06:38:49 UTC**, public verification
+**06:39:33 UTC**. Workout preparation before starting from Today: equipment/load
+preview, history, explicit suggestions and scoped substitutions. Clean pushed
+artifact source **dd4f4b2**, **1494 Flutter PASS / one UTC DST skip**, separate
+Warsaw DST **1 PASS**, analysis and final Nginx runtime build PASS. Fresh backup
+and isolated restore with the existing migrator PASS; **488/488 public hashes
+and lengths** match. API/sender remain **1.21.0+37**, Alembic **0010**, local
+Drift **14**, backup format **3**. Only web recreated; no production migration,
+API/sender/PostgreSQL/Caddy restart, dependency/configuration/data changes or
+new catalog exercises. Domain/schema fingerprints, ingress/proxy and28 shared
+hosts unchanged. No production login, domain-writing smoke, push delivery or
+paid AI; physical phone/iPhone/VoiceOver and existing-PWA acceptance pending.
+Exact images, backup, audit and rollback:
+[web release1.22.0+38](docs/releases/2026-10-22-web-1.22.0-38.md).
+
+Previous API/sender + web **1.21.0+37 deployed 2026-10-21**, API/sender ready
 **16:25:46 UTC**, web ready **16:26:22 UTC**. Versioned custom fitness tests,
 exercise cards/illustrations, actual performed date/time, raw history and
 Body/Tests/Training sections. Clean pushed source **af9b608**, **1432 Flutter
