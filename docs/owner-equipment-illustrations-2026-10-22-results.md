@@ -35,6 +35,12 @@ z pubspec. Powyższy prywatny build501 opisuje odbiór sprzed podniesienia wersj
 nie finalny obraz wydania. Nowa pełna verification i audyt kandydata muszą
 przejść przed przełączeniem produkcji. API i dane pozostają bez zmian.
 
+Publikację zakończono: **1.23.1+40**, source `d409438`, web2026-10-22
+13:03:57UTC, finalny audyt13:04:48UTC. Dockerverification1561PASS/1UTCskip,
+Warsaw1PASS, analiza czysta;501/501 publicznych hashów i424 obrazów PASS.
+Backup i isolatedrestore PASS, bez restartu API/sendera/PG/Caddy i bez DDL.
+[Finalny raport wydania](releases/2026-10-22-illustrations-1.23.1-40.md).
+
 ## Metoda i dowody
 
 Dowody poza repo: `/tmp/opencode/owner-equipment-illustrations-20261022/` (**R**).

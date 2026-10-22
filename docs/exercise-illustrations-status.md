@@ -1,9 +1,9 @@
 # Status ilustracji ćwiczeń
 
-## Stan bieżący — 2026-10-22 (424 ilustracje, lokalny komplet)
+## Stan bieżący — 2026-10-22 (424 ilustracje, wydano1.23.1+40)
 
 Katalog obejmuje **424 ćwiczenia i 424 ilustracje (`cw001–cw424`), bez
-oczekujących ID**. Nowe **12 (`cw413–cw424`)** uzupełniono lokalnie, a wszystkie
+oczekujących ID**. Nowe **12 (`cw413–cw424`)** opublikowano, a wszystkie
 wcześniejsze **412 ilustracji** pozostają identyczne bajtowo z wydanym źródłem.
 Niezależny przegląd wizualny zaakceptował komplet; dla cw421 przyjęto próbę03
 z jawnym ograniczeniem zasłoniętej perspektywą dalszej dłoni, bez nowej generacji.
@@ -22,9 +22,15 @@ Sprawdzono501/501 hashów i długości oraz zgodność wszystkich424 obrazów ze
 źródłami. Ilustracje pozostają poza CORE, z dotychczasową zgodą na pełny pakiet.
 Znane ostrzeżenia opcjonalnego Wasm dry-run nie blokują wybranego JS/CanvasKit.
 
-To lokalna integracja, **bez nowego wydania i wdrożenia**; produkcyjna
-**1.23 pozostaje bez zmian**. Poniższy stan 412 opisuje historyczne wydanie,
-nie aktualną liczbę ćwiczeń lokalnego kandydata.
+**1.23.1+40 wdrożono2026-10-22 13:03:57UTC**, source `d409438`; końcowy
+audyt13:04:48UTC. Finalny pakiet501/48 364 768B, packageId
+`86ceee4e7e599febce4a907cb530285d304ad6e662c40d625bc68498b905b7de`.
+Publiczne501/501 hashów i wszystkie424 ilustracje PASS; Dockerverification
+1561PASS/1UTCskip, izolowanyWarsaw1PASS, analiza czysta. Backup i restore PASS,
+bez zmian API/danych/schematu. Powyższy prywatny packageId opisuje wcześniejszy
+odbiór, nie finalny pakiet wydania. Telefon/VoiceOver/PWA do odbioru.
+[Wdrożenie i rollback](releases/2026-10-22-illustrations-1.23.1-40.md).
+Poniższy stan412 jest historyczny.
 
 ## Historyczne wydanie — 2026-10-21 (1.20.0+36)
 

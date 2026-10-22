@@ -3,7 +3,21 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current API/sender + web **1.23.0+39 deployed 2026-10-22**; API-first health
+Current web **1.23.1+40 deployed 2026-10-22 13:03:57 UTC**, final public audit
+**13:04:48 UTC**. Clean pushed artifact source **d409438**. Complete424
+illustrations,12 added and412 previous images unchanged. Docker verification:
+**1561 Flutter PASS / one UTC DST skip**, isolated Warsaw DST **1 PASS**,
+analysis and final Nginx runtime PASS. Fresh backup/isolated restore with the
+existing migrator PASS; **501/501 public hashes and lengths**,424 images match.
+Only web recreated. API/sender remain1.23.0+39; no production migration/DDL or
+API/sender/PG/Caddy restart. Domain/schema/config/ingress/trust and28 shared
+hosts unchanged. Images remain outside CORE, full package requires consent;
+PWA/IndexedDB/pending preserved. Alembic0010, Drift14, backupformat3 unchanged.
+Physical phone/VoiceOver/existing-PWA acceptance pending. Exact images,
+backup, audit and rollback:
+[web release1.23.1+40](docs/releases/2026-10-22-illustrations-1.23.1-40.md).
+
+Previous API/sender + web **1.23.0+39 deployed 2026-10-22**; API-first health
 and heartbeat gate **10:10:18 UTC**, web start **10:10:20 UTC**, final public
 audit **10:11:08 UTC**. Clean pushed artifact source **cddc961**. Catalog424
 with12 additions and6 explicit corrections, equipment alternatives/profile
