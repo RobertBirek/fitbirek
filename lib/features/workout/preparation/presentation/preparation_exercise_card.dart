@@ -49,14 +49,31 @@ class _PreparationExerciseCardState
   PlanPrescription get _dose =>
       widget.draft.sessionPlan!.blocks[widget.index].prescription;
   String? get _side => widget.draft.snapshot.defaultSide(_exercise.id);
-  bool get _dumbbells => _exercise.sprzet.contains('Hantle');
-  bool get _ez => _exercise.sprzet.contains('Gryf łamany EZ');
+  List<String>? get _matchedEquipment =>
+      widget.draft.snapshot.matchingEquipment(_exercise.id);
+  List<String> get _equipment =>
+      widget.draft.snapshot.equipmentFor(_exercise.id);
+  bool get _dumbbells => _equipment.contains('Hantle');
+  bool get _ez => _equipment.contains('Gryf łamany EZ');
+  bool get _wristRoller => _equipment.contains('Wrist roller');
+  double? get _fixedWeightKg => _equipment.contains('Sandbag')
+      ? ref.read(preparationEquipmentProvider).sandbagGrams == null
+            ? null
+            : ref.read(preparationEquipmentProvider).sandbagGrams! / 1000
+      : null;
+  bool get _bodyAlternative =>
+      _matchedEquipment != null &&
+      _exercise.sprzet.contains('Hantle') &&
+      !_dumbbells &&
+      !_wristRoller;
   // cw010 uses dumbbells as stable push-up handles, not as an external load.
   bool get _usesWeight =>
       _exercise.id != 'cw010' &&
+      !_bodyAlternative &&
       (_dumbbells ||
           _ez ||
-          _exercise.sprzet.contains('Sandbag') ||
+          _wristRoller ||
+          _equipment.contains('Sandbag') ||
           _dose.weightKg != null);
 
   bool get _current =>
@@ -76,9 +93,9 @@ class _PreparationExerciseCardState
             : _ez
             ? LoadImplement.ezBar
             : null);
-    _quantity = target?.quantity ?? (_ez ? 1 : 2);
+    _quantity = target?.quantity ?? (_dumbbells ? 2 : 1);
     _reps = target?.reps ?? _dose.reps;
-    final kg = target?.weightKg ?? _dose.weightKg;
+    final kg = target?.weightKg ?? _dose.weightKg ?? _fixedWeightKg;
     _weight = TextEditingController(text: kg == null ? '' : preparationKg(kg));
     ref.listenManual(
       preparationHistoryProvider((
@@ -96,6 +113,7 @@ class _PreparationExerciseCardState
           final last = offer?.last?.weightKg;
           if (_usesWeight &&
               !_weightDirty &&
+              _fixedWeightKg == null &&
               last != null &&
               last.isFinite &&
               last >= 0) {
@@ -173,13 +191,17 @@ class _PreparationExerciseCardState
           historyUnitConfirmed: true,
           history: _history.valueOrNull ?? [],
           inventory: ref.read(preparationEquipmentProvider),
+          fixedWeightKg: _fixedWeightKg,
         );
 
   String? _validate(String? raw) {
     if ((raw ?? '').trim().isEmpty) return null;
     final kg = parseDecimal(raw!);
-    if (kg == null || kg < 0 || kg > 1000) {
+    if (kg == null || !kg.isFinite || kg < 0 || kg > 1000) {
       return 'Podaj poprawny ciężar od 0 do 1000 kg.';
+    }
+    if (_fixedWeightKg != null && kg != _fixedWeightKg) {
+      return 'Sandbag ma potwierdzone ${preparationKg(_fixedWeightKg!)} kg. Wybierz tę masę jawnie lub zmień ćwiczenie.';
     }
     final grams = kg * 1000;
     if ((grams - grams.round()).abs() > 0.000001) {
@@ -318,7 +340,7 @@ class _PreparationExerciseCardState
         offer != null &&
         (offer.targetWeightKg != null ||
             (proposedReps != null && proposedReps != _reps));
-    final usesBench = _exercise.sprzet.contains('Ławeczka');
+    final usesBench = _equipment.contains('Ławeczka');
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -350,7 +372,23 @@ class _PreparationExerciseCardState
               ],
             ),
             const SizedBox(height: 8),
-            Text('Sprzęt: ${_exercise.sprzet.join(', ')}'),
+            Text('Sprzęt: ${_equipment.join(', ')}'),
+            if (_matchedEquipment == null)
+              const Text(
+                'Brak zgodnego zestawu w profilu. Lista sprzętu jest wyłącznie informacyjna.',
+              ),
+            if (_fixedWeightKg != null)
+              Text(
+                'Potwierdzony sandbag: ${preparationKg(_fixedWeightKg!)} kg — zasób sprzętu, nie wynik z historii. Bez progresji kg.',
+              ),
+            if (_equipment.contains('Ławka do brzuszków'))
+              const Text(
+                'Ławka do brzuszków: sprawdź blokadę nóg, stabilność i nośność. To nie jest ławka do wyciskania.',
+              ),
+            if (_equipment.contains('Ławka ujemna do wyciskania'))
+              const Text(
+                'Ławka ujemna: nośność pod hantle jest niezweryfikowana. Sprawdź dopuszczalne obciążenie, blokady i stabilność przed wyciskaniem; sama deklaracja przydatności nie potwierdza bezpieczeństwa.',
+              ),
             if (usesBench)
               const Padding(
                 padding: EdgeInsets.only(top: 8),
@@ -456,11 +494,16 @@ class _PreparationExerciseCardState
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: _validate,
                 decoration: InputDecoration(
-                  labelText: _dumbbells
+                  labelText: _wristRoller
+                      ? 'Zawieszony ciężar (kg)'
+                      : _dumbbells
                       ? 'Ciężar (kg/szt.)'
                       : 'Ciężar łączny (kg)',
-                  helperText:
-                      'Z uchwytem lub gryfem i talerzami. Puste pole: wybierzesz w trakcie.',
+                  helperText: _wristRoller
+                      ? 'Tylko obciążenie zawieszone na lince, bez masy uchwytu. Pełny cykl: góra–dół.'
+                      : _fixedWeightKg != null
+                      ? 'Masa całego potwierdzonego sandbaga, bez dokładania talerzy.'
+                      : 'Z uchwytem lub gryfem i talerzami. Puste pole: wybierzesz w trakcie.',
                   helperMaxLines: 4,
                   errorMaxLines: 4,
                 ),

@@ -26,6 +26,14 @@ void main() {
     write('assets/assets/exercises/cw001.webp', 'image');
     write('font-fallbacks/font.woff2', 'font');
     write('sqlite3.wasm', 'wasm');
+    write(
+      'assets/assets/data/exercise_catalog_corrections.json',
+      '{"schemaVersion":1,"corrections":[]}',
+    );
+    write(
+      'assets/assets/data/exercise_catalog_metadata.json',
+      '{"schemaVersion":1}',
+    );
     write('canvaskit/canvaskit.wasm', 'canvas');
     write('main.dart.js.map', 'source map');
     write('api/private.json', 'private');
@@ -63,6 +71,18 @@ void main() {
     check(
       (manifest['core'] as List).contains('index.html'),
       'core includes shell',
+    );
+    check(
+      (manifest['core'] as List).contains(
+        'assets/assets/data/exercise_catalog_corrections.json',
+      ),
+      'required catalog corrections must be available before full-package consent',
+    );
+    check(
+      (manifest['core'] as List).contains(
+        'assets/assets/data/exercise_catalog_metadata.json',
+      ),
+      'equipment alternatives and preparation metadata must survive a core-only offline start',
     );
     check(
       !(manifest['core'] as List).contains(

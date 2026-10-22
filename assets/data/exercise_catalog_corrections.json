@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "corrections": [
+    {
+      "exerciseId": "cw009",
+      "revision": 1,
+      "fields": {
+        "nazwaPl": "Pompki z podniesionymi nogami",
+        "sprzet": [
+          "Masa własna",
+          "Ławeczka"
+        ],
+        "kluczoweWskazowki": [
+          "Oprzyj stopy na stabilnym stepie, krześle lub ławce, dłonie na podłodze",
+          "Wybierz niską wysokość pozwalającą utrzymać ciało w linii, bez narzucania centymetrów",
+          "Napnij brzuch, uginaj łokcie ukośnie w tył i zbliż klatkę do podłogi",
+          "Odepchnij się bez zapadania bioder, oddychaj swobodnie"
+        ],
+        "czesteBledy": [
+          "Niestabilne podparcie stóp",
+          "Zapadanie bioder",
+          "Zbyt wysokie podparcie zmieniające ruch w pike"
+        ],
+        "progresja": "Najpierw dodaj kontrolowane powtórzenia przy tej samej wysokości",
+        "regresja": "Niższe stabilne podparcie stóp lub pompka na podłodze"
+      }
+    },
+    {
+      "exerciseId": "cw123",
+      "revision": 1,
+      "fields": {
+        "nazwaPl": "Nawijanie i rozwijanie linki na wrist rollerze",
+        "sprzet": [
+          "Wrist roller"
+        ],
+        "kluczoweWskazowki": [
+          "Sprawdź uchwyt, linkę i mocowanie zawieszonego talerza",
+          "Trzymaj uchwyt oburącz stabilnie przed sobą, barki rozluźnione",
+          "Nawijaj linkę naprzemienną pracą nadgarstków aż ciężar uniesie się bez kontaktu z uchwytem",
+          "Rozwijaj linkę powoli pod kontrolą aż ciężar wróci w dół: góra–dół to pełny cykl",
+          "Zapis kg oznacza wyłącznie zawieszony ciężar, nie masę uchwytu ani parę hantli",
+          "Oddychaj swobodnie i przerwij przy bólu nadgarstków lub drętwieniu"
+        ],
+        "czesteBledy": [
+          "Swobodne spadanie ciężaru",
+          "Szarpanie barkami",
+          "Zbyt duży ciężar",
+          "Liczenie masy uchwytu lub pary hantli"
+        ],
+        "progresja": "Najpierw dodaj kontrolowany pełny cykl; później najmniejszy przyrost zawieszonego ciężaru",
+        "regresja": "Lżejszy zawieszony ciężar i mniej pełnych cykli"
+      }
+    },
+    {
+      "exerciseId": "cw135",
+      "revision": 1,
+      "fields": {
+        "nazwaPl": "Wchodzenie na podwyższenie",
+        "kluczoweWskazowki": [
+          "Sprawdź stabilność i blokadę podstawy stepu na nieśliskim podłożu; Wysokość stepu właściciela jest niezmierzona, deklarowane 150 kg nie jest zweryfikowaną nośnością; Wybierz niskie ustawienie pozwalające zachować kontrolę, bez narzucania wysokości",
+          "Ustaw całą stopę na stepie i wejdź pracą nogi podporowej bez odbicia tylną nogą",
+          "Prowadź kolano w kierunku palców i zejdź powoli",
+          "Zacznij bez hantli; wariant obciążony wymaga hantli oraz stepu lub stabilnej ławki przeznaczonej do takiego użycia"
+        ],
+        "czesteBledy": [
+          "Odbijanie tylną nogą",
+          "Kolano do środka",
+          "Zeskakiwanie",
+          "Zbyt wysokie lub niestabilne podwyższenie"
+        ],
+        "progresja": "Najpierw powtórzenia i kontrola; hantle dopiero przy stabilnym ruchu i odpowiednim sprzęcie",
+        "regresja": "Niższy step i masa własna"
+      }
+    },
+    {
+      "exerciseId": "cw136",
+      "revision": 1,
+      "fields": {
+        "nazwaPl": "Wchodzenie na podwyższenie z uniesieniem kolana",
+        "kluczoweWskazowki": [
+          "Sprawdź stabilność i blokadę podstawy stepu na nieśliskim podłożu; Wysokość stepu właściciela jest niezmierzona, deklarowane 150 kg nie jest zweryfikowaną nośnością; Wybierz niskie ustawienie pozwalające zachować kontrolę, bez narzucania wysokości",
+          "Cała stopa podporowa na stepie, wejdź bez odbicia z podłogi",
+          "Po wejściu unieś wolne kolano do wygodnej wysokości, utrzymaj miednicę poziomo",
+          "Opuść nogę i zejdź wolno bez podskoku",
+          "Zacznij z masą własną; hantle wymagają stepu lub stabilnej ławki przeznaczonej do takiego użycia"
+        ],
+        "czesteBledy": [
+          "Podskok zamiast kontroli",
+          "Zapadanie kolana",
+          "Brak pełnej stopy na podporze",
+          "Utrata równowagi"
+        ],
+        "progresja": "Dodaj krótką pauzę po uniesieniu kolana; ewentualne hantle dopiero po opanowaniu ruchu",
+        "regresja": "Niższy step, bez hantli lub bez uniesienia kolana"
+      }
+    },
+    {
+      "exerciseId": "cw165",
+      "revision": 1,
+      "fields": {
+        "nazwaPl": "Wspięcia na palce na krawędzi podwyższenia",
+        "kluczoweWskazowki": [
+          "Sprawdź stabilność i blokadę podstawy stepu na nieśliskim podłożu; Wysokość stepu właściciela jest niezmierzona, deklarowane 150 kg nie jest zweryfikowaną nośnością; Wybierz niskie ustawienie pozwalające zachować kontrolę, bez narzucania wysokości",
+          "Oprzyj przodostopie pewnie na krawędzi stepu, pięty poza podporą",
+          "Powoli opuść pięty tylko do komfortowego zakresu i wznieś się na palce bez odbicia",
+          "Zacznij bez obciążenia; hantle wymagają stabilnego stepu lub ławki przeznaczonej do takiego użycia",
+          "Nie forsuj rozciągnięcia ani równowagi, oddychaj swobodnie"
+        ],
+        "czesteBledy": [
+          "Odbijanie w dole",
+          "Wymuszanie głębokiego rozciągnięcia",
+          "Ślizgające się przodostopie",
+          "Zbyt duży ciężar"
+        ],
+        "progresja": "Najpierw kontrola i powtórzenia; hantle tylko przy zachowanej równowadze i właściwej podporze",
+        "regresja": "Mniejszy zakres i masa własna albo wspięcia z podłogi"
+      }
+    },
+    {
+      "exerciseId": "cw267",
+      "revision": 1,
+      "fields": {
+        "nazwaPl": "Wyprost odcinka piersiowego na podporze",
+        "kluczoweWskazowki": [
+          "Wariant z ławką: oprzyj górną część pleców poprzecznie na stabilnej niskiej ławce, stopy na podłodze",
+          "Wariant z rollerem: połóż się na podłodze z rollerem poprzecznie pod górną częścią pleców, kolana ugięte",
+          "Podeprzyj głowę dłońmi, łokcie kieruj lekko do przodu",
+          "Wykonaj mały spokojny wyprost w odcinku piersiowym i wróć, nie wyginaj lędźwi",
+          "Nie roluj szyi ani lędźwi i nie forsuj bólu, oddychaj swobodnie"
+        ],
+        "czesteBledy": [
+          "Przeprost lędźwi",
+          "Ciągnięcie głowy",
+          "Duży zamach",
+          "Nacisk rollera na szyję lub lędźwie"
+        ],
+        "progresja": "Popraw kontrolę i dodaj spokojne powtórzenia, bez dodatkowego ciężaru",
+        "regresja": "Mniejszy bezbolesny zakres lub przerwij, jeśli nie możesz utrzymać kontroli"
+      }
+    }
+  ]
+}

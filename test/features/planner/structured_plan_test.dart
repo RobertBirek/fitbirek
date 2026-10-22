@@ -24,7 +24,7 @@ void main() {
             )
             as Map<String, dynamic>,
       );
-      expect(catalog, hasLength(412));
+      expect(catalog, hasLength(424));
       expect(md.exercises, hasLength(catalog.length));
       final engine = ExerciseFilterEngine(md);
       for (final criteria in [

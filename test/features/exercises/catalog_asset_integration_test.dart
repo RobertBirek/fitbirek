@@ -36,9 +36,9 @@ void main() {
   });
 
   test(
-    'real offline index covers all 412 exercises with known classifications',
+    'real offline index covers all 424 exercises with known classifications',
     () {
-      expect(exercises, hasLength(412));
+      expect(exercises, hasLength(424));
       for (final exercise in exercises) {
         final entry = metadata.entryFor(exercise.id);
         expect(entry, isNotNull, reason: exercise.id);
@@ -191,12 +191,13 @@ void main() {
   );
 
   test(
-    'sandbag filter selects exactly the 16 new sandbag exercises and their muscles',
+    'sandbag filter selects the sixteen lifts and the new carry with their muscles',
     () {
       const filters = ExerciseFilters(sprzet: {'Sandbag'});
       final selected = engine.filter(exercises, filters);
       expect(selected.map((e) => e.id).toSet(), {
         for (var n = 317; n <= 332; n++) 'cw$n',
+        'cw424',
       });
       final muscles = {
         for (final exercise in selected) ...engine.musclesFor(exercise),

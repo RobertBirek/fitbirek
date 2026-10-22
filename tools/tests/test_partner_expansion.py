@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 import subprocess
 import sys
+from tools.tests.catalog_test_utils import before_owner_equipment
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -16,6 +17,7 @@ class PartnerExpansionTests(unittest.TestCase):
             if isinstance(before, list):
                 self.assertEqual(after[:369], before)
             else:
+                after = before_owner_equipment(self, after)
                 for eid, row in before['exercises'].items():
                     self.assertEqual(after['exercises'][eid], row)
                 for key in ['styles', 'muscles']:

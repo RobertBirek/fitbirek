@@ -13,7 +13,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_catalog_metadata
 import validate_catalog
 import build_execution_conditions as execution
-from ez_additions import EXPECTED_COUNT
+from owner_equipment_additions import EXPECTED_COUNT
+from tools.tests.catalog_test_utils import before_owner_equipment
 
 ROOT = Path(__file__).resolve().parents[2]
 CONDITIONS = {
@@ -64,7 +65,7 @@ class ExecutionConditionsTests(unittest.TestCase):
         self.assertEqual(ADDITIONS, before)
 
     def test_all_preexisting_metadata_fields_unchanged(self):
-        old = {k: copy.deepcopy(v) for k, v in self.meta.items()
+        old = {k: copy.deepcopy(v) for k, v in before_owner_equipment(self, self.meta).items()
                if k not in ('conditions', 'positions')}
         # Project the historical 363-entry contract, not a new replacement hash.
         old['styles'] = [x for x in old['styles'] if x['id'] not in {'spine', 'partner', 'pilates'}]

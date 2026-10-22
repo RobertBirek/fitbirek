@@ -5000,6 +5000,152 @@
       "positions": [
         "seated"
       ]
+    },
+    "cw413": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw414": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw415": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw416": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw417": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw418": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw419": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw420": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw421": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw422": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw423": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw424": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
+      ]
     }
   }
 }

@@ -60,6 +60,8 @@ bool _core(String path) =>
       'assets/AssetManifest.json',
       'assets/FontManifest.json',
       'assets/assets/data/exercises.json',
+      'assets/assets/data/exercise_catalog_metadata.json',
+      'assets/assets/data/exercise_catalog_corrections.json',
     ].contains(path) ||
     path.startsWith('assets/fonts/') ||
     path.startsWith('assets/assets/fonts/') ||

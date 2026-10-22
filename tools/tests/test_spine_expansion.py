@@ -11,6 +11,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import xlsx_to_json as converter
 import validate_catalog
+from tools.tests.catalog_test_utils import before_owner_equipment
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = '6f3eb79b692f6201d8bbf45b6952cd461aeccaaa'
@@ -29,7 +30,7 @@ class SpineExpansionTests(unittest.TestCase):
 
     def test_old_metadata_preserved_except_additive_spine(self):
         old = baseline('assets/data/exercise_catalog_metadata.json')
-        new = validate_catalog.load(validate_catalog.METADATA_PATH)
+        new = before_owner_equipment(self, validate_catalog.load(validate_catalog.METADATA_PATH))
         self.assertEqual(new['styles'][:6], old['styles'])
         self.assertEqual([r for r in new['styles'] if r['id'] == 'spine'], [dict(id='spine', label='Kręgosłup — ruch i stabilizacja',
                                                 aliases=['kręgosłup', 'kregoslup', 'spine'])])

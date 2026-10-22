@@ -32,6 +32,7 @@ PreparationLoadSuggestion proposePreparationLoad({
   required bool historyUnitConfirmed,
   required List<ProgressionPerformance> history,
   required EquipmentInventory inventory,
+  double? fixedWeightKg,
 }) {
   final groups = <int, List<ProgressionPerformance>>{};
   for (final row in history) {
@@ -51,6 +52,15 @@ PreparationLoadSuggestion proposePreparationLoad({
       PreparationLoadSuggestion(reason: reason, last: last);
   if (last == null) {
     return none('Pierwszy trening: wybierz własny ciężar lub cel z szablonu.');
+  }
+  if (fixedWeightKg != null &&
+      sessions
+          .take(2)
+          .expand((rows) => rows)
+          .any((r) => r.weightKg != fixedWeightKg)) {
+    return none(
+      'Historia innej masy nie wyznacza progresji dla potwierdzonego sprzętu.',
+    );
   }
   if (!historyUnitConfirmed) {
     return none('Najpierw potwierdź sposób zapisu ciężaru w historii.');
@@ -103,6 +113,7 @@ PreparationLoadSuggestion proposePreparationLoad({
       lower == upper ||
       !usesWeight ||
       implement == null ||
+      fixedWeightKg != null ||
       quantity < 1 ||
       quantity > implement.availableQuantity ||
       sessions.take(2).any((rows) => rows.length != sets) ||

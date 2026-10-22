@@ -4,29 +4,46 @@ import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/models/exercise.dart';
 import '../../../core/sync/sync_models.dart';
+import 'exercise_catalog_corrections.dart';
 
 /// Repozytorium bazy ćwiczeń - odpowiada za import (przyrostowy) z JSON
 /// oraz konwersję między wierszami Drift a modelem domenowym Exercise.
 class ExercisesRepository {
-  ExercisesRepository(this._db);
+  ExercisesRepository(this._db, {Future<String> Function(String)? loadAsset})
+    : _loadAsset = loadAsset ?? ((path) => rootBundle.loadString(path));
 
   final AppDatabase _db;
+  final Future<String> Function(String) _loadAsset;
 
   /// Synchronizuje ćwiczenia z assets/data/exercises.json do bazy Drift.
   ///
   /// Import jest PRZYROSTOWY: wstawia tylko ćwiczenia, których `id` nie
-  /// istnieje jeszcze w bazie, oraz odświeża wyłącznie zmienione `nazwaPl`.
-  /// Obie operacje wykonuje w jednej transakcji. Dzięki temu:
+  /// istnieje jeszcze w bazie, odświeża zmienione `nazwaPl` i stosuje wąski
+  /// manifest korekt. Wszystkie operacje wykonuje w jednej transakcji. Dzięki temu:
   /// - na pierwszym uruchomieniu wgrywa cały starter pack,
   /// - po aktualizacji aplikacji z rozszerzoną bazą (np. 38 -> 316) dopisuje
   ///   tylko nowe pozycje na urządzeniach, które już mają starsze dane,
-  /// - nie usuwa wierszy ani nie zmienia pozostałych kolumn; ulubione
+  /// - nie usuwa wierszy; oprócz nazw stosuje tylko jawne, walidowane korekty
+  ///   sześciu zatwierdzonych ID i pól z wersjonowanego manifestu; ulubione
   ///   w `ExerciseFavorites` i dane synchronizacji pozostają nietknięte.
   Future<void> syncFromAssets() async {
-    final jsonString = await rootBundle.loadString(
-      'assets/data/exercises.json',
-    );
+    final jsonString = await _loadAsset('assets/data/exercises.json');
     final List<dynamic> data = jsonDecode(jsonString);
+    final corrections = ExerciseCatalogCorrection.parse(
+      await _loadAsset('assets/data/exercise_catalog_corrections.json'),
+    );
+    final catalogIds = data
+        .cast<Map<String, dynamic>>()
+        .map((e) => e['id'])
+        .toSet();
+    if (corrections.any((c) => !catalogIds.contains(c.exerciseId))) {
+      throw const FormatException('Korekta dotyczy ćwiczenia spoza katalogu.');
+    }
+    final correctedNames = <String, String>{
+      for (final correction in corrections)
+        if (correction.fields.containsKey('nazwaPl'))
+          correction.exerciseId: correction.fields['nazwaPl'] as String,
+    };
 
     await _db.transaction(() async {
       final existingIds = await _db.exercisesDao.getAllIds();
@@ -59,12 +76,21 @@ class ExercisesRepository {
       await _db.batch((batch) {
         for (final map in data.cast<Map<String, dynamic>>()) {
           final id = map['id'] as String;
-          final name = map['nazwaPl'] as String;
+          final name = correctedNames[id] ?? map['nazwaPl'] as String;
           batch.update(
             _db.exercises,
             ExercisesCompanion(nazwaPl: Value(name)),
             where: (table) =>
                 table.id.equals(id) & table.nazwaPl.equals(name).not(),
+          );
+        }
+        for (final correction in corrections) {
+          batch.update(
+            _db.exercises,
+            correction.update,
+            where: (table) =>
+                table.id.equals(correction.exerciseId) &
+                correction.differsFrom(table),
           );
         }
       });

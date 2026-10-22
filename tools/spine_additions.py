@@ -153,6 +153,12 @@ def validate_preservation(data, meta):
     if digest(data[:PREFIX_COUNT]) != PREFIX_SHA256:
         raise ValueError('Chronione rekordy cw001–cw363 zostały zmienione')
     old = copy.deepcopy(meta)
+    # Remove only the exact reviewed additive equipment field, never other keys.
+    from owner_equipment_additions import EQUIPMENT_SETS
+    for eid, groups in {**EQUIPMENT_SETS, 'cw123': [['Wrist roller']]}.items():
+        if 'equipmentSets' in old['exercises'][eid]:
+            if old['exercises'][eid].pop('equipmentSets') != groups:
+                raise ValueError(f'{eid}: reviewed equipmentSets differ')
     old['styles'] = [r for r in old['styles'] if r['id'] not in {'spine', 'partner', 'pilates'}]
     old['muscles'] = [r for r in old['muscles'] if r['id'] != 'peroneals']
     old['exercises'] = {eid: row for eid, row in old['exercises'].items()

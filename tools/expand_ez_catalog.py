@@ -23,8 +23,9 @@ def main():
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     before = converter.convert()
-    if len(before) not in (PREFIX_COUNT, EXPECTED_COUNT):
-        raise ValueError('Expected unchanged 408 baseline or completed 412 expansion')
+    from owner_equipment_additions import EXPECTED_COUNT as OWNER_COUNT
+    if len(before) not in (PREFIX_COUNT, EXPECTED_COUNT, OWNER_COUNT):
+        raise ValueError('Expected unchanged 408 baseline or completed 412/424 expansion')
     labels = {i: label for i, label, _ in MUSCLES}
     names = json.loads(MAPPING_PATH.read_text())
     execution = json.loads(INPUT_PATH.read_text())
@@ -57,7 +58,7 @@ def main():
             if args.check and eid not in mapping:
                 raise ValueError(f'Missing input: {eid}')
             mapping[eid] = value
-    validate_classification(execution, {f'cw{n:03d}' for n in range(1, EXPECTED_COUNT + 1)})
+    validate_classification(execution, {f'cw{n:03d}' for n in range(1, max(len(before), EXPECTED_COUNT) + 1)})
     texts = {p: json.dumps(v, ensure_ascii=False, indent=2) + '\n'
              for p, v in [(MAPPING_PATH, names), (INPUT_PATH, execution), (SOURCE_PATH, ledger())]}
     if args.check:

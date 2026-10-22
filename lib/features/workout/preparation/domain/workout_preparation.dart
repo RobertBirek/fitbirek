@@ -86,6 +86,14 @@ class PreparationSnapshot {
     orElse: () => throw StateError('Ćwiczenie jest niedostępne w katalogu.'),
   );
 
+  List<String>? matchingEquipment(String id) =>
+      engine.matchingEquipment(exercise(id), availableEquipment);
+
+  /// Canonical requirements remain visible if no complete set matches. This
+  /// informational fallback is not evidence that the profile supports a move.
+  List<String> equipmentFor(String id) =>
+      matchingEquipment(id) ?? exercise(id).sprzet;
+
   String? defaultSide(String id) =>
       engine.metadata.entryFor(id)?.unilateral == true ? 'both' : null;
 }

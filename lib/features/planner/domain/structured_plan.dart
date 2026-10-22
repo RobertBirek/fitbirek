@@ -239,7 +239,7 @@ class StructuredPlanGenerator {
         .filter(allExercises, criteria)
         .where(
           (e) =>
-              e.sprzet.every(equipment.contains) &&
+              engine.supportsEquipment(e, equipment) &&
               _levels.contains(e.poziom) &&
               _levels.indexOf(e.poziom) <= rank,
         )

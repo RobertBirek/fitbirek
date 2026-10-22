@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, UniqueConstraint, Uuid
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Integer, String, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -17,9 +17,11 @@ class AppleHealthToken(Base):
     """
 
     __tablename__ = "apple_health_tokens"
+    # Migration 0008 uses a UNIQUE constraint and a separate nonunique index.
+    __table_args__ = (Index("ix_apple_health_tokens_token_hash", "token_hash"),)
 
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
-    token_hash: Mapped[str | None] = mapped_column(String(64), unique=True, index=True)
+    token_hash: Mapped[str | None] = mapped_column(String(64), unique=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     last_import_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 

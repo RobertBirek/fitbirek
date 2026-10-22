@@ -369,6 +369,9 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
 
   bool get _usesWeight =>
       _templateWeight != null ||
+      // A sandbag carry remains explicitly loaded when measured in seconds;
+      // the prepared weight belongs to the form, not the global prescription.
+      widget.exercise.sprzet.contains('Sandbag') ||
       (!_isIsometric &&
           (!widget.exercise.sprzet.contains('Masa własna') ||
               widget.exercise.sprzet.any(

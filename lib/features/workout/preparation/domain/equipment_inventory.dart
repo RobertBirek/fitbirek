@@ -18,15 +18,24 @@ class EquipmentInventory {
   EquipmentInventory({
     required Map<int, int> plateCounts,
     Map<int, int> fixedDumbbells = const {1500: 2, 2000: 2},
+    this.sandbagGrams,
   }) : plateCounts = _validated(plateCounts),
-       fixedDumbbells = _validated(fixedDumbbells);
+       fixedDumbbells = _validated(fixedDumbbells) {
+    if (sandbagGrams != null && sandbagGrams! <= 0) {
+      throw ArgumentError('Potwierdzona masa sandbaga musi być dodatnia.');
+    }
+  }
 
   factory EquipmentInventory.ownerConfirmed() => EquipmentInventory(
     plateCounts: const {5000: 4, 2500: 8, 1250: 10, 1000: 4, 500: 4},
+    sandbagGrams: 20000,
   );
 
   final Map<int, int> plateCounts;
   final Map<int, int> fixedDumbbells;
+
+  /// A confirmed complete resource, not plate stock or a historical performance.
+  final int? sandbagGrams;
 
   int get plateMassGrams => plateCounts.entries.fold(
     0,

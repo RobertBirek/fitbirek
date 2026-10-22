@@ -484,6 +484,20 @@
       "positions": [
         "floor",
         "bench"
+      ],
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Masa własna",
+          "Krzesło"
+        ],
+        [
+          "Masa własna",
+          "Ławeczka"
+        ]
       ]
     },
     "cw010": {
@@ -3367,6 +3381,11 @@
       ],
       "positions": [
         "standing"
+      ],
+      "equipmentSets": [
+        [
+          "Wrist roller"
+        ]
       ]
     },
     "cw124": {
@@ -3684,6 +3703,20 @@
       "positions": [
         "standing",
         "bench"
+      ],
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Ławeczka"
+        ]
       ]
     },
     "cw136": {
@@ -3712,6 +3745,20 @@
       "positions": [
         "standing",
         "bench"
+      ],
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Ławeczka"
+        ]
       ]
     },
     "cw137": {
@@ -4454,6 +4501,20 @@
       "positions": [
         "standing",
         "bench"
+      ],
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Ławeczka"
+        ]
       ]
     },
     "cw166": {
@@ -7019,6 +7080,14 @@
       "positions": [
         "floor",
         "bench"
+      ],
+      "equipmentSets": [
+        [
+          "Ławeczka"
+        ],
+        [
+          "Roller"
+        ]
       ]
     },
     "cw268": {
@@ -11077,6 +11146,325 @@
       ],
       "positions": [
         "seated"
+      ]
+    },
+    "cw413": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "calves"
+      ],
+      "aliases": [
+        "Lateral step-up"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw414": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Controlled step-down"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw415": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Hands-elevated step push-up"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw416": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Decline bench crunch"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw417": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "abs"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Decline bench sit-up"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw418": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders"
+      ],
+      "aliases": [
+        "Dumbbell decline bench press"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "bench"
+      ]
+    },
+    "cw419": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "feet",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [
+        "Double-leg balance cushion stand"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw420": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "feet",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "abs"
+      ],
+      "aliases": [
+        "Single-leg balance cushion stand"
+      ],
+      "tracking": "time",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw421": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "calves"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Calf foam rolling"
+      ],
+      "tracking": "time",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw422": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Quadriceps foam rolling"
+      ],
+      "tracking": "time",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw423": {
+      "styles": [
+        "mobility_recovery"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Glute foam rolling"
+      ],
+      "tracking": "time",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
+    },
+    "cw424": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "abs",
+        "back"
+      ],
+      "secondaryMuscles": [
+        "glutes",
+        "quadriceps",
+        "forearms"
+      ],
+      "aliases": [
+        "Bear-hug sandbag carry",
+        "worek z piaskiem"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor"
+      ],
+      "positions": [
+        "standing"
       ]
     }
   },

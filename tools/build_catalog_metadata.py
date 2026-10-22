@@ -14,6 +14,7 @@ from pathlib import Path
 from catalog_additions import ADDITIONS
 from partner_additions import ADDITIONS as PARTNER_ADDITIONS
 from ez_additions import ADDITIONS as EZ_ADDITIONS
+from owner_equipment_additions import ADDITIONS as OWNER_ADDITIONS, EQUIPMENT_SETS
 from spine_additions import ADDITIONS as SPINE_ADDITIONS, EXISTING_SPINE, SPINE_STYLE
 from build_execution_conditions import load_classification
 
@@ -416,7 +417,7 @@ def build() -> dict:
             aliases=['taichi siedzące'] if 282 <= n <= 289 else [],
             tracking='rounds' if n in ROUNDS else 'time' if n in TIME else 'reps',
             unilateral=n in UNILATERAL)
-    for a in ADDITIONS + SPINE_ADDITIONS + PARTNER_ADDITIONS + EZ_ADDITIONS:
+    for a in ADDITIONS + SPINE_ADDITIONS + PARTNER_ADDITIONS + EZ_ADDITIONS + OWNER_ADDITIONS:
         # Crow gets a second style below; never mutate the curated source list.
         exercises[f'cw{a["number"]:03d}'] = dict(
             styles=list(a['style']), primaryMuscles=a['primary'], secondaryMuscles=a['secondary'],
@@ -430,6 +431,13 @@ def build() -> dict:
     execution = load_classification(exercises)
     for eid, entry in exercises.items():
         entry.update(execution['exercises'][eid])
+    # Consume corrected canonical equipment without ever changing the raw export.
+    from effective_catalog import effective_catalog
+    import xlsx_to_json as converter
+    effective = {e['id']: e for e in effective_catalog(converter.convert())}
+    for eid, options in EQUIPMENT_SETS.items():
+        exercises[eid]['equipmentSets'] = [list(option) for option in options]
+    exercises['cw123']['equipmentSets'] = [effective['cw123']['sprzet']]
     return dict(schemaVersion=1,
                 styles=[dict(id=i, label=l, aliases=a) for i, l, a in STYLES],
                 muscles=[dict(id=i, label=l, aliases=a) for i, l, a in MUSCLES],

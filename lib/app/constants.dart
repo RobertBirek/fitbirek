@@ -28,6 +28,14 @@ class AppConstants {
     'Piłka',
     'Piłka gimnastyczna',
     'Ślizgacze',
+    'Step',
+    'Ławka do brzuszków',
+    'Ławka ujemna do wyciskania',
+    'Wrist roller',
+    'Poduszka równoważna',
+    'Roller',
+    'Mata',
+    'Pasy do zwisu za nogi',
   ];
 
   /// Predefiniowane czasy przerwy między seriami (sekundy).

@@ -1,6 +1,8 @@
 import '../../../core/models/exercise.dart';
 import '../../../core/models/user_profile.dart';
 import '../../../core/utils/partia_kategoria.dart';
+import '../../exercises/domain/exercise_catalog_metadata.dart';
+import '../../exercises/domain/exercise_filter_engine.dart';
 
 /// Generator planu treningowego (funkcja Premium).
 ///
@@ -88,7 +90,10 @@ class PlanGenerator {
     required String poziom,
     required List<String> dostepnySprzet,
     int czasMinut = 45,
+    ExerciseFilterEngine? engine,
   }) {
+    final equipmentEngine =
+        engine ?? ExerciseFilterEngine(const ExerciseCatalogMetadata());
     // Liczba ćwiczeń skalowana czasem: ~8-10 min na ćwiczenie (rozgrzewka+serie).
     var iloscCwiczen = (czasMinut / 9).round().clamp(4, 6);
 
@@ -97,7 +102,7 @@ class PlanGenerator {
     // Krok 1: filtruj po sprzęcie (każdy wymagany element musi być dostępny)
     // i po poziomie (nie wyżej niż poziom użytkownika).
     final kandydaci = wszystkieCwiczenia.where((ex) {
-      final sprzetOk = ex.sprzet.every((s) => dostepnySprzet.contains(s));
+      final sprzetOk = equipmentEngine.supportsEquipment(ex, dostepnySprzet);
       final exPoziomRank = _poziomRanking.indexOf(ex.poziom).clamp(0, 2);
       final poziomOk = exPoziomRank <= userPoziomRank;
       return sprzetOk && poziomOk;

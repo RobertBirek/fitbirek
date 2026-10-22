@@ -145,7 +145,13 @@ class _WorkoutPreparationSheetState
                     for (final e in candidates)
                       ListTile(
                         title: Text(e.nazwaPl),
-                        subtitle: Text(e.sprzet.join(', ')),
+                        subtitle: Text(
+                          [
+                            widget.snapshot.equipmentFor(e.id).join(', '),
+                            if (widget.snapshot.matchingEquipment(e.id) == null)
+                              'Brak zgodnego zestawu w profilu — lista informacyjna, brakujący sprzęt nadal wymagany.',
+                          ].join(' · '),
+                        ),
                         onTap: () => Navigator.pop(context, e.id),
                       ),
                   ],
@@ -214,8 +220,13 @@ class _WorkoutPreparationSheetState
             ? widget.snapshot.exerciseIds
             : _draft.sessionPlan!.exerciseIds;
         final equipment = {
-          for (final id in ids) ...widget.snapshot.exercise(id).sprzet,
+          for (final id in ids) ...widget.snapshot.equipmentFor(id),
         }.toList()..sort();
+        final unsupported = [
+          for (final id in ids)
+            if (widget.snapshot.matchingEquipment(id) == null)
+              widget.snapshot.exercise(id).nazwaPl,
+        ];
         return PopScope(
           canPop: !_busy,
           child: SafeArea(
@@ -276,7 +287,7 @@ class _WorkoutPreparationSheetState
                                   )
                                 else ...[
                                   Text(
-                                    'Na początek: ${widget.snapshot.exercise(ids.first).sprzet.join(', ')}',
+                                    'Na początek: ${widget.snapshot.equipmentFor(ids.first).join(', ')}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -284,6 +295,10 @@ class _WorkoutPreparationSheetState
                                   Text(
                                     'Sprzęt do treningu: ${equipment.join(', ')}',
                                   ),
+                                  if (unsupported.isNotEmpty)
+                                    Text(
+                                      'Brak zgodnego zestawu w profilu: ${unsupported.join(', ')}. Podsumowanie sprzętu jest informacyjne; brakujący sprzęt nadal jest wymagany.',
+                                    ),
                                   const Text(
                                     'Talerze są wspólne. Przy kolejnych ćwiczeniach może być potrzebne ich przełożenie.',
                                   ),
@@ -305,8 +320,7 @@ class _WorkoutPreparationSheetState
                                       ),
                                       subtitle: Text(
                                         widget.snapshot
-                                            .exercise(id)
-                                            .sprzet
+                                            .equipmentFor(id)
                                             .join(', '),
                                       ),
                                     ),

@@ -6,6 +6,28 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.23.0+39] — 2026-10-22
+
+### Added
+- 12 ćwiczeń ze stepem, ławką ujemną, poduszką równoważną, rollerem
+  i sandbagiem; katalog liczy 424 pozycje. Nowe ilustracje pozostają do przygotowania.
+- Alternatywne kompletne zestawy sprzętu, odrębne typy ławek oraz jawna edycja
+  wyposażenia profilu z zachowaniem starszych, nieznanych wartości.
+
+### Fixed
+- Wersjonowane korekty sześciu wpisów bez zmiany ID, historii i ulubionych;
+  wrist roller nie wymaga pary hantli, a step nie oznacza ławki płaskiej.
+- Przygotowanie stałego worka20kg oraz zachowanie masy przy zapisie ćwiczenia
+  czasowego i wznowieniu sesji. Ręczny rzeczywisty wynik nie jest nadpisywany.
+- Deklaracja indeksu tokenu Apple Health zgodna z istniejącym schematem Alembica,
+  bez zmiany historycznych migracji lub danych.
+
+### Deployment Notes
+- API/Mentor i web: aktualna projekcja katalogu oraz blokada automatycznego
+  wyciskania ujemnego bez weryfikacji ławki; bez nowych danych profilu dla AI.
+- Bez nowych migracji, zależności i zmian Web SQLite. Korekty oraz metadane
+  sprzętu należą do podstawowego pakietu offline; profil nie zmienia się w tle.
+
 ## [1.22.0+38] — 2026-10-22
 
 ### Added

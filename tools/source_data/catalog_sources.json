@@ -313,6 +313,78 @@
     "ez_expansion_talk_test": {
       "url": "https://www.nhs.uk/live-well/exercise/exercise-guidelines/physical-activity-guidelines-for-adults-aged-19-to-64/",
       "verifiedSections": "2026-10-21 NHS page read: What counts as moderate aerobic activity; conversation possible, unlike vigorous exercise. Easy conversational pace here is an editorial lower-intensity choice, not an age or heart-rate prescription."
+    },
+    "owner_equipment_step_up": {
+      "url": "https://www.acefitness.org/resources/everyone/exercise-library/28/step-up/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Forward step-up: whole foot on platform, controlled ascent/descent; existing cw135, not a new duplicate."
+    },
+    "owner_equipment_step_variations": {
+      "url": "https://www.acefitness.org/resources/pros/expert-articles/6369/back-to-the-basics-how-to-create-innovative-fitness-programs/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Step-up/lunge variations, including lateral movement context; not evidence for an isolated heel-tap with support-leg-only return or a calf raise."
+    },
+    "owner_equipment_step_glutes": {
+      "url": "https://www.acefitness.org/resources/pros/expert-articles/5901/effective-exercises-to-target-the-glutes/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Eccentric Step Down With Body Weight Only: slowly lower left leg, tap heel, relax and transfer weight to floor, then step back onto bench to reset and repeat. Publication describes a 10–12 inches bench, not a measured owner step height. Also step-up/knee-lift context for cw135/cw136.",
+      "editorialAdaptation": "Editorial adaptation for cw414: a stable low adjustable step replaces the published 10–12 inches bench; 10–15 cm is illustrative only, not measured owner height or a source-prescribed target. Preserve the controlled descent, floor weight transfer and separate step-up reset; do not turn it into a support-leg-only heel-tap return."
+    },
+    "owner_equipment_step_pushup": {
+      "url": "https://www.acefitness.org/resources/pros/expert-articles/5808/strength-and-cardio-circuit-for-beginning-clients/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Elevated-hand push-up on step in beginner circuit; incline push-up, not feet-elevated cw009."
+    },
+    "owner_equipment_feet_pushup": {
+      "url": "https://www.acefitness.org/resources/everyone/blog/5391/outdoor-functional-training-exercises/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Decline Push-ups: hands on ground, feet on bench; distinct from hands-elevated incline push-ups.",
+      "editorialAdaptation": "Editorial equipment options for cw009: stable Step or chair in place of the demonstrated bench; no fixed height prescription. These options are adaptations, not an exact list quoted from this article."
+    },
+    "owner_equipment_feet_pushup_low": {
+      "url": "https://www.acefitness.org/about-ace/press-room/in-the-news/8284/what-muscles-do-pushups-work-tips-how-to-do-them-correctly-healthnews/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Decline push-up instructions explicitly allow a low support for the feet; not a mandatory 30–50 cm height.",
+      "editorialAdaptation": "Low support is source-supported; exact owner step height is not measured. Stability and control determine a suitable low setting, not a universal centimetre target."
+    },
+    "owner_equipment_standing_calf": {
+      "url": "https://exrx.net/WeightExercises/Gastrocnemius/BWStandingCalfRaise",
+      "verifiedSections": "2026-10-22 supplied publisher research: Bodyweight Standing Calf Raise: forefeet on raised step, heel lowering and raising, hand support for balance and optional dumbbell. Not a step-up or lunge.",
+      "editorialAdaptation": "Editorial equipment naming for cw165: Step or suitable stable legacy bench. Optional balance support and optional dumbbell are separate technique choices, not a requirement for a dumbbell pair or mandatory use of extra weight."
+    },
+    "owner_equipment_decline_crunch": {
+      "url": "https://exrx.net/WeightExercises/RectusAbdominis/BWInclineCrunch",
+      "verifiedSections": "2026-10-22 supplied publisher research: Incline/decline abdominal crunch: secured legs, spinal flexion, distinct from full hip-flexion sit-up."
+    },
+    "owner_equipment_decline_situp": {
+      "url": "https://exrx.net/WeightExercises/HipFlexors/WtDeclineSitup",
+      "verifiedSections": "2026-10-22 supplied publisher research: Decline sit-up: secured legs, trunk and hip flexion; unloaded conservative adaptation, no mandatory plate."
+    },
+    "owner_equipment_decline_press": {
+      "url": "https://exrx.net/WeightExercises/PectoralSternal/DBDeclineBenchPress",
+      "verifiedSections": "2026-10-22 supplied publisher research: Dumbbell decline bench press setup and controlled press; purpose-rated load-bearing bench required."
+    },
+    "owner_equipment_balance": {
+      "url": "https://www.togu.de/en/blog/pelvic-floor-training-with-the-dynair-ballkissen",
+      "verifiedSections": "2026-10-22 supplied publisher research: Two-leg and one-leg standing balance on Dynair cushion only; no pelvic-floor, treatment or clinical claims imported."
+    },
+    "owner_equipment_roll_calf": {
+      "url": "https://contentcdn.eacefitness.com/certifiednews/images/article/pdfs/MyofascialRelease.pdf",
+      "verifiedSections": "2026-10-22 supplied publisher research: ACE Myofascial Release handout, calf rolling instructions; slow calf contact, avoid joints and painful pressure."
+    },
+    "owner_equipment_roll_quad": {
+      "url": "https://www.acefitness.org/about-ace/our-efforts/blog/7786/foam-rollers-should-you-use-them/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Foam-roller quadriceps technique; supported front-thigh rolling, no knee pressure or therapeutic promise."
+    },
+    "owner_equipment_roll_glute": {
+      "url": "https://www.acefitness.org/resources/pros/expert-articles/5895/recover-faster-and-more-effectively-with-these-foam-roller-moves/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Glute foam-roller position and controlled rolling, gentle self-selected pressure; no recovery guarantee."
+    },
+    "owner_equipment_carry": {
+      "url": "https://ultimatesandbagtraining.com/best-secret-great-ultimate-sandbag-workouts/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Bear-hug Ultimate Sandbag carry; bag held against torso and controlled walking. Bag configuration differs; no universal 20 kg target."
+    },
+    "owner_equipment_wrist": {
+      "url": "https://www.catalystathletics.com/exercise/788/Wrist-Roller-Flexion/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Wrist Roller Flexion: suspended load wound up and lowered under control; complete up/down cycle, no dumbbell pair."
+    },
+    "owner_equipment_thoracic": {
+      "url": "https://www.acefitness.org/resources/pros/expert-articles/7960/thoracic-mobility-exercises-to-address-shoulder-pain/",
+      "verifiedSections": "2026-10-22 supplied publisher research: Thoracic extension over foam roller; support head, avoid substituting lumbar extension; alternate apparatus for cw267."
     }
   },
   "exercises": {
@@ -699,6 +771,54 @@
     "cw412": {
       "source": "ez_expansion_stationary_bike",
       "movement": "Easy stationary cycling"
+    },
+    "cw413": {
+      "source": "owner_equipment_step_variations",
+      "movement": "Lateral step-up"
+    },
+    "cw414": {
+      "source": "owner_equipment_step_glutes",
+      "movement": "Controlled step-down"
+    },
+    "cw415": {
+      "source": "owner_equipment_step_pushup",
+      "movement": "Hands-elevated step push-up"
+    },
+    "cw416": {
+      "source": "owner_equipment_decline_crunch",
+      "movement": "Decline bench crunch"
+    },
+    "cw417": {
+      "source": "owner_equipment_decline_situp",
+      "movement": "Decline bench sit-up"
+    },
+    "cw418": {
+      "source": "owner_equipment_decline_press",
+      "movement": "Dumbbell decline bench press"
+    },
+    "cw419": {
+      "source": "owner_equipment_balance",
+      "movement": "Double-leg balance cushion stand"
+    },
+    "cw420": {
+      "source": "owner_equipment_balance",
+      "movement": "Single-leg balance cushion stand"
+    },
+    "cw421": {
+      "source": "owner_equipment_roll_calf",
+      "movement": "Calf foam rolling"
+    },
+    "cw422": {
+      "source": "owner_equipment_roll_quad",
+      "movement": "Quadriceps foam rolling"
+    },
+    "cw423": {
+      "source": "owner_equipment_roll_glute",
+      "movement": "Glute foam rolling"
+    },
+    "cw424": {
+      "source": "owner_equipment_carry",
+      "movement": "Bear-hug sandbag carry"
     }
   },
   "excluded": [
@@ -707,5 +827,34 @@
     "No speculative Animal Rx variants inferred from a list of names; 8 documented calisthenics movements instead of 15.",
     "Seated opening/clouds already cw282–289; preserve cw283/cw285 despite similarity. No extra opening/cloud variants.",
     "No karate."
-  ]
+  ],
+  "corrections": {
+    "cw009": [
+      "owner_equipment_feet_pushup",
+      "owner_equipment_feet_pushup_low"
+    ],
+    "cw123": [
+      "owner_equipment_wrist"
+    ],
+    "cw135": [
+      "owner_equipment_step_up",
+      "owner_equipment_step_glutes"
+    ],
+    "cw136": [
+      "owner_equipment_step_glutes"
+    ],
+    "cw165": [
+      "owner_equipment_standing_calf"
+    ],
+    "cw267": [
+      "owner_equipment_thoracic"
+    ]
+  },
+  "ownerEquipmentContext": {
+    "Step": "Adjustable base; height not measured, 10–15 cm only illustrative, declared 150 kg not independently verified. No jumps or loaded sandbag step-ups.",
+    "Ławka do brzuszków": "Decline and leg lock confirmed; suitability/load rating for dumbbell pressing unverified. Not an alias for generic Ławeczka or Ławka ujemna do wyciskania.",
+    "Sandbag": "Adjustable but owner operationally keeps 20 kg. Context only, never a universal starting load or progression target.",
+    "Pasy do zwisu za nogi": "Inversion leg straps, not TRX or arm slings; no added inversion movements.",
+    "Wrist roller": "Handle, cord and suspended plate; no pulley station and no dumbbell pair."
+  }
 }

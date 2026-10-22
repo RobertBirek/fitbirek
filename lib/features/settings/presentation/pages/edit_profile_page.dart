@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../app/constants.dart';
 import '../../../../core/models/user_profile.dart';
 import '../../../../core/utils/numeric_input.dart';
 import '../../../../core/utils/profile_input.dart';
@@ -22,6 +23,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
   late Future<ProfileEdit> _load;
   ProfileEdit? _edit;
   bool _saving = false;
+  final _equipment = <String>{};
 
   bool _active() => mounted && (ModalRoute.of(context)?.isCurrent ?? false);
 
@@ -40,6 +42,9 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
     _wzrost.text = formatProfileNumber(p.wzrostCm);
     _waga.text = formatProfileNumber(p.wagaKg);
     _cel = p.cel;
+    _equipment
+      ..clear()
+      ..addAll(p.dostepnySprzet);
     _edit = edit;
     return edit;
   }
@@ -65,7 +70,7 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
         wzrostCm: parseDecimal(_wzrost.text)!,
         wagaKg: parseDecimal(_waga.text)!,
         cel: _cel,
-        dostepnySprzet: edit.profile.dostepnySprzet,
+        dostepnySprzet: _equipment.toList(),
         onboardingZakonczony: edit.profile.onboardingZakonczony,
       );
       await _repo.checkEditAuthority(edit);
@@ -84,6 +89,57 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
       }
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _editEquipment() async {
+    final selected = {..._equipment};
+    final options = {...AppConstants.dostepnySprzetOpcje, ...selected}.toList();
+    final applied = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: const Text('Twój sprzęt'),
+          content: SizedBox(
+            width: 480,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: options.length,
+              itemBuilder: (context, index) {
+                final gear = options[index];
+                return CheckboxListTile(
+                  title: Text(gear),
+                  value: selected.contains(gear),
+                  onChanged: (value) => update(() {
+                    if (value == true) {
+                      selected.add(gear);
+                    } else {
+                      selected.remove(gear);
+                    }
+                  }),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Zastosuj'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (applied == true && mounted && !_saving) {
+      setState(
+        () => _equipment
+          ..clear()
+          ..addAll(selected),
+      );
     }
   }
 
@@ -162,6 +218,11 @@ class _EditProfilePageState extends ConsumerState<EditProfilePage> {
                       decoration: const InputDecoration(labelText: 'Cel'),
                     ),
                     const SizedBox(height: 24),
+                    OutlinedButton(
+                      onPressed: _saving ? null : _editEquipment,
+                      child: const Text('Edytuj sprzęt'),
+                    ),
+                    const SizedBox(height: 12),
                     PrimaryButton(
                       label: 'Zapisz',
                       isLoading: _saving,

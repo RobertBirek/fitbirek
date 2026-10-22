@@ -10,6 +10,10 @@ from fastapi import HTTPException
 CATALOG = {e['id']: e for e in json.loads(
     Path(__file__).with_name('exercise_catalog.json').read_text())['exercises']}
 
+# Decline pressing requires an authoritatively verified load-rated bench.
+# Mentor has no such capability check; text ranking/claims cannot establish it.
+UNVERIFIED_BENCH_EXERCISE_IDS = frozenset({'cw418'})
+
 
 def fold(text):
     return ''.join(c for c in unicodedata.normalize('NFKD', text.lower().replace('ł', 'l'))
@@ -28,7 +32,8 @@ def candidate_pool(text):
     words = {w for w in re.findall(r'[a-z]{4,}', fold(text))
              if w not in {'szablon', 'uloz', 'ogolne', 'poranne', 'trening'}}
     stretching = any(w.startswith(('rozciag', 'stretch')) for w in words)
-    pool = [e for e in CATALOG.values() if e['tracking'] in {'reps', 'time'}
+    pool = [e for e in CATALOG.values() if e['id'] not in UNVERIFIED_BENCH_EXERCISE_IDS
+            and e['tracking'] in {'reps', 'time'}
             and (not stretching or 'rozciag' in fold(e['type']))]
     selected, muscles = [], set()
     def rank(e):
@@ -68,6 +73,7 @@ def validate_template(raw, text=None):
     for e in raw['exercises']:
         if (not isinstance(e, dict) or set(e) != {'exercise_id', 'sets', 'reps', 'seconds', 'rest_seconds', 'weight_kg'}
                 or not isinstance(e['exercise_id'], str) or e['exercise_id'] not in allowed
+                or e['exercise_id'] in UNVERIFIED_BENCH_EXERCISE_IDS
                 or e['exercise_id'] in seen or not _integer(e['sets'], 1, 5400)
                 or not _integer(e['rest_seconds'], 0, 5400)):
             invalid()

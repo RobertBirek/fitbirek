@@ -65,9 +65,11 @@ import json
 import hashlib
 import sys
 from pathlib import Path
+from catalog_equipment import VALID_SPRZET
 
 from spine_additions import PREFIX_COUNT, PREFIX_SHA256
 from ez_additions import PREFIX_COUNT as EZ_PREFIX_COUNT, PREFIX_SHA256 as EZ_PREFIX_SHA256
+from owner_equipment_additions import PREFIX_COUNT as OWNER_PREFIX_COUNT, PREFIX_SHA256 as OWNER_PREFIX_SHA256
 
 try:
     import openpyxl
@@ -111,27 +113,8 @@ SPRZET_ALIASY = {
     "Guma oporowa": "Gumy oporowe",
 }
 
-# Kanoniczna, rozszerzona lista sprzętu (musi być zgodna z
-# lib/app/constants.dart -> AppConstants.dostepnySprzetOpcje po aktualizacji).
-VALID_SPRZET = {
-    "Masa własna",
-    "Hantle",
-    "Gryf łamany EZ",
-    "Rower stacjonarny",
-    "Ławeczka",
-    "Drążek",
-    "Gumy oporowe",
-    "Bieżnia",
-    "Skakanka",
-    "Krzesło",
-    "Ręcznik",
-    "Sandbag",
-    "Kółko do brzucha",
-    "Partner",
-    "Piłka",
-    "Piłka gimnastyczna",
-    "Ślizgacze",
-}
+# VALID_SPRZET is shared with standard-library-only correction projections;
+# it must match lib/app/constants.dart -> dostepnySprzetOpcje.
 
 # Rozszerzony enum typów - 1:1 z wartościami z Excela (musi być zgodny z
 # lib/app/constants.dart -> AppConstants.typyOpcje po aktualizacji).
@@ -283,6 +266,11 @@ def convert() -> list[dict]:
         ez_prefix = json.dumps(result[:EZ_PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
         if hashlib.sha256(ez_prefix).hexdigest() != EZ_PREFIX_SHA256:
             raise ValueError("Chronione rekordy cw001–cw408 zostały zmienione")
+
+    if len(result) >= OWNER_PREFIX_COUNT:
+        owner_prefix = json.dumps(result[:OWNER_PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
+        if hashlib.sha256(owner_prefix).hexdigest() != OWNER_PREFIX_SHA256:
+            raise ValueError("Chronione rekordy cw001–cw412 zostały zmienione")
 
     return result
 

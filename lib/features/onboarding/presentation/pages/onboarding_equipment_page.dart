@@ -28,9 +28,6 @@ class _OnboardingEquipmentPageState extends State<OnboardingEquipmentPage> {
   void initState() {
     super.initState();
     _selected = widget.initialSelection.toSet();
-    if (_selected.isEmpty) {
-      _selected.add('Masa własna');
-    }
   }
 
   static const _icons = {

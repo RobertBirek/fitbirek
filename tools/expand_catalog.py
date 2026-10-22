@@ -86,6 +86,29 @@ def ledger():
             'url': EZ_SOURCES['stationary_bike'],
             'verified': 'Stationary bike with adjusted seat and handlebar reach; slight knee bend, easy seated pedaling. Not a treadmill or outdoor-bike substitute.'},
     })
+    from owner_equipment_additions import SOURCES as OWNER_SOURCES, VERIFIED as OWNER_VERIFIED, EDITORIAL_ADAPTATIONS, source_records as owner_records
+    result['sources'].update({
+        'owner_equipment_' + key: {'url': url, 'verifiedSections': '2026-10-22 supplied publisher research: ' + OWNER_VERIFIED[key]}
+        for key, url in OWNER_SOURCES.items()
+    })
+    result['exercises'].update(owner_records())
+    for key, note in EDITORIAL_ADAPTATIONS.items():
+        result['sources']['owner_equipment_' + key]['editorialAdaptation'] = note
+    result['corrections'] = {
+        'cw009': ['owner_equipment_feet_pushup', 'owner_equipment_feet_pushup_low'],
+        'cw123': ['owner_equipment_wrist'],
+        'cw135': ['owner_equipment_step_up', 'owner_equipment_step_glutes'],
+        'cw136': ['owner_equipment_step_glutes'],
+        'cw165': ['owner_equipment_standing_calf'],
+        'cw267': ['owner_equipment_thoracic'],
+    }
+    result['ownerEquipmentContext'] = {
+        'Step': 'Adjustable base; height not measured, 10–15 cm only illustrative, declared 150 kg not independently verified. No jumps or loaded sandbag step-ups.',
+        'Ławka do brzuszków': 'Decline and leg lock confirmed; suitability/load rating for dumbbell pressing unverified. Not an alias for generic Ławeczka or Ławka ujemna do wyciskania.',
+        'Sandbag': 'Adjustable but owner operationally keeps 20 kg. Context only, never a universal starting load or progression target.',
+        'Pasy do zwisu za nogi': 'Inversion leg straps, not TRX or arm slings; no added inversion movements.',
+        'Wrist roller': 'Handle, cord and suspended plate; no pulley station and no dumbbell pair.',
+    }
     return result
 
 

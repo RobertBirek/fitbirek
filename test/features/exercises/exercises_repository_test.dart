@@ -26,12 +26,44 @@ void main() {
     for (var i = 1; i <= legacyCount; i++) 'cw${i.toString().padLeft(3, '0')}',
   };
   late List<Map<String, dynamic>> data;
+  late Map<String, Map<String, dynamic>> approvedCorrections;
+
+  Map<String, dynamic> expectedCorrectedRow(ExerciseData row) {
+    final expected = row.toJson();
+    for (final field in (approvedCorrections[row.id] ?? {}).entries) {
+      expected[field.key] = field.value is List
+          ? jsonEncode(field.value)
+          : field.value;
+    }
+    return expected;
+  }
 
   setUpAll(() {
     data =
         (jsonDecode(File('assets/data/exercises.json').readAsStringSync())
                 as List)
             .cast<Map<String, dynamic>>();
+    final manifest =
+        jsonDecode(
+              File(
+                'assets/data/exercise_catalog_corrections.json',
+              ).readAsStringSync(),
+            )
+            as Map<String, dynamic>;
+    approvedCorrections = {
+      for (final entry in manifest['corrections'] as List)
+        entry['exerciseId'] as String: Map<String, dynamic>.from(
+          entry['fields'] as Map,
+        ),
+    };
+    expect(approvedCorrections.keys.toSet(), {
+      'cw009',
+      'cw123',
+      'cw135',
+      'cw136',
+      'cw165',
+      'cw267',
+    });
   });
 
   setUp(() {
@@ -43,7 +75,7 @@ void main() {
 
   group('syncFromAssets - import przyrostowy', () {
     test(
-      'aktualizuje tylko nazwaPl, gdy wszystkie ID aktualnego katalogu już istnieją',
+      'odświeża nazwy i tylko zatwierdzone korekty, gdy wszystkie ID już istnieją',
       () async {
         await repo.syncFromAssets();
         final catalog = await db.exercisesDao.getAll();
@@ -98,9 +130,9 @@ void main() {
       },
     );
 
-    for (final prefixCount in [316, 369]) {
+    for (final prefixCount in [316, 369, 412]) {
       test(
-        'po rozszerzeniu dopisuje nowe ID do starego prefiksu $prefixCount bez zmiany pól, historii i ulubionych',
+        'rozszerza prefiks $prefixCount tylko o nowe ID i jawne korekty, zachowując historię i ulubione',
         () async {
           final legacyIds = {
             for (var i = 1; i <= prefixCount; i++)
@@ -200,9 +232,9 @@ void main() {
           expect(
             {
               for (final row in after.where((e) => legacyIds.contains(e.id)))
-                row.id: row,
+                row.id: row.toJson(),
             },
-            {for (final row in before) row.id: row},
+            {for (final row in before) row.id: expectedCorrectedRow(row)},
           );
           final additions = data.where((e) => !legacyIds.contains(e['id']));
           expect(additions, isNotEmpty);

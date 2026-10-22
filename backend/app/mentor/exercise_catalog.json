@@ -1,7 +1,8 @@
 {
   "sources_sha256": {
-    "exercises.json": "31eb961b25fe4d4b719a5c32a4efb50a223b3215ed8e67988736001bfea17667",
-    "exercise_catalog_metadata.json": "f2f4fb302b2c6595c4482aba6edc54571c96507ccb40c2ebbb0313db67f5a8f3"
+    "exercises.json": "6c161e536839c39ccbe8db63590da7c0b5a1ace1ac6b7c4916b218d7965c106f",
+    "exercise_catalog_metadata.json": "6bee7998f386f053c15afcfaf322c8d789e5abeb27317870d208e928513a74b4",
+    "exercise_catalog_corrections.json": "bb45b26d92977c36c8a06dc886df1162dd931fb3cd4c4565de00a0cb36d0c7a5"
   },
   "exercises": [
     {
@@ -102,7 +103,21 @@
         "Ławeczka"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Masa własna",
+          "Krzesło"
+        ],
+        [
+          "Masa własna",
+          "Ławeczka"
+        ]
+      ]
     },
     {
       "id": "cw010",
@@ -1373,14 +1388,19 @@
     },
     {
       "id": "cw123",
-      "name": "Nawijanie linki z hantlem na drążek",
+      "name": "Nawijanie i rozwijanie linki na wrist rollerze",
       "type": "Hipertrofia",
       "muscle": "Przedramiona (zginacze + prostowniki)",
       "equipment": [
-        "Hantle"
+        "Wrist roller"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "equipmentSets": [
+        [
+          "Wrist roller"
+        ]
+      ]
     },
     {
       "id": "cw124",
@@ -1506,7 +1526,7 @@
     },
     {
       "id": "cw135",
-      "name": "Wchodzenie na ławkę z hantlami",
+      "name": "Wchodzenie na podwyższenie",
       "type": "Hipertrofia",
       "muscle": "Kwadryceps, Pośladki",
       "equipment": [
@@ -1514,11 +1534,25 @@
         "Ławeczka"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Ławeczka"
+        ]
+      ]
     },
     {
       "id": "cw136",
-      "name": "Wchodzenie na ławkę z uniesieniem kolana i hantlami",
+      "name": "Wchodzenie na podwyższenie z uniesieniem kolana",
       "type": "Hipertrofia",
       "muscle": "Kwadryceps, Pośladki",
       "equipment": [
@@ -1526,7 +1560,21 @@
         "Ławeczka"
       ],
       "tracking": "reps",
-      "unilateral": true
+      "unilateral": true,
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Ławeczka"
+        ]
+      ]
     },
     {
       "id": "cw137",
@@ -1842,7 +1890,7 @@
     },
     {
       "id": "cw165",
-      "name": "Wspięcia na palce na krawędzi ławki z hantlami",
+      "name": "Wspięcia na palce na krawędzi podwyższenia",
       "type": "Hipertrofia",
       "muscle": "Łydka (pełny zakres)",
       "equipment": [
@@ -1850,7 +1898,21 @@
         "Ławeczka"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "equipmentSets": [
+        [
+          "Masa własna",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Step"
+        ],
+        [
+          "Hantle",
+          "Ławeczka"
+        ]
+      ]
     },
     {
       "id": "cw166",
@@ -2967,14 +3029,22 @@
     },
     {
       "id": "cw267",
-      "name": "Wyprost odcinka piersiowego kręgosłupa na ławce",
+      "name": "Wyprost odcinka piersiowego na podporze",
       "type": "Mobilność",
       "muscle": "Th kręgosłup (mobilność)",
       "equipment": [
         "Ławeczka"
       ],
       "tracking": "reps",
-      "unilateral": false
+      "unilateral": false,
+      "equipmentSets": [
+        [
+          "Ławeczka"
+        ],
+        [
+          "Roller"
+        ]
+      ]
     },
     {
       "id": "cw268",
@@ -4585,6 +4655,139 @@
       "muscle": "Przód uda, Pośladki",
       "equipment": [
         "Rower stacjonarny"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw413",
+      "name": "Wejście bokiem na step",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Step"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw414",
+      "name": "Kontrolowane zejście ze stepu",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Step"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw415",
+      "name": "Pompki z dłońmi na stepie",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Step"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw416",
+      "name": "Spięcia brzucha na ławce głową w dół",
+      "type": "Siła",
+      "muscle": "Brzuch",
+      "equipment": [
+        "Ławka do brzuszków"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw417",
+      "name": "Pełne brzuszki na ławce głową w dół",
+      "type": "Siła",
+      "muscle": "Zginacze bioder, Brzuch",
+      "equipment": [
+        "Ławka do brzuszków"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw418",
+      "name": "Wyciskanie hantli na ławce głową w dół",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Ławka ujemna do wyciskania",
+        "Hantle"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw419",
+      "name": "Stanie obunóż na poduszce równoważnej",
+      "type": "Izometria",
+      "muscle": "Mięśnie stóp, Łydki",
+      "equipment": [
+        "Poduszka równoważna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw420",
+      "name": "Stanie jednonóż na poduszce równoważnej",
+      "type": "Izometria",
+      "muscle": "Mięśnie stóp, Łydki",
+      "equipment": [
+        "Poduszka równoważna"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw421",
+      "name": "Rolowanie łydki",
+      "type": "Regeneracja",
+      "muscle": "Łydki",
+      "equipment": [
+        "Roller"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw422",
+      "name": "Rolowanie przedniej części uda",
+      "type": "Regeneracja",
+      "muscle": "Przód uda",
+      "equipment": [
+        "Roller"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw423",
+      "name": "Rolowanie pośladka",
+      "type": "Regeneracja",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Roller"
+      ],
+      "tracking": "time",
+      "unilateral": true
+    },
+    {
+      "id": "cw424",
+      "name": "Chód z sandbagiem objętym przed tułowiem",
+      "type": "Wytrzymałość",
+      "muscle": "Brzuch, Plecy",
+      "equipment": [
+        "Sandbag"
       ],
       "tracking": "time",
       "unilateral": false

@@ -80,6 +80,47 @@ def test_template_validation_rejects_untrusted_values(mutation):
         validate_template(p, 'Poranne rozciąganie ogólne 15 min')
 
 
+@pytest.mark.parametrize('text', [
+    'Szablon decline: Wyciskanie hantli na ławce głową w dół 15 min',
+    'Szablon wyciskanie ujemne hantli na ławce 15 min',
+])
+def test_template_pool_excludes_decline_press_without_verified_bench(text):
+    from app.mentor.templates import CATALOG, candidate_pool
+
+    assert 'cw418' in CATALOG  # Keep the public catalog complete.
+    pool = candidate_pool(text)
+    assert len(pool) == 10
+    assert 'cw418' not in {entry['id'] for entry in pool}
+
+
+@pytest.mark.parametrize('text', [
+    None,
+    '',
+    'Szablon decline: Wyciskanie hantli na ławce głową w dół 15 min',
+    'Szablon wyciskanie ujemne hantli na ławce 15 min',
+    'Mam hantle i ławkę ujemną do wyciskania o potwierdzonej nośności. Szablon 15 min',
+])
+def test_template_validation_rejects_decline_press_even_with_claimed_equipment(text):
+    from app.mentor.templates import validate_template
+
+    raw = {'kind': 'create_template', 'name': 'Wyciskanie ujemne', 'minutes': 15,
+           'exercises': [{'exercise_id': 'cw418', 'sets': 1, 'reps': 8,
+                          'seconds': None, 'rest_seconds': 0, 'weight_kg': 10}]}
+    with pytest.raises(HTTPException) as error:
+        validate_template(raw, text)
+    assert error.value.status_code == 502
+
+
+@pytest.mark.parametrize('exercise_id', ['cw001', 'cw416', 'cw417'])
+def test_template_validation_keeps_other_known_exercises(exercise_id):
+    from app.mentor.templates import validate_template
+
+    raw = {'kind': 'create_template', 'name': 'Pozostałe ćwiczenia', 'minutes': 15,
+           'exercises': [{'exercise_id': exercise_id, 'sets': 1, 'reps': 8,
+                          'seconds': None, 'rest_seconds': 0, 'weight_kg': None}]}
+    assert validate_template(raw) == raw
+
+
 def test_catalog_is_reproducible_and_pool_is_bounded():
     from app.mentor.templates import candidate_pool, CATALOG
     from pathlib import Path

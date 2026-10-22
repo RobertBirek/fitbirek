@@ -14097,5 +14097,454 @@
     "regresja": "Krótsza jazda, mniejszy opór i spokojniejsze tempo; zrób przerwę przed pogorszeniem techniki",
     "zrodlo": "https://www.arthritis.org/health-wellness/healthy-living/physical-activity/other-activities/benefits-of-stationary-biking",
     "ulubione": false
+  },
+  {
+    "id": "cw413",
+    "nazwaPl": "Wejście bokiem na step",
+    "nazwaEn": "Lateral step-up",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Łydki"
+    ],
+    "sprzet": [
+      "Step"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 6-10 na stronę",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Sprawdź stabilność i blokadę podstawy stepu na nieśliskim podłożu",
+      "Wysokość stepu właściciela jest niezmierzona, deklarowane 150 kg nie jest zweryfikowaną nośnością",
+      "Wybierz niskie ustawienie pozwalające zachować kontrolę, bez narzucania wysokości",
+      "Stań bokiem przy stepie, bliższą stopę ustaw w całości na platformie",
+      "Kolano prowadź w kierunku palców",
+      "Unieś tułów pracą nogi na stepie, bez wybicia z podłogi",
+      "Dostaw drugą stopę i zejdź powoli w tej samej kolejności",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Kolano zapadające do środka",
+      "Odbijanie nogą z podłogi",
+      "Zeskakiwanie"
+    ],
+    "progresja": "Najpierw dodaj kontrolowane powtórzenia z niezmienioną wysokością",
+    "regresja": "Niższe ustawienie i mniej powtórzeń, z odpoczynkiem przed utratą kontroli",
+    "zrodlo": "https://www.acefitness.org/resources/pros/expert-articles/6369/back-to-the-basics-how-to-create-innovative-fitness-programs/",
+    "ulubione": false
+  },
+  {
+    "id": "cw414",
+    "nazwaPl": "Kontrolowane zejście ze stepu",
+    "nazwaEn": "Controlled step-down",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Step"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 6-10 na stronę",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Sprawdź stabilność i blokadę podstawy stepu na nieśliskim podłożu",
+      "Wysokość stepu właściciela jest niezmierzona, deklarowane 150 kg nie jest zweryfikowaną nośnością",
+      "Wybierz niskie ustawienie pozwalające zachować kontrolę, bez narzucania wysokości",
+      "Stań stabilnie na stepie z całą stopą nogi podporowej na platformie",
+      "Powoli ugnij biodro i kolano nogi podporowej, opuszczając drugą piętę do lekkiego dotknięcia podłogi przed stepem",
+      "Zachowaj miednicę poziomo i kolano w linii stopy",
+      "Po dotknięciu piętą spokojnie przenieś ciężar na podłogę i zakończ zejście",
+      "Następnie wejdź ponownie na step, ustaw się stabilnie i rozpocznij kolejne kontrolowane zejście",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Spadanie na podłogę",
+      "Zapadanie kolana",
+      "Przechylanie miednicy",
+      "Gwałtowne odbicie zamiast spokojnego zejścia i ponownego ustawienia"
+    ],
+    "progresja": "Wydłuż kontrolowaną fazę opuszczania lub dodaj powtórzenia, nie skoki",
+    "regresja": "Niższy step i krótszy kontrolowany zakres",
+    "zrodlo": "https://www.acefitness.org/resources/pros/expert-articles/5901/effective-exercises-to-target-the-glutes/",
+    "ulubione": false
+  },
+  {
+    "id": "cw415",
+    "nazwaPl": "Pompki z dłońmi na stepie",
+    "nazwaEn": "Hands-elevated step push-up",
+    "partiaGlowna": "Klatka piersiowa",
+    "partieWspierajace": [
+      "Triceps",
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Step"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 6-10",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Sprawdź stabilność i blokadę podstawy stepu na nieśliskim podłożu",
+      "Wysokość stepu właściciela jest niezmierzona, deklarowane 150 kg nie jest zweryfikowaną nośnością",
+      "Wybierz niskie ustawienie pozwalające zachować kontrolę, bez narzucania wysokości",
+      "Oprzyj dłonie stabilnie na platformie stepu nieco szerzej niż barki, stopy na podłodze",
+      "Utrzymaj tułów i biodra w jednej linii",
+      "Ugnij łokcie ukośnie w tył i zbliż klatkę do stepu",
+      "Odepchnij się bez zapadania lędźwi",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Ślizgający się step",
+      "Zapadanie bioder",
+      "Łokcie szeroko na boki",
+      "Stopy zamiast dłoni na stepie"
+    ],
+    "progresja": "Dodaj poprawne powtórzenia; później wybierz trudniejszą pompkę na podłodze jako osobny wariant",
+    "regresja": "Mniej powtórzeń; łatwiejszy wariant z dłońmi na wyższej, stabilnej podporze",
+    "zrodlo": "https://www.acefitness.org/resources/pros/expert-articles/5808/strength-and-cardio-circuit-for-beginning-clients/",
+    "ulubione": false
+  },
+  {
+    "id": "cw416",
+    "nazwaPl": "Spięcia brzucha na ławce głową w dół",
+    "nazwaEn": "Decline bench crunch",
+    "partiaGlowna": "Brzuch",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Ławka do brzuszków"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 6-10",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Sprawdź stabilność ławki do brzuszków, blokadę skosu i pewne zabezpieczenie nóg",
+      "Zacznij od łagodnego skosu głową w dół, bez dodatkowego ciężaru",
+      "Połóż się z podpartymi plecami i lekko ugiętymi kolanami",
+      "Skrzyżuj ręce na klatce",
+      "Z wydechem unieś tylko głowę i łopatki, zbliżając żebra do miednicy",
+      "Powoli odłóż łopatki, nie przechodź do pełnego siadu",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Ciągnięcie głowy rękami",
+      "Zamach",
+      "Pełny siad zamiast spięcia",
+      "Wstrzymywanie oddechu"
+    ],
+    "progresja": "Dodaj kontrolowane powtórzenia i krótką pauzę w spięciu, bez dokładania ciężaru",
+    "regresja": "Mniejszy skos lub krótszy zakres; jeśli pozycja głową w dół jest źle tolerowana, wybierz spięcia na podłodze",
+    "zrodlo": "https://exrx.net/WeightExercises/RectusAbdominis/BWInclineCrunch",
+    "ulubione": false
+  },
+  {
+    "id": "cw417",
+    "nazwaPl": "Pełne brzuszki na ławce głową w dół",
+    "nazwaEn": "Decline bench sit-up",
+    "partiaGlowna": "Zginacze bioder, Brzuch",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Ławka do brzuszków"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 6-10",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Sprawdź stabilność ławki do brzuszków, blokadę skosu i pewne zabezpieczenie nóg",
+      "Zacznij od łagodnego skosu głową w dół, bez dodatkowego ciężaru",
+      "Połóż plecy na ławce, ręce skrzyżuj na klatce",
+      "Najpierw zbliż żebra do miednicy, potem zegnij biodra i unieś tułów do siadu w wygodnym zakresie",
+      "Opuszczaj tułów powoli aż plecy znów będą podparte",
+      "Nie szarp nogami o blokadę",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zamach ramion",
+      "Gwałtowne odchylanie głowy",
+      "Zrzucanie tułowia",
+      "Zbyt duży skos"
+    ],
+    "progresja": "Zwiększ liczbę płynnych powtórzeń, nie obciążenie ani głębokość skosu za wszelką cenę",
+    "regresja": "Mniejszy skos i mniej powtórzeń; wybierz samo spięcie brzucha, jeśli pełny siad traci kontrolę",
+    "zrodlo": "https://exrx.net/WeightExercises/HipFlexors/WtDeclineSitup",
+    "ulubione": false
+  },
+  {
+    "id": "cw418",
+    "nazwaPl": "Wyciskanie hantli na ławce głową w dół",
+    "nazwaEn": "Dumbbell decline bench press",
+    "partiaGlowna": "Klatka piersiowa",
+    "partieWspierajace": [
+      "Triceps",
+      "Barki"
+    ],
+    "sprzet": [
+      "Ławka ujemna do wyciskania",
+      "Hantle"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 6-10",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Wymagana jest osobno potwierdzona ławka ujemna przeznaczona do wyciskania z obciążeniem",
+      "Ławka właściciela do brzuszków ma niezweryfikowaną nośność do hantli: sama deklaracja przydatności nie wystarcza, nie wykonuj na niej tego ruchu bez potwierdzenia producenta",
+      "Sprawdź limit łącznej masy ciała i hantli, stabilność, blokadę skosu oraz zabezpieczenie nóg",
+      "Ustal bezpieczne podanie i odebranie lekkich hantli, w razie potrzeby z asekuracją",
+      "Połóż się z podpartą głową, plecami i pośladkami",
+      "Prowadź hantle po bokach klatki, nadgarstki nad łokciami",
+      "Wyciskaj płynnie nad klatkę i opuszczaj bez odbicia",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Użycie niezweryfikowanej ławki do brzuszków",
+      "Brak bezpiecznego odłożenia",
+      "Zrzucanie hantli",
+      "Nadmierny skos",
+      "Wstrzymywanie oddechu"
+    ],
+    "progresja": "Najpierw popraw kontrolę i powtórzenia; dopiero na zweryfikowanym sprzęcie rozważ najmniejszy przyrost obciążenia",
+    "regresja": "Lżejsze hantle i mniejszy zatwierdzony skos; bez właściwej ławki wybierz inne ćwiczenie",
+    "zrodlo": "https://exrx.net/WeightExercises/PectoralSternal/DBDeclineBenchPress",
+    "ulubione": false
+  },
+  {
+    "id": "cw419",
+    "nazwaPl": "Stanie obunóż na poduszce równoważnej",
+    "nazwaEn": "Double-leg balance cushion stand",
+    "partiaGlowna": "Mięśnie stóp, Łydki",
+    "partieWspierajace": [
+      "Pośladki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Poduszka równoważna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 15-30 sek",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Połóż poduszkę na nieśliskiej podłodze obok stabilnego podparcia awaryjnego",
+      "Wejdź ostrożnie i ustaw obie stopy na poduszce",
+      "Utrzymuj miękkie kolana, wzrok na nieruchomym punkcie i spokojny oddech",
+      "Zejdź przed utratą równowagi",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zamykanie oczu na początku",
+      "Blokowanie kolan",
+      "Ustawienie przy przeszkodach",
+      "Kontynuowanie mimo utraty równowagi"
+    ],
+    "progresja": "Stopniowo wydłuż spokojne stanie z otwartymi oczami",
+    "regresja": "Krótsze próby lub stanie na stabilnej podłodze",
+    "zrodlo": "https://www.togu.de/en/blog/pelvic-floor-training-with-the-dynair-ballkissen",
+    "ulubione": false
+  },
+  {
+    "id": "cw420",
+    "nazwaPl": "Stanie jednonóż na poduszce równoważnej",
+    "nazwaEn": "Single-leg balance cushion stand",
+    "partiaGlowna": "Mięśnie stóp, Łydki",
+    "partieWspierajace": [
+      "Pośladki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Poduszka równoważna"
+    ],
+    "typ": "Izometria",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 15-30 sek na stronę",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Ustaw poduszkę na nieśliskiej podłodze blisko stabilnego podparcia awaryjnego",
+      "Ustaw stopę podporową na środku i lekko ugnij kolano",
+      "Ostrożnie unieś drugą stopę, utrzymuj miednicę poziomo i patrz przed siebie",
+      "Odstaw stopę natychmiast przy utracie kontroli",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Zapadanie kolana",
+      "Przechylanie miednicy",
+      "Zamykanie oczu",
+      "Ryzyko upadku przy zbyt długiej próbie"
+    ],
+    "progresja": "Wydłuż krótkie stabilne próby z otwartymi oczami, bez dodawania ciężaru",
+    "regresja": "Stanie obunóż na poduszce lub jednonóż na stabilnej podłodze",
+    "zrodlo": "https://www.togu.de/en/blog/pelvic-floor-training-with-the-dynair-ballkissen",
+    "ulubione": false
+  },
+  {
+    "id": "cw421",
+    "nazwaPl": "Rolowanie łydki",
+    "nazwaEn": "Calf foam rolling",
+    "partiaGlowna": "Łydki",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Roller"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 15-30 sek na stronę",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Usiądź na podłodze, roller umieść pod miękką częścią łydki, drugą stopę i dłonie oprzyj dla kontroli nacisku",
+      "Powoli przesuwaj łydkę po rollerze na krótkim odcinku",
+      "Omijaj dół podkolanowy, kostki i ścięgno Achillesa",
+      "Nacisk ma być łagodny i tolerowany, nie walcz z bólem",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Nacisk na staw lub ścięgno",
+      "Szybkie ruchy",
+      "Silny ból",
+      "Wstrzymywanie oddechu"
+    ],
+    "progresja": "Wydłuż łagodne rolowanie do komfortowego czasu, nie zwiększaj nacisku przez ból",
+    "regresja": "Więcej ciężaru na stopie i dłoniach, krótszy odcinek i czas",
+    "zrodlo": "https://contentcdn.eacefitness.com/certifiednews/images/article/pdfs/MyofascialRelease.pdf",
+    "ulubione": false
+  },
+  {
+    "id": "cw422",
+    "nazwaPl": "Rolowanie przedniej części uda",
+    "nazwaEn": "Quadriceps foam rolling",
+    "partiaGlowna": "Przód uda",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Roller"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 15-30 sek na stronę",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Połóż przód uda na rollerze i podeprzyj tułów na przedramionach",
+      "Drugą nogą reguluj nacisk",
+      "Powoli przesuwaj miękką część uda po rollerze, bez dociskania pachwiny i rzepki",
+      "Utrzymuj spokojny oddech i łagodny nacisk",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Rolowanie po kolanie",
+      "Zbyt silny nacisk",
+      "Zapadanie lędźwi",
+      "Szybkie przejazdy"
+    ],
+    "progresja": "Stopniowo wydłuż komfortowy czas, bez forsowania nacisku",
+    "regresja": "Odciąż nogę podporową, skróć zakres i czas",
+    "zrodlo": "https://www.acefitness.org/about-ace/our-efforts/blog/7786/foam-rollers-should-you-use-them/",
+    "ulubione": false
+  },
+  {
+    "id": "cw423",
+    "nazwaPl": "Rolowanie pośladka",
+    "nazwaEn": "Glute foam rolling",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Roller"
+    ],
+    "typ": "Regeneracja",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 15-30 sek na stronę",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Usiądź na rollerze z dłońmi i stopami opartymi stabilnie",
+      "Lekko przenieś nacisk na jeden pośladek, drugą stopą reguluj obciążenie",
+      "Wykonuj małe powolne przesunięcia po miękkiej części pośladka",
+      "Omijaj kości i przerwij przy promieniowaniu lub drętwieniu",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Ucisk kości",
+      "Silny ból",
+      "Szybkie kołysanie",
+      "Ignorowanie drętwienia"
+    ],
+    "progresja": "Wydłuż łagodne kontrolowane rolowanie, bez wymuszania większego nacisku",
+    "regresja": "Więcej podparcia na stopach i dłoniach oraz krótszy czas",
+    "zrodlo": "https://www.acefitness.org/resources/pros/expert-articles/5895/recover-faster-and-more-effectively-with-these-foam-roller-moves/",
+    "ulubione": false
+  },
+  {
+    "id": "cw424",
+    "nazwaPl": "Chód z sandbagiem objętym przed tułowiem",
+    "nazwaEn": "Bear-hug sandbag carry",
+    "partiaGlowna": "Brzuch, Plecy",
+    "partieWspierajace": [
+      "Pośladki",
+      "Przód uda",
+      "Przedramiona"
+    ],
+    "sprzet": [
+      "Sandbag"
+    ],
+    "typ": "Wytrzymałość",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "2 x 15-30 sek",
+    "tempo": "Wolno i płynnie, bez odbicia",
+    "kluczoweWskazowki": [
+      "Sprawdź zamknięcia worka i wolną płaską trasę bez przeszkód",
+      "Dobierz masę pozwalającą bezpiecznie podnieść, objąć i odłożyć worek, bez szarpania",
+      "Obejmij worek przed tułowiem, blisko klatki, nie zaciskaj szyi",
+      "Idź małymi spokojnymi krokami z wyprostowanym tułowiem i swobodnym oddechem",
+      "Odłóż worek kontrolowanie pracą bioder i kolan",
+      "Worek właściciela pozostaje operacyjnie przy 20 kg, to nie uniwersalny cel: jeśli za ciężki, nie wykonuj ruchu",
+      "Oddychaj swobodnie",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Odchylanie tułowia w tył",
+      "Zasłonięta trasa",
+      "Wstrzymywanie oddechu",
+      "Zrzucanie worka",
+      "Schody lub step z workiem"
+    ],
+    "progresja": "Najpierw wydłuż krótki odcinek lub czas przy tej samej komfortowej masie; nie dokładaj obciążenia",
+    "regresja": "Krótszy odcinek lub lżejszy worek, jeśli dostępny; gdy posiadany worek jest za ciężki, wybierz inny ruch",
+    "zrodlo": "https://ultimatesandbagtraining.com/best-secret-great-ultimate-sandbag-workouts/",
+    "ulubione": false
   }
 ]

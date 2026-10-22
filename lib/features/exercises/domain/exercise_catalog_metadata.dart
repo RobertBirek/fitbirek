@@ -18,6 +18,7 @@ class ExerciseCatalogEntry {
     this.aliases = const [],
     this.conditions = const [],
     this.positions = const [],
+    this.equipmentSets,
     required this.tracking,
     required this.unilateral,
   });
@@ -27,6 +28,9 @@ class ExerciseCatalogEntry {
   final List<String> aliases;
   final List<String> conditions;
   final List<String> positions;
+
+  /// OR of complete AND sets; null preserves legacy Exercise.sprzet.
+  final List<List<String>>? equipmentSets;
   final String tracking;
   final bool unilateral;
 }
@@ -85,6 +89,23 @@ class ExerciseCatalogMetadata {
         ),
     });
     final entries = <String, ExerciseCatalogEntry>{};
+    List<List<String>> equipmentSets(dynamic value) {
+      if (value is! List || value.isEmpty) {
+        throw const FormatException('Nieprawidłowe zestawy sprzętu');
+      }
+      return List<List<String>>.unmodifiable(
+        value.map((group) {
+          if (group is! List ||
+              group.isEmpty ||
+              group.any((s) => s is! String || s.trim().isEmpty) ||
+              group.toSet().length != group.length) {
+            throw const FormatException('Nieprawidłowy zestaw sprzętu');
+          }
+          return List<String>.unmodifiable(group.cast<String>());
+        }),
+      );
+    }
+
     for (final item in (json['exercises'] as Map<String, dynamic>).entries) {
       final value = item.value as Map<String, dynamic>;
       final tracking = value['tracking'] as String;
@@ -103,6 +124,9 @@ class ExerciseCatalogMetadata {
             ? strings(value['positions'])
             : const [],
         tracking: tracking,
+        equipmentSets: value.containsKey('equipmentSets')
+            ? equipmentSets(value['equipmentSets'])
+            : null,
         unilateral: value['unilateral'] as bool,
       );
     }

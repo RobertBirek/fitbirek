@@ -39,6 +39,11 @@ class ExerciseDetailPage extends ConsumerWidget {
         final illustrationAsset = exerciseIllustrationAsset(ex.id);
         final metadata = catalog.valueOrNull;
         final entry = metadata?.entryFor(ex.id);
+        // Refresh/error may retain an old value: only current metadata can
+        // describe alternative complete equipment sets.
+        final equipmentSets = catalog.isLoading || catalog.hasError
+            ? null
+            : entry?.equipmentSets;
         return Scaffold(
           appBar: AppBar(
             title: Text(ex.nazwaPl),
@@ -122,7 +127,16 @@ class ExerciseDetailPage extends ConsumerWidget {
                   ],
                   _section('Seria x powtórzenia', ex.seriexPowtorzenia),
                   _section('Tempo', ex.tempo),
-                  _section('Sprzęt', ex.sprzet.join(', ')),
+                  _section(
+                    equipmentSets == null
+                        ? 'Sprzęt (dane podstawowe)'
+                        : 'Sprzęt (alternatywne zestawy)',
+                    equipmentSets == null
+                        ? ex.sprzet.join(', ')
+                        : equipmentSets
+                              .map((option) => option.join(' + '))
+                              .join(' lub '),
+                  ),
                   _sectionList('Kluczowe wskazówki', ex.kluczoweWskazowki),
                   _sectionList('Częste błędy', ex.czesteBledy),
                   _section('Progresja', ex.progresja),

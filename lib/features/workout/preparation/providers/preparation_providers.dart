@@ -198,6 +198,32 @@ class WorkoutPreparationWorkflow {
           snapshot,
           additionalExerciseIds: draft.sessionPlan?.exerciseIds ?? const [],
         );
+        final plan = draft.sessionPlan;
+        final sandbagGrams = ref
+            .read(preparationEquipmentProvider)
+            .sandbagGrams;
+        if (plan != null && sandbagGrams != null) {
+          for (var i = 0; i < plan.blocks.length; i++) {
+            final block = plan.blocks[i];
+            final exercise = snapshot.exercise(block.exerciseId);
+            final equipment =
+                snapshot.engine.matchingEquipment(
+                  exercise,
+                  snapshot.availableEquipment,
+                ) ??
+                exercise.sprzet;
+            final weight = draft.targets.containsKey(i)
+                ? draft.targets[i]!.weightKg
+                : block.prescription.weightKg;
+            if (equipment.contains('Sandbag') &&
+                weight != null &&
+                weight != sandbagGrams / 1000) {
+              throw StateError(
+                'Sandbag ma potwierdzone ${sandbagGrams / 1000} kg. Wybierz zgodny cel jawnie lub zmień ćwiczenie.',
+              );
+            }
+          }
+        }
         if (!isCurrent()) throw StateError('Przygotowanie zostało zamknięte.');
         await ref
             .read(plannerWorkflowProvider)

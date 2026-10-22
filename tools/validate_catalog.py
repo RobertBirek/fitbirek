@@ -8,7 +8,8 @@ import re
 import xlsx_to_json as converter
 from build_execution_conditions import validate_classification
 from spine_additions import validate_preservation
-from ez_additions import EXPECTED_COUNT
+from owner_equipment_additions import EXPECTED_COUNT, PREFIX_COUNT, PREFIX_SHA256, EQUIPMENT_SETS, correction_manifest
+from effective_catalog import CORRECTIONS_PATH, CORRECTION_IDS, validate_corrections
 
 ROOT = Path(__file__).resolve().parents[1]
 METADATA_PATH = ROOT / 'assets/data/exercise_catalog_metadata.json'
@@ -60,7 +61,15 @@ def validate_metadata(data, meta):
     require(not {'cardio', 'mobility', 'coordination', 'full_body'} & registries['muscles'], 'Non-anatomical muscle')
     require(set(meta['exercises']) == {e['id'] for e in data}, 'Metadata ID coverage')
     for eid, m in meta['exercises'].items():
-        require(set(m) == {'styles', 'primaryMuscles', 'secondaryMuscles', 'aliases', 'tracking', 'unilateral', 'conditions', 'positions'}, f'{eid}: keys')
+        required = {'styles', 'primaryMuscles', 'secondaryMuscles', 'aliases', 'tracking', 'unilateral', 'conditions', 'positions'}
+        require(set(m) in (required, required | {'equipmentSets'}), f'{eid}: keys')
+        if 'equipmentSets' in m:
+            groups = m['equipmentSets']
+            require(isinstance(groups, list) and bool(groups), f'{eid}: equipmentSets empty/malformed')
+            for group in groups:
+                string_list(group, f'{eid}: equipmentSets group', nonempty=True)
+                require(set(group) <= converter.VALID_SPRZET, f'{eid}: equipmentSets unknown equipment')
+            require(len({frozenset(group) for group in groups}) == len(groups), f'{eid}: duplicate equipmentSets')
         for key in ('styles', 'primaryMuscles', 'secondaryMuscles', 'aliases'):
             string_list(m[key], f'{eid}: {key}', nonempty=key in ('styles', 'primaryMuscles'))
         require(set(m['styles']) <= registries['styles'], f'{eid}: unknown style')
@@ -97,10 +106,23 @@ def validate():
     legacy = json.dumps(data[:316], ensure_ascii=False, sort_keys=True).encode()
     require(hashlib.sha256(legacy).hexdigest() == LEGACY_SHA256, 'Legacy cw001–cw316 changed')
     require(len(data) == EXPECTED_COUNT, 'Unexpected reviewed catalog count')
+    prefix = json.dumps(data[:PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
+    require(hashlib.sha256(prefix).hexdigest() == PREFIX_SHA256, 'Owner prefix cw001–cw412 changed')
+    corrections = load(CORRECTIONS_PATH)
+    validate_corrections(corrections)
+    require(corrections == correction_manifest(), 'Corrections differ from reviewed revision 1')
     meta = load(METADATA_PATH)
     validate_metadata(data, meta)
+    expected_sets = {**EQUIPMENT_SETS, 'cw123': [['Wrist roller']]}
+    require({eid: m['equipmentSets'] for eid, m in meta['exercises'].items() if 'equipmentSets' in m}
+            == expected_sets, 'Reviewed equipmentSets differ')
     validate_preservation(data, meta)
-    validate_sources(data, load(SOURCES_PATH))
+    sources = load(SOURCES_PATH)
+    validate_sources(data, sources)
+    require(set(sources['corrections']) == CORRECTION_IDS, 'Correction source ID coverage')
+    for eid, keys in sources['corrections'].items():
+        string_list(keys, f'{eid}: correction sources', nonempty=True)
+        require(set(keys) <= set(sources['sources']), f'{eid}: unknown correction source')
     names = load(ROOT / 'tools/source_data/exercise_names_pl.json')
     require(names == {e['id']: e['nazwaPl'] for e in data}, 'Names mapping differs')
     print(f'Catalog OK: {len(data)} exercises; cw001–cw316 legacy and cw001–cw363 baseline unchanged; '

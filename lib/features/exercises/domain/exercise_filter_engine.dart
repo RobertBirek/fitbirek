@@ -109,6 +109,30 @@ class ExerciseFilterEngine {
   final bool classificationAvailable;
   final bool executionMetadataAvailable;
 
+  /// Complete alternatives, never aliases between different bench categories.
+  List<List<String>> equipmentOptions(Exercise exercise) =>
+      List<List<String>>.unmodifiable(
+        (metadata.entryFor(exercise.id)?.equipmentSets ?? [exercise.sprzet])
+            .map((set) => List<String>.unmodifiable(set)),
+      );
+
+  List<String>? matchingEquipment(
+    Exercise exercise,
+    Iterable<String> available,
+  ) {
+    final owned = {'Masa własna', ...available};
+    for (final option in equipmentOptions(exercise)) {
+      if (option.every(owned.contains)) return option;
+    }
+    return null;
+  }
+
+  bool supportsEquipment(Exercise exercise, Iterable<String> available) =>
+      matchingEquipment(exercise, available) != null;
+
+  Iterable<String> _equipmentFor(Exercise exercise) =>
+      equipmentOptions(exercise).expand((option) => option);
+
   /// Missing/old dictionaries cannot verify active exclusion criteria.
   bool executionFiltersVerified(ExerciseFilters filters) =>
       !filters.hasExecutionFilters ||
@@ -232,7 +256,7 @@ class ExerciseFilterEngine {
     if (!_overlaps(filters.partie, [
           mapToKategoria(ex.partiaGlowna, wzorzecRuchu: ex.wzorzecRuchu),
         ]) ||
-        !_overlaps(filters.sprzet, ex.sprzet) ||
+        !_overlaps(filters.sprzet, _equipmentFor(ex)) ||
         !_overlaps(filters.poziomy, [ex.poziom]) ||
         !_overlaps(filters.typy, [ex.typ]) ||
         (classificationAvailable &&
@@ -253,7 +277,7 @@ class ExerciseFilterEngine {
         ex.nazwaEn,
         ex.partiaGlowna,
         ...ex.partieWspierajace,
-        ...ex.sprzet,
+        ..._equipmentFor(ex),
         ex.typ,
         ...?entry?.aliases,
         for (final id in entry?.conditions ?? <String>[]) ...[
@@ -334,7 +358,7 @@ class ExerciseFilterEngine {
         (e) => metadata.entryFor(e.id)?.styles ?? [],
       ),
       muscles: count(filters.copyWith(muscles: {}), musclesFor),
-      equipment: count(filters.copyWith(sprzet: {}), (e) => e.sprzet),
+      equipment: count(filters.copyWith(sprzet: {}), _equipmentFor),
       levels: count(filters.copyWith(poziomy: {}), (e) => [e.poziom]),
       types: count(filters.copyWith(typy: {}), (e) => [e.typ]),
     );

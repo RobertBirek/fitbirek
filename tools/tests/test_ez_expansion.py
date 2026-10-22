@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'tools'))
 import xlsx_to_json as converter
 import validate_catalog
+from tools.tests.catalog_test_utils import before_owner_equipment
 PREFIX_SHA = '98fea910a93c5f85796533c217d11ce437492307c9c9aea315b4f14804438ed9'
 PATHS = ['tools/source_data/baza_cwiczen_316.xlsx',
          'tools/source_data/exercise_names_pl.json',
@@ -26,16 +27,16 @@ PATHS = ['tools/source_data/baza_cwiczen_316.xlsx',
 class EzExpansionTests(unittest.TestCase):
     def test_exact_ids_equipment_tracking_and_preserved_prefix(self):
         data = json.loads((ROOT / PATHS[4]).read_text())
-        self.assertEqual(len(data), 412)
+        self.assertEqual(len(data), 424)
         self.assertEqual(hashlib.sha256(json.dumps(data[:408], ensure_ascii=False,
                                                   sort_keys=True).encode()).hexdigest(), PREFIX_SHA)
-        meta = json.loads((ROOT / PATHS[5]).read_text())
+        meta = before_owner_equipment(self, json.loads((ROOT / PATHS[5]).read_text()))
         old = json.loads(subprocess.check_output(['git', 'show', '1b67bd5:' + PATHS[5]], cwd=ROOT))
         for eid, row in old['exercises'].items():
             self.assertEqual(meta['exercises'][eid], row)
         for key in ['styles', 'muscles', 'conditions', 'positions']:
             self.assertEqual(meta[key], old[key])
-        self.assertEqual([r['id'] for r in data[408:]], ['cw409', 'cw410', 'cw411', 'cw412'])
+        self.assertEqual([r['id'] for r in data[408:412]], ['cw409', 'cw410', 'cw411', 'cw412'])
         bike = data[411]
         self.assertEqual(bike['sprzet'], ['Rower stacjonarny'])
         self.assertEqual(meta['exercises']['cw412']['tracking'], 'time')
@@ -62,12 +63,12 @@ class EzExpansionTests(unittest.TestCase):
                 (root / path).write_bytes(subprocess.check_output(['git', 'show', '1b67bd5:' + path], cwd=ROOT))
             def run(tool, *args):
                 subprocess.run([sys.executable, str(root / 'tools' / tool), *args], check=True, capture_output=True)
-            for tool in ['expand_ez_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
+            for tool in ['expand_ez_catalog.py', 'expand_owner_equipment_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
                 run(tool)
             for path in PATHS[1:]:
                 self.assertEqual((root / path).read_bytes(), (ROOT / path).read_bytes(), path)
             hashes = [hashlib.sha256((root / p).read_bytes()).hexdigest() for p in PATHS]
-            for tool in ['expand_ez_catalog.py', 'expand_partner_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
+            for tool in ['expand_ez_catalog.py', 'expand_owner_equipment_catalog.py', 'expand_partner_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
                 run(tool)
             self.assertEqual(hashes, [hashlib.sha256((root / p).read_bytes()).hexdigest() for p in PATHS])
             run('expand_ez_catalog.py', '--check')
@@ -84,7 +85,7 @@ class EzExpansionTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'cw001–cw408'):
                     converter.convert()
 
-    def test_current_validator_requires_exact_412(self):
+    def test_current_validator_requires_exact_424(self):
         data = json.loads((ROOT / PATHS[4]).read_text())
         with patch.object(converter, 'convert', return_value=data[:408]):
             original = validate_catalog.load
