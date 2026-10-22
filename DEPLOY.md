@@ -3,7 +3,25 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.22.0+38 deployed 2026-10-22 06:38:49 UTC**, public verification
+Current API/sender + web **1.23.0+39 deployed 2026-10-22**; API-first health
+and heartbeat gate **10:10:18 UTC**, web start **10:10:20 UTC**, final public
+audit **10:11:08 UTC**. Clean pushed artifact source **cddc961**. Catalog424
+with12 additions and6 explicit corrections, equipment alternatives/profile
+editing, fixed-load sandbag preparation and weighted timed-carry persistence.
+Apple Health ORM metadata now matches historical constraint/index definitions;
+no migration changes or DDL. **1561 Flutter PASS / one UTC DST skip**, separate
+Warsaw DST **1 PASS**, **631 backend PASS**, isolated Alembic check PASS,
+**65 catalog pipeline PASS**; analysis and final Nginx runtime build PASS.
+Fresh backup, restore with new migrator and serialized production no-op0010
+PASS; **489/489 public hashes and lengths** match. API/sender/web updated only;
+PG/Caddy/configuration/ingress/trust, domain/schema fingerprints and28 shared
+hosts unchanged. Alembic **0010**, Drift **14**, backup format **3**.
+New12 illustrations use explicit fallback. No production login/domain-writing
+smoke/push delivery/paid AI/profile changes; physical phone/VoiceOver/PWA
+acceptance pending. Exact images, backup, audit and rollback:
+[release1.23.0+39](docs/releases/2026-10-22-equipment-1.23.0-39.md).
+
+Previous web **1.22.0+38 deployed 2026-10-22 06:38:49 UTC**, public verification
 **06:39:33 UTC**. Workout preparation before starting from Today: equipment/load
 preview, history, explicit suggestions and scoped substitutions. Clean pushed
 artifact source **dd4f4b2**, **1494 Flutter PASS / one UTC DST skip**, separate

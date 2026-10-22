@@ -150,3 +150,13 @@ Readonly preflight potwierdził taki sam fizyczny schemat produkcyjny.
 Nowy pełny backend+Alembic i obrazy wydania są osobnymi bramkami; powyższe
 historyczne FAIL i628PASS nie są przemianowywane na wynik tej poprawki.
 Dokładny raport wdrożenia po publikacji znajdzie się w `docs/releases/`.
+
+## Publikacja zakończona
+
+**1.23.0+39 wdrożono2026-10-22**, source `cddc961`; web10:10:20UTC,
+końcowy audyt10:11:08UTC. Nowy pełny backend631PASS i świeży Alembic checkPASS
+po metadata-onlyfixie. Dockerweb1561PASS/1UTCskip, publiczne489/489hashów PASS.
+Backup i restore nowym migratorem PASS, produkcyjny migrate no-op0010 bezDDL.
+Powyższe wyniki lokalne i historyczny drift opisują wcześniejsze etapy, nie
+bieżącą blokadę. Szczegóły i ograniczenia:
+[raport wydania](releases/2026-10-22-equipment-1.23.0-39.md).
