@@ -9,15 +9,25 @@ import '../../../mood/presentation/widgets/mood_quick_entry_card.dart';
 import '../../../onboarding/providers/user_profile_provider.dart';
 import '../../../workout/providers/workout_providers.dart';
 import '../../../workout/providers/session_recovery_provider.dart';
-import '../../../workout/data/workout_repository.dart';
+import '../../../auth/providers/auth_providers.dart';
+import '../../../workout/preparation/providers/preparation_providers.dart';
+import '../../../workout/preparation/presentation/workout_preparation_sheet.dart';
 import '../../../schedule/presentation/widgets/today_schedule.dart';
 
 /// Dotychczasowy ekran Dziś pozostaje dostępny jako w pełni offline klasyka.
-class ClassicTodayPage extends ConsumerWidget {
+class ClassicTodayPage extends ConsumerStatefulWidget {
   const ClassicTodayPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ClassicTodayPage> createState() => _ClassicTodayPageState();
+}
+
+class _ClassicTodayPageState extends ConsumerState<ClassicTodayPage> {
+  bool _preparing = false;
+  bool _opening = false;
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync = ref.watch(userProfileStreamProvider);
     final active = ref.watch(activeWorkoutProvider).isActive;
     final recovery = ref.watch(sessionRecoveryProvider);
@@ -56,22 +66,58 @@ class ClassicTodayPage extends ConsumerWidget {
                           ? 'Kontynuuj trening'
                           : 'Rozpocznij trening',
                       icon: Icons.play_arrow,
-                      isLoading: !active && recovery.isLoading,
-                      onPressed: () async {
-                        if (!continueSession &&
-                            !recovery.isLoading &&
-                            !recovery.hasError) {
-                          try {
-                            await ref
-                                .read(activeWorkoutProvider.notifier)
-                                .startSession();
-                          } on ActiveSessionExists {
-                            // A session appeared since the read. Let recovery offer
-                            // an explicit choice; never replace it with a new row.
-                          }
-                        }
-                        if (context.mounted) context.go('/workout/session');
-                      },
+                      isLoading: _opening || (!active && recovery.isLoading),
+                      onPressed: _preparing
+                          ? null
+                          : () async {
+                              if (_preparing) return;
+                              if (continueSession || recovery.hasError) {
+                                context.go('/workout/session');
+                                return;
+                              }
+                              if (recovery.isLoading) return;
+                              final authority = ref.read(
+                                cachedAuthWriteAuthorityProvider,
+                              );
+                              final epoch = authority.epoch;
+                              bool guard() =>
+                                  mounted && authority.epoch == epoch;
+                              setState(() {
+                                _preparing = true;
+                                _opening = true;
+                              });
+                              try {
+                                final snapshot = await ref
+                                    .read(workoutPreparationWorkflowProvider)
+                                    .open();
+                                if (!context.mounted || !guard()) return;
+                                setState(() => _opening = false);
+                                final started = await showWorkoutPreparation(
+                                  context,
+                                  ref,
+                                  snapshot: snapshot,
+                                );
+                                if (started == true &&
+                                    context.mounted &&
+                                    guard() &&
+                                    ref.read(activeWorkoutProvider).isActive) {
+                                  context.go('/workout/session');
+                                }
+                              } catch (e) {
+                                if (context.mounted && guard()) {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text('$e')));
+                                }
+                              } finally {
+                                if (mounted) {
+                                  setState(() {
+                                    _preparing = false;
+                                    _opening = false;
+                                  });
+                                }
+                              }
+                            },
                     ),
                   ],
                 ),

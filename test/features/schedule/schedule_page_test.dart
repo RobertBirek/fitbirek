@@ -9,6 +9,7 @@ import 'package:fitbirek_training/features/exercises/providers/filter_presets_pr
 import 'package:fitbirek_training/features/schedule/presentation/schedule_page.dart';
 import 'package:fitbirek_training/core/sync/sync_service.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/planner/data/planner_repository.dart';
 import 'package:fitbirek_training/features/schedule/data/schedule_repository.dart';
 import 'package:fitbirek_training/features/schedule/domain/weekly_schedule.dart';
@@ -18,7 +19,7 @@ import '../exercises/catalog_filter_test.dart' show exercise;
 
 void main() {
   testWidgets(
-    'start requires confirmation, exact saved plan opens existing session path without completing',
+    'start requires preparation, exact saved plan opens existing session path without completing',
     (tester) async {
       final db = AppDatabase.forTesting(NativeDatabase.memory());
       final sync = SyncService(db, CollectionServer());
@@ -37,6 +38,7 @@ void main() {
         weekday: 1,
         effectiveFrom: day,
       );
+      await db.delete(db.syncOutbox).go();
       final router = GoRouter(
         routes: [
           GoRoute(path: '/', builder: (_, _) => const SchedulePage()),
@@ -61,6 +63,9 @@ void main() {
             allExercisesProvider.overrideWith(
               (ref) => Stream.value([exercise('cw001')]),
             ),
+            exerciseCatalogMetadataProvider.overrideWith(
+              (ref) async => const ExerciseCatalogMetadata(exercises: {}),
+            ),
           ],
           child: MaterialApp.router(routerConfig: router),
         ),
@@ -69,14 +74,17 @@ void main() {
       await tester.ensureVisible(find.text('Rozpocznij plan'));
       await tester.tap(find.text('Rozpocznij plan'));
       await tester.pumpAndSettle();
-      expect(find.text('Rozpocząć zapisany plan?'), findsOneWidget);
+      expect(find.text('Przygotuj trening'), findsOneWidget);
       expect(await db.select(db.workoutSessions).get(), isEmpty);
       await tester.tap(find.text('Anuluj'));
       await tester.pumpAndSettle();
       expect(await db.select(db.workoutSessions).get(), isEmpty);
+      expect(await db.select(db.workoutDrafts).get(), isEmpty);
+      expect(await db.select(db.syncOutbox).get(), isEmpty);
       await tester.tap(find.text('Rozpocznij plan'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Potwierdź'));
+      expect(find.text('Przygotuj trening'), findsOneWidget);
+      await tester.tap(find.text('Rozpocznij trening'));
       await tester.pumpAndSettle();
       expect(find.text('Sesja testowa'), findsOneWidget);
       expect(await db.select(db.workoutSessions).get(), hasLength(1));

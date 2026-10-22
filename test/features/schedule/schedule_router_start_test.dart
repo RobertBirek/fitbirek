@@ -54,7 +54,7 @@ void main() {
   });
 
   testWidgets(
-    'production shell settings → planner → schedule confirm renders actual ActiveSessionPage with one UUID, not an empty shell',
+    'production shell settings → planner → schedule preparation renders actual ActiveSessionPage with one UUID, not an empty shell',
     (tester) async {
       await initializeDateFormatting('pl_PL');
       final db = AppDatabase.forTesting(NativeDatabase.memory());
@@ -135,7 +135,9 @@ void main() {
       await tester.ensureVisible(find.text('Rozpocznij plan'));
       await tester.tap(find.text('Rozpocznij plan'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Anuluj'));
+      expect(find.text('Przygotuj trening'), findsOneWidget);
+      expect(await db.select(db.workoutSessions).get(), isEmpty);
+      await tester.tap(find.byTooltip('Zamknij przygotowanie'));
       await tester.pumpAndSettle();
       expect(await db.select(db.workoutSessions).get(), isEmpty);
       expect(await db.select(db.workoutDrafts).get(), isEmpty);
@@ -145,8 +147,10 @@ void main() {
       await tester.tapAt(startPosition);
       await tester.tapAt(startPosition);
       await tester.pumpAndSettle();
-      expect(find.text('Rozpocząć zapisany plan?'), findsOneWidget);
-      await tester.tap(find.text('Potwierdź'));
+      expect(find.text('Przygotuj trening'), findsOneWidget);
+      expect(await db.select(db.workoutSessions).get(), isEmpty);
+      await tester.ensureVisible(find.text('Rozpocznij trening'));
+      await tester.tap(find.text('Rozpocznij trening'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.byType(ActiveSessionPage), findsOneWidget);

@@ -794,6 +794,51 @@ class WorkoutRepository {
     );
   }
 
+  /// Preparation is read-only and excludes unfinished/deleted sessions. Ordering
+  /// is significant: newest ended session, then last actual set, never max kg.
+  Future<List<ProgressionPerformance>> getPreparationHistory(
+    String exerciseId, {
+    required String? side,
+    String? variantId,
+  }) async {
+    final sets = _db.setsLog;
+    final sessions = _db.workoutSessions;
+    final query =
+        _db.select(sets).join([
+            innerJoin(sessions, sessions.id.equalsExp(sets.sesjaId)),
+          ])
+          ..where(
+            sets.cwiczenieId.equals(exerciseId) &
+                (side == null ? sets.side.isNull() : sets.side.equals(side)) &
+                (variantId == null
+                    ? sets.variantId.isNull()
+                    : sets.variantId.equals(variantId)) &
+                sets.deletedAtUtc.isNull() &
+                sessions.deletedAtUtc.isNull() &
+                sessions.dataKoniec.isNotNull(),
+          )
+          ..orderBy([
+            OrderingTerm.desc(sessions.dataKoniec),
+            OrderingTerm.desc(sessions.id),
+            OrderingTerm.desc(sets.timestamp),
+            OrderingTerm.desc(sets.id),
+          ]);
+    return (await query.get()).map((row) {
+      final set = row.readTable(sets);
+      final session = row.readTable(sessions);
+      return ProgressionPerformance(
+        sessionId: session.id,
+        exerciseId: set.cwiczenieId,
+        side: set.side,
+        variantId: set.variantId,
+        endedAt: session.dataKoniec!,
+        weightKg: set.ciezarKg,
+        reps: set.powtorzenia,
+        rpe: set.rpe,
+      );
+    }).toList();
+  }
+
   /// Read only. Keep every set in each ended session so the engine can use the
   /// weakest result/highest RPE rather than selecting two easy sets.
   Future<List<ProgressionPerformance>> getProgressionHistory(

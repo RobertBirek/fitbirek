@@ -11,6 +11,9 @@ import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/providers/database_provider.dart';
 import 'package:fitbirek_training/features/home/presentation/pages/classic_today_page.dart';
 import 'package:fitbirek_training/features/workout/providers/workout_providers.dart';
+import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
+import '../../core/profile_collections_sync_test.dart' show saveProfile;
 
 void main() {
   setUpAll(() => initializeDateFormatting('pl_PL'));
@@ -18,11 +21,20 @@ void main() {
     'immediate click waits for delayed recovery instead of empty route',
     (tester) async {
       final db = AppDatabase.forTesting(NativeDatabase.memory());
+      await db
+          .into(db.syncState)
+          .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
+      await saveProfile(db);
+      await db.delete(db.syncOutbox).go();
       final result = Completer<SessionRecovery>();
       final c = ProviderContainer(
         overrides: [
           appDatabaseProvider.overrideWithValue(db),
           healthAccountProvider.overrideWithValue(null),
+          allExercisesProvider.overrideWith((ref) => Stream.value([])),
+          exerciseCatalogMetadataProvider.overrideWith(
+            (ref) async => const ExerciseCatalogMetadata(exercises: {}),
+          ),
           sessionRecoveryProvider.overrideWith(
             (ref) => Stream.fromFuture(result.future),
           ),
@@ -59,7 +71,25 @@ void main() {
       );
       result.complete(const SessionRecovery(null, 0, []));
       await tester.pumpAndSettle();
-      await tester.runAsync(() => tester.tap(find.text('Rozpocznij trening')));
+      await tester.tap(find.text('Rozpocznij trening'));
+      await tester.tap(find.text('Rozpocznij trening'));
+      await tester.pumpAndSettle();
+      expect(find.text('Przygotuj trening'), findsOneWidget);
+      expect(find.text('Session route'), findsNothing);
+      expect(
+        await tester.runAsync(() => db.select(db.workoutSessions).get()),
+        isEmpty,
+      );
+      await tester.tap(find.byTooltip('Zamknij przygotowanie'));
+      await tester.pumpAndSettle();
+      expect(
+        await tester.runAsync(() => db.select(db.syncOutbox).get()),
+        isEmpty,
+      );
+      await tester.tap(find.text('Rozpocznij trening'));
+      await tester.pumpAndSettle();
+      expect(find.text('Przygotuj trening'), findsOneWidget);
+      await tester.tap(find.text('Rozpocznij trening').last);
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );

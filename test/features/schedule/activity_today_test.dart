@@ -15,6 +15,7 @@ import 'package:fitbirek_training/core/sync/sync_service.dart';
 import 'package:fitbirek_training/features/auth/providers/auth_providers.dart';
 import 'package:fitbirek_training/features/health/providers/health_providers.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/mentor/providers/mentor_providers.dart';
 import 'package:fitbirek_training/features/mentor/presentation/pages/mentor_page.dart';
 import 'package:fitbirek_training/features/schedule/data/activity_repository.dart';
@@ -80,6 +81,9 @@ void main() {
             pushClientProvider.overrideWithValue(FakePush()),
             healthAccountProvider.overrideWithValue(null),
             allExercisesProvider.overrideWith((ref) => Stream.value([])),
+            exerciseCatalogMetadataProvider.overrideWith(
+              (ref) async => const ExerciseCatalogMetadata(exercises: {}),
+            ),
             mentorSettingsProvider.overrideWith(
               (ref) async => mentor.mentorSettings(enabled: false),
             ),
@@ -188,14 +192,30 @@ void main() {
         expect(await db.select(db.setsLog).get(), isEmpty);
         expect(await db.select(db.personalRecords).get(), isEmpty);
         await click('Rozpocznij swobodny');
-        // Remote tombstone while the confirmation is open must invalidate the
+        expect(find.text('Przygotuj trening'), findsOneWidget);
+        expect(await db.select(db.workoutSessions).get(), isEmpty);
+        // Remote tombstone while preparation is open must invalidate the
         // chosen snapshot, not silently start the next occurrence in the list.
         await repo.delete(await repo.snapshot('account'), morning);
-        await tester.tap(find.text('Potwierdź'));
+        final beforeStaleStart = (await db.select(db.syncOutbox).get())
+            .map((e) => e.toJson())
+            .toList();
+        await tester.tap(find.text('Rozpocznij trening').last);
         await tester.pumpAndSettle();
         expect(await db.select(db.workoutSessions).get(), isEmpty);
+        expect(await db.select(db.workoutDrafts).get(), isEmpty);
+        expect(
+          (await db.select(db.syncOutbox).get())
+              .map((e) => e.toJson())
+              .toList(),
+          beforeStaleStart,
+        );
+        expect(find.text('Przygotuj trening'), findsOneWidget);
+        await tester.tap(find.byTooltip('Zamknij przygotowanie'));
+        await tester.pumpAndSettle();
         await click('Rozpocznij swobodny');
-        await tester.tap(find.text('Potwierdź'));
+        expect(find.text('Przygotuj trening'), findsOneWidget);
+        await tester.tap(find.text('Rozpocznij trening').last);
         await tester.pumpAndSettle();
         expect(tester.takeException(), isNull);
         expect(find.byType(ActiveSessionPage), findsOneWidget);
@@ -211,13 +231,23 @@ void main() {
         router.go('/schedule');
         await tester.pumpAndSettle();
         await click('Rozpocznij swobodny');
-        await tester.tap(find.text('Potwierdź'));
+        expect(find.text('Przygotuj trening'), findsOneWidget);
+        expect(
+          tester
+              .widget<ElevatedButton>(
+                find.widgetWithText(ElevatedButton, 'Rozpocznij trening'),
+              )
+              .onPressed,
+          isNull,
+        );
         await tester.pumpAndSettle();
         expect(await db.select(db.workoutSessions).get(), hasLength(1));
         expect(
           router.routerDelegate.currentConfiguration.uri.path,
           '/schedule',
         );
+        await tester.tap(find.byTooltip('Zamknij przygotowanie'));
+        await tester.pumpAndSettle();
 
         await create('Drugi', '19:00', ActivityType.fitbirek);
         final actualId = await db

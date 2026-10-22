@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/database_provider.dart';
 import '../data/planner_repository.dart';
@@ -8,6 +9,9 @@ import '../../exercises/domain/exercise_filter_engine.dart';
 import '../../workout/providers/workout_providers.dart';
 import '../domain/structured_plan.dart';
 import '../../workout/domain/workout_guidance.dart';
+import '../../workout/domain/workout_draft_write.dart' show checkpointKey;
+import '../../workout/preparation/domain/workout_preparation.dart'
+    show PreparedTarget;
 
 /// One-time entry snapshot, never a frozen catalog ID list.
 final plannerEntryCriteriaProvider = StateProvider<ExerciseFilters?>(
@@ -220,22 +224,123 @@ class PlannerWorkflow {
     );
   });
 
+  Future<void> startPrepared(
+    TemplateLease lease,
+    List<Exercise> catalog, {
+    required StructuredPlan? sessionPlan,
+    StructuredPlan? templatePlan,
+    required Map<int, PreparedTarget> targets,
+    required bool Function() isCurrent,
+  }) async {
+    String? created;
+    try {
+      await _write((db, guard) async {
+        await _checkLease(db, lease);
+        bool current() => guard() && isCurrent();
+        if (!current()) throw StateError('Start anulowany.');
+        final repo = ref.read(plannerRepositoryProvider);
+        final saved = lease.baseline == null
+            ? null
+            : await repo.getBySyncId(lease.baseline!.syncId);
+        if (lease.baseline != null && (saved == null || saved.isUnavailable)) {
+          throw StateError('Plan jest niedostępny.');
+        }
+        if (templatePlan != null) {
+          if (lease.baseline == null) {
+            throw StateError('Brak szablonu do zmiany.');
+          }
+          await repo.updateTemplate(
+            lease.baseline!,
+            name: lease.baseline!.nazwa,
+            plan: templatePlan,
+          );
+        }
+        if (sessionPlan != null) {
+          StructuredPlan.validateJson(
+            sessionPlan.toJson(),
+            exerciseIds: sessionPlan.exerciseIds,
+          );
+        }
+        final ids =
+            sessionPlan?.exerciseIds ?? saved?.cwiczeniaIds ?? const <String>[];
+        final byId = {for (final e in catalog) e.id: e};
+        if (ids.any((id) => !byId.containsKey(id))) {
+          throw StateError('Ćwiczenie jest niedostępne.');
+        }
+        await _start(
+          [for (final id in ids) byId[id]!],
+          current,
+          plan: sessionPlan,
+          allowEmpty: saved == null,
+          onCreated: (id) => created = id,
+        );
+        if (targets.isNotEmpty) {
+          if (sessionPlan == null) {
+            throw StateError('Brak struktury celów treningu.');
+          }
+          final forms = <String, Object?>{}, selections = <String, Object?>{};
+          Map<String, Object?> first = {};
+          for (final entry in targets.entries) {
+            if (entry.key < 0 || entry.key >= sessionPlan.blocks.length) {
+              throw StateError('Nieprawidłowy blok celu.');
+            }
+            entry.value.validate();
+            final id = sessionPlan.blocks[entry.key].exerciseId;
+            final key = checkpointKey(
+              created,
+              id,
+              entry.value.side,
+              entry.value.variantId,
+              extra: false,
+              slot: entry.key,
+            );
+            final fields = entry.value.toDraftFields();
+            selections[jsonEncode([entry.key, id])] = key;
+            if (entry.key == 0) {
+              first = fields;
+            } else {
+              forms[key] = fields;
+            }
+          }
+          ref.read(activeWorkoutProvider.notifier).updateDraft({
+            ...first,
+            'guidedForms': forms,
+            'guidedSelections': selections,
+          });
+        }
+        if (!current()) throw StateError('Start anulowany.');
+      });
+    } catch (_) {
+      if (created != null &&
+          ref.read(activeWorkoutProvider).sessionSyncId == created) {
+        ref.read(activeWorkoutProvider.notifier).discardSession();
+      }
+      rethrow;
+    }
+  }
+
   Future<void> _start(
     List<Exercise> exercises,
     bool Function() guard, {
     StructuredPlan? plan,
+    bool allowEmpty = false,
+    void Function(String)? onCreated,
   }) async {
     if (!guard()) throw StateError('Konto zmieniło się. Start anulowany.');
-    if (exercises.isEmpty ||
+    if ((!allowEmpty && exercises.isEmpty) ||
         ref.read(activeWorkoutProvider).isActive ||
         ref.read(activeWorkoutProvider).selectedExercises.isNotEmpty) {
       throw StateError('Najpierw zakończ lub odrzuć bieżący trening.');
     }
     final notifier = ref.read(activeWorkoutProvider.notifier);
-    await notifier.startSession(
-      guidance: plan == null ? null : WorkoutGuidance.start(plan),
-      isCurrent: guard,
-    );
+    final guidance = plan == null ? null : WorkoutGuidance.start(plan);
+    await notifier.startSession(guidance: guidance, isCurrent: guard);
+    final started = ref.read(activeWorkoutProvider);
+    if (started.isActive &&
+        identical(started.guidance, guidance) &&
+        started.sessionSyncId != null) {
+      onCreated?.call(started.sessionSyncId!);
+    }
     if (!guard() || !ref.read(activeWorkoutProvider).isActive) {
       throw StateError('Start anulowany.');
     }

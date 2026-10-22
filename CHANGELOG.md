@@ -6,6 +6,20 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.22.0+38] — 2026-10-22
+
+### Added
+- Przygotowanie treningu z panelu Dziś przed utworzeniem sesji: sprzęt,
+  ustawienie, ostatni ciężar oraz ręczne cele bez wymyślania pierwszych wyników.
+- Konfiguracje talerzy ze wspólnego zapasu dla pary hantli i gryfu EZ,
+  jawne kg na sztukę/łącznie oraz propozycje progresji przyjmowane ręcznie.
+- Zamiana ćwiczenia tylko na trening lub także w szablonie; anulowanie niczego
+  nie zapisuje, a cele zachowują się w lokalnym szkicu po wznowieniu.
+
+### Deployment Notes
+- Wydanie wyłącznie web. Bez zmian API, migracji, zależności i artefaktów
+  Web SQLite; konfiguracja potwierdzonego sprzętu prywatnej instalacji.
+
 ## [1.21.0+37] — 2026-10-21
 
 ### Added

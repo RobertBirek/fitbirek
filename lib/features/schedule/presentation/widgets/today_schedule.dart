@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/providers/database_provider.dart';
 import '../../../auth/providers/auth_providers.dart';
 import '../../../exercises/providers/filter_presets_providers.dart';
 import '../../../exercises/providers/exercises_providers.dart';
-import '../../../planner/providers/planner_providers.dart';
 import '../../../workout/providers/workout_providers.dart';
+import '../../../workout/preparation/providers/preparation_providers.dart';
+import '../../../workout/preparation/presentation/workout_preparation_sheet.dart';
 import '../../domain/activity_schedule.dart';
 import '../../domain/weekly_schedule.dart';
 import '../../data/schedule_repository.dart';
@@ -119,60 +119,19 @@ class _ScheduleOccurrenceCardState
 
   Future<void> _start() => _act((account, guard) async {
     final chosen = widget.occurrence;
-    if (!await _confirm(
-          chosen.planSyncId == null
-              ? 'Rozpocząć trening swobodny?'
-              : 'Rozpocząć zapisany plan?',
-          '${chosen.name}. Start nie zalicza terminu. Po zakończeniu wróć i jawnie wybierz wykonaną sesję.',
-        ) ||
-        !guard()) {
-      return;
-    }
-    final db = ref.read(appDatabaseProvider);
-    // Keep schedule identity, plan resolution and session start in one SQLite
-    // transaction: a remote move/delete/completion cannot slip between them.
-    await db.transaction(() async {
-      final repo = ref.read(scheduleRepositoryProvider);
-      final schedule = await repo.load(account, isCurrent: guard);
-      final profile = (await db.userProfileDao.watchProfileOnce())!;
-      await assertScheduleWritable(db, profile.syncId);
-      final current = schedule
-          .between(chosen.date, chosen.date)
-          .where((o) => o.id == chosen.id)
-          .firstOrNull;
-      if (current == null ||
-          current.isCompleted ||
-          current.mutationBaseline != chosen.mutationBaseline) {
-        throw StateError(
-          'Termin zmienił się lub jest niedostępny. Odśwież harmonogram.',
-        );
-      }
-      if (!guard()) return;
-      final active = ref.read(activeWorkoutProvider);
-      if (active.isActive || active.selectedExercises.isNotEmpty) {
-        throw StateError('Najpierw zakończ lub odrzuć bieżący trening.');
-      }
-      if (chosen.planSyncId != null) {
-        final catalog = ref.read(allExercisesProvider);
-        if (catalog.isLoading ||
-            catalog.hasError ||
-            catalog.valueOrNull == null) {
-          throw StateError('Poczekaj na wczytanie katalogu ćwiczeń.');
-        }
-        await ref
-            .read(plannerWorkflowProvider)
-            .startSaved(
-              chosen.planSyncId!,
-              catalog.requireValue,
-              isCurrent: guard,
-            );
-      } else {
-        await ref
-            .read(activeWorkoutProvider.notifier)
-            .startSession(isCurrent: guard);
-      }
-    });
-    if (mounted && guard() && ref.read(activeWorkoutProvider).isActive) {
+    final snapshot = await ref
+        .read(workoutPreparationWorkflowProvider)
+        .open(planSyncId: chosen.planSyncId, occurrence: chosen);
+    if (!mounted || !guard()) return;
+    final started = await showWorkoutPreparation(
+      context,
+      ref,
+      snapshot: snapshot,
+    );
+    if (started == true &&
+        mounted &&
+        guard() &&
+        ref.read(activeWorkoutProvider).isActive) {
       context.go('/workout/session');
     }
   });
