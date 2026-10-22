@@ -422,8 +422,6 @@ void main() {
     'cw410',
     'cw411',
     'cw412',
-  };
-  const awaitingArtworkIds = {
     'cw413',
     'cw414',
     'cw415',
@@ -437,8 +435,11 @@ void main() {
     'cw423',
     'cw424',
   };
+  const awaitingArtworkIds = <String>{};
 
-  test('catalog has exact illustrated and explicitly pending artwork sets', () {
+  test('all 424 catalog exercises have illustrations; no pending artwork', () {
+    expect(expectedIllustrationIds, hasLength(424));
+    expect(awaitingArtworkIds, isEmpty);
     expect(illustratedExerciseIds, expectedIllustrationIds);
 
     final catalog =

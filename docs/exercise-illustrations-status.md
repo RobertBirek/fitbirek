@@ -1,6 +1,32 @@
 # Status ilustracji ćwiczeń
 
-## Stan bieżący — 2026-10-21 (wydano 1.20.0+36)
+## Stan bieżący — 2026-10-22 (424 ilustracje, lokalny komplet)
+
+Katalog obejmuje **424 ćwiczenia i 424 ilustracje (`cw001–cw424`), bez
+oczekujących ID**. Nowe **12 (`cw413–cw424`)** uzupełniono lokalnie, a wszystkie
+wcześniejsze **412 ilustracji** pozostają identyczne bajtowo z wydanym źródłem.
+Niezależny przegląd wizualny zaakceptował komplet; dla cw421 przyjęto próbę03
+z jawnym ograniczeniem zasłoniętej perspektywą dalszej dłoni, bez nowej generacji.
+[Metoda, źródła i koszty](owner-equipment-illustrations-2026-10-22-results.md).
+
+Potwierdzono TDD RED przed rozszerzeniem rejestru: brak `cw413` w rejestrze,
+plikach i manifeście oraz błąd ładowania `cw413.webp` podczas dekodowania.
+Test wymaga dokładnych zbiorów ID/pliki/manifest i rzeczywistego dekodowania
+każdej z 424 ilustracji jako **512×512**. Końcowy focused odbiór ilustracji
+i rzeczywistej integracji katalogu: **21 PASS**. Potwierdzono dokładne zbiory
+rejestru/plików/manifestu oraz dekodowanie wszystkich obrazów.
+Pełna analiza czysta; prywatny build web i generator pakietu offline PASS.
+Pakiet: **501 plików /48 364 768B**, packageId
+`dd7567f560fde5c5d00410fc29bdd3434a6243462901f3949a065e5889c21273`.
+Sprawdzono501/501 hashów i długości oraz zgodność wszystkich424 obrazów ze
+źródłami. Ilustracje pozostają poza CORE, z dotychczasową zgodą na pełny pakiet.
+Znane ostrzeżenia opcjonalnego Wasm dry-run nie blokują wybranego JS/CanvasKit.
+
+To lokalna integracja, **bez nowego wydania i wdrożenia**; produkcyjna
+**1.23 pozostaje bez zmian**. Poniższy stan 412 opisuje historyczne wydanie,
+nie aktualną liczbę ćwiczeń lokalnego kandydata.
+
+## Historyczne wydanie — 2026-10-21 (1.20.0+36)
 
 **412 ćwiczeń i 412 ilustracji = 412 wydanych + 0 niewydanych,
 0 brakujących**. Nowe `cw409–cw411` to gryf łamany EZ, `cw412` to rowerek

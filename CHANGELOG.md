@@ -6,6 +6,19 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.23.1+40] — 2026-10-22
+
+### Fixed
+- Uzupełniono12 ilustracji nowych ćwiczeń cw413–cw424: step, ławka ujemna,
+  poduszka równoważna, rolowanie i chód z sandbagiem. Komplet424 ilustracji;
+  wcześniejsze412 obrazów zachowano bez zmian.
+- Rejestr, manifest i testy wymagają kompletu obrazów512×512. Ilustracje
+  dostępne w pełnym pakiecie offline, bez zmiany zgód lub danych użytkownika.
+
+### Deployment Notes
+- Wyłącznie web; bez zmian API, katalogu ćwiczeń, migracji, zależności
+  i artefaktów Web SQLite. Statyczne ilustracje nie zastępują instrukcji.
+
 ## [1.23.0+39] — 2026-10-22
 
 ### Added
