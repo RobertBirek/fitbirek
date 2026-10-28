@@ -606,6 +606,97 @@ class WorkoutRepository {
     await _requireAccount(accountId, guard);
   });
 
+  /// A guidance transition and its local recovery baseline are one commit.
+  /// The caller must flush its draft queue BEFORE entering this transaction.
+  Future<({WorkoutGuidance guidance, Map<String, Object?> draft})>
+  transitionGuidance({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required bool Function() guard,
+    required String expectedSignature,
+    required int expectedRevision,
+    required int slot,
+    String? replacement,
+  }) => _db.transaction(() async {
+    await _requireAccount(accountId, guard);
+    final session = await _db.workoutDao.getSession(sessionId);
+    _requireGuard(guard);
+    if (session == null ||
+        session.syncId != sessionSyncId ||
+        session.dataKoniec != null ||
+        session.deletedAtUtc != null) {
+      throw WorkoutSessionUnavailable(sessionId);
+    }
+    final g = WorkoutGuidance.tryRead(session.guidanceJson);
+    if (g == null || jsonEncode(g.toJson()) != expectedSignature) {
+      throw WorkoutSessionUnavailable(sessionId);
+    }
+    if (replacement != null &&
+        (g.plan.blocks[slot].prescription.weightKg ?? 0) > 0) {
+      throw StateError(
+        'Indywidualny ciężar wymaga edycji przed startem lub osobnego ćwiczenia.',
+      );
+    }
+    final current = await readDraft(accountId, sessionSyncId);
+    _requireGuard(guard);
+    if (current == null ||
+        draftRevision(current) != expectedRevision ||
+        current['guidanceSignature'] != expectedSignature ||
+        current['currentSlot'] != slot) {
+      throw WorkoutDraftConflict();
+    }
+    final nextGuidance = replacement == null
+        ? g.skip(slot)
+        : g.replace(slot, replacement);
+    final fields = Map<String, Object?>.from(current['fields'] as Map);
+    final key = checkpointKey(
+      sessionSyncId,
+      g.exerciseAt(slot),
+      fields['side'] as String?,
+      fields['variantId'] as String?,
+      extra: false,
+      slot: slot,
+    );
+    for (final name in [
+      'weight',
+      'reps',
+      'seconds',
+      'rpe',
+      'side',
+      'variantId',
+      'variantLabel',
+      'timer',
+      'timerBinding',
+    ]) {
+      fields.remove(name);
+    }
+    final epochs = checkpointEpochs(current),
+        versions = checkpointVersions(current);
+    epochs[key] = (epochs[key] ?? 0) + 1;
+    versions[key] = (versions[key] ?? 0) + 1;
+    final next = validateWorkoutDraft({
+      ...current,
+      'guidanceSignature': jsonEncode(nextGuidance.toJson()),
+      'fields': fields,
+      'draftRevision': expectedRevision + 1,
+      'checkpointEpochs': epochs,
+      'checkpointVersions': versions,
+    });
+    await _writeGuidance(session, nextGuidance);
+    await _db
+        .into(_db.workoutDrafts)
+        .insertOnConflictUpdate(
+          WorkoutDraftsCompanion.insert(
+            accountId: accountId,
+            sessionSyncId: sessionSyncId,
+            payloadJson: jsonEncode(next),
+          ),
+        );
+    await _requireAccount(accountId, guard);
+    return (guidance: nextGuidance, draft: next);
+  });
+
   Future<Map<String, Object?>> saveDraft({
     required int sessionId,
     required String sessionSyncId,

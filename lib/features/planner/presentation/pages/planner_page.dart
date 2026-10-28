@@ -12,6 +12,7 @@ import '../../../onboarding/providers/user_profile_provider.dart';
 import '../../domain/structured_plan.dart';
 import '../../domain/plan_explanation.dart';
 import '../../providers/planner_providers.dart';
+import '../widgets/plan_edit_dialog.dart';
 
 class PlannerPage extends ConsumerStatefulWidget {
   const PlannerPage({super.key});
@@ -61,6 +62,8 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
     if (source.isLoading ||
         source.hasError ||
         source.valueOrNull == null ||
+        metadata.isLoading ||
+        metadata.hasError ||
         metadata.valueOrNull == null) {
       throw StateError(
         'Poczekaj na ćwiczenia i klasyfikację lub ponów ładowanie. Kryteriów nie pominięto.',
@@ -416,6 +419,13 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
+              tooltip: 'Edytuj przerwę',
+              icon: const Icon(Icons.timer_outlined),
+              onPressed: profile == null || _busy
+                  ? null
+                  : () => _editRest(index, profile),
+            ),
+            IconButton(
               tooltip: 'Dlaczego to ćwiczenie?',
               icon: const Icon(Icons.info_outline),
               onPressed: _busy
@@ -474,44 +484,33 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
         engine: engine,
         equipment: profile.dostepnySprzet,
         level: _level,
+        allowBudgetIncrease: true,
       );
       if (replacement == null) {
         throw StateError(
-          'Brak zamiennika w tej samej puli, sekcji i metryce czasu.',
+          'Brak zgodnego zamiennika w aktualnej puli lub w limicie 90 min.',
         );
       }
       final names = {for (final e in catalog) e.id: e.nazwaPl};
-      final confirmed = await showDialog<bool>(
+      final accepted = await showDialog<StructuredPlan>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(
-            'Zamień ${names[plan.blocks[index].exerciseId] ?? plan.blocks[index].exerciseId} na ${names[replacement.blocks[index].exerciseId]}?',
-          ),
-          content: SingleChildScrollView(
-            child: Text(
-              PlanExplanation.forReplacement(
-                plan: plan,
-                replacement: replacement,
-                index: index,
-                allExercises: catalog,
-                engine: engine,
-                equipment: profile.dostepnySprzet,
-              ).join('\n\n'),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Anuluj'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Zamień'),
-            ),
-          ],
+        builder: (context) => PlanEditDialog(
+          plan: plan,
+          title:
+              'Zamień ${names[plan.blocks[index].exerciseId] ?? plan.blocks[index].exerciseId} na ${names[replacement.blocks[index].exerciseId]}?',
+          acceptLabel: 'Zamień',
+          propose: (_) => replacement,
+          explain: (_) => PlanExplanation.forReplacement(
+            plan: plan,
+            replacement: replacement,
+            index: index,
+            allExercises: catalog,
+            engine: engine,
+            equipment: profile.dostepnySprzet,
+          ).join('\n\n'),
         ),
       );
-      if (confirmed != true || !mounted) return;
+      if (accepted == null || !mounted) return;
       // The explanation must still describe exactly the data accepted by the
       // user. A changed catalog/profile/account requires a fresh proposal.
       if (!identical(_plan, plan) ||
@@ -526,6 +525,49 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
       }
       _pool(profile, plan.criteria);
       _preview(replacement);
+    } catch (e) {
+      if (mounted) setState(() => _message = '$e');
+    }
+  }
+
+  Future<void> _editRest(int index, UserProfile profile) async {
+    final plan = _plan!;
+    final epoch = ref.read(cachedAuthWriteAuthorityProvider).epoch;
+    try {
+      if (_previewEpoch != epoch) {
+        throw StateError('Konto zmieniło się. Otwórz planner ponownie.');
+      }
+      _pool(profile, plan.criteria);
+      final catalog = ref.read(allExercisesProvider).requireValue;
+      final engine = ref.read(exerciseFilterEngineProvider);
+      final accepted = await showDialog<StructuredPlan>(
+        context: context,
+        builder: (_) => PlanEditDialog(
+          plan: plan,
+          title: 'Edytuj przerwę',
+          acceptLabel: 'Zastosuj',
+          initialRest: plan.blocks[index].prescription.restSeconds,
+          propose: (rest) => StructuredPlanGenerator.withRest(
+            plan: plan,
+            index: index,
+            restSeconds: rest!,
+            allowBudgetIncrease: true,
+          ),
+        ),
+      );
+      if (accepted == null || !mounted) return;
+      if (!identical(_plan, plan) ||
+          ref.read(cachedAuthWriteAuthorityProvider).epoch != epoch ||
+          !identical(
+            ref.read(userProfileStreamProvider).valueOrNull,
+            profile,
+          ) ||
+          !identical(ref.read(allExercisesProvider).valueOrNull, catalog) ||
+          !identical(ref.read(exerciseFilterEngineProvider), engine)) {
+        throw StateError('Dane zmieniły się. Ponów edycję przerwy.');
+      }
+      _pool(profile, plan.criteria);
+      _preview(accepted);
     } catch (e) {
       if (mounted) setState(() => _message = '$e');
     }

@@ -6,6 +6,63 @@ import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
 import 'plan_explanation_fixtures.dart';
 
 void main() {
+  test(
+    'safe replacement explains family, unilateral, primary and whole time/budget delta',
+    () {
+      final md = ExerciseCatalogMetadata(
+        exercises: {
+          'a': explanationMetadata.exercises['a']!,
+          'b': explanationMetadata.exercises['a']!,
+        },
+        muscles: explanationMetadata.muscles,
+      );
+      final e = ExerciseFilterEngine(md);
+      final catalog = [
+        for (final id in ['a', 'b'])
+          explanationExercise(id).copyWith(
+            typ: 'Wytrzymałość',
+            wzorzecRuchu: 'Pull horyzontalny',
+            seriexPowtorzenia: id == 'a' ? '3 x 40 s' : '3 x 100 s',
+          ),
+      ];
+      final base = explanationPlan();
+      final plan = StructuredPlan(
+        criteria: base.criteria,
+        budgetSeconds: 300,
+        blocks: base.blocks,
+        warnings: [],
+        equipment: ['Mata'],
+      );
+      final proposal = StructuredPlanGenerator.replace(
+        plan: plan,
+        index: 0,
+        allExercises: catalog,
+        engine: e,
+        equipment: ['Mata'],
+        level: plan.level,
+        allowBudgetIncrease: true,
+      )!;
+      final text = PlanExplanation.forReplacement(
+        plan: plan,
+        replacement: proposal,
+        index: 0,
+        allExercises: catalog,
+        engine: e,
+      ).join('\n');
+      expect(text, contains('Zgodna rodzina ruchu:'));
+      expect(text, contains('Jednostronność: nie → nie'));
+      expect(text, contains('195 s → 375 s'));
+      expect(text, contains('300 s → 420 s'));
+      expect(
+        text,
+        isNot(
+          contains(
+            'wymaga tej samej filtrowanej puli, sekcji, sposobu rejestrowania i czasu',
+          ),
+        ),
+      );
+    },
+  );
   final engine = ExerciseFilterEngine(explanationMetadata);
   final a = explanationExercise('a');
   List<String> explain(

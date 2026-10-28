@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../widgets/active_replacement_dialog.dart';
 import '../widgets/repeat_set_panel.dart';
 import '../widgets/session_recovery_panel.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,6 +25,7 @@ import '../../../exercises/providers/exercise_variants_providers.dart';
 import '../../../exercises/providers/filter_presets_providers.dart';
 import '../../../exercises/presentation/widgets/own_variants.dart';
 import '../../../auth/providers/auth_providers.dart';
+import '../../../onboarding/providers/user_profile_provider.dart';
 import '../widgets/session_finish_button.dart';
 import '../widgets/session_progress_text.dart';
 import '../widgets/session_delete_button.dart';
@@ -217,6 +220,88 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
             TextButton(
               onPressed: () async {
                 try {
+                  final snapshot = ref.read(activeWorkoutProvider);
+                  final g = snapshot.guidance!, slot = snapshot.currentSlot;
+                  final epoch = ref
+                      .read(cachedAuthWriteAuthorityProvider)
+                      .epoch;
+                  if ((g.plan.blocks[slot].prescription.weightKg ?? 0) > 0) {
+                    throw StateError(
+                      'Zmiana z indywidualnym ciężarem wymaga edycji przed startem lub dodania osobnego ćwiczenia. Nie przenosimy kilogramów na inny ruch.',
+                    );
+                  }
+                  // Resolve the live profile on demand. Merely displaying an
+                  // active session must not introduce another database reader.
+                  final profile = await ref.read(
+                    userProfileStreamProvider.future,
+                  );
+                  if (!mounted ||
+                      ref.read(cachedAuthWriteAuthorityProvider).epoch !=
+                          epoch ||
+                      ref.read(activeWorkoutProvider).sessionSyncId !=
+                          snapshot.sessionSyncId ||
+                      ref.read(activeWorkoutProvider).currentSlot != slot ||
+                      jsonEncode(
+                            ref.read(activeWorkoutProvider).guidance?.toJson(),
+                          ) !=
+                          jsonEncode(g.toJson()) ||
+                      jsonEncode(ref.read(activeWorkoutProvider).draft) !=
+                          jsonEncode(snapshot.draft)) {
+                    throw StateError(
+                      'Dane zmieniły się. Ponów wybór zamiennika.',
+                    );
+                  }
+                  final source = ref.read(allExercisesProvider);
+                  final metadata = ref.read(exerciseCatalogMetadataProvider);
+                  final profileSource = ref.read(userProfileStreamProvider);
+                  if (source.isLoading ||
+                      source.hasError ||
+                      source.valueOrNull == null ||
+                      metadata.isLoading ||
+                      metadata.hasError ||
+                      metadata.valueOrNull == null ||
+                      profileSource.isLoading ||
+                      profileSource.hasError ||
+                      profile == null) {
+                    throw StateError(
+                      'Poczekaj na aktualny katalog, klasyfikację i sprzęt profilu.',
+                    );
+                  }
+                  final catalog = source.requireValue;
+                  final engine = ref.read(exerciseFilterEngineProvider);
+                  final signature = jsonEncode(g.toJson());
+                  final form = jsonEncode(snapshot.draft);
+                  bool currentProposal() {
+                    if (!mounted) return false;
+                    final now = ref.read(activeWorkoutProvider);
+                    return mounted &&
+                        now.isActive &&
+                        now.sessionSyncId == snapshot.sessionSyncId &&
+                        now.currentSlot == slot &&
+                        jsonEncode(now.guidance?.toJson()) == signature &&
+                        jsonEncode(now.draft) == form &&
+                        ref.read(cachedAuthWriteAuthorityProvider).epoch ==
+                            epoch &&
+                        !ref.read(allExercisesProvider).isLoading &&
+                        !ref.read(allExercisesProvider).hasError &&
+                        identical(
+                          ref.read(allExercisesProvider).valueOrNull,
+                          catalog,
+                        ) &&
+                        !ref.read(userProfileStreamProvider).isLoading &&
+                        !ref.read(userProfileStreamProvider).hasError &&
+                        identical(
+                          ref.read(userProfileStreamProvider).valueOrNull,
+                          profile,
+                        ) &&
+                        !ref.read(exerciseCatalogMetadataProvider).isLoading &&
+                        !ref.read(exerciseCatalogMetadataProvider).hasError &&
+                        identical(
+                          ref.read(exerciseFilterEngineProvider),
+                          engine,
+                        );
+                  }
+
                   final current = StructuredPlan(
                     criteria: g.plan.criteria,
                     budgetSeconds: g.plan.budgetSeconds,
@@ -232,45 +317,46 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
                       ),
                     ),
                   );
-                  final replacement = StructuredPlanGenerator.replace(
-                    plan: current,
-                    index: slot,
-                    allExercises: catalog,
-                    engine: ref.read(exerciseFilterEngineProvider),
-                    equipment: g.plan.equipment,
-                    level: g.plan.level,
-                  );
-                  if (replacement == null) {
+                  final replacements =
+                      StructuredPlanGenerator.replacementCandidates(
+                        plan: current,
+                        index: slot,
+                        allExercises: catalog,
+                        engine: engine,
+                        equipment: profile.dostepnySprzet,
+                        level: g.plan.level,
+                      );
+                  if (replacements.isEmpty) {
                     throw StateError(
                       'Brak zgodnego zamiennika w aktualnej puli.',
                     );
                   }
-                  final id = replacement.blocks[slot].exerciseId;
+                  final candidate = replacements.first;
+                  final id = candidate.id;
+                  if (!context.mounted) return;
                   final yes = await showDialog<bool>(
                     context: context,
-                    builder: (c) => AlertDialog(
-                      title: const Text('Zamienić ćwiczenie?'),
-                      content: Text(
-                        '${exercise?.nazwaPl ?? block.exerciseId} → ${catalog.firstWhere((e) => e.id == id).nazwaPl}. Oryginalne cele planu pozostaną zachowane.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(c, false),
-                          child: const Text('Anuluj'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(c, true),
-                          child: const Text('Zamień'),
-                        ),
-                      ],
+                    builder: (c) => ActiveReplacementDialog(
+                      description:
+                          '${exercise?.nazwaPl ?? g.exerciseAt(slot)} → ${candidate.nazwaPl}. '
+                          'Zgodna rodzina ruchu, mięśnie główne, metryka i jednostronność w aktualnej puli i sprzęcie profilu.',
                     ),
                   );
-                  if (yes == true &&
-                      mounted &&
-                      ref.read(activeWorkoutProvider).sessionSyncId ==
-                          active.sessionSyncId &&
-                      ref.read(activeWorkoutProvider).currentSlot == slot) {
-                    await n.guidedEvent(replacement: id);
+                  if (yes == true && mounted) {
+                    if (!currentProposal()) {
+                      throw StateError(
+                        'Dane zmieniły się. Ponów wybór zamiennika.',
+                      );
+                    }
+                    if (!await n.guidedEvent(
+                      replacement: id,
+                      discardCurrentDraft: true,
+                      isCurrent: currentProposal,
+                    )) {
+                      throw StateError(
+                        'Zamiana niedostępna podczas zapisu lub po zmianie danych. Ponów wybór.',
+                      );
+                    }
                   }
                 } catch (e) {
                   if (context.mounted) {

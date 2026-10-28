@@ -1,0 +1,407 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:drift/native.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:fitbirek_training/core/database/app_database.dart';
+import 'package:fitbirek_training/core/providers/database_provider.dart';
+import 'package:fitbirek_training/features/workout/data/workout_repository.dart';
+import 'package:fitbirek_training/features/workout/domain/workout_guidance.dart';
+import 'package:fitbirek_training/features/workout/providers/workout_providers.dart';
+import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
+import '../planner/structured_plan_persistence_test.dart' show structure;
+import 'session_tracking_test.dart' show exercise;
+import 'guided_side_checkpoint_review_test.dart' show completedLeftTimer;
+import 'interval_save_test.dart' show PausedRoundRepository;
+import 'package:fitbirek_training/features/workout/domain/interval_timer.dart';
+import 'package:fitbirek_training/features/workout/domain/workout_draft_write.dart';
+
+class DelayedDraftRepository extends WorkoutRepository {
+  DelayedDraftRepository(super.db);
+  bool delay = false;
+  final release = Completer<void>();
+  @override
+  Future<Map<String, Object?>> saveDraft({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required Map<String, Object?> payload,
+    required bool Function() guard,
+  }) async {
+    if (delay) await release.future;
+    return super.saveDraft(
+      sessionId: sessionId,
+      sessionSyncId: sessionSyncId,
+      accountId: accountId,
+      payload: payload,
+      guard: guard,
+    );
+  }
+}
+
+class PausedTransitionRepository extends WorkoutRepository {
+  PausedTransitionRepository(super.db);
+  final entered = Completer<void>(), release = Completer<void>();
+  @override
+  Future<({WorkoutGuidance guidance, Map<String, Object?> draft})>
+  transitionGuidance({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required bool Function() guard,
+    required String expectedSignature,
+    required int expectedRevision,
+    required int slot,
+    String? replacement,
+  }) async {
+    entered.complete();
+    await release.future;
+    return super.transitionGuidance(
+      sessionId: sessionId,
+      sessionSyncId: sessionSyncId,
+      accountId: accountId,
+      guard: guard,
+      expectedSignature: expectedSignature,
+      expectedRevision: expectedRevision,
+      slot: slot,
+      replacement: replacement,
+    );
+  }
+}
+
+void main() {
+  late AppDatabase db;
+  late ProviderContainer c;
+  late DelayedDraftRepository repo;
+  setUp(() async {
+    db = AppDatabase.forTesting(NativeDatabase.memory());
+    await db
+        .into(db.syncState)
+        .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
+    repo = DelayedDraftRepository(db);
+    c = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+        workoutRepositoryProvider.overrideWithValue(repo),
+      ],
+    );
+  });
+  tearDown(() async {
+    if (!repo.release.isCompleted) repo.release.complete();
+    await c.read(activeWorkoutProvider.notifier).flushDraft();
+    c.dispose();
+    await db.close();
+  });
+  test(
+    'active weight target refuses ID replacement without rewriting original plan',
+    () async {
+      final p = structure.blocks.single.prescription;
+      final plan = StructuredPlan(
+        criteria: structure.criteria,
+        budgetSeconds: 300,
+        blocks: [
+          PlanBlock(
+            exerciseId: 'yoga',
+            section: PlanSection.main,
+            prescription: PlanPrescription(
+              tracking: p.tracking,
+              sets: p.sets,
+              workSeconds: p.workSeconds,
+              restSeconds: p.restSeconds,
+              transitionSeconds: p.transitionSeconds,
+              weightKg: 12,
+            ),
+          ),
+        ],
+        warnings: [],
+      );
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(plan));
+      await n.flushDraft();
+      expect(await n.guidedEvent(replacement: 'other'), isFalse);
+      expect(c.read(activeWorkoutProvider).guidance!.exerciseAt(0), 'yoga');
+    },
+  );
+  test('dirty active form cannot be silently discarded', () async {
+    final n = c.read(activeWorkoutProvider.notifier);
+    await n.startSession(guidance: WorkoutGuidance.start(structure));
+    n.updateDraft({'reps': '9', 'side': 'left'});
+    await n.flushDraft();
+    expect(await n.guidedEvent(replacement: 'other'), isFalse);
+    expect(c.read(activeWorkoutProvider).draft['reps'], '9');
+  });
+  test(
+    'guidance and draft signature commit atomically before any queued draft save',
+    () async {
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      await n.logSet(exercise: exercise.copyWith(id: 'yoga'), seconds: 8);
+      await n.flushDraft();
+      final before = c.read(activeWorkoutProvider);
+      final history = await db.workoutDao.getAllSets();
+      repo.delay = true;
+      expect(await n.guidedEvent(replacement: 'other'), isTrue);
+      final row = (await db.workoutDao.getSession(before.sessionId!))!;
+      final draft = (await repo.readDraft('a', before.sessionSyncId!))!;
+      expect(
+        draft['guidanceSignature'],
+        jsonEncode(WorkoutGuidance.tryRead(row.guidanceJson)!.toJson()),
+      );
+      expect(
+        c.read(activeWorkoutProvider).guidance!.plan.toJson(),
+        structure.toJson(),
+      );
+      expect(await db.workoutDao.getAllSets(), history);
+      repo.release.complete();
+      await n.flushDraft();
+      final reload = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(reload.dispose);
+      expect(
+        await reload
+            .read(activeWorkoutProvider.notifier)
+            .resumeSession(before.sessionSyncId!),
+        isTrue,
+      );
+      expect(
+        reload.read(activeWorkoutProvider).guidance!.exerciseAt(0),
+        'other',
+      );
+    },
+  );
+
+  test(
+    'discard is targeted, retires timer token, keeps history and extra drafts on immediate reload',
+    () async {
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      n.addExercise(exercise.copyWith(id: 'extra'));
+      n.updateExerciseDraft(
+        'extra',
+        {'reps': '17'},
+        extra: true,
+        side: 'right',
+      );
+      n.updateDraft({
+        'seconds': '9',
+        'side': 'left',
+        'timer': completedLeftTimer(),
+        'variantId': '11111111-1111-4111-8111-111111111111',
+        'variantLabel': 'Wariant',
+        'note': 'preserve',
+        'futureField': {'nested': 7},
+      });
+      await n.flushDraft();
+      final before = c.read(activeWorkoutProvider);
+      final origin = n.captureInterval(
+        exercise: exercise.copyWith(id: 'yoga'),
+        side: 'left',
+        variantId: '11111111-1111-4111-8111-111111111111',
+        variantLabel: 'Wariant',
+      )!;
+      expect(
+        await n.guidedEvent(replacement: 'other', discardCurrentDraft: true),
+        isTrue,
+      );
+      expect(n.isIntervalCurrent(origin), isFalse);
+      final payload = (await repo.readDraft('a', before.sessionSyncId!))!;
+      expect(checkpointEpochs(payload)[origin.checkpointKey], 1);
+      final reload = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      addTearDown(reload.dispose);
+      expect(
+        await reload
+            .read(activeWorkoutProvider.notifier)
+            .resumeSession(before.sessionSyncId!),
+        isTrue,
+      );
+      final after = reload.read(activeWorkoutProvider);
+      expect(after.guidance!.plan.toJson(), before.guidance!.plan.toJson());
+      expect(after.draft['timer'], isNull);
+      expect(after.draft['side'], isNull);
+      expect(after.draft['seconds'], isNull);
+      expect(after.draft['variantId'], isNull);
+      expect(after.draft['note'], 'preserve');
+      expect(after.draft['futureField'], {'nested': 7});
+      expect(after.draft['extraForms'], before.draft['extraForms']);
+      expect(await db.workoutDao.getAllSets(), isEmpty);
+    },
+  );
+
+  for (final stale in ['revision', 'signature', 'guard']) {
+    test(
+      'SQLite transition rejects stale $stale and rolls back outbox and draft',
+      () async {
+        final n = c.read(activeWorkoutProvider.notifier);
+        await n.startSession(guidance: WorkoutGuidance.start(structure));
+        await n.flushDraft();
+        final state = c.read(activeWorkoutProvider);
+        final payload = (await repo.readDraft('a', state.sessionSyncId!))!;
+        final row = (await db.workoutDao.getSession(state.sessionId!))!;
+        final operations = await db.select(db.syncOutbox).get();
+        var calls = 0;
+        await expectLater(
+          repo.transitionGuidance(
+            sessionId: state.sessionId!,
+            sessionSyncId: state.sessionSyncId!,
+            accountId: 'a',
+            expectedSignature: stale == 'signature'
+                ? 'old'
+                : jsonEncode(state.guidance!.toJson()),
+            expectedRevision:
+                draftRevision(payload) - (stale == 'revision' ? 1 : 0),
+            guard: () => stale != 'guard' || ++calls < 5,
+            slot: 0,
+            replacement: 'other',
+          ),
+          throwsStateError,
+        );
+        expect(
+          (await db.workoutDao.getSession(state.sessionId!))!.guidanceJson,
+          row.guidanceJson,
+        );
+        expect(await repo.readDraft('a', state.sessionSyncId!), payload);
+        expect(await db.select(db.syncOutbox).get(), operations);
+      },
+    );
+  }
+
+  test(
+    'provider rejects form mutation during await, busy blocks duplicate and interval capture',
+    () async {
+      final paused = PausedTransitionRepository(db);
+      c.dispose();
+      c = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          workoutRepositoryProvider.overrideWithValue(paused),
+        ],
+      );
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      await n.flushDraft();
+      final write = n.guidedEvent(
+        replacement: 'other',
+        discardCurrentDraft: true,
+      );
+      await paused.entered.future;
+      expect(
+        n.captureInterval(exercise: exercise.copyWith(id: 'yoga')),
+        isNull,
+      );
+      expect(
+        await n.guidedEvent(replacement: 'other', discardCurrentDraft: true),
+        isFalse,
+      );
+      n.updateDraft({'seconds': '19'});
+      paused.release.complete();
+      expect(await write, isFalse);
+      await n.flushDraft();
+      expect(c.read(activeWorkoutProvider).draft['seconds'], '19');
+      expect(c.read(activeWorkoutProvider).guidance!.exerciseAt(0), 'yoga');
+    },
+  );
+
+  test(
+    'active replacement is refused while checkpoint is consumed in SQLite',
+    () async {
+      final paused = PausedRoundRepository(db);
+      c.dispose();
+      c = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          workoutRepositoryProvider.overrideWithValue(paused),
+        ],
+      );
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      n.updateDraft({'side': 'left', 'timer': completedLeftTimer()});
+      await n.flushDraft();
+      final origin = n.captureInterval(
+        exercise: exercise.copyWith(id: 'yoga'),
+        side: 'left',
+      )!;
+      final write = n.saveIntervalRounds(origin, [
+        const IntervalRound(round: 1, seconds: 10, shortened: false),
+      ]);
+      await paused.entered.future;
+      expect(
+        await n.guidedEvent(replacement: 'other', discardCurrentDraft: true),
+        isFalse,
+      );
+      paused.release.complete();
+      expect(await write, isTrue);
+      expect(c.read(activeWorkoutProvider).guidance!.exerciseAt(0), 'yoga');
+    },
+  );
+
+  test(
+    'observer does not lose an external identical event while own transition is pending',
+    () async {
+      final paused = PausedTransitionRepository(db);
+      c.dispose();
+      c = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          workoutRepositoryProvider.overrideWithValue(paused),
+        ],
+      );
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      await n.flushDraft();
+      final state = c.read(activeWorkoutProvider);
+      final write = n.guidedEvent(
+        replacement: 'other',
+        discardCurrentDraft: true,
+      );
+      await paused.entered.future;
+      await repo.guidanceEvent(
+        sessionId: state.sessionId!,
+        sessionSyncId: state.sessionSyncId!,
+        accountId: 'a',
+        guard: () => true,
+        slot: 0,
+        replacement: 'other',
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      paused.release.complete();
+      expect(await write, isFalse);
+      expect(c.read(activeWorkoutProvider).guidance!.exerciseAt(0), 'other');
+      await n.flushDraft();
+    },
+  );
+
+  test(
+    'adding an extra during transition cannot lose its durable selection',
+    () async {
+      final paused = PausedTransitionRepository(db);
+      c.dispose();
+      c = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          workoutRepositoryProvider.overrideWithValue(paused),
+        ],
+      );
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      await n.flushDraft();
+      final uuid = c.read(activeWorkoutProvider).sessionSyncId!;
+      final write = n.guidedEvent(
+        replacement: 'other',
+        discardCurrentDraft: true,
+      );
+      await paused.entered.future;
+      n.addExercise(exercise.copyWith(id: 'extra'));
+      paused.release.complete();
+      expect(await write, isFalse);
+      await n.flushDraft();
+      expect(
+        (await repo.readDraft('a', uuid))!['selectedIds'],
+        contains('extra'),
+      );
+      expect(c.read(activeWorkoutProvider).guidance!.exerciseAt(0), 'yoga');
+    },
+  );
+}

@@ -2,6 +2,7 @@ import '../../../core/models/exercise.dart';
 import '../../../core/utils/partia_kategoria.dart';
 import '../../exercises/domain/exercise_filter_engine.dart';
 import 'structured_plan.dart';
+import 'exercise_training_policy.dart';
 
 /// Read-only explanations of current evidence, not persisted ranking provenance.
 /// No I/O, medical assessment, selection or replacement authority.
@@ -156,7 +157,7 @@ abstract final class PlanExplanation {
     final all = {for (final e in allExercises) e.id: e};
     final a = all[old.exerciseId], b = all[next.exerciseId];
     final lines = <String>[
-      'Generator wymaga tej samej filtrowanej puli, sekcji, sposobu rejestrowania i czasu ESTYMOWANEGO.',
+      'Zamiennik pochodzi z aktualnej filtrowanej puli. Zgodność wymaga tej samej sekcji, metryki, jednostronności, rozpoznanej rodziny ruchu i niepustych równych mięśni głównych; nie wymaga identycznej dawki ani czasu.',
       if (old.section == next.section) 'Ta sama sekcja: ${next.section.label}.',
       if (old.prescription.tracking == next.prescription.tracking)
         'Ten sam sposób rejestrowania: ${next.prescription.tracking}.',
@@ -172,6 +173,26 @@ abstract final class PlanExplanation {
     }
 
     final before = old.prescription, after = next.prescription;
+    compare(
+      'Cały plan ESTYMOWANY',
+      '${plan.estimatedSeconds} s',
+      '${replacement.estimatedSeconds} s',
+    );
+    compare(
+      'Budżet',
+      '${plan.budgetSeconds} s',
+      '${replacement.budgetSeconds} s',
+    );
+    compare(
+      'Czas bloku ESTYMOWANY',
+      '${before.totalSeconds} s',
+      '${after.totalSeconds} s',
+    );
+    compare(
+      'Ciężar indywidualny',
+      before.weightKg == null ? 'brak' : '${before.weightKg} kg',
+      after.weightKg == null ? 'brak' : '${after.weightKg} kg',
+    );
     compare('Serie', '${before.sets}', '${after.sets}');
     if (before.reps != null || after.reps != null) {
       compare(
@@ -201,6 +222,23 @@ abstract final class PlanExplanation {
       final am = engine.metadata.entryFor(a.id),
           bm = engine.metadata.entryFor(b.id);
       if (am != null && bm != null) {
+        lines.add(
+          'Jednostronność: ${am.unilateral ? "tak" : "nie"} → ${bm.unilateral ? "tak" : "nie"}.',
+        );
+        if (ExerciseTrainingPolicy.compatible(
+          source: a,
+          candidate: b,
+          engine: engine,
+        )) {
+          lines.add(
+            'Zgodna rodzina ruchu: ${ExerciseTrainingPolicy.movementFamily(b)}; '
+            'te same mięśnie główne: ${_labels(bm.primaryMuscles.map(engine.muscleLabel))}.',
+          );
+        } else {
+          lines.add(
+            'Nie potwierdzono zgodności ruchu — ta propozycja nie powinna być przyjęta.',
+          );
+        }
         compare(
           'Mięśnie główne',
           _labels(am.primaryMuscles.map(engine.muscleLabel)),

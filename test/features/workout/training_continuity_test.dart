@@ -202,7 +202,13 @@ void main() {
       expect(c.read(activeWorkoutProvider).draft['variantLabel'], 'A');
       expect(c.read(activeWorkoutProvider).draft['side'], 'left');
       await n.flushDraft();
-      expect(await n.guidedEvent(replacement: 'replacement'), isTrue);
+      expect(
+        await n.guidedEvent(
+          replacement: 'replacement',
+          discardCurrentDraft: true,
+        ),
+        isTrue,
+      );
       expect(c.read(activeWorkoutProvider).draft['reps'], isNull);
       n.moveGuided(1);
       expect(c.read(activeWorkoutProvider).draft['variantLabel'], 'B');

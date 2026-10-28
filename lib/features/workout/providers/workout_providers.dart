@@ -301,6 +301,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
   bool _draftConsumptionInFlight = false;
   String? _consumingCheckpointKey;
   bool _guidedBusy = false;
+  String? _pendingGuidanceSignature;
+  WorkoutSessionData? _deferredTransitionRow;
   CachedAuthWriteAuthority? _sessionAuthority;
   int? _sessionEpoch;
   String? _sessionAccount;
@@ -327,6 +329,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       discardSession();
       return;
     }
+    // Our transaction already updates the recovery signature and fields. Do
+    // not race it with a second, non-atomic draft writer from this observer.
+    if (jsonEncode(g.toJson()) == _pendingGuidanceSignature) {
+      _deferredTransitionRow = row;
+      return;
+    }
+    _deferredTransitionRow = null;
     if (jsonEncode(g.toJson()) != jsonEncode(state.guidance!.toJson())) {
       final slot = state.currentSlot.clamp(0, g.plan.blocks.length - 1);
       final changed =
@@ -879,50 +888,109 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     updateDraft({});
   }
 
-  Future<bool> guidedEvent({String? replacement}) async {
-    if (_guidedBusy || state.guidance == null || state.sessionSyncId == null) {
+  Future<bool> guidedEvent({
+    String? replacement,
+    bool discardCurrentDraft = false,
+    bool Function()? isCurrent,
+  }) async {
+    if (_guidedBusy ||
+        _draftConsumptionInFlight ||
+        !_ownsAuthority ||
+        state.guidance == null ||
+        state.sessionSyncId == null ||
+        !(isCurrent?.call() ?? true)) {
+      return false;
+    }
+    final target = state.guidance!.plan.blocks[state.currentSlot].prescription;
+    final dirty = state.draft.entries.any(
+      (e) =>
+          const {
+            'weight',
+            'reps',
+            'seconds',
+            'side',
+            'variantId',
+            'timer',
+            'rpe',
+          }.contains(e.key) &&
+          e.value != null &&
+          e.value != '',
+    );
+    if (replacement != null &&
+        ((target.weightKg ?? 0) > 0 || (!discardCurrentDraft && dirty))) {
       return false;
     }
     _guidedBusy = true;
     final snapshot = state, generation = _generation;
+    final signature = jsonEncode(snapshot.guidance!.toJson());
+    final fields = jsonEncode(snapshot.draft);
+    final selectedIds = jsonEncode(
+      snapshot.selectedExercises.map((e) => e.id).toList(),
+    );
     final authority = _ref.read(cachedAuthWriteAuthorityProvider),
         epoch = _ref.read(cachedAuthWriteAuthorityProvider).epoch;
     bool guard() =>
         _isCurrent(snapshot.sessionId!, generation) &&
         authority.epoch == epoch &&
-        !_intervalClosing;
+        !_intervalClosing &&
+        !_draftConsumptionInFlight &&
+        state.currentSlot == snapshot.currentSlot &&
+        jsonEncode(state.guidance?.toJson()) == signature &&
+        jsonEncode(state.draft) == fields &&
+        jsonEncode(state.selectedExercises.map((e) => e.id).toList()) ==
+            selectedIds &&
+        (isCurrent?.call() ?? true);
     try {
+      // Never wait for the serialized queue while holding SQLite's transaction.
+      await flushDraft();
+      if (!guard()) return false;
       final binding = await _ref.read(appDatabaseProvider).syncDao.readState();
       if (!guard() || binding == null || binding.accountId != _sessionAccount) {
         return false;
       }
-      await _ref
-          .read(workoutRepositoryProvider)
-          .guidanceEvent(
-            sessionId: snapshot.sessionId!,
-            sessionSyncId: snapshot.sessionSyncId!,
-            accountId: binding.accountId,
-            guard: guard,
-            slot: snapshot.currentSlot,
-            replacement: replacement,
-          );
-      final row = await _ref
-          .read(appDatabaseProvider)
-          .workoutDao
-          .getSession(snapshot.sessionId!);
-      if (!guard() || row?.syncId != snapshot.sessionSyncId) return false;
-      state = state.copyWith(
-        guidance: WorkoutGuidance.tryRead(row!.guidanceJson),
-        draft: _clearedGuidedFields(),
+      final repo = _ref.read(workoutRepositoryProvider);
+      final current = await repo.readDraft(
+        binding.accountId,
+        snapshot.sessionSyncId!,
       );
-      updateDraft({});
+      if (!guard()) return false;
+      _pendingGuidanceSignature = jsonEncode(
+        (replacement == null
+                ? snapshot.guidance!.skip(snapshot.currentSlot)
+                : snapshot.guidance!.replace(snapshot.currentSlot, replacement))
+            .toJson(),
+      );
+      final committed = await repo.transitionGuidance(
+        sessionId: snapshot.sessionId!,
+        sessionSyncId: snapshot.sessionSyncId!,
+        accountId: binding.accountId,
+        guard: guard,
+        slot: snapshot.currentSlot,
+        replacement: replacement,
+        expectedSignature: signature,
+        expectedRevision: draftRevision(current),
+      );
+      if (!guard()) return false;
+      state = state.copyWith(
+        guidance: committed.guidance,
+        draft: Map<String, Object?>.from(committed.draft['fields'] as Map),
+      );
+      _lastDraftSnapshot = draftDomain(committed.draft);
+      _checkpointEpochs = checkpointEpochs(committed.draft);
+      _checkpointVersions = checkpointVersions(committed.draft);
       return true;
     } on WorkoutAccountUnavailable {
       return false;
     } on WorkoutSessionUnavailable {
       return false;
     } finally {
+      _pendingGuidanceSignature = null;
       _guidedBusy = false;
+      final deferred = _deferredTransitionRow;
+      _deferredTransitionRow = null;
+      // A matching event could have come from another writer, making our CAS
+      // fail. Replay observation then; on our own success it is simply a no-op.
+      if (deferred != null) _observeGuidance(deferred, generation);
     }
   }
 
@@ -1177,6 +1245,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     bool extra = false,
     double? weightKg,
   }) {
+    if (_guidedBusy) return null;
     if (weightKg != null && (!weightKg.isFinite || weightKg < 0)) return null;
     if (!mounted || !state.isActive || state.sessionId == null) return null;
     if (extra && !state.isExtraExercise(exercise.id)) return null;
@@ -1264,7 +1333,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     List<IntervalRound> rounds, {
     bool Function()? guard,
   }) async {
-    if (_draftConsumptionInFlight ||
+    if (_guidedBusy ||
+        _draftConsumptionInFlight ||
         origin._claimed ||
         !isIntervalCurrent(origin)) {
       return false;
