@@ -8,6 +8,7 @@ import '../../../core/providers/database_provider.dart';
 import '../../../core/utils/pr_detector.dart';
 import '../../../core/utils/set_comparison.dart';
 import '../../../core/models/exercise.dart';
+import '../../../core/models/set_role.dart';
 import '../data/workout_repository.dart';
 import '../data/session_actions_repository.dart';
 import '../domain/interval_timer.dart';
@@ -59,6 +60,7 @@ class ActiveSetEntry {
     this.rpe,
     this.isNewPr = false,
     this.comparison,
+    this.setRole,
   });
 
   final String exerciseId;
@@ -72,6 +74,7 @@ class ActiveSetEntry {
   final int? rpe;
   final bool isNewPr;
   final String? comparison;
+  final String? setRole;
 }
 
 /// Stan aktywnej sesji treningowej.
@@ -193,6 +196,7 @@ class IntervalWriteOrigin {
     this.checkpointKey,
     this.checkpointEpoch,
     this.weightKg,
+    this.setRole,
   );
   final ActiveWorkoutNotifier _owner;
   final int sessionId, _generation, _epoch;
@@ -207,6 +211,7 @@ class IntervalWriteOrigin {
   final String checkpointKey;
   final int checkpointEpoch;
   final double? weightKg;
+  final String? setRole;
   bool _claimed = false;
 }
 
@@ -1116,6 +1121,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                   variantId: s.variantId,
                   variantLabel: s.variantLabel,
                   rpe: s.rpe,
+                  setRole: s.setRole,
                 ),
               )
               .toList(),
@@ -1259,6 +1265,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     int? rpe,
     bool extra = false,
     double? weightKg,
+    String? setRole = 'working',
   }) {
     if (_guidedBusy) return null;
     if (weightKg != null && (!weightKg.isFinite || weightKg < 0)) return null;
@@ -1296,6 +1303,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       key,
       _checkpointEpochs[key] ?? 0,
       weightKg,
+      setRole,
     );
     return isIntervalCurrent(origin) ? origin : null;
   }
@@ -1442,6 +1450,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
               accountId: binding?.accountId,
               guard: () => isIntervalCurrent(origin) && (guard?.call() ?? true),
               rpe: origin.rpe,
+              setRole: origin.setRole,
               guidanceSlot: origin.guidanceSlot,
               expectedSyncId: origin.sessionSyncId,
             );
@@ -1457,6 +1466,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                 variantId: origin.variantId,
                 variantLabel: origin.variantLabel,
                 rpe: origin.rpe,
+                setRole: origin.setRole,
               ),
             );
           }
@@ -1582,6 +1592,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     String? variantId,
     String? variantLabel,
     bool extra = false,
+    String? setRole = 'working',
   }) async {
     if (state.sessionId == null ||
         !_ownsAuthority ||
@@ -1594,6 +1605,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         ? null
         : state.repeatCompletedCount;
     final repeatTarget = state.repeatTarget;
+    if (repeatIndex != null) setRole = repeatTarget?.setRole;
+    SetRole.validate(setRole);
     if (repeatIndex != null &&
         (repeatTarget == null ||
             repeatTarget.exerciseId != exercise.id ||
@@ -1677,6 +1690,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                   .where((s) => s.cwiczenieId == exercise.id)
                   .fold<int>(0, (n, s) => s.numerSerii > n ? s.numerSerii : n) +
               1;
+          final baseline =
+              SetRole.isEffectiveWorking(setRole) &&
+                  seconds == null &&
+                  weightKg != null &&
+                  reps != null
+              ? await _prBaseline(exercise.id, side: side, variantId: variantId)
+              : null;
+          requireOwnership();
           final insertedSetId = await repo.logSet(
             sessionId: sessionId,
             exerciseId: exercise.id,
@@ -1693,6 +1714,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                 _isCurrent(sessionId, generation) &&
                 authority.epoch == authEpoch,
             rpe: rpe,
+            setRole: setRole,
             guidanceSlot: guidedSlot,
             expectedSyncId: state.sessionSyncId,
           );
@@ -1735,22 +1757,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             requireOwnership();
           }
 
-          if (seconds == null &&
+          if (SetRole.isEffectiveWorking(setRole) &&
+              seconds == null &&
               weightKg != null &&
               reps != null &&
               weightKg > 0 &&
               reps > 0) {
             final prsRepo = _ref.read(prsRepositoryProvider);
-            final best = await prsRepo.getBestForExercise(
-              exercise.id,
-              side: side,
-              variantId: variantId,
-            );
-            requireOwnership();
             isNewPr = PrDetector.isNewRecord(
               nowyCiezar: weightKg,
               nowePowtorzenia: reps,
-              dotychczasowyBest1Rm: best?.szacowane1Rm,
+              dotychczasowyBest1Rm: baseline,
             );
             if (isNewPr) {
               await prsRepo.savePr(
@@ -1819,6 +1836,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             rpe: rpe,
             isNewPr: isNewPr,
             comparison: comparison,
+            setRole: setRole,
           ),
         ],
       );
@@ -1828,6 +1846,37 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     } finally {
       if (guardedGuidedWrite) _guidedBusy = false;
     }
+  }
+
+  /// Read before insertion: the candidate must not become its own baseline.
+  /// Existing legacy PRs are neither recalculated nor removed.
+  Future<double?> _prBaseline(
+    String exerciseId, {
+    String? side,
+    String? variantId,
+  }) async {
+    final best = await _ref
+        .read(prsRepositoryProvider)
+        .getBestForExercise(exerciseId, side: side, variantId: variantId);
+    var value = best?.szacowane1Rm;
+    final sets = await _ref
+        .read(workoutRepositoryProvider)
+        .getAllSetsForExercise(
+          exerciseId,
+          side: side,
+          variantId: variantId,
+          effectiveWorkingOnly: true,
+        );
+    for (final set in sets) {
+      if (set.czasSekund != null ||
+          (set.ciezarKg ?? 0) <= 0 ||
+          (set.powtorzenia ?? 0) <= 0)
+        continue;
+      final estimate = PrDetector.epley1Rm(set.ciezarKg!, set.powtorzenia!);
+      if (estimate.isFinite && (value == null || estimate > value))
+        value = estimate;
+    }
+    return value;
   }
 
   /// Performs an externally deduplicated set write and mirrors it into the
