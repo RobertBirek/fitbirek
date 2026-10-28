@@ -103,6 +103,12 @@ void main() {
     );
     expect((await occurrence()).sessionSyncId, isNull);
   });
+  test('warmup-only finished session is not completion evidence', () async {
+    final s = await session(ended: true, sets: true);
+    await db.update(db.setsLog).write(const SetsLogCompanion(setRole: Value('warmup')));
+    await expectLater(repo.complete('account', await occurrence(), s), throwsStateError);
+    expect((await occurrence()).sessionSyncId, isNull);
+  });
   test(
     'completion creates no sets or PR; duplicate session rejected; deleted session invalidates',
     () async {

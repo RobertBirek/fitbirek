@@ -5,6 +5,7 @@ import '../../auth/providers/auth_providers.dart';
 import '../../exercises/data/user_collections_repository.dart';
 import '../domain/weekly_schedule.dart';
 import '../domain/activity_schedule.dart';
+import 'session_completion_proof.dart';
 
 /// Deferred includes quarantine/hold. Do not change local bytes or outbox/CAS
 /// while the profile has an unapplied server snapshot, even if locally readable.
@@ -35,6 +36,7 @@ class ScheduleRepository {
   final CachedAuthWriteAuthority? authority;
   UserCollectionsRepository get _collections =>
       UserCollectionsRepository(db, authority: authority);
+  SessionCompletionProof get _proof => SessionCompletionProof(db, _collections);
 
   Future<WeeklySchedule> load(
     String account, {
@@ -174,26 +176,6 @@ class ScheduleRepository {
     await _put(account, _override(schedule, o, date: date), guard);
   }, isCurrent);
 
-  Future<bool> _actualSession(String id) async {
-    final session =
-        await (db.select(db.workoutSessions)..where(
-              (s) =>
-                  s.syncId.equals(id) &
-                  s.deletedAtUtc.isNull() &
-                  s.dataKoniec.isNotNull(),
-            ))
-            .getSingleOrNull();
-    if (session == null) return false;
-    final set =
-        await (db.select(db.setsLog)
-              ..where(
-                (s) => s.sesjaId.equals(session.id) & s.deletedAtUtc.isNull(),
-              )
-              ..limit(1))
-            .getSingleOrNull();
-    return set != null;
-  }
-
   Future<void> complete(
     String account,
     ScheduleOccurrence occurrence,
@@ -206,20 +188,14 @@ class ScheduleRepository {
         'Aktywność zewnętrzna wymaga ręcznego potwierdzenia, nie sesji.',
       );
     }
-    if (schedule.entries.any(
-      (e) =>
-          ['override', 'activityOverride'].contains(e['kind']) &&
-          e['deletedAtUtc'] == null &&
-          e['state'] == 'completed' &&
-          e['sessionSyncId'] == sessionSyncId,
-    )) {
+    if (await _proof.references(account, sessionSyncId, isCurrent: guard) > 0) {
       throw StateError(
         'Ta sesja zalicza już inne wystąpienie. Wybierz inną sesję.',
       );
     }
-    if (!await _actualSession(sessionSyncId)) {
+    if (!await _proof.isActual(sessionSyncId)) {
       throw StateError(
-        'Wybierz zakończoną, nieusuniętą sesję z co najmniej jedną zapisaną serią.',
+        'Wybierz zakończoną, nieusuniętą sesję z co najmniej jedną serią roboczą (także historyczną bez roli).',
       );
     }
     // Both proof and ownership are captured in this write transaction.
@@ -253,20 +229,12 @@ class ScheduleRepository {
     String account,
     ScheduleOccurrence o,
   ) async {
-    final schedule = await load(account);
+    await load(account);
     if (o.externalCompleted) return ScheduleCompletion.completed;
     if (o.sessionSyncId == null) return ScheduleCompletion.planned;
-    final duplicates = schedule.entries
-        .where(
-          (e) =>
-              ['override', 'activityOverride'].contains(e['kind']) &&
-              e['deletedAtUtc'] == null &&
-              e['state'] == 'completed' &&
-              e['sessionSyncId'] == o.sessionSyncId,
-        )
-        .length;
+    final duplicates = await _proof.references(account, o.sessionSyncId!);
     if (duplicates > 1) return ScheduleCompletion.conflict;
-    return await _actualSession(o.sessionSyncId!)
+    return await _proof.isActual(o.sessionSyncId!)
         ? ScheduleCompletion.completed
         : ScheduleCompletion.invalidated;
   }
