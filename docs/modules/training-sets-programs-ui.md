@@ -51,6 +51,9 @@ generatorów, zależności, wydania lub wdrożenia.
   revision/epoch/version, kolejka patchy i persistentDatabaseZone pozostają.
   Flush nadal musi być poza transakcją nadrzędną. Fresh provider może od razu
   zapisać/pominąć właściwy cel lub potwierdzić odzyskany timer, bez edycji pól.
+- Obserwowana zgodna zamiana inicjalizuje dokładny target nowej tożsamości,
+  zamiast zostawiać szkic bez targetId. Odroczony performed-row ręcznego zapisu
+  nie jest odtwarzany podczas późniejszego consume innego celu.
 
 ## Role i historia
 

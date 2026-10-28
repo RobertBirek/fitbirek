@@ -371,7 +371,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       state = state.copyWith(
         guidance: g,
         currentSlot: slot,
-        draft: changed ? _clearedGuidedFields() : state.draft,
+        draft: changed
+            ? {
+                ..._clearedGuidedFields(),
+                if (g.schemaVersion == 2)
+                  ...targetFields(guidedTarget(g, slot, {})!),
+              }
+            : state.draft,
       );
       updateDraft({});
     }
@@ -2069,6 +2075,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       return isNewPr;
     } finally {
       _pendingGuidanceSignature = null;
+      // Performed contains our freshly generated set UUID. Its deferred row is
+      // now represented by the committed read above (or the write rolled back).
+      // Unlike deterministic skip/replace, it cannot be another writer's CAS
+      // winner. Do not replay it during a later target's interval commit.
+      _deferredTransitionRow = null;
       if (guardedGuidedWrite) _guidedBusy = false;
     }
   }

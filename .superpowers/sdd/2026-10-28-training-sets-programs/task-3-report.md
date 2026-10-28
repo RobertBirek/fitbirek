@@ -1,7 +1,9 @@
-# Task3 — implementacja w toku
+# Task3 — DONE_WITH_CONCERNS
 
 Baseline: `81e9f4e` (Task2 odebrany). Wyłącznie klient główny, bez zmian
-toolchainu/zależności/wersji/katalogu/deployu. Nie jest to raport DONE.
+toolchainu/zależności/wersji/katalogu/deployu. Implementacja zakresu Task3
+zakończona; zastrzeżenie dotyczy odtworzonego błędu testu BASE i odrębnego odbioru
+integracyjnego/runtime w Task5. Nie oznacza odbioru niezależnego review.
 
 ## Checkpoint 1 — role i PR
 
@@ -116,7 +118,75 @@ Nie edytowano odebranego backupu ani tego niezwiązanego testu. Wymaga decyzji
 integratora Task5, nie jest regresją Task3. SKIP to istniejący guard timezone
 w `fitness_protocol_widgets_test.dart:297` (Europe/DST kontra kontener UTC).
 
-Końcowy filtered focused (bez tego potwierdzonego błędu baseline), analiza,
-version/diff/format check będą dopisane po ostatnim przebiegu. Pełna suita
-klienta i realny PWA/runtime nadal Task5; niezależny review sesji nadrzędnej
-przed Task4. Backend/backup/programrepo/UI Task4 poza zmianami.
+Pełna suita klienta i realny PWA/runtime nadal Task5; niezależny review sesji
+nadrzędnej przed Task4. Backend/backup/programrepo/UI Task4 poza zmianami.
+
+## Końcowa samokontrola i weryfikacja
+
+Dwie dodatkowe regresje z kontroli kolejności zdarzeń, bez pomocy subagentów:
+
+1. `/tmp/opencode/task3/deferred-observer-red.log`:1FAIL, wykonanie ręczne A →
+   timer B mogło odtworzyć odroczony stary wiersz A. Test steruje wyłącznie
+   czasem obserwacji prawdziwego wiersza SQLite; serie/linki/draft są zapisywane
+   normalnym repo. Po ręcznym commit/rollback jego odroczony performed-row jest
+   wycofywany, nie zostaje do następnego consume. GREEN:
+   `deferred-observer-green.log`:23PASS z dotychczasowymi CAS/inflight regresjami.
+2. `/tmp/opencode/task3/observed-replacement-red.log`:1FAIL, obserwowana zgodna
+   zamiana v2 czyściła pola bez ponownego wskazania targetId. Zmiana tożsamości
+   bloku teraz inicjalizuje dokładny cel nowego formularza, zachowując namespace
+   EXTRA/nieaktywnych formularzy. Test świeżego providera po flush od razu
+   pomija właściwy cel bez pomocniczej edycji. GREEN w końcowym zestawie.
+
+Łącznie **35 nowych testów** Task3; obejmują realną bazę, świeże providery,
+natychmiastowe log/skip/consume po resume, doubletap/stary widok, target/side/
+variant/EXTRA, role/PR, edytor reps/time/cancel/stale/stableID, przygotowanie i
+widżety320px/200% z klawiaturą. Istniejące asercje danych legacy pozostają.
+
+Końcowa komenda na bieżących źródłach (Flutter3.35.4/Dart3.9.2):
+
+```sh
+docker exec fit-catalog-program-tests bash -lc '
+  cd /app
+  progress=$(find test/features/progress -name "*_test.dart" \
+    ! -name "custom_fitness_data_test.dart" | sort)
+  flutter test --no-pub -r expanded test/features/planner \
+    test/features/workout $progress test/core/*sync*_test.dart
+  flutter analyze --no-pub
+  dart tools/generate_app_version.dart --check
+'
+```
+
+W wykonanym przebiegu polecenia były połączone `&&`, więc błąd zatrzymałby
+następny krok. Log `/tmp/opencode/task3/focused-green-final2.log`:
+**896PASS/0FAIL/1SKIP**, analyze **No issues found**, versioncheck PASS.
+Poprzedni filtered przebieg przed dwiema ostatnimi regresjami:894PASS/1SKIP
+(`focused-green-final.log`). Wykluczenie dotyczy wyłącznie całego potwierdzonego
+na BASE pliku backup3→4 (9 poprawnych testów i1 wadliwa asercja); wynik szerokiego
+przebiegu z nim pozostaje jawnie RED powyżej — nie deklarujemy pełnego green.
+
+`git diff --check` PASS. Format ograniczony do własnych zmienionych Dart.
+Nie zmieniano deklaracji Drift/Freezed/json_serializable, więc generator nie
+był potrzebny; artefakty wygenerowane Task2 pozostają niezmienione.
+`pubspec.yaml`/lock i para WebSQLite niezmienione względem BASE, wersje nadal
+Drift2.28.2/sqlite3 2.9.4. SHA256:
+- sqlite3.wasm: `922a76b182b6af69b030c8e2fdd3283ecc8e827248b20e4b1f3f3db170b52117`
+- drift_worker.dart.js: `6372cb95370e8698afbc594011c2d91cf6d8afea8c9122c25da60013c4eac610`
+
+API i working set: `docs/modules/training-sets-programs-ui.md`.
+Checkpointy: `56f0fa4` role/PR, `338b511` target identity/recovery/UI,
+`2ee0112` edytor/preparation/metadata/timer. Ostatni commit dopina dwie regresje
+obserwatora i ten raport. Bez push/merge/deploy/backend/backup/version bump.
+
+### Do Task4 / integratora
+
+- Task4 implementuje repo/UI programów A/B na odebranym kontrakcie danych;
+  ten etap nie dodał alternatywnego programu/serializera ani automatycznego
+  zaliczania terminów. Używa istniejącego `PlannerWorkflow.startSaved/startPrepared`.
+- Przed wejściem Task4 wymagany review sesji nadrzędnej. Nie uruchamiano własnych
+  reviewerów/subagentów zgodnie z poleceniem.
+- Task5: decyzja o aktualizacji starego testu backup3 do4, pełna suita klienta,
+  backend i rzeczywisty compiled PWA/mobile acceptance. Task3 nie daje gwarancji
+  flush przy zabiciu procesu, budzenia w tle ani synchronizacji lokalnych szkiców.
+- Przygotowanie v2 celowo nie oferuje zamian ani wspólnej historycznej dawki.
+  Edycje są jawne per cel w edytorze; timer zachowuje dotychczasowy limit
+  pojedynczej pracy3600s (dłuższy cel można zapisać ręcznie, bez przycinania celu).

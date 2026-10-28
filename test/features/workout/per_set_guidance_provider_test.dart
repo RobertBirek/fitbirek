@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +10,7 @@ import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
 import 'package:fitbirek_training/features/workout/domain/workout_guidance.dart';
 import 'package:fitbirek_training/features/workout/domain/interval_timer.dart';
 import 'package:fitbirek_training/features/workout/providers/workout_providers.dart';
+import 'package:fitbirek_training/features/workout/data/workout_repository.dart';
 import 'package:fitbirek_training/features/workout/domain/workout_repeat.dart';
 import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
@@ -52,6 +54,46 @@ StructuredPlan ramp({bool time = false, String? side}) => StructuredPlan(
   ],
   warnings: [],
 );
+
+class LaggingGuidanceRepository extends WorkoutRepository {
+  LaggingGuidanceRepository(super.db);
+  final rows = StreamController<WorkoutSessionData?>.broadcast(sync: true);
+  @override
+  Stream<WorkoutSessionData?> watchSession(int id) => rows.stream;
+  @override
+  Future<Map<String, Object?>> consumeDraftCheckpoint({
+    required int sessionId,
+    required String sessionSyncId,
+    required String accountId,
+    required String key,
+    required int expectedEpoch,
+    required int expectedVersion,
+    required bool extra,
+    required String exerciseId,
+    required Map<String, Object?> fallbackPayload,
+    required bool Function() guard,
+  }) async {
+    final result = await super.consumeDraftCheckpoint(
+      sessionId: sessionId,
+      sessionSyncId: sessionSyncId,
+      accountId: accountId,
+      key: key,
+      expectedEpoch: expectedEpoch,
+      expectedVersion: expectedVersion,
+      extra: extra,
+      exerciseId: exerciseId,
+      fallbackPayload: fallbackPayload,
+      guard: guard,
+    );
+    final row = await findSessionBySyncId(sessionSyncId);
+    // Deliver the first REAL row at the narrow pending-signature boundary;
+    // delay its successor until after the next explicit save has returned.
+    if (WorkoutGuidance.tryRead(row?.guidanceJson)?.events.length == 1) {
+      rows.add(row);
+    }
+    return result;
+  }
+}
 
 void main() {
   late AppDatabase db;
@@ -115,6 +157,81 @@ void main() {
     await n.flushDraft();
     return c.read(activeWorkoutProvider).sessionSyncId!;
   }
+
+  test(
+    'observed v2 replacement rehydrates an exact target that resumes and skips immediately',
+    () async {
+      final json = ramp().toJson();
+      for (final t
+          in (((json['blocks'] as List).single as Map)['prescription']
+                  as Map)['setTargets']
+              as List) {
+        (t as Map)['weightKg'] = 0;
+      }
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(
+        guidance: WorkoutGuidance.start(StructuredPlan.fromJson(json)),
+      );
+      n.addExercise(exercise);
+      await n.flushDraft();
+      final active = c.read(activeWorkoutProvider);
+      await c
+          .read(workoutRepositoryProvider)
+          .guidanceEvent(
+            sessionId: active.sessionId!,
+            sessionSyncId: active.sessionSyncId!,
+            accountId: 'a',
+            guard: () => true,
+            slot: 0,
+            replacement: 'extra',
+          );
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      expect(c.read(activeWorkoutProvider).guidance!.exerciseAt(0), 'extra');
+      await n.flushDraft();
+      c.dispose();
+      c = fresh();
+      final restored = c.read(activeWorkoutProvider.notifier);
+      expect(await restored.resumeSession(active.sessionSyncId!), isTrue);
+      expect(c.read(activeWorkoutProvider).draft['targetId'], 'warm');
+      expect(c.read(activeWorkoutProvider).draft['weight'], '0.0');
+      expect(await restored.guidedEvent(), isTrue);
+    },
+  );
+
+  test(
+    'manual performed followed by a timer cannot replay an older deferred observer row',
+    () async {
+      c.dispose();
+      final repo = LaggingGuidanceRepository(db);
+      addTearDown(repo.rows.close);
+      c = ProviderContainer(
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          workoutRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await start(time: true);
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.logSet(exercise: exercise, seconds: 20);
+      expect(n.selectGuidedTarget('work'), isTrue);
+      await n.flushDraft();
+      final origin = n.captureInterval(exercise: exercise)!;
+      expect(
+        await n.saveIntervalRounds(origin, const [
+          IntervalRound(round: 1, seconds: 40, shortened: false),
+        ]),
+        isTrue,
+      );
+      expect(c.read(activeWorkoutProvider).guidance!.events, hasLength(2));
+      await n.flushDraft();
+      expect(
+        WorkoutGuidance.tryRead(
+          (await db.workoutDao.getSession(origin.sessionId))!.guidanceJson,
+        )!.events,
+        hasLength(2),
+      );
+    },
+  );
 
   test(
     'repeating original v2 snapshot starts exact first target and permits an immediate log',
