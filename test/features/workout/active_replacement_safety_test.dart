@@ -83,6 +83,7 @@ class PausedTransitionRepository extends WorkoutRepository {
     required int expectedRevision,
     required int slot,
     String? replacement,
+    String? targetId,
   }) async {
     entered.complete();
     await release.future;
@@ -95,6 +96,7 @@ class PausedTransitionRepository extends WorkoutRepository {
       expectedRevision: expectedRevision,
       slot: slot,
       replacement: replacement,
+      targetId: targetId,
     );
   }
 }

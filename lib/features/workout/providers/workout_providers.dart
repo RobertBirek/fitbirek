@@ -16,6 +16,8 @@ import '../domain/workout_guidance.dart';
 import '../domain/workout_repeat.dart';
 
 import '../domain/workout_draft_write.dart';
+import '../domain/guided_target.dart';
+import '../../planner/domain/set_prescription.dart';
 import '../../exercises/providers/exercises_providers.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../progress/prs/providers/prs_providers.dart';
@@ -100,6 +102,11 @@ class ActiveWorkoutState {
   final WorkoutGuidance? guidance;
   final int currentSlot;
   final Map<String, Object?> draft;
+  SetPrescription? get currentTarget =>
+      guidedTarget(guidance, currentSlot, draft);
+  bool get currentTargetConsumed =>
+      currentTarget != null &&
+      targetConsumed(guidance!, currentSlot, currentTarget!.targetId);
 
   WorkoutRepeat? get repeat => draft['repeatTargets'] == null
       ? null
@@ -197,6 +204,7 @@ class IntervalWriteOrigin {
     this.checkpointEpoch,
     this.weightKg,
     this.setRole,
+    this.targetId,
   );
   final ActiveWorkoutNotifier _owner;
   final int sessionId, _generation, _epoch;
@@ -212,6 +220,7 @@ class IntervalWriteOrigin {
   final int checkpointEpoch;
   final double? weightKg;
   final String? setRole;
+  final String? targetId;
   bool _claimed = false;
 }
 
@@ -401,6 +410,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       selectedExercises: state.selectedExercises,
       sessionSyncId: row.syncId,
       guidance: guidance,
+      draft: guidance?.schemaVersion == 2
+          ? targetFields(
+              guidance!.plan.blocks.first.prescription.setTargets.first,
+            )
+          : const {},
     );
     // The planner may call startSession inside its short-lived transaction.
     // Persistent subscriptions must not retain that transaction's Drift zone.
@@ -634,6 +648,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         b['variantId'] as String?,
         extra: false,
         slot: b['slotIndex'] as int?,
+        targetId: b['targetId'] as String?,
       );
       result[key] = _checkpointEpochs[key] ?? 0;
     }
@@ -676,6 +691,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     'extra': extra,
     'side': fields['side'],
     'variantId': fields['variantId'],
+    if (!extra && state.guidance?.schemaVersion == 2)
+      'targetId': fields['targetId'],
   };
 
   bool _checkpointMatches(IntervalWriteOrigin origin) {
@@ -703,6 +720,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         binding['side'] == origin.side &&
         binding['variantId'] == origin.variantId &&
         fields['side'] == origin.side &&
+        (origin.targetId == null ||
+            (binding['targetId'] == origin.targetId &&
+                fields['targetId'] == origin.targetId)) &&
         fields['variantId'] == origin.variantId;
   }
 
@@ -711,6 +731,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       'guidedForms': state.draft['guidedForms'],
     if (state.draft.containsKey('guidedSelections'))
       'guidedSelections': state.draft['guidedSelections'],
+    if (state.draft.containsKey('guidedTargets'))
+      'guidedTargets': state.draft['guidedTargets'],
     if (state.draft.containsKey('extraForms'))
       'extraForms': state.draft['extraForms'],
     if (state.draft.containsKey('extraSelections'))
@@ -840,7 +862,27 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     return true;
   }
 
-  void _switchGuidedDraft(int slot, {Map<String, Object?>? identity}) {
+  bool selectGuidedTarget(String targetId) {
+    final g = state.guidance;
+    if (g?.schemaVersion != 2 ||
+        !_ownsAuthority ||
+        _guidedBusy ||
+        _draftConsumptionInFlight ||
+        !g!.plan.blocks[state.currentSlot].prescription.setTargets.any(
+          (t) => t.targetId == targetId,
+        )) {
+      return false;
+    }
+    if (state.currentTarget?.targetId == targetId) return true;
+    _switchGuidedDraft(state.currentSlot, targetId: targetId);
+    return true;
+  }
+
+  void _switchGuidedDraft(
+    int slot, {
+    Map<String, Object?>? identity,
+    String? targetId,
+  }) {
     final g = state.guidance!;
     final forms = Map<String, Object?>.from(
       state.draft['guidedForms'] as Map? ?? {},
@@ -855,6 +897,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       state.draft['variantId'] as String?,
       extra: false,
       slot: state.currentSlot,
+      targetId: state.currentTarget?.targetId,
     );
     final source = {...state.draft}
       ..remove('guidedForms')
@@ -865,9 +908,27 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     selections[jsonEncode([
           state.currentSlot,
           g.exerciseAt(state.currentSlot),
+          if (state.currentTarget != null) state.currentTarget!.targetId,
         ])] =
         sourceKey;
-    final selectionKey = jsonEncode([slot, g.exerciseAt(slot)]);
+    final targetSelections = Map<String, Object?>.from(
+      state.draft['guidedTargets'] as Map? ?? {},
+    );
+    if (state.currentTarget != null)
+      targetSelections['${state.currentSlot}'] = state.currentTarget!.targetId;
+    targetId ??= slot == state.currentSlot
+        ? state.currentTarget?.targetId
+        : targetSelections['$slot'] as String?;
+    final selectedTarget = guidedTarget(g, slot, {
+      if (targetId != null) 'targetId': targetId,
+    });
+    targetId = selectedTarget?.targetId;
+    if (targetId != null) targetSelections['$slot'] = targetId;
+    final selectionKey = jsonEncode([
+      slot,
+      g.exerciseAt(slot),
+      if (targetId != null) targetId,
+    ]);
     final targetKey = identity == null
         ? selections[selectionKey]
         : checkpointKey(
@@ -877,6 +938,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             identity['variantId'] as String?,
             extra: false,
             slot: slot,
+            targetId: targetId,
           );
     final target = targetKey is String ? forms.remove(targetKey) : null;
     if (targetKey is String) selections[selectionKey] = targetKey;
@@ -884,10 +946,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       currentSlot: slot,
       draft: {
         ..._clearedGuidedFields(),
+        if (selectedTarget != null) ...targetFields(selectedTarget),
         ...?identity,
         if (target is Map) ...Map<String, Object?>.from(target),
         'guidedForms': forms,
         'guidedSelections': selections,
+        if (g.schemaVersion == 2) 'guidedTargets': targetSelections,
       },
     );
     updateDraft({});
@@ -907,6 +971,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       return false;
     }
     final target = state.guidance!.plan.blocks[state.currentSlot].prescription;
+    final targetId = state.currentTarget?.targetId;
+    if (replacement == null && state.currentTargetConsumed) return false;
     final dirty = state.draft.entries.any(
       (e) =>
           const {
@@ -922,7 +988,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           e.value != '',
     );
     if (replacement != null &&
-        ((target.weightKg ?? 0) > 0 || (!discardCurrentDraft && dirty))) {
+        ((target.isPerSet
+                ? target.setTargets.any((t) => (t.weightKg ?? 0) > 0)
+                : (target.weightKg ?? 0) > 0) ||
+            (!discardCurrentDraft && dirty))) {
       return false;
     }
     _guidedBusy = true;
@@ -976,7 +1045,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       }
       _pendingGuidanceSignature = jsonEncode(
         (replacement == null
-                ? snapshot.guidance!.skip(snapshot.currentSlot)
+                ? (targetId == null
+                      ? snapshot.guidance!.skip(snapshot.currentSlot)
+                      : snapshot.guidance!.skipTarget(
+                          snapshot.currentSlot,
+                          targetId,
+                        ))
                 : snapshot.guidance!.replace(snapshot.currentSlot, replacement))
             .toJson(),
       );
@@ -987,6 +1061,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         guard: guard,
         slot: snapshot.currentSlot,
         replacement: replacement,
+        targetId: targetId,
         expectedSignature: signature,
         expectedRevision: draftRevision(current),
       );
@@ -1270,6 +1345,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     if (_guidedBusy) return null;
     if (weightKg != null && (!weightKg.isFinite || weightKg < 0)) return null;
     if (!mounted || !state.isActive || state.sessionId == null) return null;
+    final target = extra ? null : state.currentTarget;
+    if (target != null &&
+        (state.currentTargetConsumed ||
+            target.side != side ||
+            target.seconds == null))
+      return null;
+    if (target != null) setRole = target.setRole;
     if (extra && !state.isExtraExercise(exercise.id)) return null;
     if (!extra &&
         state.guidance != null &&
@@ -1284,6 +1366,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       variantId,
       extra: extra,
       slot: state.guidance == null || extra ? null : state.currentSlot,
+      targetId: target?.targetId,
     );
     if (_consumingCheckpointKey == key) return null;
     final origin = IntervalWriteOrigin._(
@@ -1304,6 +1387,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       _checkpointEpochs[key] ?? 0,
       weightKg,
       setRole,
+      target?.targetId,
     );
     return isIntervalCurrent(origin) ? origin : null;
   }
@@ -1335,6 +1419,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       _isCurrent(origin.sessionId, origin._generation) &&
       state.isActive &&
       state.sessionSyncId == origin.sessionSyncId &&
+      (origin.targetId == null ||
+          state.currentTarget?.targetId == origin.targetId) &&
       (origin.extra
           ? state.isExtraExercise(origin.exercise.id)
           : (state.guidance == null ||
@@ -1366,7 +1452,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     final results = List<IntervalRound>.of(rounds);
     final saveStep = state.currentSlot;
     final expectedVersion = _checkpointVersions[origin.checkpointKey] ?? 0;
-    if (results.isEmpty ||
+    if ((origin.targetId != null &&
+            (results.length != 1 || results.single.round != 1)) ||
+        results.isEmpty ||
         results.length > 100 ||
         results.any((r) => r.seconds < 1 || r.seconds > 3600) ||
         results.any((r) => r.round < 1 || r.round > 100) ||
@@ -1452,6 +1540,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
               rpe: origin.rpe,
               setRole: origin.setRole,
               guidanceSlot: origin.guidanceSlot,
+              guidanceTargetId: origin.targetId,
               expectedSyncId: origin.sessionSyncId,
             );
             requireOwnership();
@@ -1593,6 +1682,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     String? variantLabel,
     bool extra = false,
     String? setRole = 'working',
+    String? guidanceTargetId,
   }) async {
     if (state.sessionId == null ||
         !_ownsAuthority ||
@@ -1601,6 +1691,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       return false;
     }
     if (extra && !state.isExtraExercise(exercise.id)) return false;
+    final selectedTarget = extra ? null : state.currentTarget;
+    if (selectedTarget != null) {
+      if (state.currentTargetConsumed ||
+          selectedTarget.side != side ||
+          (guidanceTargetId != null &&
+              guidanceTargetId != selectedTarget.targetId)) {
+        return false;
+      }
+      setRole = selectedTarget.setRole;
+      guidanceTargetId = selectedTarget.targetId;
+    } else if (guidanceTargetId != null) {
+      return false;
+    }
     final repeatIndex = state.repeat == null || extra
         ? null
         : state.repeatCompletedCount;
@@ -1627,6 +1730,23 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       final sessionId = state.sessionId!;
       final generation = _generation;
       final repo = _ref.read(workoutRepositoryProvider);
+      final initialSlot = state.currentSlot;
+      final previousSignature = state.guidance == null
+          ? null
+          : jsonEncode(state.guidance!.toJson());
+      final key = selectedTarget == null
+          ? null
+          : checkpointKey(
+              state.sessionSyncId,
+              exercise.id,
+              side,
+              variantId,
+              extra: false,
+              slot: guidedSlot,
+              targetId: selectedTarget.targetId,
+            );
+      final expectedEpoch = key == null ? 0 : _checkpointEpochs[key] ?? 0;
+      Map<String, Object?>? consumed;
 
       // SQLite reads inside this transaction cannot observe a logout lock queued
       // behind it. The passive auth epoch changes synchronously at logout start.
@@ -1641,6 +1761,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       Map<String, Object?>? repeatDraft;
       void requireOwnership() {
         if (!_isCurrent(sessionId, generation) ||
+            (extra &&
+                (!state.isExtraExercise(exercise.id) ||
+                    state.currentSlot != initialSlot)) ||
+            (selectedTarget != null &&
+                state.currentTarget?.targetId != selectedTarget.targetId) ||
             authority.epoch != authEpoch ||
             (authority.state != null && !authority.state!.isSignedIn)) {
           throw WorkoutAccountUnavailable();
@@ -1648,6 +1773,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       }
 
       try {
+        if (selectedTarget != null) {
+          await flushDraft();
+          requireOwnership();
+        }
         await _ref.read(appDatabaseProvider).transaction(() async {
           requireOwnership();
           final binding = await _ref
@@ -1716,9 +1845,43 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             rpe: rpe,
             setRole: setRole,
             guidanceSlot: guidedSlot,
+            guidanceTargetId: guidanceTargetId,
             expectedSyncId: state.sessionSyncId,
           );
           requireOwnership();
+          if (selectedTarget != null && binding != null) {
+            final row = await _ref
+                .read(appDatabaseProvider)
+                .workoutDao
+                .getSession(sessionId);
+            requireOwnership();
+            _pendingGuidanceSignature = jsonEncode(
+              WorkoutGuidance.tryRead(row?.guidanceJson)!.toJson(),
+            );
+            consumed = await repo.consumeDraftCheckpoint(
+              sessionId: sessionId,
+              sessionSyncId: state.sessionSyncId!,
+              accountId: binding.accountId,
+              key: key!,
+              expectedEpoch: expectedEpoch,
+              expectedVersion: _checkpointVersions[key] ?? 0,
+              extra: false,
+              exerciseId: exercise.id,
+              fallbackPayload: {
+                'schemaVersion': 1,
+                'currentSlot': state.currentSlot,
+                'selectedIds': state.selectedExercises
+                    .map((e) => e.id)
+                    .toList(),
+                'guidanceSignature': _pendingGuidanceSignature,
+                'fields': state.draft,
+              },
+              guard: () =>
+                  _isCurrent(sessionId, generation) &&
+                  authority.epoch == authEpoch,
+            );
+            requireOwnership();
+          }
           if (repeatIndex != null) {
             final currentDraft = await repo.readDraft(
               binding!.accountId,
@@ -1813,6 +1976,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           guidance: WorkoutGuidance.tryRead(row?.guidanceJson),
         );
       }
+      if (consumed != null) {
+        _checkpointEpochs[key!] = checkpointEpochs(consumed)[key]!;
+        _checkpointVersions[key] = checkpointVersions(consumed)[key]!;
+        final nextSignature = consumed!['guidanceSignature'] as String;
+        if (previousSignature != null && previousSignature != nextSignature) {
+          _ownGuidanceRebases[previousSignature] = nextSignature;
+        }
+      }
 
       state = state.copyWith(
         draft: repeatDraft == null
@@ -1844,6 +2015,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       if (guidedSlot != null) updateDraft({'timer': null});
       return isNewPr;
     } finally {
+      _pendingGuidanceSignature = null;
       if (guardedGuidedWrite) _guidedBusy = false;
     }
   }
@@ -1870,11 +2042,13 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     for (final set in sets) {
       if (set.czasSekund != null ||
           (set.ciezarKg ?? 0) <= 0 ||
-          (set.powtorzenia ?? 0) <= 0)
+          (set.powtorzenia ?? 0) <= 0) {
         continue;
+      }
       final estimate = PrDetector.epley1Rm(set.ciezarKg!, set.powtorzenia!);
-      if (estimate.isFinite && (value == null || estimate > value))
+      if (estimate.isFinite && (value == null || estimate > value)) {
         value = estimate;
+      }
     }
     return value;
   }

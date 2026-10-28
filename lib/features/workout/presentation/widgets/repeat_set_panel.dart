@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/workout_providers.dart';
 import '../../domain/workout_repeat.dart';
+import '../../../../core/models/set_role.dart';
 
 class RepeatSetPanel extends ConsumerWidget {
   const RepeatSetPanel({super.key, this.extras = const []});
@@ -90,6 +91,7 @@ class _RepeatFormState extends ConsumerState<_RepeatForm> {
         Text(
           '${target.name} • ${target.side ?? 'strona nieokreślona'} • ${target.variantLabel ?? 'bazowy'}',
         ),
+        Text(SetRole.label(target.setRole)),
         if (target.previousRpe != null)
           Text('RPE poprzednio: ${target.previousRpe} — tylko odniesienie'),
         if (target.seconds != null)

@@ -3,6 +3,7 @@ import '../../planner/domain/structured_plan.dart';
 import 'interval_timer.dart';
 import '../../../core/sync/user_collections.dart';
 import 'workout_repeat.dart';
+import '../../../core/models/set_role.dart';
 
 Map<String, dynamic> validateWorkoutDraft(Object? value) {
   try {
@@ -51,14 +52,16 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
       for (final entry in (fields['guidedForms'] as Map).entries) {
         final key = jsonDecode(entry.key as String) as List;
         final form = Map<String, dynamic>.from(entry.value as Map);
-        if (key.length != 6 ||
+        if (!{6, 7}.contains(key.length) ||
             key[0] != 'guided' ||
             key[1] is! String ||
             key[2] is! int ||
             (key[2] as int) < 0 ||
             key[3] is! String ||
             form['side'] != key[4] ||
-            form['variantId'] != key[5]) {
+            form['variantId'] != key[5] ||
+            (key.length == 7 &&
+                (key[6] is! String || form['targetId'] != key[6]))) {
           throw const FormatException('Nieprawidłowy klucz szkicu bloku');
         }
         _validateWorkoutForm(form);
@@ -68,11 +71,12 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
       for (final entry in (fields['guidedSelections'] as Map).entries) {
         final slot = jsonDecode(entry.key as String) as List;
         final key = jsonDecode(entry.value as String) as List;
-        if (slot.length != 2 ||
-            key.length != 6 ||
+        if (!{2, 3}.contains(slot.length) ||
+            key.length != slot.length + 4 ||
             key[0] != 'guided' ||
             slot[0] != key[2] ||
-            slot[1] != key[3]) {
+            slot[1] != key[3] ||
+            (slot.length == 3 && slot[2] != key[6])) {
           throw const FormatException('Nieprawidłowy wybór szkicu bloku');
         }
       }
@@ -109,6 +113,13 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
 }
 
 void _validateWorkoutForm(Map<String, dynamic> fields) {
+  SetRole.validate(fields['setRole']);
+  if (fields['targetId'] != null &&
+      (fields['targetId'] is! String ||
+          (fields['targetId'] as String).trim().isEmpty ||
+          (fields['targetId'] as String).runes.length > 80)) {
+    throw const FormatException('Nieprawidłowy cel szkicu');
+  }
   if (fields['variantId'] != null) UserCollections.validateVariantPair(fields);
   for (final key in ['reps', 'seconds', 'weight']) {
     if (fields[key] != null && fields[key] is! String) {
@@ -139,6 +150,11 @@ void _validateWorkoutForm(Map<String, dynamic> fields) {
         (binding['variantId'] != null && binding['variantId'] is! String) ||
         (binding['extra'] != null && binding['extra'] is! bool)) {
       throw const FormatException('Nieprawidłowe przypisanie timera');
+    }
+    if (binding['targetId'] != null &&
+        (binding['targetId'] is! String ||
+            binding['targetId'] != fields['targetId'])) {
+      throw const FormatException('Nieprawidłowy cel timera');
     }
   }
 }

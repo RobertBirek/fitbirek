@@ -80,6 +80,8 @@ Set<String> changedCheckpointKeys(
           fields['variantId'] as String?,
           extra: false,
           slot: slot,
+          targetId:
+              binding['targetId'] as String? ?? fields['targetId'] as String?,
         ),
       );
     }
@@ -109,10 +111,19 @@ String checkpointKey(
   String? variant, {
   required bool extra,
   int? slot,
+  String? targetId,
 }) => jsonEncode(
   extra
       ? ['extra', session, exercise, side, variant]
-      : ['guided', session, slot, exercise, side, variant],
+      : [
+          'guided',
+          session,
+          slot,
+          exercise,
+          side,
+          variant,
+          if (targetId != null) targetId,
+        ],
 );
 
 final _missing = Object();

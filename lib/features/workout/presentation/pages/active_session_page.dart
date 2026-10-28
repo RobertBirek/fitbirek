@@ -29,6 +29,10 @@ import '../../../onboarding/providers/user_profile_provider.dart';
 import '../widgets/session_finish_button.dart';
 import '../widgets/session_progress_text.dart';
 import '../widgets/session_delete_button.dart';
+import '../widgets/set_role_selector.dart';
+import '../../../../core/models/set_role.dart';
+import '../../../planner/presentation/widgets/set_target_details.dart';
+import '../../domain/guided_target.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
 /// ciężar/powtórzenia - plank, wall-sit, dead-hang itp.
@@ -179,9 +183,41 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
           '${block.section.label} • blok ${slot + 1}/${g.plan.blocks.length}',
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        Text(
-          'Cel planu: ${target.sets} serii • ${target.reps == null ? '${target.workSeconds} s' : '${target.reps} powt.'} • odpoczynek ${target.restSeconds} s',
-        ),
+        if (!target.isPerSet)
+          Text(
+            'Cel planu: ${target.sets} serii • ${target.reps == null ? '${target.workSeconds} s' : '${target.reps} powt.'} • odpoczynek ${target.restSeconds} s',
+          ),
+        if (target.isPerSet) ...[
+          const Text('Kolejne cele serii — wybierz cel do potwierdzenia'),
+          for (var i = 0; i < target.setTargets.length; i++)
+            ListTile(
+              key: ValueKey('guided-target-${target.setTargets[i].targetId}'),
+              selected:
+                  active.currentTarget?.targetId ==
+                  target.setTargets[i].targetId,
+              leading: Icon(
+                active.currentTarget?.targetId == target.setTargets[i].targetId
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+              ),
+              title: Text(
+                '${i + 1}. ${setTargetDetails(target.setTargets[i])}',
+              ),
+              subtitle: Text(
+                g.events.any(
+                      (e) =>
+                          e['type'] == 'performed' &&
+                          e['slotIndex'] == slot &&
+                          e['targetId'] == target.setTargets[i].targetId,
+                    )
+                    ? 'Cel wykonany'
+                    : targetConsumed(g, slot, target.setTargets[i].targetId)
+                    ? 'Pominięty cel — bez wykonania'
+                    : 'Bez potwierdzenia',
+              ),
+              onTap: () => n.selectGuidedTarget(target.setTargets[i].targetId),
+            ),
+        ],
         const Text(
           'Cele są szkicem. Zapis nastąpi dopiero po potwierdzeniu wykonania.',
         ),
@@ -199,7 +235,9 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
           if (exercise.kluczoweWskazowki.isNotEmpty)
             Text(exercise.kluczoweWskazowki.first),
           _ExerciseLogCard(
-            key: ValueKey('${active.sessionSyncId}:$slot:${exercise.id}'),
+            key: ValueKey(
+              '${active.sessionSyncId}:$slot:${exercise.id}:${active.currentTarget?.targetId ?? ''}',
+            ),
             exercise: exercise,
             guided: true,
           ),
@@ -225,7 +263,10 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
                   final epoch = ref
                       .read(cachedAuthWriteAuthorityProvider)
                       .epoch;
-                  if ((g.plan.blocks[slot].prescription.weightKg ?? 0) > 0) {
+                  final dose = g.plan.blocks[slot].prescription;
+                  if (dose.isPerSet
+                      ? dose.setTargets.any((t) => (t.weightKg ?? 0) > 0)
+                      : (dose.weightKg ?? 0) > 0) {
                     throw StateError(
                       'Zmiana z indywidualnym ciężarem wymaga edycji przed startem lub dodania osobnego ćwiczenia. Nie przenosimy kilogramów na inny ruch.',
                     );
@@ -303,6 +344,7 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
                   }
 
                   final current = StructuredPlan(
+                    schemaVersion: g.plan.schemaVersion,
                     criteria: g.plan.criteria,
                     budgetSeconds: g.plan.budgetSeconds,
                     equipment: g.plan.equipment,
@@ -422,6 +464,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   final _secondsController = TextEditingController();
   int _rpe = 7;
   String _selectedSide = 'both';
+  String _setRole = SetRole.working;
   bool _intervalBusy = false;
   bool _loadingForm = false;
   bool get _durable => widget.guided || widget.extra;
@@ -449,7 +492,13 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   double? get _templateWeight {
     final active = ref.read(activeWorkoutProvider);
     return widget.guided
-        ? active.guidance?.plan.blocks[active.currentSlot].prescription.weightKg
+        ? active.currentTarget?.weightKg ??
+              active
+                  .guidance
+                  ?.plan
+                  .blocks[active.currentSlot]
+                  .prescription
+                  .weightKg
         : null;
   }
 
@@ -518,9 +567,14 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       final target = widget.guided
           ? state.guidance!.plan.blocks[state.currentSlot].prescription
           : null;
-      _repsController.text = '${draft['reps'] ?? target?.reps ?? ''}';
+      _setRole =
+          (widget.guided ? state.currentTarget?.setRole : null) ??
+          draft['setRole'] as String? ??
+          SetRole.working;
+      _repsController.text =
+          '${draft['reps'] ?? (widget.guided ? state.currentTarget?.reps : null) ?? target?.reps ?? ''}';
       _secondsController.text =
-          '${draft['seconds'] ?? (target == null || target.tracking == 'reps' ? '' : target.workSeconds)}';
+          '${draft['seconds'] ?? (widget.guided ? state.currentTarget?.seconds : null) ?? (target == null || target.isPerSet || target.tracking == 'reps' ? '' : target.workSeconds)}';
       _weightController.text =
           '${draft['weight'] ?? _newTargetWeight(draft, target) ?? ''}';
       _selectedSide = draft['side'] is String
@@ -553,6 +607,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             'rpe': _rpe,
             'variantId': _variantId,
             'variantLabel': _variantLabel,
+            'setRole': _setRole,
           },
           extra: widget.extra,
           side: _side,
@@ -591,7 +646,11 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
           '${draft['weight'] ?? (_usesWeight && definition?['loadKg'] != null ? definition!['loadKg'] : _newTargetWeight(draft, target) ?? '')}';
       _repsController.text = '${draft['reps'] ?? target?.reps ?? ''}';
       _secondsController.text =
-          '${draft['seconds'] ?? (target == null || target.tracking == 'reps' ? '' : target.workSeconds)}';
+          '${draft['seconds'] ?? (widget.guided ? active.currentTarget?.seconds : null) ?? (target == null || target.isPerSet || target.tracking == 'reps' ? '' : target.workSeconds)}';
+      _setRole =
+          (widget.guided ? active.currentTarget?.setRole : null) ??
+          draft['setRole'] as String? ??
+          SetRole.working;
       _rpe = draft['rpe'] is int ? (draft['rpe'] as int).clamp(1, 10) : 7;
       _variantLabel =
           definition?['name'] as String? ?? draft['variantLabel'] as String?;
@@ -1017,6 +1076,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             variantLabel: variantLabel,
             extra: widget.extra,
             weightKg: weight,
+            setRole: _setRole,
           )
         : null;
     if (_durable && origin == null) return;
@@ -1051,6 +1111,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       variantLabel: _variantLabel,
       extra: widget.extra,
       weightKg: _enteredWeight,
+      setRole: _setRole,
     );
     if (origin == null) return;
     setState(() => _intervalBusy = true);
@@ -1174,6 +1235,10 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             variantId: variantId,
             variantLabel: variantLabel,
             extra: widget.extra,
+            setRole: _setRole,
+            guidanceTargetId: widget.guided
+                ? ref.read(activeWorkoutProvider).currentTarget?.targetId
+                : null,
           );
       await _afterLogSet(isPr);
     } on StateError catch (error) {
@@ -1215,6 +1280,19 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             ),
             const SizedBox(height: 4),
             _variantSelector(),
+            if (widget.guided &&
+                ref.watch(activeWorkoutProvider).currentTarget != null)
+              Text('Rodzaj celu: ${SetRole.label(_setRole)}')
+            else
+              SetRoleSelector(
+                value: _setRole,
+                onChanged: _intervalBusy
+                    ? null
+                    : (value) => setState(() {
+                        _setRole = value;
+                        _saveForm();
+                      }),
+              ),
             if (_entry?.unilateral == true) ...[
               SegmentedButton<String>(
                 segments: const [
@@ -1236,7 +1314,10 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               Text(
                 'Zmiana względem poprzedniej serii • ${setSideLabel(_side)}: ${loggedForThis.last.comparison}',
               ),
-            _progression(),
+            if (_setRole != SetRole.warmup)
+              _progression()
+            else
+              const Text('Rozgrzewkowa — bez PR i propozycji progresji.'),
             const SizedBox(height: 12),
             if (_isIsometric) ...[
               if (_usesWeight)
@@ -1267,7 +1348,11 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                     ? 'Zapisz rundę (${loggedForThis.length})'
                     : 'Zapisz czas (${loggedForThis.length})',
                 icon: Icons.check,
-                onPressed: _logTimedSet,
+                onPressed:
+                    widget.guided &&
+                        ref.watch(activeWorkoutProvider).currentTargetConsumed
+                    ? null
+                    : _logTimedSet,
               ),
               RpeSlider(
                 value: _rpe,
@@ -1280,7 +1365,11 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               PrimaryButton(
                 label: 'Start stopera (${loggedForThis.length})',
                 icon: Icons.timer_outlined,
-                onPressed: _startIsometricStopwatch,
+                onPressed:
+                    widget.guided &&
+                        ref.watch(activeWorkoutProvider).currentTargetConsumed
+                    ? null
+                    : _startIsometricStopwatch,
               ),
             ] else ...[
               Row(
@@ -1319,7 +1408,11 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
               PrimaryButton(
                 label: 'Seria wykonana (${loggedForThis.length})',
                 icon: Icons.check,
-                onPressed: _logStrengthSet,
+                onPressed:
+                    widget.guided &&
+                        ref.watch(activeWorkoutProvider).currentTargetConsumed
+                    ? null
+                    : _logStrengthSet,
               ),
             ],
           ],

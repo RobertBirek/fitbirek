@@ -11,4 +11,9 @@ abstract final class SetRole {
   }
 
   static bool isEffectiveWorking(String? role) => role != warmup;
+  static String label(String? role) => switch (role) {
+    warmup => 'Rozgrzewkowa',
+    working => 'Robocza',
+    _ => 'Rola nieokreślona (starszy zapis)',
+  };
 }

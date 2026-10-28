@@ -12,6 +12,8 @@ import '../../data/workout_repository.dart';
 import '../../../planner/presentation/widgets/save_as_template_button.dart';
 import '../widgets/session_delete_button.dart';
 import '../../domain/workout_progress.dart';
+import '../../../../core/models/set_role.dart';
+import '../../../planner/presentation/widgets/set_target_details.dart';
 
 /// Podsumowanie zakończonej sesji treningowej.
 class SessionSummaryPage extends ConsumerStatefulWidget {
@@ -163,7 +165,17 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage> {
                                 );
                                 return Text(
                                   '${block.section.label} • ${block.exerciseId}${changed ? ' → ${g.exerciseAt(i)} • Zmienione' : ''}'
-                                  '\nCel: ${p.sets} serii × ${p.reps == null ? '${p.workSeconds} s' : '${p.reps} powt.'}'
+                                  '${p.isPerSet ? '\nCele indywidualne:\n${p.setTargets.map((t) {
+                                          final event = events.where((e) => e['targetId'] == t.targetId).firstOrNull;
+                                          final status = event == null
+                                              ? 'Bez potwierdzenia'
+                                              : event['type'] == 'skippedTarget'
+                                              ? 'Pominięty cel — bez wykonania'
+                                              : actual.any((s) => s.syncId == event['setSyncId'])
+                                              ? 'Wykonany cel'
+                                              : 'Brak żywej serii — potwierdzenie nieważne';
+                                          return '${setTargetDetails(t)} • $status';
+                                        }).join('\n')}' : '\nCel: ${p.sets} serii × ${p.reps == null ? '${p.workSeconds} s' : '${p.reps} powt.'}'}'
                                   '\nWykonane: ${actual.length} serii${skipped ? ' • Pominięte (zdarzenie)' : ''}'
                                   '${actual.any((s) => s.variantId != null) ? '\nWariant zamiast bazowego (Zmienione): ${actual.where((s) => s.variantId != null).map((s) => s.variantLabel ?? s.variantId).toSet().join(', ')}' : ''}'
                                   '${actual.isEmpty && !skipped ? ' • Bez potwierdzenia' : ''}',
@@ -188,6 +200,7 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage> {
                                 '${additional.contains(s.syncId) ? 'Dodatkowe • ' : ''}${s.nazwaCwiczeniaPl} - seria ${s.numerSerii}',
                               ),
                               subtitle: Text(
+                                '${s.setRole == null ? '' : '${SetRole.label(s.setRole)} • '}'
                                 '${s.variantId == null ? '' : '${s.variantLabel ?? s.variantId} • '}'
                                 '${s.side == null ? '' : '${const {'left': 'Lewa', 'right': 'Prawa', 'both': 'Obie'}[s.side]} • '}'
                                 '${s.czasSekund != null ? '${s.czasSekund} s' : '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg × '}${s.powtorzenia ?? '-'} powt.'}'

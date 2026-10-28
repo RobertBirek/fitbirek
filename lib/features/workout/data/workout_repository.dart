@@ -10,6 +10,7 @@ import '../domain/fixed_load_progression.dart';
 import '../domain/workout_guidance.dart';
 import '../domain/workout_repeat.dart';
 import '../domain/workout_draft_write.dart';
+import '../domain/guided_target.dart';
 import '../../exercises/data/exercise_variants_repository.dart';
 
 class ActiveSessionExists extends StateError {
@@ -656,6 +657,7 @@ class WorkoutRepository {
     required int expectedRevision,
     required int slot,
     String? replacement,
+    String? targetId,
   }) => _db.transaction(() async {
     await _requireAccount(accountId, guard);
     final session = await _db.workoutDao.getSession(sessionId);
@@ -670,8 +672,11 @@ class WorkoutRepository {
     if (g == null || jsonEncode(g.toJson()) != expectedSignature) {
       throw WorkoutSessionUnavailable(sessionId);
     }
+    final dose = g.plan.blocks[slot].prescription;
     if (replacement != null &&
-        (g.plan.blocks[slot].prescription.weightKg ?? 0) > 0) {
+        (dose.isPerSet
+            ? dose.setTargets.any((t) => (t.weightKg ?? 0) > 0)
+            : (dose.weightKg ?? 0) > 0)) {
       throw StateError(
         'Indywidualny ciężar wymaga edycji przed startem lub osobnego ćwiczenia.',
       );
@@ -684,8 +689,12 @@ class WorkoutRepository {
         current['currentSlot'] != slot) {
       throw WorkoutDraftConflict();
     }
+    if (g.schemaVersion == 2 &&
+        (current['fields'] as Map)['targetId'] != targetId) {
+      throw WorkoutDraftConflict();
+    }
     final nextGuidance = replacement == null
-        ? g.skip(slot)
+        ? (targetId == null ? g.skip(slot) : g.skipTarget(slot, targetId))
         : g.replace(slot, replacement);
     final fields = Map<String, Object?>.from(current['fields'] as Map);
     final key = checkpointKey(
@@ -695,6 +704,7 @@ class WorkoutRepository {
       fields['variantId'] as String?,
       extra: false,
       slot: slot,
+      targetId: targetId,
     );
     for (final name in [
       'weight',
@@ -706,8 +716,15 @@ class WorkoutRepository {
       'variantLabel',
       'timer',
       'timerBinding',
+      'setRole',
     ]) {
       fields.remove(name);
+    }
+    // A skipped target remains selected and visible, but is never performed.
+    // Its precise defaults survive recovery, without borrowing another target.
+    if (targetId != null && replacement == null) {
+      final target = dose.setTargets.singleWhere((t) => t.targetId == targetId);
+      fields.addAll(targetFields(target));
     }
     final epochs = checkpointEpochs(current),
         versions = checkpointVersions(current);
