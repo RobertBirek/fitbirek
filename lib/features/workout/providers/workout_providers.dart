@@ -944,6 +944,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       // Never wait for the serialized queue while holding SQLite's transaction.
       await flushDraft();
       if (!guard()) return false;
+      // Resume may reconstruct/reorder selectedExercises without writing it.
+      // Capture our own persisted/queued domain, not that derived RAM list.
+      final baseline = _lastDraftSnapshot;
+      if (baseline == null) return false;
+      final acceptedBaseline = jsonEncode(draftDomain(baseline));
       final binding = await _ref.read(appDatabaseProvider).syncDao.readState();
       if (!guard() || binding == null || binding.accountId != _sessionAccount) {
         return false;
@@ -958,13 +963,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       // Keep our existing patch baseline on refusal, so subsequent local edits
       // still merge with (rather than remove) unrelated data from other views.
       if (current == null ||
-          !draftValueEquals(draftDomain(current), {
-            'schemaVersion': 1,
-            'currentSlot': snapshot.currentSlot,
-            'guidanceSignature': signature,
-            'fields': jsonDecode(fields),
-            'selectedIds': jsonDecode(selectedIds),
-          })) {
+          !draftValueEquals(
+            draftDomain(current),
+            jsonDecode(acceptedBaseline),
+          )) {
         return false;
       }
       _pendingGuidanceSignature = jsonEncode(

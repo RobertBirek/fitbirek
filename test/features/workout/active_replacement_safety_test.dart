@@ -20,12 +20,11 @@ import 'package:fitbirek_training/features/exercises/data/exercises_repository.d
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
 
 class ReplacementCatalog extends ExercisesRepository {
-  ReplacementCatalog(super.db);
+  ReplacementCatalog(super.db, {this.ids = const ['yoga', 'extra']});
+  final List<String> ids;
   @override
-  Stream<List<Exercise>> watchAll() => Stream.value([
-    exercise.copyWith(id: 'yoga'),
-    exercise.copyWith(id: 'extra'),
-  ]);
+  Stream<List<Exercise>> watchAll() =>
+      Stream.value([for (final id in ids) exercise.copyWith(id: id)]);
 }
 
 /// Pause outside SQLite, immediately before guidedEvent reads its baseline.
@@ -123,6 +122,113 @@ void main() {
     c.dispose();
     await db.close();
   });
+  for (final recovery in ['swapped', 'reordered']) {
+    for (final action in ['skip', 'replace']) {
+      test(
+        'fresh $recovery resume permits immediate $action without a draft edit',
+        () async {
+          final multiblock = recovery == 'reordered';
+          final plan = multiblock
+              ? StructuredPlan(
+                  criteria: structure.criteria,
+                  budgetSeconds: 300,
+                  warnings: [],
+                  blocks: [
+                    structure.blocks.single,
+                    PlanBlock(
+                      exerciseId: 'second',
+                      section: PlanSection.main,
+                      prescription: structure.blocks.single.prescription,
+                    ),
+                  ],
+                )
+              : structure;
+          final catalog = ReplacementCatalog(
+            db,
+            ids: [
+              if (multiblock) 'second',
+              'yoga',
+              'replacement',
+              'replacement2',
+            ],
+          );
+          ProviderContainer container() => ProviderContainer(
+            overrides: [
+              appDatabaseProvider.overrideWithValue(db),
+              exercisesRepositoryProvider.overrideWithValue(catalog),
+            ],
+          );
+          c.dispose();
+          c = container();
+          var n = c.read(activeWorkoutProvider.notifier);
+          await n.startSession(guidance: WorkoutGuidance.start(plan));
+          n.addExercise(exercise.copyWith(id: 'yoga'));
+          if (multiblock) n.addExercise(exercise.copyWith(id: 'second'));
+          await n.logSet(exercise: exercise.copyWith(id: 'yoga'), seconds: 8);
+          await n.flushDraft();
+          if (!multiblock) {
+            expect(await n.guidedEvent(replacement: 'replacement'), isTrue);
+          }
+          final before = c.read(activeWorkoutProvider);
+          final uuid = before.sessionSyncId!;
+          final durable = (await repo.readDraft('a', uuid))!;
+          final sets = await db.workoutDao.getAllSets();
+          final outbox = await db.select(db.syncOutbox).get();
+          c.dispose();
+          c = container();
+          n = c.read(activeWorkoutProvider.notifier);
+          expect(await n.resumeSession(uuid), isTrue);
+          expect(
+            c
+                .read(activeWorkoutProvider)
+                .selectedExercises
+                .map((e) => e.id)
+                .toList(),
+            multiblock ? ['second', 'yoga'] : ['yoga', 'replacement'],
+          );
+          expect(
+            durable['selectedIds'],
+            multiblock ? ['yoga', 'second'] : ['yoga'],
+          );
+          // Recovery reconstructs RAM only. Do NOT use updateDraft, navigation or
+          // any form edit to accidentally normalize the durable selectedIds.
+          expect(await repo.readDraft('a', uuid), durable);
+          expect(await db.select(db.syncOutbox).get(), outbox);
+          expect(
+            await n.guidedEvent(
+              replacement: action == 'replace' ? 'replacement2' : null,
+            ),
+            isTrue,
+          );
+          final after = c.read(activeWorkoutProvider);
+          expect(after.guidance!.plan.toJson(), plan.toJson());
+          expect(
+            after.guidance!.events
+                .take(before.guidance!.events.length)
+                .toList(),
+            before.guidance!.events,
+          );
+          expect(
+            after.guidance!.events.last['type'],
+            action == 'replace' ? 'replaced' : 'skipped',
+          );
+          expect(
+            after.guidance!.exerciseAt(0),
+            action == 'replace'
+                ? 'replacement2'
+                : before.guidance!.exerciseAt(0),
+          );
+          final committed = (await repo.readDraft('a', uuid))!;
+          expect(committed['selectedIds'], durable['selectedIds']);
+          expect(
+            committed['guidanceSignature'],
+            jsonEncode(after.guidance!.toJson()),
+          );
+          expect(await db.workoutDao.getAllSets(), sets);
+        },
+      );
+    }
+  }
   for (final foreignChange in ['timer', 'extra']) {
     test(
       'foreign $foreignChange before baseline read is not consent and survives later edit/resume',
