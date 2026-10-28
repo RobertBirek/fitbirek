@@ -1,5 +1,9 @@
 # Wyjaśnienia planera — osobny etap
 
+> Bieżący kontrakt zamienników i porównania czasu/budżetu opisuje
+> [planner-safe-replacements.md](planner-safe-replacements.md).
+> Historyczny wymóg identycznego czasu zamiany poniżej już nie obowiązuje.
+
 ## Zakres i API
 
 `lib/features/planner/domain/plan_explanation.dart` jest czystym helperem:

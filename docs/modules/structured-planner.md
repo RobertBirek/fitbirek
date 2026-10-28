@@ -1,5 +1,9 @@
 # Working set: Generator z filtrów (etap 4)
 
+> Aktualizacja zamienników, przerw i edycji czasu: obowiązuje
+> [planner-safe-replacements.md](planner-safe-replacements.md).
+> Zastępuje opisane niżej historyczne stałe 30 s i wymóg identycznego czasu zamiany.
+
 ## Pliki i wejście
 
 - `lib/features/planner/domain/structured_plan.dart`: czysty silnik, model i kodek.

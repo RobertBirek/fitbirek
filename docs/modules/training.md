@@ -13,6 +13,8 @@ Katalog ćwiczeń, planowanie, aktywna sesja, serie, podsumowanie i rekordy osob
 - testy ćwiczeń, workoutu, planera i rekordów
 - Interwały: `docs/modules/workout-intervals.md` (silnik, ekran, atomowy zapis rund)
 - Generator z filtrów: `docs/modules/structured-planner.md` (struktura, czas, sync i testy)
+- Zamienniki, domyślne/edytowane przerwy i aktywna zamiana:
+  `docs/modules/planner-safe-replacements.md` (zgodność ruchowa, budżet, atomowe recovery).
 - Warunki wykonania i pozycje: `docs/modules/exercise-execution-filters.md` (AND/OR, fasety, brak weryfikacji)
 - Progresja stałego ciężaru: `docs/modules/fixed-load-progression.md` (read-only, RPE, guard konta i szkic celu)
 - Własne warianty / filtry w chmurze: `docs/modules/user-variants-cloud.md`
