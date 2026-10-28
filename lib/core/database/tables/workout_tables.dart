@@ -40,6 +40,9 @@ class SetsLog extends Table with SyncMetadata {
   TextColumn get side => text().nullable().customConstraint(
     "NULL CHECK (side IS NULL OR side IN ('left', 'right', 'both'))",
   )();
+  TextColumn get setRole => text().nullable().customConstraint(
+    "NULL CHECK (set_role IS NULL OR set_role IN ('working', 'warmup'))",
+  )();
   IntColumn get rpe => integer().nullable()();
   DateTimeColumn get timestamp => dateTime().withDefault(currentDateAndTime)();
 }

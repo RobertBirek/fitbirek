@@ -146,25 +146,26 @@ void _validateWorkoutForm(Map<String, dynamic> fields) {
 /// Immutable original prescription and append-only execution facts. Slot identity
 /// is positional, never encoded in an exercise name or a measurement.
 class WorkoutGuidance {
-  WorkoutGuidance._(this.plan, List<Map<String, Object?>> events)
+  WorkoutGuidance._(this.schemaVersion, this.plan, List<Map<String, Object?>> events)
     : events = List.unmodifiable(events.map(Map<String, Object?>.unmodifiable));
   factory WorkoutGuidance.start(StructuredPlan plan) =>
       WorkoutGuidance.validateJson({
-        'schemaVersion': 1,
+        'schemaVersion': plan.schemaVersion,
         'plan': plan.toJson(),
         'events': [],
       });
   final StructuredPlan plan;
+  final int schemaVersion;
   final List<Map<String, Object?>> events;
   Map<String, Object?> toJson() => {
-    'schemaVersion': 1,
+    'schemaVersion': schemaVersion,
     'plan': plan.toJson(),
     'events': events,
   };
   static WorkoutGuidance validateJson(Object? value) {
     try {
       final j = jsonDecode(jsonEncode(value)) as Map<String, dynamic>;
-      if (j['schemaVersion'] != 1 ||
+      if (j['schemaVersion'] is! int || !{1, 2}.contains(j['schemaVersion']) ||
           j.keys.any((k) => !{'schemaVersion', 'plan', 'events'}.contains(k))) {
         throw const FormatException('Nieobsługiwane prowadzenie');
       }
@@ -199,6 +200,7 @@ class WorkoutGuidance {
                 'restSeconds',
                 'transitionSeconds',
                 'weightKg',
+                if (j['schemaVersion'] == 2) 'setTargets',
               }.contains(k),
             )) {
           throw const FormatException('Nieobsługiwane cele');
@@ -207,16 +209,19 @@ class WorkoutGuidance {
       final p = StructuredPlan.fromJson(
         Map<String, dynamic>.from(j['plan'] as Map),
       );
-      if (p.blocks.isEmpty) {
+      if (p.blocks.isEmpty || p.schemaVersion != j['schemaVersion']) {
         throw const FormatException('Prowadzenie wymaga bloków');
       }
       final events = (j['events'] as List)
           .map((e) => Map<String, Object?>.from(e as Map))
           .toList();
       final linked = <String>{};
+      final consumed = <String>{};
+      final v2 = p.schemaVersion == 2;
       for (final e in events) {
         final keys = switch (e['type']) {
-          'performed' => {'type', 'slotIndex', 'setSyncId'},
+          'performed' => {'type', 'slotIndex', 'setSyncId', if (v2) 'targetId'},
+          'skippedTarget' => {'type', 'slotIndex', 'targetId'},
           'replaced' => {'type', 'slotIndex', 'exerciseId'},
           _ => {'type', 'slotIndex'},
         };
@@ -227,8 +232,15 @@ class WorkoutGuidance {
         if (slot is! int ||
             slot < 0 ||
             slot >= p.blocks.length ||
-            !{'performed', 'skipped', 'replaced'}.contains(e['type'])) {
+            !(v2 ? {'performed', 'skippedTarget', 'replaced'} : {'performed', 'skipped', 'replaced'}).contains(e['type'])) {
           throw const FormatException('Nieprawidłowe zdarzenie prowadzenia');
+        }
+        if (v2 && {'performed', 'skippedTarget'}.contains(e['type'])) {
+          final target = e['targetId'];
+          if (target is! String || !p.blocks[slot].prescription.setTargets.any((t) => t.targetId == target) ||
+              !consumed.add(jsonEncode([slot, target]))) {
+            throw const FormatException('Nieprawidłowy lub już zużyty cel.');
+          }
         }
         if (e['type'] == 'performed' &&
             (e['setSyncId'] is! String ||
@@ -242,7 +254,7 @@ class WorkoutGuidance {
           throw const FormatException('Nieprawidłowy zamiennik');
         }
       }
-      return WorkoutGuidance._(p, events);
+      return WorkoutGuidance._(p.schemaVersion, p, events);
     } on TypeError {
       throw const FormatException('Nieprawidłowe typy prowadzenia');
     } on ArgumentError {
@@ -273,12 +285,13 @@ class WorkoutGuidance {
   }
 
   WorkoutGuidance skip(int slot) => _append(slot, {'type': 'skipped'});
+  WorkoutGuidance skipTarget(int slot, String targetId) => _append(slot, {'type': 'skippedTarget', 'targetId': targetId});
   WorkoutGuidance replace(int slot, String exerciseId) =>
       _append(slot, {'type': 'replaced', 'exerciseId': exerciseId});
-  WorkoutGuidance link(int slot, String setSyncId) {
+  WorkoutGuidance link(int slot, String setSyncId, {String? targetId}) {
     RangeError.checkValidIndex(slot, plan.blocks);
-    if (events.any((e) => e['setSyncId'] == setSyncId)) return this;
-    return _append(slot, {'type': 'performed', 'setSyncId': setSyncId});
+    if (schemaVersion == 1 && events.any((e) => e['setSyncId'] == setSyncId)) return this;
+    return _append(slot, {'type': 'performed', 'setSyncId': setSyncId, if (targetId != null) 'targetId': targetId});
   }
 
   String exerciseAt(int slot) {

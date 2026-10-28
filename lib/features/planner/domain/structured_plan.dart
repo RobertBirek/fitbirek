@@ -3,6 +3,7 @@ import '../../../core/models/exercise.dart';
 import '../../exercises/domain/exercise_filter_engine.dart';
 import '../../exercises/domain/filter_preset.dart';
 import 'exercise_training_policy.dart';
+import 'set_prescription.dart';
 
 enum PlanSection {
   warmup('Rozgrzewka'),
@@ -22,18 +23,41 @@ class PlanPrescription {
   static const maxReps = maxSeconds ~/ 3;
   const PlanPrescription({
     required this.tracking,
-    required this.sets,
-    this.reps,
-    required this.workSeconds,
-    required this.restSeconds,
+    required int sets,
+    int? reps,
+    required int workSeconds,
+    required int restSeconds,
     required this.transitionSeconds,
-    this.weightKg,
-  });
+    double? weightKg,
+  }) : _sets = sets, _reps = reps, _workSeconds = workSeconds,
+       _restSeconds = restSeconds, _weightKg = weightKg, setTargets = const [];
+  PlanPrescription.perSet({
+    required this.tracking,
+    required List<SetPrescription> setTargets,
+    required this.transitionSeconds,
+  }) : setTargets = List.unmodifiable(setTargets), _sets = null,
+       _reps = null, _workSeconds = null, _restSeconds = null, _weightKg = null;
   final String tracking;
-  final int sets, workSeconds, restSeconds, transitionSeconds;
-  final int? reps;
-  final double? weightKg;
+  final int? _sets, _reps, _workSeconds, _restSeconds;
+  final double? _weightKg;
+  final int transitionSeconds;
+  final List<SetPrescription> setTargets;
+  bool get isPerSet => _sets == null;
+  int get sets => isPerSet ? setTargets.length : _sets!;
+  int? get reps => _reps;
+  double? get weightKg => _weightKg;
+  int get workSeconds => _workSeconds ?? (throw StateError('Użyj setTargets — cele są indywidualne.'));
+  int get restSeconds => _restSeconds ?? (throw StateError('Użyj setTargets — przerwy są indywidualne.'));
   void validate() {
+    if (isPerSet) {
+      if (setTargets.isEmpty || setTargets.length > 100 ||
+          transitionSeconds < 0 || transitionSeconds > maxSeconds ||
+          setTargets.map((t) => t.targetId).toSet().length != setTargets.length) {
+        throw const FormatException('Nieprawidłowa lista celów serii.');
+      }
+      for (final target in setTargets) { target.validate(tracking); }
+      return;
+    }
     if (!{'reps', 'time', 'rounds'}.contains(tracking) ||
         (weightKg != null && (!weightKg!.isFinite || weightKg! < 0)) ||
         sets < 1 ||
@@ -55,10 +79,18 @@ class PlanPrescription {
 
   int get totalSeconds {
     validate();
+    if (isPerSet) {
+      return transitionSeconds + setTargets.fold<int>(0, (sum, t) => sum + t.workSeconds) +
+          setTargets.take(setTargets.length - 1).fold<int>(0, (sum, t) => sum + t.restSeconds);
+    }
     return sets * workSeconds + (sets - 1) * restSeconds + transitionSeconds;
   }
 
-  Map<String, Object?> toJson() => {
+  Map<String, Object?> toJson() => isPerSet ? {
+    'tracking': tracking,
+    'transitionSeconds': transitionSeconds,
+    'setTargets': setTargets.map((t) => t.toJson()).toList(),
+  } : {
     'tracking': tracking,
     'sets': sets,
     'reps': reps,
@@ -68,6 +100,20 @@ class PlanPrescription {
     if (weightKg != null) 'weightKg': weightKg,
   };
   factory PlanPrescription.fromJson(Map<String, dynamic> j) {
+    if (j.containsKey('setTargets')) {
+      if (j.keys.any((k) => !{'tracking', 'transitionSeconds', 'setTargets'}.contains(k))) {
+        throw const FormatException('Indywidualne cele nie mogą mieć równoległej dawki.');
+      }
+      final p = PlanPrescription.perSet(
+        tracking: j['tracking'] as String,
+        transitionSeconds: j['transitionSeconds'] as int,
+        setTargets: (j['setTargets'] as List).map((t) => SetPrescription.fromJson(
+          Map<String, dynamic>.from(t as Map), tracking: j['tracking'] as String,
+        )).toList(),
+      );
+      p.validate();
+      return p;
+    }
     final p = PlanPrescription(
       tracking: j['tracking'] as String,
       sets: j['sets'] as int,
@@ -107,6 +153,7 @@ class PlanBlock {
 
 class StructuredPlan {
   StructuredPlan({
+    this.schemaVersion = 1,
     required ExerciseFilters criteria,
     required this.budgetSeconds,
     required List<PlanBlock> blocks,
@@ -120,6 +167,7 @@ class StructuredPlan {
        blocks = List.unmodifiable(blocks),
        warnings = List.unmodifiable(warnings);
   final ExerciseFilters criteria;
+  final int schemaVersion;
   final String level;
   final List<String> equipment;
   final int budgetSeconds;
@@ -129,7 +177,7 @@ class StructuredPlan {
   int get estimatedSeconds =>
       blocks.fold(0, (s, b) => s + b.prescription.totalSeconds);
   Map<String, Object?> toJson() => {
-    'schemaVersion': 1,
+    'schemaVersion': schemaVersion,
     'criteria': FilterPreset.encodeFilters(criteria),
     'budgetSeconds': budgetSeconds,
     'level': level,
@@ -182,7 +230,7 @@ class StructuredPlan {
   }
 
   static StructuredPlan _fromJson(Map<String, dynamic> j) {
-    if (j['schemaVersion'] != 1) {
+    if (j['schemaVersion'] is! int || !{1, 2}.contains(j['schemaVersion'])) {
       throw const FormatException('Nieobsługiwana struktura planu');
     }
     final criteria = Map<String, dynamic>.from(j['criteria'] as Map);
@@ -198,6 +246,7 @@ class StructuredPlan {
       );
     }
     final p = StructuredPlan(
+      schemaVersion: j['schemaVersion'] as int,
       criteria: FilterPreset.decodeFilters(criteria),
       budgetSeconds: j['budgetSeconds'] as int,
       level: j['level'] as String,
@@ -211,7 +260,8 @@ class StructuredPlan {
         p.budgetSeconds > 5400 ||
         p.estimatedSeconds > p.budgetSeconds ||
         p.exerciseIds.toSet().length != p.blocks.length ||
-        p.exerciseIds.any((id) => id.isEmpty)) {
+        p.exerciseIds.any((id) => id.isEmpty) ||
+        p.blocks.any((b) => b.prescription.isPerSet != (p.schemaVersion == 2))) {
       throw const FormatException('Nieprawidłowy budżet lub bloki planu');
     }
     return p;
@@ -475,6 +525,7 @@ class StructuredPlanGenerator {
     required String level,
   }) {
     final old = plan.blocks[index];
+    if (old.prescription.isPerSet && old.prescription.setTargets.any((t) => (t.weightKg ?? 0) > 0)) return [];
     final sources = allExercises.where((e) => e.id == old.exerciseId).toList();
     if (sources.length != 1 ||
         engine.metadata.entryFor(old.exerciseId)?.tracking !=
@@ -512,6 +563,8 @@ class StructuredPlanGenerator {
     bool allowBudgetIncrease = false,
   }) {
     final old = plan.blocks[index];
+    // Generating a new uniform dose would silently flatten a schema2 ramp.
+    if (old.prescription.isPerSet) return null;
     for (final e in replacementCandidates(
       plan: plan,
       index: index,
@@ -560,6 +613,8 @@ class StructuredPlanGenerator {
     }
     final old = plan.blocks[index];
     final p = old.prescription;
+    // Use the per-target editor instead; a scalar edit cannot overwrite a ramp.
+    if (p.isPerSet) return null;
     final blocks = [...plan.blocks];
     blocks[index] = PlanBlock(
       exerciseId: old.exerciseId,
@@ -604,6 +659,7 @@ class StructuredPlanGenerator {
       if (budget < 300) budget = 300;
     }
     final result = StructuredPlan(
+      schemaVersion: plan.schemaVersion,
       criteria: plan.criteria,
       budgetSeconds: budget,
       level: plan.level,

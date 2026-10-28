@@ -33,6 +33,8 @@ mixin _$SetLog {
   @JsonKey(includeIfNull: false)
   String? get side => throw _privateConstructorUsedError;
   @JsonKey(includeIfNull: false)
+  String? get setRole => throw _privateConstructorUsedError;
+  @JsonKey(includeIfNull: false)
   String? get variantId => throw _privateConstructorUsedError;
   @JsonKey(includeIfNull: false)
   String? get variantLabel => throw _privateConstructorUsedError;
@@ -63,6 +65,7 @@ abstract class $SetLogCopyWith<$Res> {
     int? powtorzenia,
     int? czasSekund,
     @JsonKey(includeIfNull: false) String? side,
+    @JsonKey(includeIfNull: false) String? setRole,
     @JsonKey(includeIfNull: false) String? variantId,
     @JsonKey(includeIfNull: false) String? variantLabel,
     int? rpe,
@@ -94,6 +97,7 @@ class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
     Object? powtorzenia = freezed,
     Object? czasSekund = freezed,
     Object? side = freezed,
+    Object? setRole = freezed,
     Object? variantId = freezed,
     Object? variantLabel = freezed,
     Object? rpe = freezed,
@@ -137,6 +141,10 @@ class _$SetLogCopyWithImpl<$Res, $Val extends SetLog>
                 ? _value.side
                 : side // ignore: cast_nullable_to_non_nullable
                       as String?,
+            setRole: freezed == setRole
+                ? _value.setRole
+                : setRole // ignore: cast_nullable_to_non_nullable
+                      as String?,
             variantId: freezed == variantId
                 ? _value.variantId
                 : variantId // ignore: cast_nullable_to_non_nullable
@@ -177,6 +185,7 @@ abstract class _$$SetLogImplCopyWith<$Res> implements $SetLogCopyWith<$Res> {
     int? powtorzenia,
     int? czasSekund,
     @JsonKey(includeIfNull: false) String? side,
+    @JsonKey(includeIfNull: false) String? setRole,
     @JsonKey(includeIfNull: false) String? variantId,
     @JsonKey(includeIfNull: false) String? variantLabel,
     int? rpe,
@@ -207,6 +216,7 @@ class __$$SetLogImplCopyWithImpl<$Res>
     Object? powtorzenia = freezed,
     Object? czasSekund = freezed,
     Object? side = freezed,
+    Object? setRole = freezed,
     Object? variantId = freezed,
     Object? variantLabel = freezed,
     Object? rpe = freezed,
@@ -250,6 +260,10 @@ class __$$SetLogImplCopyWithImpl<$Res>
             ? _value.side
             : side // ignore: cast_nullable_to_non_nullable
                   as String?,
+        setRole: freezed == setRole
+            ? _value.setRole
+            : setRole // ignore: cast_nullable_to_non_nullable
+                  as String?,
         variantId: freezed == variantId
             ? _value.variantId
             : variantId // ignore: cast_nullable_to_non_nullable
@@ -284,6 +298,7 @@ class _$SetLogImpl implements _SetLog {
     this.powtorzenia,
     this.czasSekund,
     @JsonKey(includeIfNull: false) this.side,
+    @JsonKey(includeIfNull: false) this.setRole,
     @JsonKey(includeIfNull: false) this.variantId,
     @JsonKey(includeIfNull: false) this.variantLabel,
     this.rpe,
@@ -315,6 +330,9 @@ class _$SetLogImpl implements _SetLog {
   final String? side;
   @override
   @JsonKey(includeIfNull: false)
+  final String? setRole;
+  @override
+  @JsonKey(includeIfNull: false)
   final String? variantId;
   @override
   @JsonKey(includeIfNull: false)
@@ -326,7 +344,7 @@ class _$SetLogImpl implements _SetLog {
 
   @override
   String toString() {
-    return 'SetLog(id: $id, sesjaId: $sesjaId, cwiczenieId: $cwiczenieId, nazwaCwiczeniaPl: $nazwaCwiczeniaPl, numerSerii: $numerSerii, ciezarKg: $ciezarKg, powtorzenia: $powtorzenia, czasSekund: $czasSekund, side: $side, variantId: $variantId, variantLabel: $variantLabel, rpe: $rpe, timestamp: $timestamp)';
+    return 'SetLog(id: $id, sesjaId: $sesjaId, cwiczenieId: $cwiczenieId, nazwaCwiczeniaPl: $nazwaCwiczeniaPl, numerSerii: $numerSerii, ciezarKg: $ciezarKg, powtorzenia: $powtorzenia, czasSekund: $czasSekund, side: $side, setRole: $setRole, variantId: $variantId, variantLabel: $variantLabel, rpe: $rpe, timestamp: $timestamp)';
   }
 
   @override
@@ -349,6 +367,7 @@ class _$SetLogImpl implements _SetLog {
             (identical(other.czasSekund, czasSekund) ||
                 other.czasSekund == czasSekund) &&
             (identical(other.side, side) || other.side == side) &&
+            (identical(other.setRole, setRole) || other.setRole == setRole) &&
             (identical(other.variantId, variantId) ||
                 other.variantId == variantId) &&
             (identical(other.variantLabel, variantLabel) ||
@@ -371,6 +390,7 @@ class _$SetLogImpl implements _SetLog {
     powtorzenia,
     czasSekund,
     side,
+    setRole,
     variantId,
     variantLabel,
     rpe,
@@ -402,6 +422,7 @@ abstract class _SetLog implements SetLog {
     final int? powtorzenia,
     final int? czasSekund,
     @JsonKey(includeIfNull: false) final String? side,
+    @JsonKey(includeIfNull: false) final String? setRole,
     @JsonKey(includeIfNull: false) final String? variantId,
     @JsonKey(includeIfNull: false) final String? variantLabel,
     final int? rpe,
@@ -429,6 +450,9 @@ abstract class _SetLog implements SetLog {
   @override
   @JsonKey(includeIfNull: false)
   String? get side;
+  @override
+  @JsonKey(includeIfNull: false)
+  String? get setRole;
   @override
   @JsonKey(includeIfNull: false)
   String? get variantId;

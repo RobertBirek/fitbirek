@@ -1,6 +1,7 @@
 import 'dart:convert';
 import '../../features/exercises/domain/filter_preset.dart';
 import '../../features/schedule/domain/weekly_schedule.dart';
+import '../../features/schedule/domain/training_program.dart';
 import '../../features/progress/tests/domain/fitness_protocol.dart';
 
 /// Profile-owned versioned collections. Never prune tombstones or malformed data.
@@ -10,6 +11,7 @@ abstract final class UserCollections {
     'exerciseVariants',
     'weeklySchedule',
     'fitnessProtocols',
+    'trainingPrograms',
   ];
   static const maxEntries = 500;
   static const maxBytes = 262144;
@@ -29,7 +31,7 @@ abstract final class UserCollections {
       bad();
     }
     final map = Map<String, dynamic>.from(value);
-    if (key == 'fitnessProtocols' &&
+    if ((key == 'fitnessProtocols' || key == 'trainingPrograms') &&
         (map.length != 2 || map['version'] is! int)) {
       bad();
     }
@@ -56,7 +58,7 @@ abstract final class UserCollections {
       final e = Map<String, dynamic>.from(raw);
       if (!isUuid(e['id']) ||
           !ids.add(
-            key == 'fitnessProtocols'
+            (key == 'fitnessProtocols' || key == 'trainingPrograms')
                 ? (e['id'] as String).toLowerCase()
                 : e['id'] as String,
           )) {
@@ -82,6 +84,8 @@ abstract final class UserCollections {
         );
       } else if (key == 'weeklySchedule') {
         WeeklySchedule.validateEntry(e);
+      } else if (key == 'trainingPrograms') {
+        TrainingPrograms.validateEntry(e);
       } else {
         if (e['exerciseId'] is! String || (e['exerciseId'] as String).isEmpty) {
           bad();
@@ -149,7 +153,7 @@ abstract final class UserCollections {
     final byId = <String, Map<String, dynamic>>{};
     for (final raw in [...a['entries'] as List, ...b['entries'] as List]) {
       final e = Map<String, dynamic>.from(raw as Map);
-      final id = e['id'] as String;
+      final id = key == 'trainingPrograms' ? (e['id'] as String).toLowerCase() : e['id'] as String;
       final old = byId[id];
       if (old == null) {
         byId[id] = e;
@@ -163,6 +167,7 @@ abstract final class UserCollections {
           'Konflikt niezmiennych zasad testu. Dane zachowano.',
         );
       }
+      if (key == 'trainingPrograms') TrainingPrograms.requireCompatible(old, e);
       var cmp = DateTime.parse(
         e['updatedAtUtc'] as String,
       ).compareTo(DateTime.parse(old['updatedAtUtc'] as String));
@@ -172,7 +177,11 @@ abstract final class UserCollections {
         );
       }
       if (cmp == 0) cmp = canonical(e).compareTo(canonical(old));
-      if (cmp > 0) byId[id] = e;
+      if (key == 'trainingPrograms') {
+        byId[id] = TrainingPrograms.preserveCutoff(cmp > 0 ? e : old, cmp > 0 ? old : e);
+      } else if (cmp > 0) {
+        byId[id] = e;
+      }
     }
     final ids = byId.keys.toList()..sort();
     return validate(key, {

@@ -66,11 +66,15 @@ class AppDatabase extends _$AppDatabase {
     : super(guardDatabaseSchema(executor));
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
+      if (from < 15) {
+        await m.addColumn(setsLog, setsLog.setRole);
+        await m.addColumn(userProfiles, userProfiles.trainingProgramsJson);
+      }
       if (from < 14) {
         await m.addColumn(userProfiles, userProfiles.fitnessProtocolsJson);
         await m.addColumn(

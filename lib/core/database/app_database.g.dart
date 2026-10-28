@@ -168,6 +168,17 @@ class $UserProfilesTable extends UserProfiles
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _trainingProgramsJsonMeta =
+      const VerificationMeta('trainingProgramsJson');
+  @override
+  late final GeneratedColumn<String> trainingProgramsJson =
+      GeneratedColumn<String>(
+        'training_programs_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _onboardingZakonczonyMeta =
       const VerificationMeta('onboardingZakonczony');
   @override
@@ -212,6 +223,7 @@ class $UserProfilesTable extends UserProfiles
     exerciseVariantsJson,
     weeklyScheduleJson,
     fitnessProtocolsJson,
+    trainingProgramsJson,
     onboardingZakonczony,
     dataUtworzenia,
   ];
@@ -348,6 +360,15 @@ class $UserProfilesTable extends UserProfiles
         ),
       );
     }
+    if (data.containsKey('training_programs_json')) {
+      context.handle(
+        _trainingProgramsJsonMeta,
+        trainingProgramsJson.isAcceptableOrUnknown(
+          data['training_programs_json']!,
+          _trainingProgramsJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('onboarding_zakonczony')) {
       context.handle(
         _onboardingZakonczonyMeta,
@@ -435,6 +456,10 @@ class $UserProfilesTable extends UserProfiles
         DriftSqlType.string,
         data['${effectivePrefix}fitness_protocols_json'],
       ),
+      trainingProgramsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}training_programs_json'],
+      ),
       onboardingZakonczony: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}onboarding_zakonczony'],
@@ -468,6 +493,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
   final String? exerciseVariantsJson;
   final String? weeklyScheduleJson;
   final String? fitnessProtocolsJson;
+  final String? trainingProgramsJson;
   final bool onboardingZakonczony;
   final DateTime dataUtworzenia;
   const UserProfileData({
@@ -486,6 +512,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     this.exerciseVariantsJson,
     this.weeklyScheduleJson,
     this.fitnessProtocolsJson,
+    this.trainingProgramsJson,
     required this.onboardingZakonczony,
     required this.dataUtworzenia,
   });
@@ -516,6 +543,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     }
     if (!nullToAbsent || fitnessProtocolsJson != null) {
       map['fitness_protocols_json'] = Variable<String>(fitnessProtocolsJson);
+    }
+    if (!nullToAbsent || trainingProgramsJson != null) {
+      map['training_programs_json'] = Variable<String>(trainingProgramsJson);
     }
     map['onboarding_zakonczony'] = Variable<bool>(onboardingZakonczony);
     map['data_utworzenia'] = Variable<DateTime>(dataUtworzenia);
@@ -549,6 +579,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       fitnessProtocolsJson: fitnessProtocolsJson == null && nullToAbsent
           ? const Value.absent()
           : Value(fitnessProtocolsJson),
+      trainingProgramsJson: trainingProgramsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(trainingProgramsJson),
       onboardingZakonczony: Value(onboardingZakonczony),
       dataUtworzenia: Value(dataUtworzenia),
     );
@@ -583,6 +616,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       fitnessProtocolsJson: serializer.fromJson<String?>(
         json['fitnessProtocolsJson'],
       ),
+      trainingProgramsJson: serializer.fromJson<String?>(
+        json['trainingProgramsJson'],
+      ),
       onboardingZakonczony: serializer.fromJson<bool>(
         json['onboardingZakonczony'],
       ),
@@ -608,6 +644,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       'exerciseVariantsJson': serializer.toJson<String?>(exerciseVariantsJson),
       'weeklyScheduleJson': serializer.toJson<String?>(weeklyScheduleJson),
       'fitnessProtocolsJson': serializer.toJson<String?>(fitnessProtocolsJson),
+      'trainingProgramsJson': serializer.toJson<String?>(trainingProgramsJson),
       'onboardingZakonczony': serializer.toJson<bool>(onboardingZakonczony),
       'dataUtworzenia': serializer.toJson<DateTime>(dataUtworzenia),
     };
@@ -629,6 +666,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     Value<String?> exerciseVariantsJson = const Value.absent(),
     Value<String?> weeklyScheduleJson = const Value.absent(),
     Value<String?> fitnessProtocolsJson = const Value.absent(),
+    Value<String?> trainingProgramsJson = const Value.absent(),
     bool? onboardingZakonczony,
     DateTime? dataUtworzenia,
   }) => UserProfileData(
@@ -655,6 +693,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     fitnessProtocolsJson: fitnessProtocolsJson.present
         ? fitnessProtocolsJson.value
         : this.fitnessProtocolsJson,
+    trainingProgramsJson: trainingProgramsJson.present
+        ? trainingProgramsJson.value
+        : this.trainingProgramsJson,
     onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
     dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
   );
@@ -691,6 +732,9 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
       fitnessProtocolsJson: data.fitnessProtocolsJson.present
           ? data.fitnessProtocolsJson.value
           : this.fitnessProtocolsJson,
+      trainingProgramsJson: data.trainingProgramsJson.present
+          ? data.trainingProgramsJson.value
+          : this.trainingProgramsJson,
       onboardingZakonczony: data.onboardingZakonczony.present
           ? data.onboardingZakonczony.value
           : this.onboardingZakonczony,
@@ -718,6 +762,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
           ..write('exerciseVariantsJson: $exerciseVariantsJson, ')
           ..write('weeklyScheduleJson: $weeklyScheduleJson, ')
           ..write('fitnessProtocolsJson: $fitnessProtocolsJson, ')
+          ..write('trainingProgramsJson: $trainingProgramsJson, ')
           ..write('onboardingZakonczony: $onboardingZakonczony, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
@@ -741,6 +786,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
     exerciseVariantsJson,
     weeklyScheduleJson,
     fitnessProtocolsJson,
+    trainingProgramsJson,
     onboardingZakonczony,
     dataUtworzenia,
   );
@@ -763,6 +809,7 @@ class UserProfileData extends DataClass implements Insertable<UserProfileData> {
           other.exerciseVariantsJson == this.exerciseVariantsJson &&
           other.weeklyScheduleJson == this.weeklyScheduleJson &&
           other.fitnessProtocolsJson == this.fitnessProtocolsJson &&
+          other.trainingProgramsJson == this.trainingProgramsJson &&
           other.onboardingZakonczony == this.onboardingZakonczony &&
           other.dataUtworzenia == this.dataUtworzenia);
 }
@@ -783,6 +830,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
   final Value<String?> exerciseVariantsJson;
   final Value<String?> weeklyScheduleJson;
   final Value<String?> fitnessProtocolsJson;
+  final Value<String?> trainingProgramsJson;
   final Value<bool> onboardingZakonczony;
   final Value<DateTime> dataUtworzenia;
   const UserProfilesCompanion({
@@ -801,6 +849,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     this.exerciseVariantsJson = const Value.absent(),
     this.weeklyScheduleJson = const Value.absent(),
     this.fitnessProtocolsJson = const Value.absent(),
+    this.trainingProgramsJson = const Value.absent(),
     this.onboardingZakonczony = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   });
@@ -820,6 +869,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     this.exerciseVariantsJson = const Value.absent(),
     this.weeklyScheduleJson = const Value.absent(),
     this.fitnessProtocolsJson = const Value.absent(),
+    this.trainingProgramsJson = const Value.absent(),
     this.onboardingZakonczony = const Value.absent(),
     this.dataUtworzenia = const Value.absent(),
   }) : wiek = Value(wiek),
@@ -843,6 +893,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     Expression<String>? exerciseVariantsJson,
     Expression<String>? weeklyScheduleJson,
     Expression<String>? fitnessProtocolsJson,
+    Expression<String>? trainingProgramsJson,
     Expression<bool>? onboardingZakonczony,
     Expression<DateTime>? dataUtworzenia,
   }) {
@@ -865,6 +916,8 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
         'weekly_schedule_json': weeklyScheduleJson,
       if (fitnessProtocolsJson != null)
         'fitness_protocols_json': fitnessProtocolsJson,
+      if (trainingProgramsJson != null)
+        'training_programs_json': trainingProgramsJson,
       if (onboardingZakonczony != null)
         'onboarding_zakonczony': onboardingZakonczony,
       if (dataUtworzenia != null) 'data_utworzenia': dataUtworzenia,
@@ -887,6 +940,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
     Value<String?>? exerciseVariantsJson,
     Value<String?>? weeklyScheduleJson,
     Value<String?>? fitnessProtocolsJson,
+    Value<String?>? trainingProgramsJson,
     Value<bool>? onboardingZakonczony,
     Value<DateTime>? dataUtworzenia,
   }) {
@@ -906,6 +960,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
       exerciseVariantsJson: exerciseVariantsJson ?? this.exerciseVariantsJson,
       weeklyScheduleJson: weeklyScheduleJson ?? this.weeklyScheduleJson,
       fitnessProtocolsJson: fitnessProtocolsJson ?? this.fitnessProtocolsJson,
+      trainingProgramsJson: trainingProgramsJson ?? this.trainingProgramsJson,
       onboardingZakonczony: onboardingZakonczony ?? this.onboardingZakonczony,
       dataUtworzenia: dataUtworzenia ?? this.dataUtworzenia,
     );
@@ -963,6 +1018,11 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
         fitnessProtocolsJson.value,
       );
     }
+    if (trainingProgramsJson.present) {
+      map['training_programs_json'] = Variable<String>(
+        trainingProgramsJson.value,
+      );
+    }
     if (onboardingZakonczony.present) {
       map['onboarding_zakonczony'] = Variable<bool>(onboardingZakonczony.value);
     }
@@ -990,6 +1050,7 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfileData> {
           ..write('exerciseVariantsJson: $exerciseVariantsJson, ')
           ..write('weeklyScheduleJson: $weeklyScheduleJson, ')
           ..write('fitnessProtocolsJson: $fitnessProtocolsJson, ')
+          ..write('trainingProgramsJson: $trainingProgramsJson, ')
           ..write('onboardingZakonczony: $onboardingZakonczony, ')
           ..write('dataUtworzenia: $dataUtworzenia')
           ..write(')'))
@@ -2992,6 +3053,19 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
     $customConstraints:
         'NULL CHECK (side IS NULL OR side IN (\'left\', \'right\', \'both\'))',
   );
+  static const VerificationMeta _setRoleMeta = const VerificationMeta(
+    'setRole',
+  );
+  @override
+  late final GeneratedColumn<String> setRole = GeneratedColumn<String>(
+    'set_role',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NULL CHECK (set_role IS NULL OR set_role IN (\'working\', \'warmup\'))',
+  );
   static const VerificationMeta _rpeMeta = const VerificationMeta('rpe');
   @override
   late final GeneratedColumn<int> rpe = GeneratedColumn<int>(
@@ -3030,6 +3104,7 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
     powtorzenia,
     czasSekund,
     side,
+    setRole,
     rpe,
     timestamp,
   ];
@@ -3161,6 +3236,12 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
         side.isAcceptableOrUnknown(data['side']!, _sideMeta),
       );
     }
+    if (data.containsKey('set_role')) {
+      context.handle(
+        _setRoleMeta,
+        setRole.isAcceptableOrUnknown(data['set_role']!, _setRoleMeta),
+      );
+    }
     if (data.containsKey('rpe')) {
       context.handle(
         _rpeMeta,
@@ -3242,6 +3323,10 @@ class $SetsLogTable extends SetsLog with TableInfo<$SetsLogTable, SetLogData> {
         DriftSqlType.string,
         data['${effectivePrefix}side'],
       ),
+      setRole: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}set_role'],
+      ),
       rpe: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}rpe'],
@@ -3275,6 +3360,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
   final int? powtorzenia;
   final int? czasSekund;
   final String? side;
+  final String? setRole;
   final int? rpe;
   final DateTime timestamp;
   const SetLogData({
@@ -3293,6 +3379,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     this.powtorzenia,
     this.czasSekund,
     this.side,
+    this.setRole,
     this.rpe,
     required this.timestamp,
   });
@@ -3327,6 +3414,9 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     }
     if (!nullToAbsent || side != null) {
       map['side'] = Variable<String>(side);
+    }
+    if (!nullToAbsent || setRole != null) {
+      map['set_role'] = Variable<String>(setRole);
     }
     if (!nullToAbsent || rpe != null) {
       map['rpe'] = Variable<int>(rpe);
@@ -3364,6 +3454,9 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
           ? const Value.absent()
           : Value(czasSekund),
       side: side == null && nullToAbsent ? const Value.absent() : Value(side),
+      setRole: setRole == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setRole),
       rpe: rpe == null && nullToAbsent ? const Value.absent() : Value(rpe),
       timestamp: Value(timestamp),
     );
@@ -3390,6 +3483,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
       powtorzenia: serializer.fromJson<int?>(json['powtorzenia']),
       czasSekund: serializer.fromJson<int?>(json['czasSekund']),
       side: serializer.fromJson<String?>(json['side']),
+      setRole: serializer.fromJson<String?>(json['setRole']),
       rpe: serializer.fromJson<int?>(json['rpe']),
       timestamp: serializer.fromJson<DateTime>(json['timestamp']),
     );
@@ -3413,6 +3507,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
       'powtorzenia': serializer.toJson<int?>(powtorzenia),
       'czasSekund': serializer.toJson<int?>(czasSekund),
       'side': serializer.toJson<String?>(side),
+      'setRole': serializer.toJson<String?>(setRole),
       'rpe': serializer.toJson<int?>(rpe),
       'timestamp': serializer.toJson<DateTime>(timestamp),
     };
@@ -3434,6 +3529,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     Value<int?> powtorzenia = const Value.absent(),
     Value<int?> czasSekund = const Value.absent(),
     Value<String?> side = const Value.absent(),
+    Value<String?> setRole = const Value.absent(),
     Value<int?> rpe = const Value.absent(),
     DateTime? timestamp,
   }) => SetLogData(
@@ -3452,6 +3548,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     powtorzenia: powtorzenia.present ? powtorzenia.value : this.powtorzenia,
     czasSekund: czasSekund.present ? czasSekund.value : this.czasSekund,
     side: side.present ? side.value : this.side,
+    setRole: setRole.present ? setRole.value : this.setRole,
     rpe: rpe.present ? rpe.value : this.rpe,
     timestamp: timestamp ?? this.timestamp,
   );
@@ -3490,6 +3587,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
           ? data.czasSekund.value
           : this.czasSekund,
       side: data.side.present ? data.side.value : this.side,
+      setRole: data.setRole.present ? data.setRole.value : this.setRole,
       rpe: data.rpe.present ? data.rpe.value : this.rpe,
       timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
     );
@@ -3513,6 +3611,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
           ..write('powtorzenia: $powtorzenia, ')
           ..write('czasSekund: $czasSekund, ')
           ..write('side: $side, ')
+          ..write('setRole: $setRole, ')
           ..write('rpe: $rpe, ')
           ..write('timestamp: $timestamp')
           ..write(')'))
@@ -3536,6 +3635,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
     powtorzenia,
     czasSekund,
     side,
+    setRole,
     rpe,
     timestamp,
   );
@@ -3558,6 +3658,7 @@ class SetLogData extends DataClass implements Insertable<SetLogData> {
           other.powtorzenia == this.powtorzenia &&
           other.czasSekund == this.czasSekund &&
           other.side == this.side &&
+          other.setRole == this.setRole &&
           other.rpe == this.rpe &&
           other.timestamp == this.timestamp);
 }
@@ -3578,6 +3679,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
   final Value<int?> powtorzenia;
   final Value<int?> czasSekund;
   final Value<String?> side;
+  final Value<String?> setRole;
   final Value<int?> rpe;
   final Value<DateTime> timestamp;
   const SetsLogCompanion({
@@ -3596,6 +3698,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     this.powtorzenia = const Value.absent(),
     this.czasSekund = const Value.absent(),
     this.side = const Value.absent(),
+    this.setRole = const Value.absent(),
     this.rpe = const Value.absent(),
     this.timestamp = const Value.absent(),
   });
@@ -3615,6 +3718,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     this.powtorzenia = const Value.absent(),
     this.czasSekund = const Value.absent(),
     this.side = const Value.absent(),
+    this.setRole = const Value.absent(),
     this.rpe = const Value.absent(),
     this.timestamp = const Value.absent(),
   }) : sesjaId = Value(sesjaId),
@@ -3637,6 +3741,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     Expression<int>? powtorzenia,
     Expression<int>? czasSekund,
     Expression<String>? side,
+    Expression<String>? setRole,
     Expression<int>? rpe,
     Expression<DateTime>? timestamp,
   }) {
@@ -3656,6 +3761,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
       if (powtorzenia != null) 'powtorzenia': powtorzenia,
       if (czasSekund != null) 'czas_sekund': czasSekund,
       if (side != null) 'side': side,
+      if (setRole != null) 'set_role': setRole,
       if (rpe != null) 'rpe': rpe,
       if (timestamp != null) 'timestamp': timestamp,
     });
@@ -3677,6 +3783,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     Value<int?>? powtorzenia,
     Value<int?>? czasSekund,
     Value<String?>? side,
+    Value<String?>? setRole,
     Value<int?>? rpe,
     Value<DateTime>? timestamp,
   }) {
@@ -3696,6 +3803,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
       powtorzenia: powtorzenia ?? this.powtorzenia,
       czasSekund: czasSekund ?? this.czasSekund,
       side: side ?? this.side,
+      setRole: setRole ?? this.setRole,
       rpe: rpe ?? this.rpe,
       timestamp: timestamp ?? this.timestamp,
     );
@@ -3749,6 +3857,9 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
     if (side.present) {
       map['side'] = Variable<String>(side.value);
     }
+    if (setRole.present) {
+      map['set_role'] = Variable<String>(setRole.value);
+    }
     if (rpe.present) {
       map['rpe'] = Variable<int>(rpe.value);
     }
@@ -3776,6 +3887,7 @@ class SetsLogCompanion extends UpdateCompanion<SetLogData> {
           ..write('powtorzenia: $powtorzenia, ')
           ..write('czasSekund: $czasSekund, ')
           ..write('side: $side, ')
+          ..write('setRole: $setRole, ')
           ..write('rpe: $rpe, ')
           ..write('timestamp: $timestamp')
           ..write(')'))
@@ -10229,6 +10341,7 @@ typedef $$UserProfilesTableCreateCompanionBuilder =
       Value<String?> exerciseVariantsJson,
       Value<String?> weeklyScheduleJson,
       Value<String?> fitnessProtocolsJson,
+      Value<String?> trainingProgramsJson,
       Value<bool> onboardingZakonczony,
       Value<DateTime> dataUtworzenia,
     });
@@ -10249,6 +10362,7 @@ typedef $$UserProfilesTableUpdateCompanionBuilder =
       Value<String?> exerciseVariantsJson,
       Value<String?> weeklyScheduleJson,
       Value<String?> fitnessProtocolsJson,
+      Value<String?> trainingProgramsJson,
       Value<bool> onboardingZakonczony,
       Value<DateTime> dataUtworzenia,
     });
@@ -10334,6 +10448,11 @@ class $$UserProfilesTableFilterComposer
 
   ColumnFilters<String> get fitnessProtocolsJson => $composableBuilder(
     column: $table.fitnessProtocolsJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trainingProgramsJson => $composableBuilder(
+    column: $table.trainingProgramsJson,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10432,6 +10551,11 @@ class $$UserProfilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get trainingProgramsJson => $composableBuilder(
+    column: $table.trainingProgramsJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get onboardingZakonczony => $composableBuilder(
     column: $table.onboardingZakonczony,
     builder: (column) => ColumnOrderings(column),
@@ -10513,6 +10637,11 @@ class $$UserProfilesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get trainingProgramsJson => $composableBuilder(
+    column: $table.trainingProgramsJson,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<bool> get onboardingZakonczony => $composableBuilder(
     column: $table.onboardingZakonczony,
     builder: (column) => column,
@@ -10570,6 +10699,7 @@ class $$UserProfilesTableTableManager
                 Value<String?> exerciseVariantsJson = const Value.absent(),
                 Value<String?> weeklyScheduleJson = const Value.absent(),
                 Value<String?> fitnessProtocolsJson = const Value.absent(),
+                Value<String?> trainingProgramsJson = const Value.absent(),
                 Value<bool> onboardingZakonczony = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => UserProfilesCompanion(
@@ -10588,6 +10718,7 @@ class $$UserProfilesTableTableManager
                 exerciseVariantsJson: exerciseVariantsJson,
                 weeklyScheduleJson: weeklyScheduleJson,
                 fitnessProtocolsJson: fitnessProtocolsJson,
+                trainingProgramsJson: trainingProgramsJson,
                 onboardingZakonczony: onboardingZakonczony,
                 dataUtworzenia: dataUtworzenia,
               ),
@@ -10608,6 +10739,7 @@ class $$UserProfilesTableTableManager
                 Value<String?> exerciseVariantsJson = const Value.absent(),
                 Value<String?> weeklyScheduleJson = const Value.absent(),
                 Value<String?> fitnessProtocolsJson = const Value.absent(),
+                Value<String?> trainingProgramsJson = const Value.absent(),
                 Value<bool> onboardingZakonczony = const Value.absent(),
                 Value<DateTime> dataUtworzenia = const Value.absent(),
               }) => UserProfilesCompanion.insert(
@@ -10626,6 +10758,7 @@ class $$UserProfilesTableTableManager
                 exerciseVariantsJson: exerciseVariantsJson,
                 weeklyScheduleJson: weeklyScheduleJson,
                 fitnessProtocolsJson: fitnessProtocolsJson,
+                trainingProgramsJson: trainingProgramsJson,
                 onboardingZakonczony: onboardingZakonczony,
                 dataUtworzenia: dataUtworzenia,
               ),
@@ -11789,6 +11922,7 @@ typedef $$SetsLogTableCreateCompanionBuilder =
       Value<int?> powtorzenia,
       Value<int?> czasSekund,
       Value<String?> side,
+      Value<String?> setRole,
       Value<int?> rpe,
       Value<DateTime> timestamp,
     });
@@ -11809,6 +11943,7 @@ typedef $$SetsLogTableUpdateCompanionBuilder =
       Value<int?> powtorzenia,
       Value<int?> czasSekund,
       Value<String?> side,
+      Value<String?> setRole,
       Value<int?> rpe,
       Value<DateTime> timestamp,
     });
@@ -11913,6 +12048,11 @@ class $$SetsLogTableFilterComposer
 
   ColumnFilters<String> get side => $composableBuilder(
     column: $table.side,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get setRole => $composableBuilder(
+    column: $table.setRole,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12029,6 +12169,11 @@ class $$SetsLogTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get setRole => $composableBuilder(
+    column: $table.setRole,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get rpe => $composableBuilder(
     column: $table.rpe,
     builder: (column) => ColumnOrderings(column),
@@ -12132,6 +12277,9 @@ class $$SetsLogTableAnnotationComposer
   GeneratedColumn<String> get side =>
       $composableBuilder(column: $table.side, builder: (column) => column);
 
+  GeneratedColumn<String> get setRole =>
+      $composableBuilder(column: $table.setRole, builder: (column) => column);
+
   GeneratedColumn<int> get rpe =>
       $composableBuilder(column: $table.rpe, builder: (column) => column);
 
@@ -12205,6 +12353,7 @@ class $$SetsLogTableTableManager
                 Value<int?> powtorzenia = const Value.absent(),
                 Value<int?> czasSekund = const Value.absent(),
                 Value<String?> side = const Value.absent(),
+                Value<String?> setRole = const Value.absent(),
                 Value<int?> rpe = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
               }) => SetsLogCompanion(
@@ -12223,6 +12372,7 @@ class $$SetsLogTableTableManager
                 powtorzenia: powtorzenia,
                 czasSekund: czasSekund,
                 side: side,
+                setRole: setRole,
                 rpe: rpe,
                 timestamp: timestamp,
               ),
@@ -12243,6 +12393,7 @@ class $$SetsLogTableTableManager
                 Value<int?> powtorzenia = const Value.absent(),
                 Value<int?> czasSekund = const Value.absent(),
                 Value<String?> side = const Value.absent(),
+                Value<String?> setRole = const Value.absent(),
                 Value<int?> rpe = const Value.absent(),
                 Value<DateTime> timestamp = const Value.absent(),
               }) => SetsLogCompanion.insert(
@@ -12261,6 +12412,7 @@ class $$SetsLogTableTableManager
                 powtorzenia: powtorzenia,
                 czasSekund: czasSekund,
                 side: side,
+                setRole: setRole,
                 rpe: rpe,
                 timestamp: timestamp,
               ),
