@@ -2,6 +2,7 @@ import '../../../../core/models/exercise.dart';
 import '../../../exercises/domain/exercise_filter_engine.dart';
 import '../../../planner/data/planner_repository.dart';
 import '../../../planner/domain/structured_plan.dart';
+import '../../../planner/domain/exercise_training_policy.dart';
 import '../../../planner/providers/planner_providers.dart' show TemplateLease;
 import '../../../schedule/domain/weekly_schedule.dart';
 import 'equipment_inventory.dart';
@@ -160,22 +161,25 @@ class PreparationDraft {
       equipment: snapshot.availableEquipment,
       level: plan.level,
     );
-    return pool.where((e) {
+    final occupied = <String>{
+      for (var i = 0; i < plan.blocks.length; i++)
+        if (i != index) ...[plan.blocks[i].exerciseId, exerciseIdAt(i)],
+    };
+    final result = pool.where((e) {
       if (e.id == source.id ||
+          occupied.contains(e.id) ||
           snapshot.engine.metadata.entryFor(e.id)?.tracking != tracking ||
           StructuredPlanGenerator.sectionFor(e) != plan.blocks[index].section) {
         return false;
       }
-      final samePattern =
-          source.wzorzecRuchu.trim().isNotEmpty &&
-          ExerciseFilterEngine.fold(source.wzorzecRuchu) ==
-              ExerciseFilterEngine.fold(e.wzorzecRuchu);
-      final sameMuscle =
-          source.partiaGlowna.trim().isNotEmpty &&
-          ExerciseFilterEngine.fold(source.partiaGlowna) ==
-              ExerciseFilterEngine.fold(e.partiaGlowna);
-      return samePattern || sameMuscle;
+      return ExerciseTrainingPolicy.compatible(
+        source: source,
+        candidate: e,
+        engine: snapshot.engine,
+      );
     }).toList();
+    result.sort((a, b) => a.id.compareTo(b.id));
+    return result;
   }
 
   PreparationDraft replace(

@@ -252,31 +252,43 @@ void main() {
         ],
         warnings: [],
       );
-      expect(
-        StructuredPlanGenerator.replace(
-          plan: legacy,
-          index: 0,
-          allExercises: [original, clone],
-          engine: using,
-          equipment: plan.equipment,
-          level: plan.level,
-        ),
-        isNull,
-      );
+      final recalculated = StructuredPlanGenerator.replace(
+        plan: legacy,
+        index: 0,
+        allExercises: [original, clone],
+        engine: using,
+        equipment: plan.equipment,
+        level: plan.level,
+      )!;
+      expect(recalculated.blocks.single.prescription.toJson(), p.toJson());
+      expect(recalculated.estimatedSeconds, 33);
+      expect(legacy.estimatedSeconds, 255);
     },
   );
 
   test(
     'replacement with same total but different goals explains actual differences',
     () {
-      final a = explanationExercise('a').copyWith(seriexPowtorzenia: '1 x 22');
-      final b = explanationExercise('b').copyWith(seriexPowtorzenia: '2 x 6');
+      final a = explanationExercise('a').copyWith(
+        seriexPowtorzenia: '1 x 22',
+        typ: 'Wytrzymałość',
+        wzorzecRuchu: 'Pull horyzontalny',
+      );
+      final b = explanationExercise('b').copyWith(
+        seriexPowtorzenia: '2 x 6',
+        typ: 'Wytrzymałość',
+        wzorzecRuchu: 'Pull horyzontalny',
+      );
       final plan = generate(
         [a],
         using: ExerciseFilterEngine(
           const ExerciseCatalogMetadata(
             exercises: {
-              'a': ExerciseCatalogEntry(tracking: 'reps', unilateral: false),
+              'a': ExerciseCatalogEntry(
+                tracking: 'reps',
+                unilateral: false,
+                primaryMuscles: ['back'],
+              ),
             },
           ),
         ),
@@ -284,8 +296,16 @@ void main() {
       final using = ExerciseFilterEngine(
         const ExerciseCatalogMetadata(
           exercises: {
-            'a': ExerciseCatalogEntry(tracking: 'reps', unilateral: false),
-            'b': ExerciseCatalogEntry(tracking: 'reps', unilateral: false),
+            'a': ExerciseCatalogEntry(
+              tracking: 'reps',
+              unilateral: false,
+              primaryMuscles: ['back'],
+            ),
+            'b': ExerciseCatalogEntry(
+              tracking: 'reps',
+              unilateral: false,
+              primaryMuscles: ['back'],
+            ),
           },
         ),
       );
@@ -314,13 +334,25 @@ void main() {
   test(
     'fallback warning follows replacement without changing unrelated warnings',
     () {
-      final a = explanationExercise('a');
-      final b = explanationExercise('b');
+      final a = explanationExercise(
+        'a',
+      ).copyWith(typ: 'Wytrzymałość', wzorzecRuchu: 'Pull horyzontalny');
+      final b = explanationExercise(
+        'b',
+      ).copyWith(typ: 'Wytrzymałość', wzorzecRuchu: 'Pull horyzontalny');
       final using = ExerciseFilterEngine(
         const ExerciseCatalogMetadata(
           exercises: {
-            'a': ExerciseCatalogEntry(tracking: 'reps', unilateral: false),
-            'b': ExerciseCatalogEntry(tracking: 'reps', unilateral: false),
+            'a': ExerciseCatalogEntry(
+              tracking: 'reps',
+              unilateral: false,
+              primaryMuscles: ['back'],
+            ),
+            'b': ExerciseCatalogEntry(
+              tracking: 'reps',
+              unilateral: false,
+              primaryMuscles: ['back'],
+            ),
           },
         ),
       );

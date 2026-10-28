@@ -2,6 +2,7 @@ import 'dart:convert';
 import '../../../core/models/exercise.dart';
 import '../../exercises/domain/exercise_filter_engine.dart';
 import '../../exercises/domain/filter_preset.dart';
+import 'exercise_training_policy.dart';
 
 enum PlanSection {
   warmup('Rozgrzewka'),
@@ -246,14 +247,8 @@ class StructuredPlanGenerator {
         .toList();
   }
 
-  static PlanSection sectionFor(Exercise e) {
-    final type = ExerciseFilterEngine.fold(e.typ);
-    if (type.contains('rozgrzew')) return PlanSection.warmup;
-    if (type.contains('rozciag') || type.contains('stretch')) {
-      return PlanSection.cooldown;
-    }
-    return PlanSection.main; // yoga, recovery, mobility are valid main work
-  }
+  static PlanSection sectionFor(Exercise e) =>
+      PlanSection.values.byName(ExerciseTrainingPolicy.sectionKeyFor(e));
 
   // Only complete, unambiguous dose strings. Never inspect tempo/instructions.
   // Range lower bounds are intentional; these are catalog starting doses,
@@ -267,7 +262,7 @@ class StructuredPlanGenerator {
     String raw, {
     required String tracking,
     required bool unilateral,
-    required PlanSection section,
+    required int restSeconds,
   }) {
     var text = ExerciseFilterEngine.fold(
       raw,
@@ -305,7 +300,7 @@ class StructuredPlanGenerator {
         amount *
         BigInt.from(time ? (unit == 'min' ? 60 : 1) : 3) *
         BigInt.from(unilateral ? 2 : 1);
-    final rest = section == PlanSection.main ? 30 : 0;
+    final rest = restSeconds;
     final total =
         sets * work + (sets - BigInt.one) * BigInt.from(rest) + BigInt.from(15);
     // Serialization/arithmetic guard shared by VM and Web, not a medical cap.
@@ -324,6 +319,9 @@ class StructuredPlanGenerator {
       '$id: Nie rozpoznano jednoznacznej dawki katalogowej zgodnej z metadanymi; '
       'zastosowana domyślna dawka generatora; czas pozostaje ESTYMOWANY, nie pomiar ani indywidualna rehabilitacja.';
 
+  static String _restFallbackWarning(String id) =>
+      '$id: Brak jednoznacznej polityki przerw; zastosowano domyślnie 30 s między seriami.';
+
   static ({PlanPrescription value, bool fallback})? _prescription(
     Exercise e,
     ExerciseFilterEngine engine,
@@ -337,7 +335,7 @@ class StructuredPlanGenerator {
       e.seriexPowtorzenia,
       tracking: entry.tracking,
       unilateral: entry.unilateral,
-      section: section,
+      restSeconds: ExerciseTrainingPolicy.restFor(e).seconds,
     );
     if (catalogDose != null) {
       // A recognized but over-limit dose must be skipped, not replaced with
@@ -358,7 +356,7 @@ class StructuredPlanGenerator {
         sets: main ? 3 : 1,
         reps: reps,
         workSeconds: work * (entry.unilateral ? 2 : 1),
-        restSeconds: main ? 30 : 0,
+        restSeconds: ExerciseTrainingPolicy.restFor(e).seconds,
         transitionSeconds: 15,
       ),
       fallback: true,
@@ -429,6 +427,9 @@ class StructuredPlanGenerator {
         if (dose == null || dose.value.totalSeconds > remaining) continue;
         final p = dose.value;
         if (dose.fallback) warnings.add(_fallbackWarning(e.id));
+        if (ExerciseTrainingPolicy.restFor(e).fallback) {
+          warnings.add(_restFallbackWarning(e.id));
+        }
         blocks.add(
           PlanBlock(exerciseId: e.id, section: section, prescription: p),
         );
@@ -463,7 +464,9 @@ class StructuredPlanGenerator {
     );
   }
 
-  static StructuredPlan? replace({
+  /// ID-only selection for active sessions: no newly invented prescription or
+  /// budget change. Callers retain their original guidance targets/history.
+  static List<Exercise> replacementCandidates({
     required StructuredPlan plan,
     required int index,
     required List<Exercise> allExercises,
@@ -472,6 +475,12 @@ class StructuredPlanGenerator {
     required String level,
   }) {
     final old = plan.blocks[index];
+    final sources = allExercises.where((e) => e.id == old.exerciseId).toList();
+    if (sources.length != 1 ||
+        engine.metadata.entryFor(old.exerciseId)?.tracking !=
+            old.prescription.tracking) {
+      return [];
+    }
     final pool = candidates(
       allExercises: allExercises,
       engine: engine,
@@ -479,36 +488,133 @@ class StructuredPlanGenerator {
       equipment: equipment,
       level: level,
     )..sort((a, b) => a.id.compareTo(b.id));
-    for (final e in pool) {
-      if (plan.exerciseIds.contains(e.id) || sectionFor(e) != old.section) {
-        continue;
-      }
-      final entry = engine.metadata.entryFor(e.id);
-      if (entry == null || entry.tracking != old.prescription.tracking) {
-        continue;
-      }
+    return pool
+        .where(
+          (e) =>
+              !plan.exerciseIds.contains(e.id) &&
+              sectionFor(e) == old.section &&
+              ExerciseTrainingPolicy.compatible(
+                source: sources.single,
+                candidate: e,
+                engine: engine,
+              ),
+        )
+        .toList();
+  }
+
+  static StructuredPlan? replace({
+    required StructuredPlan plan,
+    required int index,
+    required List<Exercise> allExercises,
+    required ExerciseFilterEngine engine,
+    required List<String> equipment,
+    required String level,
+    bool allowBudgetIncrease = false,
+  }) {
+    final old = plan.blocks[index];
+    for (final e in replacementCandidates(
+      plan: plan,
+      index: index,
+      allExercises: allExercises,
+      engine: engine,
+      equipment: equipment,
+      level: level,
+    )) {
       final dose = _prescription(e, engine, old.section);
       if (dose == null) continue;
       final p = dose.value;
-      if (p.totalSeconds != old.prescription.totalSeconds) continue;
       final blocks = [...plan.blocks];
       blocks[index] = PlanBlock(
         exerciseId: e.id,
         section: old.section,
         prescription: p,
       );
-      return StructuredPlan(
-        criteria: plan.criteria,
-        budgetSeconds: plan.budgetSeconds,
-        level: plan.level,
-        equipment: plan.equipment,
+      final proposal = proposeBlocks(
+        plan: plan,
         blocks: blocks,
+        allowBudgetIncrease: allowBudgetIncrease,
         warnings: [
-          ...plan.warnings.where((w) => w != _fallbackWarning(old.exerciseId)),
+          ...plan.warnings.where(
+            (w) =>
+                w != _fallbackWarning(old.exerciseId) &&
+                w != _restFallbackWarning(old.exerciseId),
+          ),
           if (dose.fallback) _fallbackWarning(e.id),
+          if (ExerciseTrainingPolicy.restFor(e).fallback)
+            _restFallbackWarning(e.id),
         ],
       );
+      if (proposal != null) return proposal;
     }
     return null;
+  }
+
+  static StructuredPlan? withRest({
+    required StructuredPlan plan,
+    required int index,
+    required int restSeconds,
+    bool allowBudgetIncrease = false,
+  }) {
+    if (restSeconds < 0 || restSeconds > 600) {
+      throw ArgumentError.value(restSeconds, 'restSeconds', 'Zakres: 0–600 s.');
+    }
+    final old = plan.blocks[index];
+    final p = old.prescription;
+    final blocks = [...plan.blocks];
+    blocks[index] = PlanBlock(
+      exerciseId: old.exerciseId,
+      section: old.section,
+      prescription: PlanPrescription(
+        tracking: p.tracking,
+        sets: p.sets,
+        reps: p.reps,
+        workSeconds: p.workSeconds,
+        restSeconds: restSeconds,
+        transitionSeconds: p.transitionSeconds,
+        weightKg: p.weightKg,
+      ),
+    );
+    return proposeBlocks(
+      plan: plan,
+      blocks: blocks,
+      allowBudgetIncrease: allowBudgetIncrease,
+      warnings: plan.warnings
+          .where((w) => w != _restFallbackWarning(old.exerciseId))
+          .toList(),
+    );
+  }
+
+  /// Preview-only proposal. Never reduces sets/rests or removes a block to fit.
+  /// Permission allows a minute-rounded budget increase, not an invalid wire v1.
+  static StructuredPlan? proposeBlocks({
+    required StructuredPlan plan,
+    required List<PlanBlock> blocks,
+    bool allowBudgetIncrease = false,
+    List<String>? warnings,
+  }) {
+    final seconds = blocks.fold<int>(
+      0,
+      (s, b) => s + b.prescription.totalSeconds,
+    );
+    if (seconds > PlanPrescription.maxSeconds) return null;
+    var budget = plan.budgetSeconds;
+    if (seconds > budget) {
+      if (!allowBudgetIncrease) return null;
+      budget = ((seconds + 59) ~/ 60) * 60;
+      if (budget < 300) budget = 300;
+    }
+    final result = StructuredPlan(
+      criteria: plan.criteria,
+      budgetSeconds: budget,
+      level: plan.level,
+      equipment: plan.equipment,
+      blocks: blocks,
+      warnings: warnings ?? plan.warnings,
+    );
+    StructuredPlan.validateJson(
+      result.toJson(),
+      exerciseIds: result.exerciseIds,
+    );
+    return result;
   }
 }

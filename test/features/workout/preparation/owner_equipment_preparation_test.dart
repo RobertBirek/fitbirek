@@ -75,6 +75,7 @@ Future<List<PreparedTarget>> showCard(
             item.id: ExerciseCatalogEntry(
               tracking: 'reps',
               unilateral: false,
+              primaryMuscles: const ['quadriceps', 'glutes'],
               equipmentSets: options,
             ),
         },
@@ -127,7 +128,7 @@ void main() {
           'cw135',
           name: 'Ruch źródłowy',
           equipment: ['Hantle', 'Ławeczka'],
-        ),
+        ).copyWith(wzorzecRuchu: 'Lunge'),
         available: ['Step'],
         options: [
           ['Hantle', 'Ławeczka'],
@@ -139,7 +140,7 @@ void main() {
             'cw136',
             name: 'Ruch zastępczy',
             equipment: ['Hantle', 'Ławeczka'],
-          ),
+          ).copyWith(wzorzecRuchu: 'Lunge'),
         ],
         sheet: true,
       );

@@ -6,11 +6,23 @@ import 'package:fitbirek_training/core/models/exercise.dart';
 import 'package:fitbirek_training/core/models/user_profile.dart';
 import 'package:fitbirek_training/features/auth/providers/auth_providers.dart';
 import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/onboarding/providers/user_profile_provider.dart';
 import 'package:fitbirek_training/features/planner/data/planner_repository.dart';
 import 'package:fitbirek_training/features/planner/presentation/pages/planner_page.dart';
 import 'package:fitbirek_training/features/planner/providers/planner_providers.dart';
 import 'plan_explanation_fixtures.dart';
+
+Exercise compatibleExercise(String id) => explanationExercise(
+  id,
+).copyWith(typ: 'Wytrzymałość', wzorzecRuchu: 'Pull horyzontalny');
+final compatibleMetadata = ExerciseCatalogMetadata(
+  exercises: {
+    'a': explanationMetadata.exercises['a']!,
+    'b': explanationMetadata.exercises['a']!,
+  },
+  muscles: explanationMetadata.muscles,
+);
 
 void main() {
   for (final accept in [false, true]) {
@@ -23,12 +35,12 @@ void main() {
           overrides: [
             allExercisesProvider.overrideWith(
               (ref) => Stream.value([
-                explanationExercise('a'),
-                explanationExercise('b').copyWith(sprzet: ['Krzesło']),
+                compatibleExercise('a'),
+                compatibleExercise('b').copyWith(sprzet: ['Krzesło']),
               ]),
             ),
             exerciseCatalogMetadataProvider.overrideWith(
-              (ref) async => explanationMetadata,
+              (ref) async => compatibleMetadata,
             ),
             userProfileStreamProvider.overrideWith(
               (ref) => Stream.value(
@@ -105,7 +117,7 @@ void main() {
       overrides: [
         allExercisesProvider.overrideWith((ref) => stream.stream),
         exerciseCatalogMetadataProvider.overrideWith(
-          (ref) async => explanationMetadata,
+          (ref) async => compatibleMetadata,
         ),
         userProfileStreamProvider.overrideWith(
           (ref) => Stream.value(
@@ -144,7 +156,7 @@ void main() {
         child: const MaterialApp(home: PlannerPage()),
       ),
     );
-    stream.add([explanationExercise('a'), explanationExercise('b')]);
+    stream.add([compatibleExercise('a'), compatibleExercise('b')]);
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('Podgląd'));
     await tester.tap(find.text('Podgląd'));
@@ -152,7 +164,7 @@ void main() {
     await tester.ensureVisible(find.byTooltip('Wymień ćwiczenie'));
     await tester.tap(find.byTooltip('Wymień ćwiczenie'));
     await tester.pumpAndSettle();
-    stream.add([explanationExercise('a')]);
+    stream.add([compatibleExercise('a')]);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Zamień'));
     await tester.pumpAndSettle();

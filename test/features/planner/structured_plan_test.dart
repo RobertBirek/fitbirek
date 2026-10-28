@@ -64,6 +64,9 @@ void main() {
         e.id: ExerciseCatalogEntry(
           tracking: 'reps',
           unilateral: false,
+          primaryMuscles: e.id.startsWith('squat')
+              ? const ['quadriceps', 'glutes']
+              : const ['back'],
           styles: const ['strength'],
         ),
     },
@@ -169,8 +172,8 @@ void main() {
         generate(filters: const ExerciseFilters(query: 'missing')).blocks,
         isEmpty,
       );
-      final p = generate(minutes: 5);
-      final index = p.blocks.indexWhere((b) => b.section == PlanSection.main);
+      final p = generate(minutes: 15);
+      final index = p.blocks.indexWhere((b) => b.exerciseId == 'squat');
       final replaced = StructuredPlanGenerator.replace(
         plan: p,
         index: index,

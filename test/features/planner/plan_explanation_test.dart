@@ -151,14 +151,9 @@ void main() {
       ).copyWith(sprzet: ['Krzesło'], poziom: 'Średni', wzorzecRuchu: 'Push');
       final plan = explanationPlan();
       final before = plan.toJson();
-      final replacement = StructuredPlanGenerator.replace(
-        plan: plan,
-        index: 0,
-        allExercises: [a, b],
-        engine: engine,
-        equipment: plan.equipment,
-        level: plan.level,
-      )!;
+      // Historical snapshots may describe a formerly accepted, incompatible
+      // swap. Explain that data, rather than asking the safe engine to make it.
+      final replacement = explanationPlan(ids: ['b']);
       final text = PlanExplanation.forReplacement(
         plan: plan,
         replacement: replacement,
@@ -178,17 +173,10 @@ void main() {
     },
   );
 
-  test('current equipment override explains the same pool used by replace', () {
+  test('current equipment override explains the shared engine pool', () {
     final plan = explanationPlan();
     final b = explanationExercise('b').copyWith(sprzet: ['Guma']);
-    final replacement = StructuredPlanGenerator.replace(
-      plan: plan,
-      index: 0,
-      allExercises: [a, b],
-      engine: engine,
-      equipment: ['Guma'],
-      level: plan.level,
-    )!;
+    final replacement = explanationPlan(ids: ['b']);
     final text = PlanExplanation.forReplacement(
       plan: plan,
       replacement: replacement,

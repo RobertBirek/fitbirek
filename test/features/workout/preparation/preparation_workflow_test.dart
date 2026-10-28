@@ -102,12 +102,19 @@ class PreparationFixture {
         );
     final catalog = [
       for (final id in ['a', 'b', 'c', 'd'])
-        exercise(id, name: 'Ruch $id').copyWith(seriexPowtorzenia: '3×8–12'),
+        exercise(id, name: 'Ruch $id').copyWith(
+          seriexPowtorzenia: '3×8–12',
+          wzorzecRuchu: 'Pull horyzontalny',
+        ),
     ];
     final metadata = ExerciseCatalogMetadata(
       exercises: {
         for (final e in catalog)
-          e.id: const ExerciseCatalogEntry(tracking: 'reps', unilateral: true),
+          e.id: const ExerciseCatalogEntry(
+            tracking: 'reps',
+            unilateral: true,
+            primaryMuscles: ['back'],
+          ),
       },
     );
     final authority = MutableAuthority();
@@ -170,7 +177,10 @@ void main() {
     test('catalog change $change invalidates prepared start', () async {
       var current = [
         for (final id in ['a', 'b', 'c', 'd'])
-          exercise(id, name: 'Ruch $id').copyWith(seriexPowtorzenia: '3×8–12'),
+          exercise(id, name: 'Ruch $id').copyWith(
+            seriexPowtorzenia: '3×8–12',
+            wzorzecRuchu: 'Pull horyzontalny',
+          ),
       ];
       final f = await PreparationFixture.create(catalogReader: () => current);
       addTearDown(f.close);
