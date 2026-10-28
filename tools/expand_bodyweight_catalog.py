@@ -3,6 +3,7 @@
 
 Follow with xlsx_to_json.py, build_catalog_metadata.py and the Mentor generator.
 No save is performed when the workbook already contains the reviewed rows.
+Also reproduces the editorial English instructions sidecar, not runtime fields.
 """
 import argparse
 from copy import copy
@@ -12,11 +13,13 @@ import tempfile
 
 import openpyxl
 import xlsx_to_json as converter
-from bodyweight_additions import ADDITIONS, EXPECTED_COUNT, PREFIX_COUNT, SOURCES
+from bodyweight_additions import ADDITIONS, EXPECTED_COUNT, PREFIX_COUNT, SOURCES, INSTRUCTIONS_EN
 from build_catalog_metadata import MUSCLES
 from build_execution_conditions import INPUT_PATH, validate_classification
 from expand_catalog import SOURCE_PATH, ledger
 from update_exercise_names_pl import MAPPING_PATH, workbook_snapshot
+
+EN_PATH = Path(__file__).parent / 'source_data/bodyweight_instructions_en.json'
 
 
 def main():
@@ -60,10 +63,11 @@ def main():
             mapping[eid] = value
     validate_classification(execution, {f'cw{n:03d}' for n in range(1, EXPECTED_COUNT + 1)})
     texts = {p: json.dumps(v, ensure_ascii=False, indent=2) + '\n'
-             for p, v in [(MAPPING_PATH, names), (INPUT_PATH, execution), (SOURCE_PATH, ledger())]}
+             for p, v in [(MAPPING_PATH, names), (INPUT_PATH, execution), (SOURCE_PATH, ledger()),
+                          (EN_PATH, dict(schemaVersion=1, language='en', exercises=INSTRUCTIONS_EN))]}
     if args.check:
         for path, text in texts.items():
-            if path.read_text() != text:
+            if not path.exists() or path.read_text() != text:
                 raise ValueError(f'Static input differs: {path}')
     else:
         if added:
@@ -91,7 +95,7 @@ def main():
             finally:
                 temp.unlink(missing_ok=True)
         for path, text in texts.items():
-            if path.read_text() != text:
+            if not path.exists() or path.read_text() != text:
                 path.write_text(text)
     wb.close()
     print(f'Bodyweight expansion OK: {added} rows appended; {EXPECTED_COUNT} total')

@@ -5,10 +5,17 @@
 - `tools/bodyweight_additions.py`: jawne cw425–cw431, autorskie wskazówki,
   odczytane źródła HTTPS, osobno zakres źródła i adaptacje redakcyjne.
 - `tools/expand_bodyweight_catalog.py [--check]`: append-only XLSX, nazwy,
-  warunki i źródła. Potem `xlsx_to_json.py`, `build_catalog_metadata.py`
+  warunki, źródła i redakcyjny sidecar EN. Potem `xlsx_to_json.py`, `build_catalog_metadata.py`
   oraz `backend/tools/generate_mentor_catalog.py`.
 - `tools/source_data/`: XLSX i wersjonowane wejścia; `assets/data/`: surowy
   eksport, metadata i nadal ten sam manifest sześciu korekt.
+- `tools/source_data/bodyweight_instructions_en.json`: pełne autorskie opisy
+  EN siedmiu pozycji (nazwa, opis ruchu, wskazówki, błędy, tempo, dawka startowa,
+  progresja i regresja), odtwarzane z `INSTRUCTIONS_EN` w
+  `tools/bodyweight_additions.py` przez ten sam appender; `--check` odrzuca
+  brak lub nieaktualny plik bez zapisu. To wersjonowany materiał redakcyjny,
+  nie asset runtime: aplikacja nadal pokazuje instrukcje PL. Nie dodawaj pól
+  do `Exercise`, wire, UI ani migracji, by przechować ten materiał EN.
 - `exercise_illustrations.dart`, `exercise_detail_page.dart`:424 obrazów,
   jawny zbiór `awaitingIllustrationExerciseIds` dla siedmiu nowych ruchów,
   tekst „Ilustracja w przygotowaniu” zamiast obrazu innego ćwiczenia.

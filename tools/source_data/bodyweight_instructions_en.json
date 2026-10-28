@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "language": "en",
+  "exercises": {
+    "cw425": {
+      "name": "Wall push-up",
+      "description": "A standing push-up with both hands against a stable wall. Bend and straighten your arms while keeping your trunk and hips aligned, using only a comfortable range.",
+      "cues": [
+        "Face a stable wall from roughly an arm length away, standing on a non-slip floor.",
+        "Place your palms at chest height with your fingers pointing upwards.",
+        "Keep your trunk and hips in one line, with your feet staying on the floor.",
+        "Slowly bend your elbows close to your sides and bring your chest towards the wall within a comfortable range.",
+        "Press away smoothly to return to the starting position.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Letting your hands or feet slide.",
+        "Allowing your hips to sag.",
+        "Reaching forwards with only your head.",
+        "Pushing away with a sudden bounce."
+      ],
+      "tempo": "About 2 seconds in each direction, without swinging or bouncing.",
+      "prescription": "1-2 sets of 5-8 repetitions",
+      "progression": "First add smooth repetitions, then move your feet a little farther from the wall only while remaining stable.",
+      "regression": "Stand closer to the wall and reduce both the range and the number of repetitions."
+    },
+    "cw426": {
+      "name": "Bodyweight squat",
+      "description": "An unloaded squat performed without hand support. Bend your hips and knees together, keep your whole feet planted and return to standing without forcing depth.",
+      "cues": [
+        "Stand steadily with your feet slightly wider than your hips and your toes turned slightly outwards.",
+        "Reach your arms forwards without resting them on equipment.",
+        "Move your hips back and slowly bend your hips and knees, keeping your knees aligned with the direction of your feet.",
+        "Lower only as far as you can keep your whole feet down and your back position controlled.",
+        "Press your feet into the floor and straighten your hips and knees without jerking.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Lifting your heels.",
+        "Letting your knees collapse inwards.",
+        "Forcing a deeper squat.",
+        "Allowing your trunk to drop without control."
+      ],
+      "tempo": "About 2 seconds in each direction, without swinging or bouncing.",
+      "prescription": "1-2 sets of 5-8 repetitions",
+      "progression": "Add repetitions or gradually use a larger controlled range without adding external weight.",
+      "regression": "Use a shallower squat and fewer repetitions; do not force your thighs to reach parallel."
+    },
+    "cw427": {
+      "name": "Bodyweight reverse lunge",
+      "description": "An unloaded step backwards into a shallow lunge, followed by a controlled return to standing. The rear knee stays above the floor throughout; this is not a kneeling exercise.",
+      "cues": [
+        "Stand with your feet hip-width apart, space behind you and no weights in your hands.",
+        "Step one foot back onto its forefoot, keeping some sideways distance between your feet.",
+        "Slowly bend both legs while guiding the front knee in the direction of its toes.",
+        "Keep the rear knee above the floor throughout the movement; do not kneel down.",
+        "Press the whole front foot into the floor and return to standing without bouncing.",
+        "Complete a short set on one side, then change legs.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Placing both feet on one narrow line.",
+        "Dropping the rear knee onto the floor.",
+        "Letting the front knee collapse inwards.",
+        "Swinging your trunk to return to standing."
+      ],
+      "tempo": "About 2 seconds in each direction, without swinging or bouncing.",
+      "prescription": "1-2 sets of 5-8 repetitions per side",
+      "progression": "Add controlled repetitions on each side or slightly increase the comfortable range.",
+      "regression": "Take a shorter step and bend less deeply. If you cannot balance without hand support, choose a different exercise."
+    },
+    "cw428": {
+      "name": "March in place",
+      "description": "A gentle stationary march with alternating low foot lifts and relaxed arm movements. Time covers the whole alternating sequence, not a separate interval for each leg.",
+      "cues": [
+        "Stand on a level, non-slip surface with clear space around you.",
+        "Alternate low foot lifts and set each foot down quietly beneath your hip.",
+        "Keep your trunk upright, look ahead and breathe calmly.",
+        "Let your slightly bent arms move freely in rhythm with your steps.",
+        "Stay in the same place, without bouncing or forcing your knees high.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Bouncing between steps.",
+        "Stamping your feet loudly.",
+        "Leaning your trunk backwards.",
+        "Marching so fast that comfortable conversation becomes difficult."
+      ],
+      "tempo": "A calm, even rhythm without bouncing.",
+      "prescription": "1-2 sets of 20-30 seconds",
+      "progression": "Gradually lengthen a short marching interval at a pace that still allows comfortable conversation.",
+      "regression": "Lift your feet less, slow down and use a shorter interval with a rest break."
+    },
+    "cw429": {
+      "name": "Seated march",
+      "description": "Alternate small bent-knee lifts while sitting upright on a stable chair and lightly holding its sides. Measure the total time spent alternating, rather than time per leg.",
+      "cues": [
+        "Choose a stable chair without wheels on a non-slip surface, with your feet resting flat on the floor.",
+        "Sit upright away from the backrest and lightly hold the sides of the seat for stability.",
+        "Lift one foot a little with the knee bent, without leaning your trunk backwards.",
+        "Set the foot down gently and repeat with the other leg.",
+        "Continue alternating at a calm rhythm without tugging or rocking the chair.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Leaning backwards.",
+        "Forcing a high knee lift.",
+        "Stamping your feet.",
+        "Rocking the chair."
+      ],
+      "tempo": "A calm, even rhythm without bouncing.",
+      "prescription": "1-2 sets of 20-30 seconds",
+      "progression": "Lengthen the time spent alternating calmly without increasing your pace.",
+      "regression": "Lift each foot only slightly, shorten the interval and rest between attempts."
+    },
+    "cw430": {
+      "name": "Seated knee extension",
+      "description": "An unloaded seated knee extension with the thigh supported by the chair. Straighten and bend one knee slowly within a comfortable range, without a band or ankle weight.",
+      "cues": [
+        "Choose a stable chair without wheels on a non-slip surface, with your feet resting flat on the floor.",
+        "Sit upright with your hands resting loosely on your thighs, not supporting your body weight.",
+        "Keep your thigh on the seat and slowly straighten one knee, lifting the foot in front of you and gently drawing your toes towards your shin.",
+        "Stop at a comfortable range without abruptly locking the knee.",
+        "Slowly bend the knee and return your foot to the floor.",
+        "After a short set, change legs; do not use a resistance band or ankle weight.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Kicking with momentum.",
+        "Leaning your trunk backwards.",
+        "Lifting your thigh off the seat.",
+        "Forcing the knee into hyperextension."
+      ],
+      "tempo": "About 2 seconds in each direction, without swinging or bouncing.",
+      "prescription": "1-2 sets of 5-8 repetitions per side",
+      "progression": "Add controlled repetitions or a brief calm pause near extension, without adding external resistance.",
+      "regression": "Use a smaller comfortable range and fewer repetitions on each side."
+    },
+    "cw431": {
+      "name": "Bodyweight fire hydrant",
+      "description": "A small sideways lift of a bent leg from a hands-and-knees position, without a band. Move at the hip while keeping the pelvis still rather than lifting the knee as high as possible.",
+      "cues": [
+        "Place your hands under your shoulders and your knees under your hips on a level, comfortable surface, without a resistance band.",
+        "Keep your back steady, lightly engage your abdomen and look down.",
+        "Keep the knee bent at about a right angle and lift one leg sideways with a small movement at the hip.",
+        "Do not rotate your pelvis or trunk and do not lift the knee beyond about 45 degrees; a smaller range is enough.",
+        "Slowly return the knee beneath your hip and change sides after a short set.",
+        "A mat may make the position more comfortable, but it is not required.",
+        "Breathe freely.",
+        "End the set before you lose control of the movement.",
+        "Stop if you feel pain, numbness or dizziness."
+      ],
+      "errors": [
+        "Rotating your pelvis.",
+        "Letting your lower back sag.",
+        "Straightening the knee instead of moving the hip sideways.",
+        "Forcing a higher leg lift."
+      ],
+      "tempo": "About 2 seconds in each direction, without swinging or bouncing.",
+      "prescription": "1-2 sets of 5-8 repetitions per side",
+      "progression": "Add smooth repetitions or a short pause while keeping the pelvis still.",
+      "regression": "Reduce the range and the number of repetitions. If kneeling or supporting yourself on your hands is uncomfortable, choose a different exercise."
+    }
+  }
+}

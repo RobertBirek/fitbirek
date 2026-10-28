@@ -27,9 +27,74 @@ PATHS = ['tools/source_data/baza_cwiczen_316.xlsx',
          'backend/app/mentor/exercise_catalog.json']
 TOOLS = ['tools/expand_bodyweight_catalog.py', 'tools/xlsx_to_json.py',
          'tools/build_catalog_metadata.py', 'backend/tools/generate_mentor_catalog.py']
+EN_PATH = 'tools/source_data/bodyweight_instructions_en.json'
 
 
 class BodyweightTests(unittest.TestCase):
+    def test_full_english_editorial_instructions_cover_exactly_seven_movements(self):
+        path = ROOT / EN_PATH
+        self.assertTrue(path.exists(), 'Missing complete English editorial sidecar')
+        sidecar = json.loads(path.read_text())
+        self.assertEqual(set(sidecar), {'schemaVersion', 'language', 'exercises'})
+        self.assertEqual(sidecar['schemaVersion'], 1)
+        self.assertEqual(sidecar['language'], 'en')
+        self.assertEqual(set(sidecar['exercises']), {f'cw{n}' for n in range(425, 432)})
+        raw = json.loads((ROOT / PATHS[4]).read_text())
+        for pl in raw[424:431]:
+            eid = pl['id']
+            en = sidecar['exercises'][eid]
+            self.assertEqual(set(en), {'name', 'description', 'cues', 'errors', 'tempo',
+                                       'prescription', 'progression', 'regression'})
+            self.assertEqual(en['name'], pl['nazwaEn'])
+            for field in ('description', 'tempo', 'prescription', 'progression', 'regression'):
+                self.assertIsInstance(en[field], str)
+                self.assertTrue(en[field].strip(), (eid, field))
+            self.assertGreaterEqual(len(en['description'].split()), 12, eid)
+            for field, pl_field in [('cues', 'kluczoweWskazowki'), ('errors', 'czesteBledy')]:
+                self.assertIsInstance(en[field], list)
+                self.assertEqual(len(en[field]), len(pl[pl_field]), (eid, field))
+                self.assertTrue(all(isinstance(s, str) and s.strip() for s in en[field]))
+                self.assertTrue(all(s not in pl[pl_field] for s in en[field]), (eid, field))
+            self.assertEqual(en['prescription'], '1-2 sets of 20-30 seconds' if eid in ('cw428', 'cw429')
+                             else '1-2 sets of 5-8 repetitions per side' if eid in ('cw427', 'cw430', 'cw431')
+                             else '1-2 sets of 5-8 repetitions')
+            self.assertIn('Stop if you feel pain, numbness or dizziness.', en['cues'])
+
+    def test_english_sidecar_is_generated_checked_and_idempotent_without_changing_catalog(self):
+        with tempfile.TemporaryDirectory(dir='/tmp/opencode') as tmp:
+            root = Path(tmp)
+            shutil.copytree(ROOT / 'tools', root / 'tools', ignore=shutil.ignore_patterns('__pycache__'))
+            # A completed431 device/repository, not a partially replayed workbook.
+            for path in PATHS:
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_bytes(subprocess.check_output(['git', 'show', 'd778e69:' + path], cwd=ROOT))
+            en_path = root / EN_PATH
+            en_path.unlink(missing_ok=True)
+            protected = {path: (root / path).read_bytes() for path in PATHS}
+            command = [sys.executable, str(root / TOOLS[0])]
+            check = subprocess.run(command + ['--check'], capture_output=True, text=True)
+            self.assertNotEqual(check.returncode, 0, 'Missing EN must fail --check')
+            self.assertFalse(en_path.exists(), '--check must not create the sidecar')
+            for _ in range(2):
+                result = subprocess.run(command, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertTrue(en_path.exists(), 'Appender must generate full EN sidecar')
+                self.assertEqual(en_path.read_bytes(), (ROOT / EN_PATH).read_bytes())
+                self.assertEqual(subprocess.run(command + ['--check'], capture_output=True).returncode, 0)
+                for path, before in protected.items():
+                    self.assertEqual((root / path).read_bytes(), before, path)
+            good = en_path.read_bytes()
+            bad = json.loads(good)
+            del bad['exercises']['cw431']['regression']
+            en_path.write_text(json.dumps(bad))
+            stale = en_path.read_bytes()
+            self.assertNotEqual(subprocess.run(command + ['--check'], capture_output=True).returncode, 0)
+            self.assertEqual(en_path.read_bytes(), stale, '--check must not repair stale EN')
+            subprocess.run(command, check=True, capture_output=True)
+            self.assertEqual(en_path.read_bytes(), good)
+            for path, before in protected.items():
+                self.assertEqual((root / path).read_bytes(), before, path)
+
     def test_exact_data_metadata_and_verified_source_coverage(self):
         data = json.loads((ROOT / PATHS[4]).read_text())
         self.assertEqual(len(data), 431)
