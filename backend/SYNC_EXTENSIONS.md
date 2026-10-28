@@ -13,10 +13,10 @@ kluczami istniejącego payloadu JSONB:
 
 | entityType | Klucze zachowywane przy pominięciu |
 | --- | --- |
-| `profile` | `filterPresets`, `exerciseVariants`, `weeklySchedule`, `fitnessProtocols` |
+| `profile` | `filterPresets`, `exerciseVariants`, `weeklySchedule`, `fitnessProtocols`, `trainingPrograms` |
 | `fitnessTest` | `customProtocol` |
 | `workoutSession` | `guidance` |
-| `workoutSet` | `variantId`, `variantLabel`, `side` |
+| `workoutSet` | `variantId`, `variantLabel`, `side`, `setRole` |
 | `personalRecord` | `variantId`, `variantLabel`, `side` |
 | `workoutPlan` | `structure` (z kontrolą zgodności ID opisaną poniżej) |
 
@@ -302,3 +302,70 @@ nie dziedziczy rozszerzeń przy jawnym revival, jak dotychczas.
 
 API wymaga osobnego wdrożenia **przed** nowym klientem; ta implementacja nie
 oznacza wdrożenia ani zgody na zmianę produkcji.
+
+## Role serii i programy A/B — 2026-10-28
+
+Kontrakt: `docs/superpowers/specs/2026-10-28-training-sets-programs-design.md`,
+sekcje 1/5/6. Bez nowych typów encji, DDL, migracji Alembic ani backfillu.
+
+- `workoutSet.payload.setRole` jest opcjonalne: jawne `null` albo dokładnie
+  string `working` / `warmup`. Pydantic waliduje typowany literal w trybie
+  strict, bez konwersji liczb/bool/list/map i bez wartości domyślnej. Inne
+  wartości dają HTTP 422 podczas walidacji całego żądania, **przed zapisami**,
+  także dla DELETE. Nie wprowadzamy tej walidacji dla innych typów encji.
+- Brak / `null` zachowuje dotychczasową semantykę obliczeń (legacy), nie stanowi
+  dowodu historycznie świadomie wybranej roli. Nie przepisujemy logów ani PR.
+  Omission przy aktualizacji żywej serii zachowuje jej rolę, także zapisany
+  `null`; explicit `null` resetuje rolę do legacy. DELETE nie dziedziczy roli,
+  a revival nie kopiuje jej z tombstone'a. Dotyczy to tylko `workoutSet`, nie PR.
+- `profile.payload.trainingPrograms` jest optional/nullable opaque JSON.
+  Omission zachowuje całą kolekcję wyłącznie z żywego profilu, również `null`;
+  explicit `null` czyści ją, obecna wartość zastępuje całość bez deep merge.
+  DELETE/revival nie dziedziczą kolekcji. Backend nie waliduje wersji/koperty,
+  programów, terminów, granicy zakończenia, referencji ani dowodów ukończenia;
+  nie scala wpisów i nie planuje powiadomień. To odpowiedzialność klienta.
+  Nadal obowiązuje ogólny kontrakt finite JSON i limit 100 operacji w batchu.
+- `structure` i `guidance` pozostają opaque, również dla schema2 i przyszłych
+  wersji. Istniejący guard zgodności `cwiczeniaIds` przy omission struktury
+  pozostaje bez zmian; nie dodajemy walidacji całego schematu programu/planu.
+- Walidacja nie zmienia attempted payloadu ani hasha. Zachowanie optional
+  extensions następuje wyłącznie na kopii snapshotu po CAS/idempotencji;
+  retry, `operationReuse`, historia wersji i rollback całego batcha bez zmian.
+- Mentor wyklucza **wyłącznie jawny `setRole: "warmup"`** z projekcji serii
+  i trendu. Filtr działa w SQL przed limitem 144 serii, więc nowsze rozgrzewki
+  nie wypierają working/legacy. Missing/JSON null i working nadal liczą się
+  jak wcześniej. Nie zmieniamy selekcji zakończonych sesji ani ich licznika;
+  warmup-only może mieć pustą listę serii, bez dowodu progresji. Projekcja
+  nie zapisuje zmian do źródłowych rekordów.
+
+### Zgodność i przyszła publikacja
+
+Przeczytano `DEPLOY.md`. **API-first** pozostaje wymaganą kolejnością przyszłego,
+osobno zatwierdzonego wydania: stary backend nie ochroni pominiętych nowych pól
+i nie odfiltruje rozgrzewek w Mentorze. Ochrona omission nie daje staremu
+klientowi semantycznej zgodności: może on liczyć warmup jako PR/progresję,
+nie rozumieć schema2, programów ani backup4. Potrzebny jest plan aktualizacji
+klientów, bez resetowania danych/outboxa. Ten task niczego nie publikuje;
+produkcja, konfiguracja i wersja wydania pozostają nietknięte.
+
+### Weryfikacja Task 1
+
+Python **3.12.3**, istniejący `.venv` z zależnościami instalowanymi przez
+`make test-health` z `--require-hashes`; Docker/Testcontainers, izolowany
+PostgreSQL16 z przypiętym obrazem z `tests/conftest.py`, bez SQLite/produkcji.
+
+```sh
+# RED przed implementacją i GREEN po niej (ten sam selektor):
+.venv/bin/python -m pytest -q tests/test_sync.py tests/test_mentor_context.py \
+  -k 'extension or set_role or training_v2 or only_explicit_warmup'
+# Cały backend na aktualnym kodzie:
+.venv/bin/python -m pytest -q
+```
+
+- RED: **40 failed, 62 passed, 112 deselected**, 150.39s; oczekiwane błędy
+  invalid role zaakceptowane zamiast422, utrata omission i trend warmup.
+- GREEN focused: **102 passed, 112 deselected**, 173.84s.
+- GREEN pełny backend: **691 passed**, 867.71s.
+- Logi: `/tmp/opencode/training-programs-backend-{red,green,full}.log`.
+  Baseline hash-locked health: `training-programs-backend-baseline-health.log`
+  w tym samym katalogu. Niezależny review przed Task2 pozostaje osobną bramą.

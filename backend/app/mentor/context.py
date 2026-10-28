@@ -229,6 +229,9 @@ async def _training_projection(db, user_id) -> dict:
     set_rows = list((await db.scalars(select(SyncRecord).where(
         SyncRecord.user_id == user_id, SyncRecord.deleted_at.is_(None),
         SyncRecord.entity_type == "workoutSet", SyncRecord.payload["sessionSyncId"].astext.in_(ids),
+        # Filter before the bound so recent warmups cannot displace working
+        # evidence. Missing/JSON null keeps the historical legacy semantics.
+        SyncRecord.payload["setRole"].astext.is_distinct_from("warmup"),
     ).order_by(SyncRecord.updated_at.desc()).limit(12 * 12))).all())
     sets_by_session: dict[str, list[dict]] = {item: [] for item in ids}
     progress_by_session: dict[str, dict[str, float]] = {item: {} for item in ids}

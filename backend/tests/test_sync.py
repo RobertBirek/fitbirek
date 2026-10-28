@@ -897,6 +897,14 @@ WEEKLY_SCHEDULE = {"version": 1, "entries": [{
 }]}
 
 
+TRAINING_PROGRAMS = {"version": 1, "entries": [{
+    "id": "33333333-3333-4333-8333-333333333333", "name": "A/B", "kind": "program",
+    "createdAtUtc": "2026-10-28T12:00:00Z", "updatedAtUtc": "2026-10-28T12:00:00Z",
+    "planSyncIds": ["44444444-4444-4444-8444-444444444444", "55555555-5555-4555-8555-555555555555"],
+    "weekdays": [1, 3, 5], "effectiveFromDate": "2026-10-28",
+}]}
+
+
 EXTENSION_CASES = [
     ("profile", {"filterPresets": {"version": 1, "entries": [{
         "id": str(uuid4()), "name": "Mata", "filters": {"equipment": ["Mata"]},
@@ -904,18 +912,80 @@ EXTENSION_CASES = [
     }]}, "exerciseVariants": {"version": 1, "entries": [{
         "id": str(uuid4()), "exerciseId": "cw317", "name": "Wolno", "tempo": "3-1-3",
         "createdAtUtc": "2026-10-16T00:00:00Z", "updatedAtUtc": "2026-10-16T00:00:00Z",
-    }]}, "weeklySchedule": WEEKLY_SCHEDULE}),
+    }]}, "weeklySchedule": WEEKLY_SCHEDULE, "trainingPrograms": TRAINING_PROGRAMS}),
     pytest.param("profile", {"weeklySchedule": WEEKLY_SCHEDULE}, id="weeklySchedule"),
+    pytest.param("profile", {"trainingPrograms": TRAINING_PROGRAMS}, id="trainingPrograms"),
+    pytest.param("profile", {"trainingPrograms": None}, id="trainingPrograms-null"),
     ("workoutSession", {"guidance": {"schemaVersion": 1, "progress": {"block": 2}}}),
     ("workoutSet", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
     ("personalRecord", {"variantId": str(uuid4()), "variantLabel": "Wolno"}),
     ("workoutSet", {"side": "left"}),
+    pytest.param("workoutSet", {"setRole": "warmup"}, id="setRole-warmup"),
+    pytest.param("workoutSet", {"setRole": "working"}, id="setRole-working"),
+    pytest.param("workoutSet", {"setRole": None}, id="setRole-null"),
     ("personalRecord", {"side": "right"}),
 ]
 
 
 def extension_operation(entity_type, **kwargs):
     return PushOperation.model_validate({**operation(**kwargs), "entityType": entity_type})
+
+
+@pytest.mark.parametrize("role", [True, False, 0, 1, 1.0, [], {}, "", "WORKING", "Warmup", "unknown"])
+@pytest.mark.parametrize("deleted", [False, True])
+async def test_set_role_invalid_rejects_entire_batch_before_writes(client, account, session, role, deleted):
+    headers = await authenticate(client, account)
+    invalid = {**operation(payload={"setRole": role}, deleted=deleted), "entityType": "workoutSet"}
+    response = await client.post("/api/sync/push", json={"operations": [operation(), invalid]}, headers=headers)
+    assert response.status_code == 422, response.text
+    assert (await client.get("/api/sync/pull")).json() == {"cursor": 0, "changes": []}
+    for model in (SyncRecord, SyncChange, SyncOperation):
+        assert await session.scalar(select(func.count()).select_from(model)) == 0
+
+
+@pytest.mark.parametrize("payload", [{"numerSerii": 1}, {"setRole": None}, {"setRole": "working"}, {"setRole": "warmup"}])
+async def test_set_role_validation_preserves_original_request_and_digest(client, account, session, payload):
+    headers = await authenticate(client, account)
+    raw = {**operation(payload=payload), "entityType": "workoutSet"}
+    original_bytes = json.dumps(raw, separators=(",", ":"))
+    parsed = PushOperation.model_validate_json(original_bytes)
+    assert parsed.payload == payload
+    # Independent canonical hash, not the service's own helper as the oracle.
+    from hashlib import sha256
+    expected_digest = sha256(json.dumps(raw, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    assert sync_service.request_digest(parsed) == expected_digest
+    response = await client.post("/api/sync/push", content='{"operations":[' + original_bytes + ']}',
+                                 headers={**headers, "Content-Type": "application/json"})
+    assert response.status_code == 200, response.text
+    stored = await session.scalar(select(SyncOperation).where(SyncOperation.operation_id == parsed.operation_id))
+    assert stored.request_digest == expected_digest
+    assert (await client.get("/api/sync/pull")).json()["changes"][0]["payload"] == payload
+    assert parsed.payload == payload
+    assert json.dumps(raw, separators=(",", ":")) == original_bytes
+
+
+@pytest.mark.parametrize("entity_type", ["profile", "personalRecord", "workoutSession", "mood"])
+async def test_set_role_validation_is_workout_set_only(client, account, entity_type):
+    headers = await authenticate(client, account)
+    raw = {**operation(payload={"setRole": {"future": True}}), "entityType": entity_type}
+    response = await client.post("/api/sync/push", json={"operations": [raw]}, headers=headers)
+    assert response.status_code == 200, response.text
+    assert response.json()["conflicts"] == []
+
+
+@pytest.mark.parametrize("schema_version", [2, 99])
+@pytest.mark.parametrize("entity_type,key", [("workoutPlan", "structure"), ("workoutSession", "guidance")])
+async def test_training_v2_and_future_extensions_remain_opaque(account, session, entity_type, key, schema_version):
+    extension = {"schemaVersion": schema_version, "blocks": [{"exerciseId": "cw001", "targets": [
+        {"targetId": "warmup-1", "setRole": "warmup", "future": [True, None, 2.5]},
+    ]}], "unknown": {"keep": "raw"}}
+    initial = extension_operation(entity_type, payload={"cwiczeniaIds": ["cw001"], key: extension})
+    omitted = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1,
+                                  payload={"cwiczeniaIds": ["cw001"], "name": "renamed"})
+    assert not (await sync_service.push_operations(session, account.id, [initial, omitted])).conflicts
+    changes = (await sync_service.pull_changes(session, account.id, 0)).changes
+    assert [change.payload[key] for change in changes] == [extension, extension]
+    assert key not in omitted.payload
 
 
 @pytest.mark.parametrize("entity_type,extras", EXTENSION_CASES)
@@ -1009,13 +1079,15 @@ async def test_extension_delete_and_revival_do_not_copy_tombstone_extras(account
     assert changes[-1].deleted_at is None
 
 
-async def test_extension_conflict_returns_committed_snapshot_and_rolls_back_planned_merge(account, session):
+@pytest.mark.parametrize("entity_type,extras", [
+    ("profile", EXTENSION_CASES[0][1]), ("workoutSet", {"setRole": "warmup"}),
+])
+async def test_extension_conflict_returns_committed_snapshot_and_rolls_back_planned_merge(account, session, entity_type, extras):
     user_id = account.id
-    extras = EXTENSION_CASES[0][1]
-    initial = extension_operation("profile", payload={"name": "committed", **extras})
+    initial = extension_operation(entity_type, payload={"name": "committed", **extras})
     await sync_service.push_operations(session, user_id, [initial])
-    planned = extension_operation("profile", entity_id=initial.entity_id, base_version=1, payload={"name": "planned"})
-    stale = extension_operation("profile", entity_id=initial.entity_id, base_version=1, payload={"name": "stale"})
+    planned = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1, payload={"name": "planned"})
+    stale = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1, payload={"name": "stale"})
     result = await sync_service.push_operations(session, user_id, [planned, stale])
     assert result.accepted == []
     assert result.conflicts[0].record.version == 1
@@ -1049,7 +1121,7 @@ async def test_extension_present_value_replaces_whole_value_without_semantic_val
     initial = extension_operation(entity_type, payload={"name": "first", **extras})
     await sync_service.push_operations(session, account.id, [initial])
     # Future client-owned schemas are not deep-merged or constrained to v1.
-    replacement = {key: {"futureSchema": [True, None, 2.5]} for key in extras}
+    replacement = {key: "working" if key == "setRole" else {"futureSchema": [True, None, 2.5]} for key in extras}
     update = extension_operation(entity_type, entity_id=initial.entity_id, base_version=1,
                                  payload={"name": "second", **replacement})
     assert (await sync_service.push_operations(session, account.id, [update])).conflicts == []
@@ -1061,9 +1133,9 @@ async def test_extension_new_record_baseline_and_keys_are_type_scoped(account, s
     baseline = extension_operation(entity_type, payload={"name": "baseline"})
     assert (await sync_service.push_operations(session, account.id, [baseline])).conflicts == []
     assert (await sync_service.pull_changes(session, account.id, 0)).changes[-1].payload == baseline.payload
-    foreign_keys = {"filterPresets", "exerciseVariants", "weeklySchedule", "guidance", "variantId", "variantLabel", "side", "structure"} - set(
-        {"profile": ("filterPresets", "exerciseVariants", "weeklySchedule"), "workoutSession": ("guidance",),
-         "workoutSet": ("variantId", "variantLabel", "side"), "personalRecord": ("variantId", "variantLabel", "side")}.get(entity_type, ())
+    foreign_keys = {"filterPresets", "exerciseVariants", "weeklySchedule", "trainingPrograms", "setRole", "guidance", "variantId", "variantLabel", "side", "structure"} - set(
+        {"profile": ("filterPresets", "exerciseVariants", "weeklySchedule", "trainingPrograms"), "workoutSession": ("guidance",),
+         "workoutSet": ("variantId", "variantLabel", "side", "setRole"), "personalRecord": ("variantId", "variantLabel", "side")}.get(entity_type, ())
     )
     with_foreign = extension_operation(entity_type, entity_id=baseline.entity_id, base_version=1,
                                       payload={"name": "foreign", **{k: "not preserved" for k in foreign_keys}})
@@ -1094,11 +1166,11 @@ async def test_extension_commit_failure_rolls_back_snapshot_history_and_digest(a
     assert (await sync_service.push_operations(session, user_id, [update])).conflicts == []
 
 
-@pytest.mark.parametrize("key", ["filterPresets", "exerciseVariants", "weeklySchedule", "guidance", "variantId", "variantLabel"])
+@pytest.mark.parametrize("key", ["filterPresets", "exerciseVariants", "weeklySchedule", "trainingPrograms", "guidance", "variantId", "variantLabel"])
 async def test_extension_values_do_not_bypass_finite_json_validation(client, account, key):
     headers = await authenticate(client, account)
     invalid = {**operation(payload={key: {"entries": [{"value": float("inf")}]}}),
-               "entityType": "profile" if key in ("filterPresets", "exerciseVariants", "weeklySchedule") else
+               "entityType": "profile" if key in ("filterPresets", "exerciseVariants", "weeklySchedule", "trainingPrograms") else
                "workoutSession" if key == "guidance" else "workoutSet"}
     response = await client.post("/api/sync/push", content=json.dumps({"operations": [invalid]}),
                                  headers={**headers, "Content-Type": "application/json"})

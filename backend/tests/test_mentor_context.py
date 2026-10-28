@@ -548,3 +548,47 @@ async def test_training_projection_excludes_open_sessions_and_aggregates_progres
     assert str(open_id) not in rendered and str(early_id) not in rendered and str(recent_id) not in rendered
     trend_rendered = json.dumps(projected["progress_trend"])
     assert "10" not in trend_rendered and "12" not in trend_rendered and "started_at" not in trend_rendered
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("role", ["omitted", None, "working", "warmup"])
+async def test_training_projection_only_explicit_warmup_is_excluded(context_account, session, role):
+    from app.mentor.context import _training_projection
+    from app.sync.models import SyncRecord
+
+    account, _, _ = context_account
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    records = []
+    for days_ago, weight in [(7, 10), (1, 12)]:
+        session_id = uuid4()
+        started = now - timedelta(days=days_ago)
+        records.append(SyncRecord(user_id=account.id, entity_type="workoutSession", entity_id=session_id,
+            version=1, updated_at=started, payload={"dataStart": started.isoformat(),
+                "dataKoniec": (started + timedelta(minutes=30)).isoformat()}))
+        payload = {"sessionSyncId": str(session_id), "cwiczenieId": "cw001", "numerSerii": 1,
+                   "ciezarKg": weight, "powtorzenia": 8}
+        if role != "omitted":
+            payload["setRole"] = role
+        records.append(SyncRecord(user_id=account.id, entity_type="workoutSet", entity_id=uuid4(),
+                                  version=1, updated_at=started, payload=payload))
+        # Newer, larger warmups must not crowd out working sets at the SQL limit
+        # or reverse the progress trend (early warmup is much heavier).
+        for index in range(145):
+            records.append(SyncRecord(user_id=account.id, entity_type="workoutSet", entity_id=uuid4(),
+                version=1, updated_at=now + timedelta(seconds=index), payload={**payload,
+                    "setRole": "warmup", "numerSerii": 2, "ciezarKg": 100 if days_ago == 7 else 50}))
+    session.add_all(records)
+    await session.commit()
+    original_payloads = [dict(row.payload) for row in records]
+
+    projected = await _training_projection(session, account.id)
+
+    expected_trend = [] if role == "warmup" else [{"exercise": "Pompki klasyczne", "direction": "up"}]
+    assert projected["progress_trend"] == {"completed_sessions": 2, "by_exercise": expected_trend}
+    assert [item["sets"] for item in projected["sessions"]] == ([[], []] if role == "warmup" else [
+        [{"exercise": "Pompki klasyczne", "set_number": 1, "reps": 8, "weight_kg": 12}],
+        [{"exercise": "Pompki klasyczne", "set_number": 1, "reps": 8, "weight_kg": 10}],
+    ])
+    for row, original in zip(records, original_payloads):
+        await session.refresh(row)
+        assert row.payload == original

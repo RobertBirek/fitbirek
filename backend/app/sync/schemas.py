@@ -3,7 +3,10 @@ from math import isfinite
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter, ValidationInfo, field_validator
+
+
+set_role_adapter = TypeAdapter(Literal["working", "warmup"] | None)
 
 
 class SyncSchema(BaseModel):
@@ -21,6 +24,15 @@ class PushOperation(SyncRequest):
     base_version: int = Field(alias="baseVersion", ge=0)
     payload: dict[str, JsonValue]
     deleted: bool
+
+    @field_validator("payload")
+    @classmethod
+    def validate_workout_set_role(cls, payload: dict[str, JsonValue], info: ValidationInfo) -> dict[str, JsonValue]:
+        if info.data.get("entity_type") == "workoutSet" and "setRole" in payload:
+            # Validate only: omission/null and the attempted hash input must not
+            # be rewritten, defaulted or normalized into a new payload.
+            set_role_adapter.validate_python(payload["setRole"], strict=True)
+        return payload
 
     @field_validator("payload")
     @classmethod

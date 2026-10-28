@@ -27,10 +27,10 @@ from app.sync.schemas import (
 pull_limit = 500
 publisher_lock_key = "sync-change-publisher"
 optional_extension_keys = {
-    "profile": ("filterPresets", "exerciseVariants", "weeklySchedule", "fitnessProtocols"),
+    "profile": ("filterPresets", "exerciseVariants", "weeklySchedule", "fitnessProtocols", "trainingPrograms"),
     "fitnessTest": ("customProtocol",),
     "workoutSession": ("guidance",),
-    "workoutSet": ("variantId", "variantLabel", "side"),
+    "workoutSet": ("variantId", "variantLabel", "side", "setRole"),
     "personalRecord": ("variantId", "variantLabel", "side"),
     "workoutPlan": ("structure",),
 }
