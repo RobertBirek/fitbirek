@@ -120,3 +120,25 @@ Sprawdzać zwłaszcza: rzeczywiste niejednoznaczne rekordy katalogu, secondary
 zamiast primary, typy/styl regeneracyjny, jednostronność, komplet sprzętu,
 różne dawki/czasy, jedną serię, 90 min, cancel, nieaktualne dialogi,
 atomową sygnaturę po ponownym otwarciu bazy i brak przeniesienia timera/kg.
+
+## Weryfikacja implementacji
+
+Kod `360fa58` na gałęzi `feat/planner-safe-replacements`, Flutter 3.35.4 /
+Dart 3.9.2, przeszedł niezależny review wraz z poprawkami stale baseline
+i akcji bezpośrednio po recovery. Końcowe wyniki na aktualnym źródle:
+
+- Planner/workout: 568 testów zaliczonych.
+- Pełne `flutter test --no-pub --reporter expanded`: 1667 zaliczonych,
+  1 istniejący test pominięty; bez błędów (7 min 2 s).
+- `flutter analyze --no-pub`: bez uwag; kontrola wersji aplikacji poprawna.
+- Format 23 zmienionych plików Dart: bez zmian; `git diff --check` poprawny.
+- `flutter build web --release --no-pub --no-web-resources-cdn`: poprawny
+  standardowy build Web. Dry run Wasm nadal ostrzega o istniejących
+  zależnościach `flutter_secure_storage_web`/`js`; nie jest to build Wasm.
+
+Testy używały istniejącego obrazu
+`fit-web:verification-1.23.1-40-illustrations-candidate`, z read-only mountem
+aktualnego worktree skopiowanym do roboczego `/app`. Web budowano osobno,
+pobierając brakujący SDK Web dokładnie tej samej przypiętej wersji Fluttera.
+Nie testowano działania w prawdziwej przeglądarce/PWA ani zabicia procesu telefonu.
+Bez publikacji, wdrożenia, zmiany wersji, zależności i artefaktów Web SQLite.
