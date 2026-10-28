@@ -5,6 +5,7 @@ import 'package:fitbirek_training/core/models/exercise.dart';
 import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/exercises/domain/exercise_filter_engine.dart';
 import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
+import 'package:fitbirek_training/features/planner/domain/exercise_training_policy.dart';
 import 'package:fitbirek_training/features/planner/data/planner_repository.dart';
 import 'package:fitbirek_training/features/planner/providers/planner_providers.dart';
 import 'package:fitbirek_training/features/workout/preparation/domain/workout_preparation.dart';
@@ -353,9 +354,122 @@ void main() {
         ),
       );
       final plan = generate([a], using: using);
+      expect(
+        ExerciseTrainingPolicy.compatible(
+          source: a,
+          candidate: b,
+          engine: using,
+        ),
+        isFalse,
+      );
       expect(replace(plan, [a, b], using: using), isNull);
       expect(preparation(plan, [a, b], using).candidatesFor(0), isEmpty);
       expect(plan.blocks.single.prescription.restSeconds, 30);
+    },
+  );
+  for (final id in ['cw111', 'cw112']) {
+    test('ambiguous Triceps refuses real $id bench dip to cw105 isolation', () {
+      final benchDip = real(id);
+      final isolation = real('cw105');
+      final plan = generate([benchDip]);
+      expect(
+        ExerciseTrainingPolicy.compatible(
+          source: benchDip,
+          candidate: isolation,
+          engine: engine,
+        ),
+        isFalse,
+      );
+      expect(
+        replace(plan, [benchDip, isolation], equipment: ['Hantle', 'Ławeczka']),
+        isNull,
+      );
+      expect(
+        preparation(
+          plan,
+          [benchDip, isolation],
+          engine,
+          equipment: ['Hantle', 'Ławeczka'],
+        ).candidatesFor(0),
+        isEmpty,
+      );
+    });
+    test(
+      'real $id bench dip has explicit rest fallback for catalog and fallback doses',
+      () {
+        for (final e in [real(id), real(id).copyWith(seriexPowtorzenia: '')]) {
+          final plan = generate([e]);
+          final p = plan.blocks.single.prescription;
+          expect(p.restSeconds, 30);
+          expect(
+            plan.warnings,
+            contains(
+              '$id: Brak jednoznacznej polityki przerw; zastosowano domyślnie 30 s między seriami.',
+            ),
+          );
+          expect(
+            p.totalSeconds,
+            e.seriexPowtorzenia.isEmpty || id == 'cw111' ? 165 : 201,
+          );
+          expect(
+            StructuredPlan.fromJson(plan.toJson()).toJson(),
+            plan.toJson(),
+          );
+        }
+      },
+    );
+  }
+  test(
+    'ambiguous Triceps denies automation even for a cloned real isolated exercise',
+    () {
+      final original = real('cw105');
+      final clone = original.copyWith(id: 'custom-triceps');
+      final using = ExerciseFilterEngine(
+        ExerciseCatalogMetadata(
+          exercises: {
+            original.id: metadata.entryFor(original.id)!,
+            clone.id: metadata.entryFor(original.id)!,
+          },
+        ),
+      );
+      final plan = generate([original], using: using);
+      expect(replace(plan, [original, clone], using: using), isNull);
+      expect(plan.blocks.single.prescription.restSeconds, 30);
+      expect(ExerciseTrainingPolicy.restFor(clone), (
+        seconds: 30,
+        fallback: true,
+      ));
+    },
+  );
+  test(
+    'manual rest removes only the edited real Triceps block fallback warning',
+    () {
+      final first = generate([real('cw111')]);
+      final second = generate([real('cw105')]);
+      final plan = StructuredPlan(
+        criteria: first.criteria,
+        budgetSeconds: 2700,
+        blocks: [...first.blocks, ...second.blocks],
+        warnings: [...first.warnings, ...second.warnings],
+      );
+      final originalWarnings = [...plan.warnings];
+      final edited = StructuredPlanGenerator.withRest(
+        plan: plan,
+        index: 0,
+        restSeconds: 60,
+      )!;
+      expect(edited.blocks.first.prescription.restSeconds, 60);
+      expect(
+        edited.warnings,
+        originalWarnings.where((w) => !w.startsWith('cw111:')).toList(),
+      );
+      expect(
+        edited.warnings.where((w) => w.startsWith('cw105:')),
+        hasLength(1),
+      );
+      expect(identical(edited.blocks[1], plan.blocks[1]), isTrue);
+      expect(plan.warnings, originalWarnings);
+      expect(plan.blocks.first.prescription.restSeconds, 30);
     },
   );
   final rests = <(String, String, String, int)>[

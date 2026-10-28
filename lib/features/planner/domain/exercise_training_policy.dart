@@ -24,7 +24,8 @@ class ExerciseTrainingPolicy {
     'biceps': 'elbow_flexion',
     'biceps (metoda)': 'elbow_flexion',
     'zginanie lokci': 'elbow_flexion',
-    'triceps': 'elbow_extension',
+    // Generic "Triceps" also labels multi-joint bench dips in the catalog;
+    // only an explicit movement function is evidence of elbow isolation.
     'prostowanie lokci': 'elbow_extension',
     'lydka': 'calf_raise',
     'soleus': 'seated_calf_raise',
@@ -56,7 +57,6 @@ class ExerciseTrainingPolicy {
     'biceps',
     'biceps (metoda)',
     'zginanie lokci',
-    'triceps',
     'prostowanie lokci',
     'lydka',
     'soleus',
