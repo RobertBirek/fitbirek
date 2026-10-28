@@ -414,6 +414,9 @@ class BackupService {
     return row;
   }
 
+  String _identityKey(String value) =>
+      UserCollections.isUuid(value) ? value.toLowerCase() : value;
+
   List<Map<String, String>> _legacyFavorites(dynamic raw) {
     if (raw == null) return const [];
     return (raw as List)
@@ -430,8 +433,17 @@ class BackupService {
     Map<String, String> plans,
     Map<String, String> sessions,
   ) async {
-    if (raw == null) return 0;
-    final list = raw as List;
+    final list = raw == null ? const [] : raw as List;
+    if (list.isEmpty &&
+        previous != null &&
+        UserCollections.keys.any(
+          (key) => previous.toJson()['${key}Json'] != null,
+        )) {
+      // No source profile is not an instruction to erase newer extensions.
+      // Keep its scalar envelope as well: there is no imported scalar authority.
+      await db.into(db.userProfiles).insert(previous.toCompanion(false));
+      return 1;
+    }
     var n = 0;
     for (final item in list) {
       final json = _withFreshSyncMetadata(item);
@@ -493,7 +505,7 @@ class BackupService {
     for (final item in list) {
       final row = WorkoutSessionData.fromJson(_withFreshSyncMetadata(item));
       if (item['archiveSessionSyncId'] is String) {
-        final old = item['archiveSessionSyncId'] as String;
+        final old = _identityKey(item['archiveSessionSyncId'] as String);
         if (uuids.containsKey(old)) {
           throw const FormatException('Duplicate archived session UUID');
         }
@@ -510,25 +522,28 @@ class BackupService {
   }
 
   Future<int> _restoreSets(dynamic raw, Map<int, int> sessionIds) async {
-    if (raw == null) return 0;
-    final list = raw as List;
+    // Even an absent section must validate/remap every restored guidance link.
+    final list = raw == null ? const [] : raw as List;
     var n = 0;
     final linkedIds = <String, String>{};
+    final linkedSessions = <String, int>{};
     for (final item in list) {
       final json = _withFreshSyncMetadata(item);
       UserCollections.validateVariantPair(json);
       SetRole.validate(json['setRole']);
       final row = SetLogData.fromJson(json);
       if (item['archiveSetSyncId'] is String) {
-        final old = item['archiveSetSyncId'] as String;
-        if (linkedIds.containsKey(old))
+        final old = _identityKey(item['archiveSetSyncId'] as String);
+        if (linkedIds.containsKey(old)) {
           throw const FormatException('Duplicate archived set UUID');
+        }
         linkedIds[old] = row.syncId;
       }
       final parent = sessionIds[row.sesjaId];
       if (parent == null) {
         throw const FormatException('Missing backup session ID');
       }
+      linkedSessions[row.syncId] = parent;
       await db
           .into(db.setsLog)
           .insertOnConflictUpdate(
@@ -542,9 +557,10 @@ class BackupService {
       final g = WorkoutGuidance.validateJson(jsonDecode(session.guidanceJson!));
       final events = g.events.map((event) {
         if (event['type'] != 'performed') return event;
-        final mapped = linkedIds[event['setSyncId']];
-        if (mapped == null)
+        final mapped = linkedIds[_identityKey(event['setSyncId'] as String)];
+        if (mapped == null || linkedSessions[mapped] != id) {
           throw const FormatException('Missing archived guidance set UUID');
+        }
         return {...event, 'setSyncId': mapped};
       }).toList();
       final mapped = WorkoutGuidance.validateJson({
@@ -634,7 +650,7 @@ class BackupService {
     for (final item in list) {
       final row = WorkoutPlanData.fromJson(_withFreshSyncMetadata(item));
       if (item['archivePlanSyncId'] is String) {
-        final old = item['archivePlanSyncId'] as String;
+        final old = _identityKey(item['archivePlanSyncId'] as String);
         if (uuids.containsKey(old)) {
           throw const FormatException('Duplicate archived plan UUID');
         }
@@ -665,7 +681,8 @@ class BackupService {
       final e = raw as Map<String, dynamic>;
       var changed = false;
       void replace(Map target, String field, Map<String, String> ids) {
-        final replacement = ids[target[field]];
+        final old = target[field];
+        final replacement = old is String ? ids[_identityKey(old)] : null;
         if (replacement != null && replacement != target[field]) {
           target[field] = replacement;
           changed = true;
@@ -732,10 +749,11 @@ class BackupService {
     String reference(Map<String, String> map, Object? old) {
       final mapped =
           map[old] ?? (old is String ? map[old.toLowerCase()] : null);
-      if (mapped == null)
+      if (mapped == null) {
         throw const FormatException(
           'Brak mapowanej referencji programu w backupie.',
         );
+      }
       return mapped;
     }
 
@@ -756,8 +774,9 @@ class BackupService {
           CalendarDay.parse(e['originalDate'] as String),
         );
         definition(e['programSnapshot'] as Map<String, dynamic>);
-        if (e['sessionSyncId'] != null)
+        if (e['sessionSyncId'] != null) {
           e['sessionSyncId'] = reference(sessions, e['sessionSyncId']);
+        }
       }
     }
     return UserCollections.validate('trainingPrograms', json);
@@ -765,15 +784,17 @@ class BackupService {
 
   Future<void> _requireReadableCurrentExtensions() async {
     for (final p in await db.select(db.workoutPlans).get()) {
-      if (p.structureJson != null)
+      if (p.structureJson != null) {
         StructuredPlan.validateJson(
           jsonDecode(p.structureJson!),
           exerciseIds: jsonDecode(p.cwiczeniaIds),
         );
+      }
     }
     for (final s in await db.select(db.workoutSessions).get()) {
-      if (s.guidanceJson != null)
+      if (s.guidanceJson != null) {
         WorkoutGuidance.validateJson(jsonDecode(s.guidanceJson!));
+      }
     }
     for (final p in await db.select(db.userProfiles).get()) {
       for (final key in UserCollections.keys) {

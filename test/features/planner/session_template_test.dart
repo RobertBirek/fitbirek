@@ -33,6 +33,18 @@ SetLogData row(
 
 void main() {
   test(
+    'per-set copy never silently promotes unknown legacy role to explicit working',
+    () {
+      expect(
+        () => templateFromSets([
+          row(1),
+          row(2, reps: 6, kg: 15).copyWith(setRole: const Value('working')),
+        ], metadata),
+        throwsFormatException,
+      );
+    },
+  );
+  test(
     'heterogeneous doses and explicit roles copy to one ordered v2 list',
     () {
       final plan = templateFromSets([
@@ -76,6 +88,8 @@ void main() {
         [],
         [row(1, variant: 'variant')],
         [row(1, side: 'left')],
+        [row(1), row(2, reps: 12)],
+        [row(1), row(2, kg: 15)],
         [row(1, reps: 0)],
         [row(1, reps: null, seconds: 40)],
         [row(1, seconds: 40)],

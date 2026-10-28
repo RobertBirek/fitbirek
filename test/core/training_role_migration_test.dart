@@ -1,4 +1,5 @@
 import 'package:drift/native.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/features/workout/data/workout_repository.dart';
@@ -53,6 +54,18 @@ void main() {
         reps: 8,
       );
       await db.customStatement('UPDATE sync_outbox SET attempted = 1');
+      await db
+          .into(db.userProfiles)
+          .insert(
+            UserProfilesCompanion.insert(
+              wiek: 40,
+              wzrostCm: 180,
+              wagaKg: 80,
+              cel: 'mix',
+              dostepnySprzet: '[]',
+              syncId: const Value('legacy-profile'),
+            ),
+          );
       final before =
           (await db
                   .customSelect(
@@ -72,6 +85,10 @@ void main() {
       await db.close();
       db = AppDatabase.forTesting(NativeDatabase.opened(raw));
       addTearDown(db.close);
+      final profile = await db.userProfileDao.watchProfileOnce();
+      expect(profile!.trainingProgramsJson, isNull);
+      expect(profile.syncId, 'legacy-profile');
+      expect(profile.wiek, 40);
       expect(
         (await db.customSelect('SELECT set_role FROM sets_log').getSingle())
             .data['set_role'],

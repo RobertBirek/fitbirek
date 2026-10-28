@@ -93,6 +93,114 @@ void main() {
   setUp(() => db = AppDatabase.forTesting(NativeDatabase.memory()));
   tearDown(() => db.close());
   test(
+    'missing entire sets section still refuses dangling performed guidance refs',
+    () async {
+      await seedProgramBackup(db);
+      final archive =
+          jsonDecode(utf8.decode(await BackupService(db).exportToBytes()))
+              as Map;
+      (archive['data'] as Map).remove('setsLog');
+      final before = (await db.select(db.syncOutbox).get())
+          .map((r) => r.toJson())
+          .toList();
+      final result = await BackupService(
+        db,
+      ).importFromBytes(Uint8List.fromList(utf8.encode(jsonEncode(archive))));
+      expect(result.success, isFalse);
+      expect(
+        (await db.select(db.syncOutbox).get()).map((r) => r.toJson()).toList(),
+        before,
+      );
+    },
+  );
+  test(
+    'valid UUID reference casing does not break shared restore maps',
+    () async {
+      await seedProgramBackup(db);
+      final archive =
+          jsonDecode(utf8.decode(await BackupService(db).exportToBytes()))
+              as Map;
+      final data = archive['data'] as Map;
+      final plans = data['workoutPlans'] as List;
+      // Real UUIDs are case-insensitive. Use hex letters so the casing differs.
+      const lower = 'aabbccdd-0000-4000-8000-000000000001';
+      final programs =
+          jsonDecode(
+                data['userProfiles'].single['trainingProgramsJson'] as String,
+              )
+              as Map;
+      for (final e in programs['entries'] as List) {
+        final def = e['kind'] == 'program' ? e : e['programSnapshot'];
+        (def['planSyncIds'] as List)[0] = lower;
+      }
+      plans.first['archivePlanSyncId'] = lower.toUpperCase();
+      data['userProfiles'].single['trainingProgramsJson'] = jsonEncode(
+        programs,
+      );
+      final result = await BackupService(
+        db,
+      ).importFromBytes(Uint8List.fromList(utf8.encode(jsonEncode(archive))));
+      expect(result.success, isTrue, reason: result.message);
+    },
+  );
+  test(
+    'foreign-session guidance link refuses restore, not remapped as evidence',
+    () async {
+      await seedProgramBackup(db);
+      final repo = WorkoutRepository(db);
+      final second = await repo.startSession();
+      await repo.logSet(
+        sessionId: second,
+        exerciseId: 'cw001',
+        exerciseNamePl: 'Foreign',
+        setNumber: 1,
+        reps: 8,
+      );
+      final foreign = (await repo.getSetsForSession(second)).single;
+      final first = (await db.select(db.workoutSessions).get()).first;
+      final g = WorkoutGuidance.tryRead(first.guidanceJson)!;
+      await db.workoutDao.updateSession(
+        first.id,
+        WorkoutSessionsCompanion(
+          guidanceJson: Value(
+            jsonEncode({
+              ...g.toJson(),
+              'events': [
+                {...g.events.single, 'setSyncId': foreign.syncId},
+              ],
+            }),
+          ),
+        ),
+      );
+      final bytes = await BackupService(db).exportToBytes();
+      final before = (await db.select(db.syncOutbox).get())
+          .map((r) => r.toJson())
+          .toList();
+      final result = await BackupService(db).importFromBytes(bytes);
+      expect(result.success, isFalse);
+      expect(
+        (await db.select(db.syncOutbox).get()).map((r) => r.toJson()).toList(),
+        before,
+      );
+    },
+  );
+  test(
+    'legacy restore without any profile cannot erase existing program history',
+    () async {
+      await seedProgramBackup(db);
+      final before =
+          (await db.userProfileDao.watchProfileOnce())!.trainingProgramsJson;
+      final result = await BackupService(db).importFromBytes(
+        Uint8List.fromList(utf8.encode('{"schemaVersion":1,"data":{}}')),
+      );
+      expect(result.success, isTrue, reason: result.message);
+      expect(
+        (await db.userProfileDao.watchProfileOnce())!.trainingProgramsJson,
+        before,
+      );
+    },
+  );
+  test(
     'backup4 includes quarantined raw and pending bytes as inert recovery evidence',
     () async {
       const raw =

@@ -47,13 +47,18 @@ void main() {
     () async {
       final g = WorkoutGuidance.start(StructuredPlan.fromJson(planJson()));
       final session = await repo.startSession(guidance: g);
-      Future<dynamic> log({String role = 'warmup', String? side}) =>
+      Future<dynamic> log({
+        String role = 'warmup',
+        String? side,
+        int? seconds,
+      }) =>
           Function.apply(repo.logSet, [], {
                 #sessionId: session,
                 #exerciseId: 'cw001',
                 #exerciseNamePl: 'X',
                 #setNumber: 1,
                 #reps: 8,
+                #seconds: seconds,
                 #setRole: role,
                 #side: side,
                 #guidanceSlot: 0,
@@ -62,6 +67,7 @@ void main() {
               as Future<dynamic>;
       await expectLater(log(role: 'working'), throwsStateError);
       await expectLater(log(side: 'left'), throwsStateError);
+      await expectLater(log(seconds: 10), throwsStateError);
       expect(await repo.getSetsForSession(session), isEmpty);
       await log();
       final before = (await db.select(db.syncOutbox).get())

@@ -44,6 +44,11 @@ StructuredPlan templateFromSets(
     final reps = m.tracking == 'reps';
     for (final s in entry.value) {
       SetRole.validate(s.setRole);
+      if (perSet && s.setRole == null) {
+        throw const FormatException(
+          'Indywidualna kopia wymaga jawnych ról wszystkich serii. Nie odgadujemy roli dawnych danych; ułóż cele ręcznie.',
+        );
+      }
       if ((reps
               ? (s.powtorzenia == null ||
                     s.powtorzenia! < 1 ||
@@ -75,7 +80,7 @@ StructuredPlan templateFromSets(
                         Namespace.url.value,
                         'fitbirek:set-target:${s.syncId}',
                       ),
-                      setRole: s.setRole ?? SetRole.working,
+                      setRole: s.setRole!,
                       reps: s.powtorzenia,
                       seconds: s.czasSekund,
                       weightKg: s.ciezarKg,

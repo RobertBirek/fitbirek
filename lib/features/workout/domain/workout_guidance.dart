@@ -263,6 +263,15 @@ class WorkoutGuidance {
                 (e['exerciseId'] as String).isEmpty)) {
           throw const FormatException('Nieprawidłowy zamiennik');
         }
+        if (v2 &&
+            e['type'] == 'replaced' &&
+            p.blocks[slot].prescription.setTargets.any(
+              (t) => (t.weightKg ?? 0) > 0,
+            )) {
+          throw const FormatException(
+            'Nie można przenieść indywidualnego obciążenia na inny ruch.',
+          );
+        }
       }
       return WorkoutGuidance._(p.schemaVersion, p, events);
     } on TypeError {
@@ -297,12 +306,24 @@ class WorkoutGuidance {
   WorkoutGuidance skip(int slot) => _append(slot, {'type': 'skipped'});
   WorkoutGuidance skipTarget(int slot, String targetId) =>
       _append(slot, {'type': 'skippedTarget', 'targetId': targetId});
-  WorkoutGuidance replace(int slot, String exerciseId) =>
-      _append(slot, {'type': 'replaced', 'exerciseId': exerciseId});
+  WorkoutGuidance replace(int slot, String exerciseId) {
+    RangeError.checkValidIndex(slot, plan.blocks);
+    if (schemaVersion == 2 &&
+        plan.blocks[slot].prescription.setTargets.any(
+          (t) => (t.weightKg ?? 0) > 0,
+        )) {
+      throw StateError(
+        'Nie można przenieść indywidualnego obciążenia na inny ruch.',
+      );
+    }
+    return _append(slot, {'type': 'replaced', 'exerciseId': exerciseId});
+  }
+
   WorkoutGuidance link(int slot, String setSyncId, {String? targetId}) {
     RangeError.checkValidIndex(slot, plan.blocks);
-    if (schemaVersion == 1 && events.any((e) => e['setSyncId'] == setSyncId))
+    if (schemaVersion == 1 && events.any((e) => e['setSyncId'] == setSyncId)) {
       return this;
+    }
     return _append(slot, {
       'type': 'performed',
       'setSyncId': setSyncId,

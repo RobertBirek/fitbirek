@@ -264,6 +264,26 @@ class StructuredPlan {
     if (j['schemaVersion'] is! int || !{1, 2}.contains(j['schemaVersion'])) {
       throw const FormatException('Nieobsługiwana struktura planu');
     }
+    if (j['schemaVersion'] == 2) {
+      if (j.keys.any(
+            (k) => !{
+              'schemaVersion',
+              'criteria',
+              'budgetSeconds',
+              'level',
+              'equipment',
+              'blocks',
+              'warnings',
+            }.contains(k),
+          ) ||
+          (j['blocks'] as List).any(
+            (b) => (b as Map).keys.any(
+              (k) => !{'exerciseId', 'section', 'prescription'}.contains(k),
+            ),
+          )) {
+        throw const FormatException('Nieobsługiwane ograniczenia planu v2.');
+      }
+    }
     final criteria = Map<String, dynamic>.from(j['criteria'] as Map);
     final knownCriteria = FilterPreset.encodeFilters(
       const ExerciseFilters(),
@@ -560,8 +580,9 @@ class StructuredPlanGenerator {
   }) {
     final old = plan.blocks[index];
     if (old.prescription.isPerSet &&
-        old.prescription.setTargets.any((t) => (t.weightKg ?? 0) > 0))
+        old.prescription.setTargets.any((t) => (t.weightKg ?? 0) > 0)) {
       return [];
+    }
     final sources = allExercises.where((e) => e.id == old.exerciseId).toList();
     if (sources.length != 1 ||
         engine.metadata.entryFor(old.exerciseId)?.tracking !=

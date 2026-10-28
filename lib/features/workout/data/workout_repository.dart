@@ -374,8 +374,9 @@ class WorkoutRepository {
     String? expectedSyncId,
   }) async {
     SetRole.validate(setRole);
-    if (guidanceTargetId != null && guidanceSlot == null)
+    if (guidanceTargetId != null && guidanceSlot == null) {
       throw StateError('Cel wymaga bloku prowadzenia.');
+    }
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
     return _db.transaction(() async {
@@ -451,8 +452,13 @@ class WorkoutRepository {
               .where((t) => t.targetId == guidanceTargetId);
           if (targets.length != 1 ||
               targets.single.setRole != setRole ||
-              targets.single.side != side) {
-            throw StateError('Rola lub strona nie odpowiada wybranemu celowi.');
+              targets.single.side != side ||
+              (targets.single.reps != null
+                  ? (reps == null || seconds != null)
+                  : (seconds == null || reps != null))) {
+            throw StateError(
+              'Rola, strona lub jednostka nie odpowiada wybranemu celowi.',
+            );
           }
           await _writeGuidance(
             session,

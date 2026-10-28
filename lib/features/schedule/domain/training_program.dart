@@ -194,10 +194,11 @@ class TrainingPrograms {
     for (final raw in a['entries'] as List) {
       final old = raw as Map<String, dynamic>;
       final fresh = byId[(old['id'] as String).toLowerCase()];
-      if (fresh == null)
+      if (fresh == null) {
         throw const FormatException(
           'Nie można usunąć definicji ani wyjątków programu.',
         );
+      }
       requireCompatible(old, fresh);
       if (old['endBeforeDate'] != null &&
           fresh['endBeforeDate'] != old['endBeforeDate']) {

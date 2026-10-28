@@ -83,8 +83,9 @@ class UserCollectionsRepository {
         // collection that the callback could already have changed in memory.
         UserCollections.requireFitnessPreserved(readRow(row, key), value);
       }
-      if (key == 'trainingPrograms')
+      if (key == 'trainingPrograms') {
         TrainingPrograms.requirePreserved(readRow(row, key), value);
+      }
       final raw = jsonEncode(value);
       await (db.update(
         db.userProfiles,

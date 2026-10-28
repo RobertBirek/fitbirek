@@ -56,6 +56,73 @@ Map<String, dynamic> planJson({int version = 2}) => {
 
 void main() {
   test(
+    'time targets preserve seconds/side and estimate both sides with only between rests',
+    () {
+      final raw = planJson();
+      final prescription =
+          (raw['blocks'] as List).single['prescription'] as Map;
+      prescription['tracking'] = 'time';
+      prescription['setTargets'] = [
+        {
+          ...target('left'),
+          'reps': null,
+          'seconds': 30,
+          'side': 'both',
+          'workSeconds': 60,
+          'restSeconds': 10,
+        },
+        {
+          ...target('right'),
+          'reps': null,
+          'seconds': 20,
+          'side': 'left',
+          'workSeconds': 20,
+          'restSeconds': 500,
+        },
+      ];
+      final plan = StructuredPlan.fromJson(raw);
+      expect(plan.estimatedSeconds, 105);
+      expect(plan.blocks.single.prescription.setTargets.map((t) => t.seconds), [
+        30,
+        20,
+      ]);
+      expect(
+        (plan.toJson()['blocks'] as List).single['prescription'],
+        prescription,
+      );
+      for (final field in ['seconds', 'workSeconds', 'restSeconds']) {
+        final bad = jsonDecode(jsonEncode(raw)) as Map<String, dynamic>;
+        (bad['blocks'] as List).single['prescription']['setTargets'][0][field] =
+            9007199254740991;
+        expect(() => StructuredPlan.fromJson(bad), throwsFormatException);
+      }
+    },
+  );
+  test(
+    'positive per-target load forbids active replacement without rewriting original targets',
+    () {
+      final g = WorkoutGuidance.start(StructuredPlan.fromJson(planJson()));
+      expect(() => g.replace(0, 'other'), throwsStateError);
+      expect(
+        () => WorkoutGuidance.validateJson({
+          ...g.toJson(),
+          'events': [
+            {'type': 'replaced', 'slotIndex': 0, 'exerciseId': 'other'},
+          ],
+        }),
+        throwsFormatException,
+      );
+    },
+  );
+  test('v2 does not silently discard unknown plan or block restrictions', () {
+    final root = planJson()..['futureRestriction'] = true;
+    final block = planJson();
+    (block['blocks'] as List).single['futureRestriction'] = true;
+    for (final raw in [root, block]) {
+      expect(() => StructuredPlan.fromJson(raw), throwsFormatException);
+    }
+  });
+  test(
     'v2 preserves ordered heterogeneous targets without parallel scalar dose',
     () {
       final raw = planJson();

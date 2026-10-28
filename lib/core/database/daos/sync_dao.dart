@@ -127,8 +127,9 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
     // never mutation targets, including when an explicit restore clear survives
     // a later ordinary profile save that omits nullable raw extension columns.
     payload = Map<String, Object?>.from(payload);
-    if (entityType == SyncEntityType.workoutSet)
+    if (entityType == SyncEntityType.workoutSet) {
       SetRole.validate(payload['setRole']);
+    }
     if (entityType == SyncEntityType.profile && !deleted) {
       final seen = <String>{
         for (final key in UserCollections.keys)

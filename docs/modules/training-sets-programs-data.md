@@ -35,6 +35,8 @@ aby stary adapter nie spłaszczył rampy. `isPerSet` rozróżnia ścieżki.
 Legacy API/default wersji1, JSON i podpis guidance pozostają niezmienione.
 Generator nadal tworzy v1. Scalar `withRest` i generacyjne `replace` v2 zwracają
 null (jawna odmowa); edytor musi zmieniać konkretne cele, nie średnią listy.
+Także kodek/`WorkoutGuidance.replace` odmawiają aktywnej zamiany v2, jeśli
+jakikolwiek cel ma dodatni ciężar; nie wystarcza ukryć przycisk UI.
 
 `WorkoutGuidance.schemaVersion` odpowiada planowi. `link(slot,setSyncId,
 targetId:...)` i `skipTarget(slot,targetId)` wymagają istniejącego celu v2,
@@ -46,8 +48,9 @@ jest dodatkowy i nie dostaje linku working. `guidanceEvent(targetId:)` obsługuj
 jawny skip; recovery transition/form/timer pozostaje do podłączenia przez UI.
 
 Repeat rzeczywistego wykonania zachowuje nullable role. Kopia jednorodnych
-legacyNULL pozostaje v1. Różne dawki lub jawne role dają v2 bez uśredniania;
-NULL historyczne staje się roboczym *celem nowego planu*, nie zmianą historii.
+legacyNULL pozostaje v1. Różne dawki lub jawne role dają v2 bez uśredniania,
+wyłącznie gdy wszystkie serie mają jawną rolę. Jeśli v2 wymagałoby odgadnięcia
+historycznego NULL, kopia odmawia i prosi o ręczne cele zamiast nadać working.
 Kopia odmawia stron/wariantów/mieszanych jednostek i niejednoznacznych
 jednostronnych danych. Ostrzeżenie mówi o niezmierzonych przerwach (0s).
 
@@ -86,6 +89,9 @@ z nowymi UUID i przeliczonymi UUIDv5 wyjątków. Plany, sesje i snapshoty korzys
 z tych samych map. Dawne lokalne programy pozostają bez zmiany immutable core.
 Role, tombstone, cutoff są zachowane. Brak mapy lub limit całego merge odmawia
 całego importu transakcyjnie. Oryginalnych bajtów pliku nie zmieniamy.
+UUID mapy respektują wielkość liter UUID, a link serii musi należeć do tej samej
+sesji. Legacy archiwum bez całego profilu nie usuwa istniejących kolekcji:
+zachowuje wtedy ich dotychczasową kopertę profilu.
 
 Ochrona raw nie oznacza konwersji przyszłego schematu. Nieczytelny lokalny
 plan/guidance/kolekcja odmawia destrukcyjnego restore; eksport nadal zachowuje
@@ -102,3 +108,13 @@ archiwa. Rozstrzygnięcie nieznanych outcomes nadal wymaga jawnego recovery.
 Bez UI/providera prowadzenia lub repo/UI programów, bez zmiany zależności,
 katalogu, artefaktów Web SQLite, wersji, backendu i wdrożenia. API-first oraz
 plan aktualizacji starych klientów są konieczne przed przyszłą publikacją.
+
+## Weryfikacja Task2
+
+Flutter3.35.4/Dart3.9.2, bieżące źródła RO→robocze `/app` w istniejącym
+`fit-catalog-program-tests`. CodegenPASS, trzy własne generatedDart w repo.
+Focused data/core/sync/workout/planner/backup/progression/trends/migration:
+**842PASS**, analiza **No issues found**, versioncheck/diffcheck/formatPASS.
+Osobny kontraktowy zestaw:36PASS (34nowe +2dotychczasowe template). Pełna
+suity klienta i prawdziwy runtime/browser pozostają do integracji Task5;
+niezależny review wykonuje sesja nadrzędna, nie implementer Task2.
