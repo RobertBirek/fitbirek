@@ -135,7 +135,18 @@ void _validateWorkoutForm(Map<String, dynamic> fields) {
     throw const FormatException('Nieprawidłowa strona lub RPE');
   }
   if (fields['timer'] != null) {
-    IntervalTimer.restore(Map<String, dynamic>.from(fields['timer'] as Map));
+    final timer = IntervalTimer.restore(
+      Map<String, dynamic>.from(fields['timer'] as Map),
+    );
+    if (fields['targetId'] != null &&
+        (timer.config.rounds != 1 ||
+            fields['timerBinding'] is! Map ||
+            (fields['timerBinding'] as Map)['targetId'] !=
+                fields['targetId'])) {
+      throw const FormatException(
+        'Timer indywidualnego celu wymaga jego tożsamości i jednej rundy.',
+      );
+    }
   }
   if (fields['timerBinding'] != null) {
     final binding = fields['timerBinding'];

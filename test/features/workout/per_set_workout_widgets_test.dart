@@ -26,6 +26,73 @@ void main() {
               const StandardMessageCodec().encodeMessage(<Object?>[null]),
         );
   });
+  testWidgets('manual role selector saves explicit warmup without PR', (
+    tester,
+  ) async {
+    final db = AppDatabase.forTesting(NativeDatabase.memory());
+    final c = ProviderContainer(
+      overrides: [
+        appDatabaseProvider.overrideWithValue(db),
+        exerciseCatalogMetadataProvider.overrideWith(
+          (ref) async => ExerciseCatalogMetadata(
+            exercises: {
+              exercise.id: const ExerciseCatalogEntry(
+                tracking: 'reps',
+                unilateral: false,
+              ),
+            },
+          ),
+        ),
+      ],
+    );
+    addTearDown(() async {
+      c.dispose();
+      await db.close();
+    });
+    await tester.runAsync(() async {
+      final n = c.read(activeWorkoutProvider.notifier);
+      n.addExercise(exercise.copyWith(sprzet: ['Hantle']));
+      await n.startSession();
+    });
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: c,
+        child: const MaterialApp(home: ActiveSessionPage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final role = find.byKey(const ValueKey('set-role-selector'));
+    await tester.ensureVisible(role);
+    await tester.pumpAndSettle();
+    await tester.tap(role);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Rozgrzewkowa').last);
+    await tester.pumpAndSettle();
+    for (final field in [('Ciężar (kg)', '100'), ('Powtórzenia', '10')]) {
+      final input = find.widgetWithText(TextField, field.$1);
+      await tester.ensureVisible(input);
+      await tester.pumpAndSettle();
+      await tester.enterText(input, field.$2);
+    }
+    final save = find.text('Seria wykonana (0)');
+    await tester.ensureVisible(save);
+    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await tester.tap(save);
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+    });
+    await tester.pumpAndSettle();
+    expect(
+      (await tester.runAsync(() => db.select(db.setsLog).getSingle()))!.setRole,
+      'warmup',
+    );
+    expect(
+      await tester.runAsync(() => db.select(db.personalRecords).get()),
+      isEmpty,
+    );
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets(
     'mobile v2 displays distinct roles and next targets, saves deviations to selected target',
     (tester) async {
@@ -69,13 +136,32 @@ void main() {
           container: c,
           child: MaterialApp(
             theme: FitBirekTheme.dark,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: const TextScaler.linear(2),
+                viewInsets: const EdgeInsets.only(bottom: 160),
+              ),
+              child: child!,
+            ),
             home: const ActiveSessionPage(),
           ),
         ),
       );
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('guided-target-warm')),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.textContaining('Rozgrzewkowa'), findsWidgets);
+      await tester.scrollUntilVisible(
+        find.byKey(const ValueKey('guided-target-work')),
+        180,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.textContaining('Robocza'), findsWidgets);
       final field = find.widgetWithText(TextField, 'Powtórzenia');
       await tester.scrollUntilVisible(
@@ -85,6 +171,7 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.enterText(field, '11');
+      await tester.pumpAndSettle();
       final save = find.text('Seria wykonana (0)');
       await tester.ensureVisible(save);
       await tester.pumpAndSettle();

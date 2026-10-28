@@ -4,12 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/providers/database_provider.dart';
-import 'package:fitbirek_training/features/exercises/domain/exercise_filter_engine.dart';
 import 'package:fitbirek_training/features/planner/domain/set_prescription.dart';
 import 'package:fitbirek_training/features/planner/domain/structured_plan.dart';
 import 'package:fitbirek_training/features/workout/domain/workout_guidance.dart';
 import 'package:fitbirek_training/features/workout/domain/interval_timer.dart';
 import 'package:fitbirek_training/features/workout/providers/workout_providers.dart';
+import 'package:fitbirek_training/features/workout/domain/workout_repeat.dart';
+import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
+import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
 import 'session_tracking_test.dart' show exercise;
 
 StructuredPlan ramp({bool time = false, String? side}) => StructuredPlan(
@@ -54,14 +56,51 @@ StructuredPlan ramp({bool time = false, String? side}) => StructuredPlan(
 void main() {
   late AppDatabase db;
   late ProviderContainer c;
-  ProviderContainer fresh() =>
-      ProviderContainer(overrides: [appDatabaseProvider.overrideWithValue(db)]);
+  ProviderContainer fresh() => ProviderContainer(
+    overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      exerciseCatalogMetadataProvider.overrideWith(
+        (ref) async => ExerciseCatalogMetadata(
+          exercises: {
+            exercise.id: const ExerciseCatalogEntry(
+              tracking: 'reps',
+              unilateral: false,
+            ),
+          },
+        ),
+      ),
+    ],
+  );
   setUp(() async {
     db = AppDatabase.forTesting(NativeDatabase.memory());
     c = fresh();
     await db
         .into(db.syncState)
         .insert(SyncStateCompanion.insert(accountId: 'a', deviceId: 'd'));
+    for (final e in [exercise, exercise.copyWith(id: 'extra')]) {
+      await db
+          .into(db.exercises)
+          .insert(
+            ExercisesCompanion.insert(
+              id: e.id,
+              nazwaPl: e.nazwaPl,
+              nazwaEn: '',
+              partiaGlowna: '',
+              partieWspierajace: '[]',
+              sprzet: '[]',
+              typ: '',
+              poziom: '',
+              wzorzecRuchu: '',
+              seriexPowtorzenia: '',
+              tempo: '',
+              kluczoweWskazowki: '[]',
+              czesteBledy: '[]',
+              progresja: '',
+              regresja: '',
+              zrodlo: '',
+            ),
+          );
+    }
   });
   tearDown(() async {
     c.dispose();
@@ -76,6 +115,202 @@ void main() {
     await n.flushDraft();
     return c.read(activeWorkoutProvider).sessionSyncId!;
   }
+
+  test(
+    'repeating original v2 snapshot starts exact first target and permits an immediate log',
+    () async {
+      final repo = c.read(workoutRepositoryProvider);
+      final source = await repo.startSession(
+        guidance: WorkoutGuidance.start(ramp()),
+        accountId: 'a',
+      );
+      await repo.logSet(
+        sessionId: source,
+        exerciseId: exercise.id,
+        exerciseNamePl: exercise.nazwaPl,
+        setNumber: 1,
+        reps: 12,
+        weightKg: 5,
+        setRole: 'warmup',
+        guidanceSlot: 0,
+        guidanceTargetId: 'warm',
+      );
+      await repo.finishSession(source, DateTime.now(), accountId: 'a');
+      final n = c.read(activeWorkoutProvider.notifier);
+      final request = await n.previewRepeat(source, RepeatMode.original);
+      expect(request.preview.canStart, isTrue);
+      expect(await n.confirmRepeat(request), isTrue);
+      expect(c.read(activeWorkoutProvider).draft['targetId'], 'warm');
+      await n.logSet(exercise: exercise, weightKg: 5, reps: 12);
+      expect(
+        (await repo.getSetsForSession(
+          c.read(activeWorkoutProvider).sessionId!,
+        )).single.setRole,
+        'warmup',
+      );
+    },
+  );
+
+  test(
+    'original v2 repeat rechecks metadata before creating its new row',
+    () async {
+      final repo = c.read(workoutRepositoryProvider);
+      final source = await repo.startSession(
+        guidance: WorkoutGuidance.start(ramp(side: 'both')),
+        accountId: 'a',
+      );
+      await repo.logSet(
+        sessionId: source,
+        exerciseId: exercise.id,
+        exerciseNamePl: exercise.nazwaPl,
+        setNumber: 1,
+        reps: 12,
+        side: 'both',
+        setRole: 'warmup',
+        guidanceSlot: 0,
+        guidanceTargetId: 'warm',
+      );
+      await repo.finishSession(source, DateTime.now(), accountId: 'a');
+      final n = c.read(activeWorkoutProvider.notifier);
+      final request = await n.previewRepeat(source, RepeatMode.original);
+      final before = await db.select(db.syncOutbox).get();
+      await expectLater(() => n.confirmRepeat(request), throwsStateError);
+      expect(await db.select(db.workoutSessions).get(), hasLength(1));
+      expect(await db.select(db.syncOutbox).get(), before);
+    },
+  );
+
+  test(
+    'fresh recovery keeps EXTRA separate, accepts multi-round warmup without target consumption',
+    () async {
+      final uuid = await start(time: true);
+      final extra = exercise.copyWith(id: 'extra');
+      final n = c.read(activeWorkoutProvider.notifier);
+      n.addExercise(extra);
+      n.updateExerciseDraft(extra.id, {
+        'seconds': '9',
+        'setRole': 'warmup',
+      }, extra: true);
+      await n.flushDraft();
+      c.dispose();
+      c = fresh();
+      final restored = c.read(activeWorkoutProvider.notifier);
+      expect(await restored.resumeSession(uuid), isTrue);
+      expect(c.read(activeWorkoutProvider).isExtraExercise(extra.id), isTrue);
+      final origin = restored.captureInterval(
+        exercise: extra,
+        extra: true,
+        setRole: 'warmup',
+      )!;
+      expect(
+        await restored.saveIntervalRounds(origin, const [
+          IntervalRound(round: 1, seconds: 8, shortened: true),
+          IntervalRound(round: 2, seconds: 9, shortened: false),
+        ]),
+        isTrue,
+      );
+      await restored.flushDraft();
+      final sets = await db.select(db.setsLog).get();
+      expect(sets.map((s) => s.setRole), ['warmup', 'warmup']);
+      expect(c.read(activeWorkoutProvider).guidance!.events, isEmpty);
+      expect(restored.captureInterval(exercise: exercise, extra: true), isNull);
+      await restored.logSet(
+        exercise: exercise.copyWith(id: 'foreign'),
+        extra: true,
+        seconds: 9,
+      );
+      expect(await db.select(db.setsLog).get(), hasLength(2));
+      expect(c.read(activeWorkoutProvider).currentTarget!.targetId, 'warm');
+    },
+  );
+
+  test(
+    'foreign selected target and its timer cannot be cleared by a stale view log',
+    () async {
+      final uuid = await start(time: true);
+      final foreign = fresh();
+      addTearDown(foreign.dispose);
+      final stale = foreign.read(activeWorkoutProvider.notifier);
+      expect(await stale.resumeSession(uuid), isTrue);
+      final n = c.read(activeWorkoutProvider.notifier);
+      expect(n.selectGuidedTarget('work'), isTrue);
+      final timer = IntervalTimer(
+        IntervalConfig(preparation: 0, work: 40, rest: 0, rounds: 1),
+      )..start();
+      final origin = n.captureInterval(exercise: exercise)!;
+      expect(n.updateIntervalCheckpoint(origin, timer.checkpoint()), isTrue);
+      await n.flushDraft();
+      final before =
+          (await db.select(db.workoutDrafts).getSingle()).payloadJson;
+      await stale.logSet(exercise: exercise, seconds: 20);
+      expect(await db.select(db.setsLog).get(), isEmpty);
+      expect(
+        (await db.select(db.workoutDrafts).getSingle()).payloadJson,
+        before,
+      );
+    },
+  );
+
+  test(
+    'v2 origin cannot borrow a different selected variant even before a checkpoint exists',
+    () async {
+      await start(time: true, side: 'both');
+      final n = c.read(activeWorkoutProvider.notifier);
+      expect(
+        n.selectGuidedIdentity(
+          exercise.id,
+          side: 'both',
+          variantId: '11111111-1111-4111-8111-111111111111',
+          variantLabel: 'X',
+        ),
+        isTrue,
+      );
+      expect(
+        n.captureInterval(
+          exercise: exercise,
+          side: 'both',
+          variantId: '22222222-2222-4222-8222-222222222222',
+          variantLabel: 'Y',
+        ),
+        isNull,
+      );
+      expect(
+        n.captureInterval(
+          exercise: exercise,
+          side: 'both',
+          variantId: '11111111-1111-4111-8111-111111111111',
+          variantLabel: 'X',
+        ),
+        isNotNull,
+      );
+    },
+  );
+
+  test(
+    'foreign performed event invalidates an already open v2 origin',
+    () async {
+      final uuid = await start(time: true);
+      final foreign = fresh();
+      addTearDown(foreign.dispose);
+      final stale = foreign.read(activeWorkoutProvider.notifier);
+      expect(await stale.resumeSession(uuid), isTrue);
+      final origin = stale.captureInterval(exercise: exercise)!;
+      await c
+          .read(activeWorkoutProvider.notifier)
+          .logSet(exercise: exercise, seconds: 20);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      expect(stale.isIntervalCurrent(origin), isFalse);
+      expect(
+        stale.updateIntervalCheckpoint(
+          origin,
+          IntervalTimer(
+            IntervalConfig(preparation: 0, work: 20, rest: 0, rounds: 1),
+          ).checkpoint(),
+        ),
+        isFalse,
+      );
+    },
+  );
 
   test(
     'start hydrates one exact target and its role without flattening ramp',
@@ -167,6 +402,10 @@ void main() {
       await start(time: true);
       final n = c.read(activeWorkoutProvider.notifier);
       final origin = n.captureInterval(exercise: exercise)!;
+      final multi = IntervalTimer(
+        IntervalConfig(preparation: 0, work: 10, rest: 0, rounds: 2),
+      )..start();
+      expect(n.updateIntervalCheckpoint(origin, multi.checkpoint()), isFalse);
       expect(
         await n.saveIntervalRounds(origin, const [
           IntervalRound(round: 1, seconds: 10, shortened: false),

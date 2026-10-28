@@ -18,6 +18,7 @@ import '../domain/workout_repeat.dart';
 import '../domain/workout_draft_write.dart';
 import '../domain/guided_target.dart';
 import '../../planner/domain/set_prescription.dart';
+import '../../planner/domain/plan_catalog_validation.dart';
 import '../../exercises/providers/exercises_providers.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../progress/prs/providers/prs_providers.dart';
@@ -265,6 +266,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                 request._authority.state!.accountId == request._account));
     if (!guard() || !request.preview.canStart || request._account == null) {
       return false;
+    }
+    final plan = request.preview.repeat?.plan;
+    if (plan?.schemaVersion == 2) {
+      final catalog = await _ref
+          .read(exercisesRepositoryProvider)
+          .watchAll()
+          .first;
+      final metadata = await _ref.read(exerciseCatalogMetadataProvider.future);
+      if (!guard()) return false;
+      validatePerSetCatalog(plan!, catalog, metadata);
     }
     try {
       final row = await _ref
@@ -903,7 +914,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       ..remove('guidedForms')
       ..remove('guidedSelections')
       ..remove('extraForms')
-      ..remove('extraSelections');
+      ..remove('extraSelections')
+      ..remove('guidedTargets');
     forms[sourceKey] = source;
     selections[jsonEncode([
           state.currentSlot,
@@ -914,8 +926,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     final targetSelections = Map<String, Object?>.from(
       state.draft['guidedTargets'] as Map? ?? {},
     );
-    if (state.currentTarget != null)
+    if (state.currentTarget != null) {
       targetSelections['${state.currentSlot}'] = state.currentTarget!.targetId;
+    }
     targetId ??= slot == state.currentSlot
         ? state.currentTarget?.targetId
         : targetSelections['$slot'] as String?;
@@ -972,6 +985,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     }
     final target = state.guidance!.plan.blocks[state.currentSlot].prescription;
     final targetId = state.currentTarget?.targetId;
+    if (target.isPerSet && targetId == null) return false;
     if (replacement == null && state.currentTargetConsumed) return false;
     final dirty = state.draft.entries.any(
       (e) =>
@@ -1147,6 +1161,11 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           return;
         }
         final fields = Map<String, Object?>.from(j['fields'] as Map);
+        if (guidance?.schemaVersion == 2 &&
+            (fields['targetId'] == null ||
+                guidedTarget(guidance, slot, fields) == null)) {
+          return;
+        }
         if (restartSegment && fields['timer'] is Map) {
           fields['timer'] = IntervalTimer.restore(
             Map<String, dynamic>.from(fields['timer'] as Map),
@@ -1346,11 +1365,16 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     if (weightKg != null && (!weightKg.isFinite || weightKg < 0)) return null;
     if (!mounted || !state.isActive || state.sessionId == null) return null;
     final target = extra ? null : state.currentTarget;
+    if (!extra && state.guidance?.schemaVersion == 2 && target == null) {
+      return null;
+    }
     if (target != null &&
         (state.currentTargetConsumed ||
             target.side != side ||
-            target.seconds == null))
+            state.draft['variantId'] != variantId ||
+            target.seconds == null)) {
       return null;
+    }
     if (target != null) setRole = target.setRole;
     if (extra && !state.isExtraExercise(exercise.id)) return null;
     if (!extra &&
@@ -1404,6 +1428,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     Map<String, Object?>? checkpoint,
   ) {
     if (!isIntervalCheckpointCurrent(origin)) return false;
+    if (origin.targetId != null &&
+        checkpoint != null &&
+        IntervalTimer.restore(
+              Map<String, dynamic>.from(checkpoint),
+            ).config.rounds !=
+            1) {
+      return false;
+    }
     updateExerciseDraft(
       origin.exercise.id,
       {'timer': checkpoint},
@@ -1420,7 +1452,8 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       state.isActive &&
       state.sessionSyncId == origin.sessionSyncId &&
       (origin.targetId == null ||
-          state.currentTarget?.targetId == origin.targetId) &&
+          (state.currentTarget?.targetId == origin.targetId &&
+              !state.currentTargetConsumed)) &&
       (origin.extra
           ? state.isExtraExercise(origin.exercise.id)
           : (state.guidance == null ||
@@ -1567,6 +1600,9 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
                 (state.guidance != null && guidance == null)) {
               throw WorkoutSessionUnavailable(origin.sessionId);
             }
+            if (origin.targetId != null) {
+              _pendingGuidanceSignature = jsonEncode(guidance!.toJson());
+            }
             // Consuming a checkpoint is part of the same commit as its actual
             // rounds. A crash after commit must not offer those results again.
             consumedPayload = await repo.consumeDraftCheckpoint(
@@ -1663,6 +1699,12 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       }
       return true;
     } finally {
+      if (origin.targetId != null) {
+        _pendingGuidanceSignature = null;
+        final deferred = _deferredTransitionRow;
+        _deferredTransitionRow = null;
+        if (deferred != null) _observeGuidance(deferred, origin._generation);
+      }
       if (_consumingCheckpointKey == origin.checkpointKey) {
         _consumingCheckpointKey = null;
       }
@@ -1687,14 +1729,21 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     if (state.sessionId == null ||
         !_ownsAuthority ||
         _guidedBusy ||
+        _draftConsumptionInFlight ||
         _intervalClosing) {
       return false;
     }
     if (extra && !state.isExtraExercise(exercise.id)) return false;
     final selectedTarget = extra ? null : state.currentTarget;
+    if (!extra &&
+        state.guidance?.schemaVersion == 2 &&
+        selectedTarget == null) {
+      return false;
+    }
     if (selectedTarget != null) {
       if (state.currentTargetConsumed ||
           selectedTarget.side != side ||
+          state.draft['variantId'] != variantId ||
           (guidanceTargetId != null &&
               guidanceTargetId != selectedTarget.targetId)) {
         return false;
@@ -1959,6 +2008,10 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
       } on WorkoutSessionUnavailable {
         _guidedBusy = false;
         _resetIfCurrent(sessionId, generation);
+        return false;
+      } on WorkoutDraftConflict catch (error) {
+        _draftError = error;
+        if (mounted) state = state.copyWith();
         return false;
       } on WorkoutAccountUnavailable {
         _guidedBusy = false;

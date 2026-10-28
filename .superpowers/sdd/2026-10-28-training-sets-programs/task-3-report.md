@@ -19,7 +19,7 @@ toolchainu/zależności/wersji/katalogu/deployu. Nie jest to raport DONE.
   /app/ && cd /app && flutter test --no-pub -r expanded <focused files>'`.
   Kontener: Flutter3.35.4/Dart3.9.2, host RO `/workspace`, robocze `/app`.
 
-## Pozostały zakres Task3
+## Pozostały zakres po checkpoincie 1 (historycznie)
 
 Edytor per-set, pełny start/metadata guard, provider guidance v2, target identity
 formularzy/checkpointów/origin, atomowe recovery skip/log, rzeczywisty fresh
@@ -58,3 +58,65 @@ Task4 (program repository/UI) pozostaje poza tym zakresem.
   Log `/tmp/opencode/task3/workout-checkpoint2.log`. Nie deklaruję zielonej suite.
 - Analyze checkpoint: 4 style infos i additive override jednego testu.
   Poprawione w źródłach, wymagają ponowienia. Brak deklaracji generatorów.
+
+## Checkpoint 3 — edytor, przygotowanie i guardy
+
+- Nowy per-set edytor: stable UUID celu, role/strony/reps/time/kg/przerwy i praca
+  estymowana, add/delete/reorder. Nowe ręczne szablony są v2; legacy edytuje się
+  nadal jako v1 do jawnej konwersji wszystkich bloków reps/time. Rounds odmawia.
+- `validatePerSetCatalog` + planner save/start: bieżące ID/metryka/strony;
+  start sprawdza również uporządkowaną selekcję. Headless path nie tworzy
+  długowiecznego DB-streamu w transakcji planera. Legacy start bez zmiany.
+- Przygotowanie v2 pokazuje wszystkie cele, bez historical scalar prefill,
+  history suggestions i zamienników. Domenowy `setTarget` i `startPrepared`
+  odmawiają nadpisania per-set wspólną dawką. Sandbag sprawdza każdą masę celu.
+- Timer v2 ma konfigurację jednej rundy i własne sekundy celu; multiround
+  checkpoint jest odrzucany, EXTRA pozostaje wielorundowe. Wybór celu ma osobny,
+  ograniczony przycisk zamiast ogromnego ListTile, więc działa przy320px/200%
+  i otwartej klawiaturze. Edytor/preparation mają testy320px/200%, edytor także
+  z klawiaturą180px; aktywny z160px. Pozostaje istniejący motyw/komponenty.
+- Poprawki wykryte przez nowe RED:
+  - editor3FAIL (`editor-red.log`) → save/cancel/stale/reorder/role/side green;
+    dołożono czas i mobile200% (łącznie4testy edytora).
+  - start4FAIL (`start-red.log`), ordered selection1FAIL
+    (`start-selection-red.log`) →5PASS walidacji bez session/outbox.
+  - prep2FAIL (`preparation-red.log`) →2PASS domena+realny modal/start.
+  - checkpoint multiround1FAIL (`checkpoint-rounds-red.log`) → odmowa bez zmiany.
+  - foreign target1FAIL (`foreign-target-red.log`): consume starego A kasował
+    timer nowego B. Repo v2 porównuje bieżący dokładny klucz przed consume;
+    transakcja wycofuje set/link/outbox, zachowując obcy szkic.
+  - variant1FAIL (`variant-red.log`): capture przed checkpointem mógł pożyczyć
+    inną tożsamość. V2 capture/log sprawdzają wybrany wariant.
+  - foreign performed1FAIL (`foreign-origin-red.log`): otwarty origin pozostawał
+    ważny po wykonaniu celu w innym widoku. Consumed target unieważnia origin;
+    własny commit odracza observer do atomowego merge.
+  - original-repeat2FAIL (`repeat-original-red.log`): źródłowy v2 repeat tworzył
+    pusty draft i nie dało się go wznowić. V2 dostaje dokładny pierwszy target
+    w początkowym draft, a confirm ponawia metadata guard przed insertem.
+    `repeat-green-analyze.log`:36PASS (12target +24repeat regression).
+- Legacy klucz UI przywrócony bez pustego suffixu. Dotychczasowe testy widgetów
+  czekają na koniec przewinięcia i przewijają do faktycznego pola/EXTRA, zamiast
+  tapować poza ekranem po dodaniu wyboru roli. Nie usunięto ich asercji danych.
+
+### Szeroki focused i istniejący problem baseline
+
+`/tmp/opencode/task3/focused-final.log`:
+`flutter test --no-pub -r expanded test/features/planner test/features/workout
+test/features/progress test/core/*sync*_test.dart` → **901PASS/1FAIL/1SKIP**.
+Wszystkie workout/planner i nowe testy przeszły. Jedyny FAIL:
+`test/features/progress/custom_fitness_data_test.dart:330`, test
+`account-bound repository backup3 keeps protocol UUID and embedded snapshot;
+unknown marker fails atomically`: oczekuje backup3, Task2 eksportuje backup4.
+
+Zweryfikowano niezależnie dokładny BASE81e9f4e przez `git archive` do prywatnej
+kopii kontenera `/tmp/task3-baseline` (ten sam SDK/cache, bez zmian hosta):
+`flutter test --no-pub -r expanded test/features/progress/custom_fitness_data_test.dart`
+→**9PASS/ten sam1FAIL**; `/tmp/opencode/task3/baseline-custom-fitness.log`.
+Nie edytowano odebranego backupu ani tego niezwiązanego testu. Wymaga decyzji
+integratora Task5, nie jest regresją Task3. SKIP to istniejący guard timezone
+w `fitness_protocol_widgets_test.dart:297` (Europe/DST kontra kontener UTC).
+
+Końcowy filtered focused (bez tego potwierdzonego błędu baseline), analiza,
+version/diff/format check będą dopisane po ostatnim przebiegu. Pełna suita
+klienta i realny PWA/runtime nadal Task5; niezależny review sesji nadrzędnej
+przed Task4. Backend/backup/programrepo/UI Task4 poza zmianami.

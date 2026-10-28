@@ -14,6 +14,9 @@ import '../../../exercises/domain/exercise_filter_engine.dart';
 import '../../domain/structured_plan.dart';
 import '../../providers/planner_providers.dart';
 import 'templates_page.dart';
+import '../widgets/per_set_dose_editor.dart';
+import '../../domain/set_prescription.dart';
+import 'package:uuid/uuid.dart';
 
 /// Shared route payload for a session copy or a Mentor proposal. Never a write.
 class TemplateEditorSeed {
@@ -44,20 +47,33 @@ class _Dose {
   _Dose(this.block)
     : sets = TextEditingController(text: '${block.prescription.sets}'),
       amount = TextEditingController(
-        text: '${block.prescription.reps ?? block.prescription.workSeconds}',
+        text: block.prescription.isPerSet
+            ? ''
+            : '${block.prescription.reps ?? block.prescription.workSeconds}',
       ),
-      rest = TextEditingController(text: '${block.prescription.restSeconds}'),
+      rest = TextEditingController(
+        text: block.prescription.isPerSet
+            ? ''
+            : '${block.prescription.restSeconds}',
+      ),
       kg = TextEditingController(
         text: block.prescription.weightKg?.toString() ?? '',
-      );
+      ),
+      targets = block.prescription.isPerSet
+          ? block.prescription.setTargets.map(SetTargetForm.new).toList()
+          : null;
   final PlanBlock block;
   final TextEditingController sets, amount, rest, kg;
   bool expanded = true;
+  List<SetTargetForm>? targets;
   void dispose() {
     sets.dispose();
     amount.dispose();
     rest.dispose();
     kg.dispose();
+    for (final target in targets ?? <SetTargetForm>[]) {
+      target.dispose();
+    }
   }
 }
 
@@ -186,16 +202,31 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
           PlanBlock(
             exerciseId: exercise.id,
             section: PlanSection.main,
-            prescription: PlanPrescription(
-              tracking: metadata.tracking,
-              sets: 3,
-              reps: metadata.tracking == 'reps' ? 10 : null,
-              workSeconds:
-                  (metadata.tracking == 'reps' ? 30 : 40) *
-                  (metadata.unilateral ? 2 : 1),
-              restSeconds: 30,
-              transitionSeconds: 15,
-            ),
+            prescription:
+                original == null || doses.any((d) => d.targets != null)
+                ? PlanPrescription.perSet(
+                    tracking: metadata.tracking,
+                    setTargets: List.generate(3, (_) {
+                      final f = SetTargetForm.initial(
+                        metadata.tracking,
+                        metadata.unilateral,
+                      );
+                      final t = f.build(metadata.tracking);
+                      f.dispose();
+                      return t;
+                    }),
+                    transitionSeconds: 15,
+                  )
+                : PlanPrescription(
+                    tracking: metadata.tracking,
+                    sets: 3,
+                    reps: metadata.tracking == 'reps' ? 10 : null,
+                    workSeconds:
+                        (metadata.tracking == 'reps' ? 30 : 40) *
+                        (metadata.unilateral ? 2 : 1),
+                    restSeconds: 30,
+                    transitionSeconds: 15,
+                  ),
           ),
         ),
       );
@@ -218,6 +249,29 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
         throw StateError(
           'Ćwiczenie lub jego sposób śledzenia jest niedostępny: ${dose.block.exerciseId}. Niczego nie pominięto.',
         );
+      }
+      final targets = dose.targets;
+      if (targets != null) {
+        final prescriptions = targets.map((t) => t.build(p.tracking)).toList();
+        if (prescriptions.any(
+          (t) => metadata.unilateral ? t.side == null : t.side != null,
+        )) {
+          throw StateError(
+            'Strona celu nie odpowiada aktualnemu katalogowi. Dla jednostronnych wybierz Lewa, Prawa lub Obie.',
+          );
+        }
+        blocks.add(
+          PlanBlock(
+            exerciseId: dose.block.exerciseId,
+            section: dose.block.section,
+            prescription: PlanPrescription.perSet(
+              tracking: p.tracking,
+              setTargets: prescriptions,
+              transitionSeconds: p.transitionSeconds,
+            ),
+          ),
+        );
+        continue;
       }
       final amount = int.parse(dose.amount.text);
       blocks.add(
@@ -254,6 +308,7 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
       );
     }
     return StructuredPlan(
+      schemaVersion: doses.any((d) => d.targets != null) ? 2 : 1,
       criteria: original?.criteria ?? const ExerciseFilters(),
       budgetSeconds: math.max(
         300,
@@ -272,7 +327,8 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
     // przed validate, żeby komunikat nigdy nie został ukryty.
     setState(() {
       for (final d in doses) {
-        if (invalidNumber(d.sets.text) != null ||
+        if (d.targets != null ||
+            invalidNumber(d.sets.text) != null ||
             invalidNumber(d.amount.text, maxInteger: amountLimit(d)) != null ||
             invalidNumber(d.rest.text, zero: true) != null ||
             invalidNumber(d.kg.text, weight: true) != null) {
@@ -308,6 +364,60 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
       if (mounted) setState(() => error = '$e');
     } finally {
       if (mounted) setState(() => busy = false);
+    }
+  }
+
+  void individualTargets() {
+    if (busy || !form.currentState!.validate()) return;
+    try {
+      final plan = buildPlan(ref.read(allExercisesProvider).requireValue);
+      final converted = <List<SetTargetForm>>[];
+      for (final block in plan.blocks) {
+        final p = block.prescription;
+        if (!{'reps', 'time'}.contains(p.tracking) || p.sets > 100) {
+          throw StateError(
+            'Osobne cele obsługują reps/time i do 100 serii. Rundy pozostają bez konwersji.',
+          );
+        }
+        final unilateral = ref
+            .read(exerciseCatalogMetadataProvider)
+            .requireValue
+            .entryFor(block.exerciseId)!
+            .unilateral;
+        converted.add(
+          List.generate(
+            p.sets,
+            (_) => SetTargetForm(
+              SetPrescription(
+                targetId: const Uuid().v4(),
+                setRole: 'working',
+                side: unilateral ? 'both' : null,
+                reps: p.reps,
+                seconds: p.tracking == 'time' ? p.workSeconds : null,
+                weightKg: p.weightKg,
+                workSeconds: p.workSeconds,
+                restSeconds: p.restSeconds,
+              ),
+            ),
+          ),
+        );
+      }
+      setState(() {
+        for (var i = 0; i < doses.length; i++) {
+          doses[i].targets = converted[i];
+        }
+      });
+    } catch (e) {
+      setState(() => error = '$e');
+    }
+  }
+
+  String get estimateLabel {
+    try {
+      final plan = buildPlan(ref.read(allExercisesProvider).requireValue);
+      return 'Czas ESTYMOWANY: ${plan.estimatedSeconds} s (praca, przerwy między celami i przejścia).';
+    } catch (_) {
+      return 'Estymacja pojawi się po podaniu poprawnych celów.';
     }
   }
 
@@ -416,7 +526,9 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
                       doses[i].rest,
                     ]),
                     builder: (context, _) => Text(
-                      '${doses[i].sets.text} × ${doses[i].amount.text}${doses[i].block.prescription.tracking == 'reps' ? ' powt.' : ' s'}${doses[i].kg.text.isEmpty ? '' : ' · ${doses[i].kg.text} kg'} · ${doses[i].rest.text} s przerwy',
+                      doses[i].targets != null
+                          ? '${doses[i].targets!.length} indywidualnych celów — kolejność i rodzaje serii poniżej.'
+                          : '${doses[i].sets.text} × ${doses[i].amount.text}${doses[i].block.prescription.tracking == 'reps' ? ' powt.' : ' s'}${doses[i].kg.text.isEmpty ? '' : ' · ${doses[i].kg.text} kg'} · ${doses[i].rest.text} s przerwy',
                     ),
                   ),
                   Wrap(
@@ -486,28 +598,40 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
                   ),
                   Offstage(
                     offstage: !doses[i].expanded,
-                    child: Column(
-                      children: [
-                        number(doses[i].sets, 'Serie'),
-                        number(
-                          doses[i].amount,
-                          doses[i].block.prescription.tracking == 'reps'
-                              ? 'Powtórzenia'
-                              : 'Sekundy (łącznie obie strony)',
-                          maxInteger: amountLimit(doses[i]),
-                        ),
-                        number(
-                          doses[i].rest,
-                          'Przerwa między seriami (s)',
-                          zero: true,
-                        ),
-                        number(
-                          doses[i].kg,
-                          'Ciężar (kg, opcjonalnie)',
-                          weight: true,
-                        ),
-                      ],
-                    ),
+                    child: doses[i].targets != null
+                        ? PerSetDoseEditor(
+                            targets: doses[i].targets!,
+                            tracking: doses[i].block.prescription.tracking,
+                            unilateral:
+                                metadata.valueOrNull
+                                    ?.entryFor(doses[i].block.exerciseId)
+                                    ?.unilateral ==
+                                true,
+                            enabled: !busy,
+                            onChanged: () => setState(() {}),
+                          )
+                        : Column(
+                            children: [
+                              number(doses[i].sets, 'Serie'),
+                              number(
+                                doses[i].amount,
+                                doses[i].block.prescription.tracking == 'reps'
+                                    ? 'Powtórzenia'
+                                    : 'Sekundy (łącznie obie strony)',
+                                maxInteger: amountLimit(doses[i]),
+                              ),
+                              number(
+                                doses[i].rest,
+                                'Przerwa między seriami (s)',
+                                zero: true,
+                              ),
+                              number(
+                                doses[i].kg,
+                                'Ciężar (kg, opcjonalnie)',
+                                weight: true,
+                              ),
+                            ],
+                          ),
                   ),
                 ],
               ),
@@ -582,6 +706,16 @@ class _TemplateEditorPageState extends ConsumerState<TemplateEditorPage> {
                                 in original?.warnings ?? <String>[])
                               Text(warning),
                             if (lease != null) ...[
+                              if (doses.isNotEmpty &&
+                                  doses.every((d) => d.targets == null))
+                                OutlinedButton(
+                                  onPressed: busy || !metadata.hasValue
+                                      ? null
+                                      : individualTargets,
+                                  child: const Text('Ustaw osobne cele serii'),
+                                ),
+                              if (doses.any((d) => d.targets != null))
+                                Text(estimateLabel),
                               const SizedBox(height: 16),
                               LayoutBuilder(
                                 builder: (context, constraints) {

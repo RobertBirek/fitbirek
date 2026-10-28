@@ -173,7 +173,13 @@ class WorkoutRepository {
         'guidanceSignature': guidance == null
             ? null
             : jsonEncode(guidance.toJson()),
-        'fields': {if (guidance == null) 'repeatTargets': repeat.toJson()},
+        'fields': {
+          if (guidance == null) 'repeatTargets': repeat.toJson(),
+          if (guidance?.schemaVersion == 2)
+            ...targetFields(
+              guidance!.plan.blocks.first.prescription.setTargets.first,
+            ),
+        },
       },
     );
     await _requireAccount(accountId, guard);
@@ -722,7 +728,7 @@ class WorkoutRepository {
     }
     // A skipped target remains selected and visible, but is never performed.
     // Its precise defaults survive recovery, without borrowing another target.
-    if (targetId != null && replacement == null) {
+    if (targetId != null) {
       final target = dose.setTargets.singleWhere((t) => t.targetId == targetId);
       fields.addAll(targetFields(target));
     }
@@ -859,6 +865,20 @@ class WorkoutRepository {
       jsonDecode(jsonEncode(current ?? fallbackPayload)) as Map,
     );
     final fields = Map<String, Object?>.from(next['fields'] as Map);
+    final guidance = WorkoutGuidance.tryRead(session.guidanceJson);
+    if (!extra && guidance?.schemaVersion == 2) {
+      final slot = next['currentSlot'] as int;
+      final selectedKey = checkpointKey(
+        sessionSyncId,
+        guidance!.exerciseAt(slot),
+        fields['side'] as String?,
+        fields['variantId'] as String?,
+        extra: false,
+        slot: slot,
+        targetId: fields['targetId'] as String?,
+      );
+      if (selectedKey != key) throw WorkoutDraftConflict();
+    }
     if (extra) {
       final forms = Map<String, Object?>.from(
         fields['extraForms'] as Map? ?? {},

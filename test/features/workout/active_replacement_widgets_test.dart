@@ -156,6 +156,7 @@ void main() {
         300,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(TextButton, 'Zamień'));
       await tester.pumpAndSettle();
       if (action == 'weight' || action == 'equipment') {

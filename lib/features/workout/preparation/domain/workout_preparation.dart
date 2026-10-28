@@ -136,6 +136,11 @@ class PreparationDraft {
 
   PreparationDraft setTarget(int index, PreparedTarget target) {
     _checkIndex(index);
+    if (snapshot.plan!.blocks[index].prescription.isPerSet) {
+      throw StateError(
+        'Ten plan ma indywidualne cele. Zmieniaj konkretne serie w edytorze, nie całą rampę historyczną sugestią.',
+      );
+    }
     target.validate();
     if (target.variantId != null ||
         target.side != snapshot.defaultSide(exerciseIdAt(index))) {
@@ -152,6 +157,7 @@ class PreparationDraft {
   List<Exercise> candidatesFor(int index) {
     _checkIndex(index);
     final plan = snapshot.plan!;
+    if (plan.blocks[index].prescription.isPerSet) return [];
     final source = snapshot.exercise(exerciseIdAt(index));
     final tracking = plan.blocks[index].prescription.tracking;
     final pool = StructuredPlanGenerator.candidates(
@@ -249,6 +255,7 @@ class PreparationDraft {
       );
     }
     final result = StructuredPlan(
+      schemaVersion: plan.schemaVersion,
       criteria: plan.criteria,
       budgetSeconds: plan.budgetSeconds,
       level: plan.level,

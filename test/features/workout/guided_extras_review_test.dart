@@ -389,6 +389,12 @@ void main() {
         maxScrolls: 8,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.scrollUntilVisible(
+        find.text('Dodatkowy ruch'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.text('Dodatkowy ruch'), findsOneWidget);
       expect(find.text('Inny planowany blok'), findsNothing);
       final card = find.byKey(ValueKey('extra:$uuid:${extra.id}'));
@@ -444,6 +450,12 @@ void main() {
         maxScrolls: 8,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.scrollUntilVisible(
+        find.text('Dodatkowy ruch'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
       expect(find.text('Dodatkowy ruch'), findsOneWidget);
       await tester.runAsync(() async {
         final n = c.read(activeWorkoutProvider.notifier),

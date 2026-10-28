@@ -212,12 +212,17 @@ class WorkoutPreparationWorkflow {
                   snapshot.availableEquipment,
                 ) ??
                 exercise.sprzet;
-            final weight = draft.targets.containsKey(i)
-                ? draft.targets[i]!.weightKg
-                : block.prescription.weightKg;
+            final weights = block.prescription.isPerSet
+                ? block.prescription.setTargets.map((t) => t.weightKg)
+                : [
+                    draft.targets.containsKey(i)
+                        ? draft.targets[i]!.weightKg
+                        : block.prescription.weightKg,
+                  ];
             if (equipment.contains('Sandbag') &&
-                weight != null &&
-                weight != sandbagGrams / 1000) {
+                weights.any(
+                  (weight) => weight != null && weight != sandbagGrams / 1000,
+                )) {
               throw StateError(
                 'Sandbag ma potwierdzone ${sandbagGrams / 1000} kg. Wybierz zgodny cel jawnie lub zmień ćwiczenie.',
               );

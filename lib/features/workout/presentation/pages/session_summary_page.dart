@@ -203,7 +203,7 @@ class _SessionSummaryPageState extends ConsumerState<SessionSummaryPage> {
                                 '${s.setRole == null ? '' : '${SetRole.label(s.setRole)} • '}'
                                 '${s.variantId == null ? '' : '${s.variantLabel ?? s.variantId} • '}'
                                 '${s.side == null ? '' : '${const {'left': 'Lewa', 'right': 'Prawa', 'both': 'Obie'}[s.side]} • '}'
-                                '${s.czasSekund != null ? '${s.czasSekund} s' : '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg × '}${s.powtorzenia ?? '-'} powt.'}'
+                                '${s.czasSekund != null ? '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg • '}${s.czasSekund} s${s.powtorzenia == null ? '' : ' • ${s.powtorzenia} powt.'}' : '${s.ciezarKg == null ? '' : '${s.ciezarKg} kg × '}${s.powtorzenia ?? '-'} powt.'}'
                                 ' (RPE ${s.rpe ?? '-'}) • ${Formatters.time(s.timestamp)}',
                               ),
                             ),

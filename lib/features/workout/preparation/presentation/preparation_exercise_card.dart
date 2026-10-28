@@ -11,6 +11,7 @@ import '../domain/equipment_inventory.dart';
 import '../domain/preparation_progression.dart';
 import '../domain/workout_preparation.dart';
 import '../providers/preparation_providers.dart';
+import '../../../planner/presentation/widgets/set_target_details.dart';
 
 String preparationKg(num value) {
   final text = value.toStringAsFixed(3).replaceFirst(RegExp(r'\.?0+$'), '');
@@ -85,6 +86,10 @@ class _PreparationExerciseCardState
   @override
   void initState() {
     super.initState();
+    if (_dose.isPerSet) {
+      _weight = TextEditingController();
+      return;
+    }
     final target = widget.draft.targets[widget.index];
     _implement =
         target?.implement ??
@@ -323,6 +328,36 @@ class _PreparationExerciseCardState
 
   @override
   Widget build(BuildContext context) {
+    if (_dose.isPerSet) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                _exercise.nazwaPl,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              Text('Sprzęt: ${_equipment.join(', ')}'),
+              for (var i = 0; i < _dose.setTargets.length; i++)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    '${i + 1}. ${setTargetDetails(_dose.setTargets[i])}',
+                  ),
+                ),
+              Text(
+                'Przejście: ${_dose.transitionSeconds} s • razem ESTYMOWANE ${_dose.totalSeconds} s',
+              ),
+              const Text(
+                'Indywidualne cele pozostają bez zmian. Historia nie nadpisuje rampy kilogramów ani powtórzeń. Zmianę celu lub ćwiczenia wykonaj w edytorze przed startem.',
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     final offer = _offer;
     final kg = parseDecimal(_weight.text);
     final assemblies =

@@ -31,7 +31,7 @@ import '../widgets/session_progress_text.dart';
 import '../widgets/session_delete_button.dart';
 import '../widgets/set_role_selector.dart';
 import '../../../../core/models/set_role.dart';
-import '../../../planner/presentation/widgets/set_target_details.dart';
+import '../widgets/guided_target_card.dart';
 import '../../domain/guided_target.dart';
 
 /// Ćwiczenia tego typu korzystają ze stopera (czas w górę) zamiast pól
@@ -190,32 +190,25 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
         if (target.isPerSet) ...[
           const Text('Kolejne cele serii — wybierz cel do potwierdzenia'),
           for (var i = 0; i < target.setTargets.length; i++)
-            ListTile(
-              key: ValueKey('guided-target-${target.setTargets[i].targetId}'),
+            GuidedTargetCard(
+              target: target.setTargets[i],
+              index: i,
               selected:
                   active.currentTarget?.targetId ==
                   target.setTargets[i].targetId,
-              leading: Icon(
-                active.currentTarget?.targetId == target.setTargets[i].targetId
-                    ? Icons.radio_button_checked
-                    : Icons.radio_button_unchecked,
-              ),
-              title: Text(
-                '${i + 1}. ${setTargetDetails(target.setTargets[i])}',
-              ),
-              subtitle: Text(
-                g.events.any(
-                      (e) =>
-                          e['type'] == 'performed' &&
-                          e['slotIndex'] == slot &&
-                          e['targetId'] == target.setTargets[i].targetId,
-                    )
-                    ? 'Cel wykonany'
-                    : targetConsumed(g, slot, target.setTargets[i].targetId)
-                    ? 'Pominięty cel — bez wykonania'
-                    : 'Bez potwierdzenia',
-              ),
-              onTap: () => n.selectGuidedTarget(target.setTargets[i].targetId),
+              status:
+                  g.events.any(
+                    (e) =>
+                        e['type'] == 'performed' &&
+                        e['slotIndex'] == slot &&
+                        e['targetId'] == target.setTargets[i].targetId,
+                  )
+                  ? 'Cel wykonany'
+                  : targetConsumed(g, slot, target.setTargets[i].targetId)
+                  ? 'Pominięty cel — bez wykonania'
+                  : 'Bez potwierdzenia',
+              onSelect: () =>
+                  n.selectGuidedTarget(target.setTargets[i].targetId),
             ),
         ],
         const Text(
@@ -236,7 +229,7 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
             Text(exercise.kluczoweWskazowki.first),
           _ExerciseLogCard(
             key: ValueKey(
-              '${active.sessionSyncId}:$slot:${exercise.id}:${active.currentTarget?.targetId ?? ''}',
+              '${active.sessionSyncId}:$slot:${exercise.id}${active.currentTarget == null ? '' : ':${active.currentTarget!.targetId}'}',
             ),
             exercise: exercise,
             guided: true,
@@ -485,10 +478,24 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       ?.value
       .entryFor(widget.exercise.id);
   String get _tracking =>
+      (widget.guided && ref.read(activeWorkoutProvider).currentTarget != null
+          ? ref
+                .read(activeWorkoutProvider)
+                .guidance!
+                .plan
+                .blocks[ref.read(activeWorkoutProvider).currentSlot]
+                .prescription
+                .tracking
+          : null) ??
       _entry?.tracking ??
       (_typyIzometryczne.contains(widget.exercise.typ) ? 'time' : 'reps');
   bool get _isIsometric => _tracking != 'reps';
-  String? get _side => _entry?.unilateral == true ? _selectedSide : null;
+  String? get _side =>
+      _entry?.unilateral == true ||
+          (widget.guided &&
+              ref.read(activeWorkoutProvider).currentTarget?.side != null)
+      ? _selectedSide
+      : null;
   double? get _templateWeight {
     final active = ref.read(activeWorkoutProvider);
     return widget.guided
@@ -1119,6 +1126,10 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
       final result = await Navigator.of(context).push<List<IntervalRound>>(
         MaterialPageRoute(
           builder: (_) => IntervalTimerScreen(
+            singleRound: origin.targetId != null,
+            initialWorkSeconds: origin.targetId == null
+                ? null
+                : ref.read(activeWorkoutProvider).currentTarget?.seconds,
             label: '${widget.exercise.nazwaPl} • ${setSideLabel(origin.side)}',
             isValid: () => mounted && notifier.isIntervalCurrent(origin),
             checkpoint: _durable && _formDraft['timer'] is Map
@@ -1223,6 +1234,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     required String? variantLabel,
   }) async {
     try {
+      final before = ref.read(activeWorkoutProvider).loggedSets.length;
       final isPr = await ref
           .read(activeWorkoutProvider.notifier)
           .logSet(
@@ -1240,6 +1252,17 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                 ? ref.read(activeWorkoutProvider).currentTarget?.targetId
                 : null,
           );
+      if (mounted &&
+          ref.read(activeWorkoutProvider).loggedSets.length == before) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Nie zapisano serii. Sprawdź wybrany cel, jego stronę i aktualność sesji.',
+            ),
+          ),
+        );
+        return;
+      }
       await _afterLogSet(isPr);
     } on StateError catch (error) {
       // A definition can be removed by pull between the selector and SQLite's
@@ -1293,6 +1316,11 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                         _saveForm();
                       }),
               ),
+            if (widget.guided &&
+                ref.watch(activeWorkoutProvider).currentTarget?.side != null)
+              Text(
+                'Cel potwierdza wyłącznie strona: ${setSideLabel(ref.watch(activeWorkoutProvider).currentTarget!.side)}. Lewa i prawa osobno nie potwierdzają celu Obie.',
+              ),
             if (_entry?.unilateral == true) ...[
               SegmentedButton<String>(
                 segments: const [
@@ -1326,13 +1354,28 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(labelText: 'Ciężar (kg)'),
                 ),
-              if (_tracking == 'rounds')
+              if (_tracking == 'rounds' ||
+                  (widget.guided &&
+                      ref.watch(activeWorkoutProvider).currentTarget?.seconds !=
+                          null) ||
+                  widget.extra)
                 PrimaryButton(
                   label: _intervalBusy
                       ? 'Interwały w toku…'
+                      : widget.guided &&
+                            ref.watch(activeWorkoutProvider).currentTarget !=
+                                null
+                      ? 'Timer celu (1 seria)'
                       : 'Timer interwałów',
                   icon: Icons.av_timer,
-                  onPressed: _intervalBusy ? null : _startIntervals,
+                  onPressed:
+                      _intervalBusy ||
+                          (widget.guided &&
+                              ref
+                                  .watch(activeWorkoutProvider)
+                                  .currentTargetConsumed)
+                      ? null
+                      : _startIntervals,
                 ),
               TextField(
                 controller: _secondsController,

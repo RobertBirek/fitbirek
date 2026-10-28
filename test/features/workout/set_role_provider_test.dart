@@ -7,6 +7,8 @@ import 'package:fitbirek_training/features/workout/data/workout_repository.dart'
 import 'package:fitbirek_training/features/workout/domain/workout_repeat.dart';
 import 'package:fitbirek_training/features/workout/providers/workout_providers.dart';
 import 'session_tracking_test.dart' show exercise;
+import '../planner/structured_plan_persistence_test.dart' show structure;
+import 'package:fitbirek_training/features/workout/domain/workout_guidance.dart';
 
 void main() {
   late AppDatabase db;
@@ -55,6 +57,30 @@ void main() {
     await n.logSet(exercise: exercise, reps: 8);
     expect((await db.select(db.setsLog).getSingle()).setRole, 'working');
   });
+
+  test(
+    'explicit warmup under v1 stays additional and cannot produce PR',
+    () async {
+      final n = c.read(activeWorkoutProvider.notifier);
+      await n.startSession(guidance: WorkoutGuidance.start(structure));
+      final ex = exercise.copyWith(id: 'yoga');
+      expect(
+        await n.logSet(
+          exercise: ex,
+          weightKg: 100,
+          reps: 10,
+          setRole: 'warmup',
+        ),
+        isFalse,
+      );
+      expect(c.read(activeWorkoutProvider).guidance!.events, isEmpty);
+      expect((await db.select(db.setsLog).getSingle()).setRole, 'warmup');
+      expect(await db.select(db.personalRecords).get(), isEmpty);
+      expect(await n.logSet(exercise: ex, weightKg: 20, reps: 10), isTrue);
+      expect(c.read(activeWorkoutProvider).guidance!.events, hasLength(1));
+      expect(await db.select(db.personalRecords).get(), hasLength(1));
+    },
+  );
 
   for (final role in ['warmup', null]) {
     test('repeat preserves $role; warmup cannot create PR', () async {

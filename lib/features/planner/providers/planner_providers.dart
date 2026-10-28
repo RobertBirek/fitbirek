@@ -5,9 +5,10 @@ import '../data/planner_repository.dart';
 import '../../../core/models/exercise.dart';
 import '../../../core/database/app_database.dart';
 import '../../auth/providers/auth_providers.dart';
-import '../../exercises/domain/exercise_filter_engine.dart';
 import '../../workout/providers/workout_providers.dart';
 import '../domain/structured_plan.dart';
+import '../domain/plan_catalog_validation.dart';
+import '../../exercises/providers/exercises_providers.dart';
 import '../../workout/domain/workout_guidance.dart';
 import '../../workout/domain/workout_draft_write.dart' show checkpointKey;
 import '../../workout/preparation/domain/workout_preparation.dart'
@@ -115,6 +116,7 @@ class PlannerWorkflow {
   }) => _write((db, guard) async {
     await _checkLease(db, lease);
     PlannerRepository.validateTemplate(name, plan);
+    await _validateCatalog(plan);
     final repo = ref.read(plannerRepositoryProvider);
     if (lease.baseline == null) {
       await repo.savePlan(
@@ -185,16 +187,17 @@ class PlannerWorkflow {
     StructuredPlan plan, {
     required String name,
     required String goal,
-  }) => _write(
-    (db, guard) => ref
+  }) => _write((db, guard) async {
+    await _validateCatalog(plan);
+    return ref
         .read(plannerRepositoryProvider)
         .savePlan(
           nazwa: name,
           cwiczeniaIds: plan.exerciseIds,
           cel: goal,
           structure: plan,
-        ),
-  );
+        );
+  });
 
   Future<void> start(List<Exercise> exercises, {StructuredPlan? plan}) =>
       _write((db, guard) => _start(exercises, guard, plan: plan));
@@ -285,6 +288,11 @@ class PlannerWorkflow {
               throw StateError('Nieprawidłowy blok celu.');
             }
             entry.value.validate();
+            if (sessionPlan.blocks[entry.key].prescription.isPerSet) {
+              throw StateError(
+                'Indywidualna lista celów nie przyjmuje wspólnego ciężaru ani powtórzeń z przygotowania.',
+              );
+            }
             final id = sessionPlan.blocks[entry.key].exerciseId;
             final key = checkpointKey(
               created,
@@ -327,6 +335,18 @@ class PlannerWorkflow {
     void Function(String)? onCreated,
   }) async {
     if (!guard()) throw StateError('Konto zmieniło się. Start anulowany.');
+    if (plan?.schemaVersion == 2 &&
+        (exercises.length != plan!.blocks.length ||
+            List.generate(
+              exercises.length,
+              (i) => exercises[i].id != plan.blocks[i].exerciseId,
+            ).any((e) => e))) {
+      throw StateError(
+        'Wybrane ćwiczenia nie odpowiadają uporządkowanym blokom planu.',
+      );
+    }
+    if (plan != null) await _validateCatalog(plan);
+    if (!guard()) throw StateError('Konto zmieniło się. Start anulowany.');
     if ((!allowEmpty && exercises.isEmpty) ||
         ref.read(activeWorkoutProvider).isActive ||
         ref.read(activeWorkoutProvider).selectedExercises.isNotEmpty) {
@@ -348,6 +368,18 @@ class PlannerWorkflow {
       notifier.addExercise(e);
     }
     notifier.updateDraft({});
+  }
+
+  Future<void> _validateCatalog(StructuredPlan plan) async {
+    if (plan.schemaVersion != 2) return;
+    // Do not create a long-lived Drift stream inside the caller's transaction.
+    // UI already owns its live catalogue; headless starts use a one-shot reader
+    // in this transaction and cancel the stream immediately after its first row.
+    final catalog = ref.exists(allExercisesProvider)
+        ? await ref.read(allExercisesProvider.future)
+        : await ref.read(exercisesRepositoryProvider).watchAll().first;
+    final metadata = await ref.read(exerciseCatalogMetadataProvider.future);
+    validatePerSetCatalog(plan, catalog, metadata);
   }
 }
 

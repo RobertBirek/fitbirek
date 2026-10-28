@@ -13,6 +13,7 @@ import '../../domain/structured_plan.dart';
 import '../../domain/plan_explanation.dart';
 import '../../providers/planner_providers.dart';
 import '../widgets/plan_edit_dialog.dart';
+import '../widgets/set_target_details.dart';
 
 class PlannerPage extends ConsumerStatefulWidget {
   const PlannerPage({super.key});
@@ -419,9 +420,11 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
           all[b.exerciseId]?.nazwaPl ?? 'Niedostępne: ${b.exerciseId}',
         ),
         subtitle: Text(
-          '${p.sets} serie × ${p.reps == null ? "${p.workSeconds} s (${p.tracking})" : "${p.reps} powt."} '
-          '• praca ${p.workSeconds} s/serię • przerwa ${p.restSeconds} s • przejście ${p.transitionSeconds} s '
-          '• razem ${p.totalSeconds} s',
+          p.isPerSet
+              ? '${p.setTargets.map(setTargetDetails).join('\n')}\nPrzejście ${p.transitionSeconds} s • razem ${p.totalSeconds} s'
+              : '${p.sets} serie × ${p.reps == null ? "${p.workSeconds} s (${p.tracking})" : "${p.reps} powt."} '
+                    '• praca ${p.workSeconds} s/serię • przerwa ${p.restSeconds} s • przejście ${p.transitionSeconds} s '
+                    '• razem ${p.totalSeconds} s',
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -540,6 +543,13 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
 
   Future<void> _editRest(int index, UserProfile profile) async {
     final plan = _plan!;
+    if (plan.blocks[index].prescription.isPerSet) {
+      setState(
+        () => _message =
+            'Każdy cel ma własną przerwę. Edytuj konkretne serie w edytorze szablonu; wspólna przerwa nie nadpisze listy.',
+      );
+      return;
+    }
     final epoch = ref.read(cachedAuthWriteAuthorityProvider).epoch;
     try {
       if (_previewEpoch != epoch) {

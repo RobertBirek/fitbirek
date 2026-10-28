@@ -147,6 +147,7 @@ void main() {
       expect(c.read(activeWorkoutProvider).draft['side'], 'right');
       expect(c.read(activeWorkoutProvider).draft['timer'], isNull);
       await tester.ensureVisible(find.text('Timer interwałów'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Timer interwałów'));
       await tester.pumpAndSettle();
       expect(find.text('Rozpocznij interwały'), findsOneWidget);

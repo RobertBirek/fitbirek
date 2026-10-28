@@ -134,6 +134,11 @@ void _identityTests(bool guided) {
       String value(int i) =>
           tester.widget<TextField>(field(i)).controller!.text;
       Future<void> enter(int i, String text) async {
+        await tester.scrollUntilVisible(
+          field(i),
+          150,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.ensureVisible(field(i));
         await tester.pumpAndSettle();
         await tester.enterText(field(i), text);
@@ -449,6 +454,14 @@ void _identityTests(bool guided) {
           scrollable: find.byType(Scrollable).first,
         );
       }
+      await tester.scrollUntilVisible(
+        card(),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(input());
+      await tester.pumpAndSettle();
       expect(value(), '9');
       await side('Lewa');
       expect(value(), '7');

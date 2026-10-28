@@ -12,12 +12,16 @@ class IntervalTimerScreen extends StatefulWidget {
     this.isValid,
     this.checkpoint,
     this.onCheckpoint,
+    this.singleRound = false,
+    this.initialWorkSeconds,
   });
   final String label;
   final Duration Function()? clock;
   final bool Function()? isValid;
   final Map<String, dynamic>? checkpoint;
   final void Function(Map<String, Object?>?)? onCheckpoint;
+  final bool singleRound;
+  final int? initialWorkSeconds;
   @override
   State<IntervalTimerScreen> createState() => _IntervalTimerScreenState();
 }
@@ -41,12 +45,20 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (widget.singleRound) _rounds.text = '1';
+    if (widget.initialWorkSeconds != null) {
+      _work.text = '${widget.initialWorkSeconds}';
+    }
     if (widget.checkpoint != null) {
       try {
         _engine = IntervalTimer.restore(
           widget.checkpoint!,
           clock: widget.clock,
         );
+        if (widget.singleRound && _engine!.config.rounds != 1) {
+          _engine = null;
+          _invalid = true;
+        }
       } on FormatException {
         _invalid = true;
       }
@@ -239,6 +251,7 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
   ) => TextFormField(
     key: Key(key),
     controller: c,
+    enabled: key != 'rounds' || !widget.singleRound,
     keyboardType: TextInputType.number,
     decoration: InputDecoration(labelText: '$label ($min–$max)'),
     validator: (text) {
@@ -292,7 +305,17 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
                       ),
                       _field('work', 'Praca', _work, 1, 3600),
                       _field('rest', 'Przerwa (s)', _rest, 0, 600),
-                      _field('rounds', 'Rundy', _rounds, 1, 100),
+                      _field(
+                        'rounds',
+                        'Rundy',
+                        _rounds,
+                        1,
+                        widget.singleRound ? 1 : 100,
+                      ),
+                      if (widget.singleRound)
+                        const Text(
+                          'Jeden wybrany cel, jedna runda. Wielorundowy timer jest dostępny dla ćwiczeń dodatkowych, bez potwierdzania celów planu.',
+                        ),
                       FilledButton(
                         onPressed: _start,
                         child: const Text('Rozpocznij interwały'),

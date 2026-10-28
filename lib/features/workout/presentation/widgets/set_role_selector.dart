@@ -14,6 +14,8 @@ class SetRoleSelector extends StatelessWidget {
     key: const ValueKey('set-role-selector'),
     initialValue: value,
     isExpanded: true,
+    isDense: false,
+    itemHeight: null,
     decoration: const InputDecoration(labelText: 'Rodzaj serii'),
     items: [
       for (final role in [SetRole.working, SetRole.warmup])

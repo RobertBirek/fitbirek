@@ -66,6 +66,7 @@ void main() {
       await tester.tap(find.text('Prawa'));
       await tester.enterText(find.byType(TextField).first, '15');
       await tester.ensureVisible(find.text('Zapisz czas (0)'));
+      await tester.pumpAndSettle();
       await tester.runAsync(() async {
         await tester.tap(find.text('Zapisz czas (0)'));
         await Future<void>.delayed(const Duration(milliseconds: 100));
