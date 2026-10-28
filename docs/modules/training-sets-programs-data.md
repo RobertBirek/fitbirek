@@ -89,6 +89,14 @@ z nowymi UUID i przeliczonymi UUIDv5 wyjątków. Plany, sesje i snapshoty korzys
 z tych samych map. Dawne lokalne programy pozostają bez zmiany immutable core.
 Role, tombstone, cutoff są zachowane. Brak mapy lub limit całego merge odmawia
 całego importu transakcyjnie. Oryginalnych bajtów pliku nie zmieniamy.
+Zachowane lokalne originals nie mogą po restore stracić danych referencji.
+Ich plany oraz sesje dowodowe z seriami/linkami pozostają pod dawnymi UUID jako
+tombstone'y w istniejących tabelach. Nie są żywym wykonaniem ani nowym dowodem
+ukończenia. Eksport4 obejmuje domknięcie tych referencji, także tombstone'y;
+`archiveDeletedAtUtc` zachowuje ich stan usunięcia po remapie do nowych UUID.
+Restore nadaje również nowe lokalne integerID, aby kopia nie nadpisała
+zachowanego originala. Kolejne własne eksporty/importy są odtwarzalne bez
+przepisywania immutable core programu lub pomijania dawnych wyjątków.
 UUID mapy respektują wielkość liter UUID, a link serii musi należeć do tej samej
 sesji. Legacy archiwum bez całego profilu nie usuwa istniejących kolekcji:
 zachowuje wtedy ich dotychczasową kopertę profilu.
@@ -118,3 +126,19 @@ Focused data/core/sync/workout/planner/backup/progression/trends/migration:
 Osobny kontraktowy zestaw:36PASS (34nowe +2dotychczasowe template). Pełna
 suity klienta i prawdziwy runtime/browser pozostają do integracji Task5;
 niezależny review wykonuje sesja nadrzędna, nie implementer Task2.
+
+### Fixround1 po review
+
+P1: regresje obejmują export → restore do tej samej bazy → export → restore do
+pustej bazy, także completed override z warmup/working, linkami i zamkniętym,
+usuniętym programem; następny reexport również daje odtwarzalny plik. Braki
+rzeczywistych lokalnych referencji są odrzucane przed zastąpieniem danych,
+a nie ukrywane lub zastępowane fikcyjną tożsamością.
+
+P2: `RepeatSetTarget.toJson/prefill` pomijają NULL setRole. Legacy powtórzenie
+z v1draft bez pola roli zachowuje JSON używany przez identity guard; świeży
+provider potrafi wznowić i od razu zapisać jedną serię oraz przesunąć kursor.
+Jawne role pozostają serializowane. Bez zmian produkcyjnego providera/UI,
+migracji, generated modeli i zależności.
+Końcowe focused backup/snapshot/repeat/recovery/target storage:107PASS,
+`flutter analyze --no-pub`:No issues found; format/diff/versioncheckPASS.

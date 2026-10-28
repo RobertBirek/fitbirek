@@ -102,6 +102,17 @@ class BackupService {
     });
 
     // Filtering, archive mapping and JSON encoding do not hold the transaction.
+    final references = _programReferences(
+      userProfiles.where((p) => p.deletedAtUtc == null),
+    );
+    final referencedSessions = sessions
+        .where(
+          (s) =>
+              references.retainAll ||
+              references.sessions.contains(_identityKey(s.syncId)),
+        )
+        .map((s) => s.id)
+        .toSet();
     final payload = {
       'schemaVersion': currentSchemaVersion,
       'appVersion': AppConstants.appVersion,
@@ -119,10 +130,13 @@ class BackupService {
             .toList(),
         'exercises': exercises.map((e) => e.toJson()).toList(),
         'workoutSessions': sessions
-            .where((r) => r.deletedAtUtc == null)
+            .where(
+              (r) =>
+                  r.deletedAtUtc == null || referencedSessions.contains(r.id),
+            )
             .map(
               (r) => {
-                ..._withoutSyncMetadata(r),
+                ..._archiveReferencedRow(r),
                 'archiveSessionSyncId': r.syncId,
               },
             )
@@ -130,13 +144,17 @@ class BackupService {
         'setsLog': sets
             .where(
               (r) =>
-                  r.deletedAtUtc == null &&
-                  sessions.any(
-                    (s) => s.id == r.sesjaId && s.deletedAtUtc == null,
-                  ),
+                  referencedSessions.contains(r.sesjaId) ||
+                  (r.deletedAtUtc == null &&
+                      sessions.any(
+                        (s) => s.id == r.sesjaId && s.deletedAtUtc == null,
+                      )),
             )
             .map(
-              (s) => {..._withoutSyncMetadata(s), 'archiveSetSyncId': s.syncId},
+              (s) => {
+                ..._archiveReferencedRow(s),
+                'archiveSetSyncId': s.syncId,
+              },
             )
             .toList(),
         'moodEntries': moods
@@ -156,10 +174,15 @@ class BackupService {
             .map(_withoutSyncMetadata)
             .toList(),
         'workoutPlans': plans
-            .where((r) => r.deletedAtUtc == null)
+            .where(
+              (r) =>
+                  r.deletedAtUtc == null ||
+                  references.retainAll ||
+                  references.plans.contains(_identityKey(r.syncId)),
+            )
             .map(
               (r) => {
-                ..._withoutSyncMetadata(r),
+                ..._archiveReferencedRow(r),
                 'archivePlanSyncId': r.syncId,
               },
             )
@@ -252,14 +275,23 @@ class BackupService {
         final profileCollectionClears = <String>{};
         final profileBefore = await db.userProfileDao.watchProfileOnce();
         final favoritesBefore = await db.select(db.exerciseFavorites).get();
+        final retained = await _retainedProgramRows(profileBefore);
         await SyncStore(db).enqueueAll(deleted: true);
-        // Czyścimy w kolejności odwrotnej do FK (setsLog referencjonuje
-        // workoutSessions, więc setsLog najpierw).
-        await db.delete(db.setsLog).go();
+        // Retained immutable program definitions still own their old references.
+        // Keep their full rows as tombstones, including evidence and guidance
+        // links. Fresh restores use new integer keys as well as new UUIDs.
+        await (db.delete(
+          db.setsLog,
+        )..where((s) => s.sesjaId.isNotIn(retained.sessions))).go();
         await db.delete(db.workoutDrafts).go();
         // A remote device may have published children not yet pulled. Keep
         // their UUID -> integer parent mappings even after the delete is acked.
         final now = DateTime.now().toUtc();
+        await (db.update(
+          db.setsLog,
+        )..where((s) => s.deletedAtUtc.isNull())).write(
+          SetsLogCompanion(deletedAtUtc: Value(now), updatedAtUtc: Value(now)),
+        );
         await (db.update(
           db.workoutSessions,
         )..where((s) => s.deletedAtUtc.isNull())).write(
@@ -269,7 +301,17 @@ class BackupService {
           ),
         );
         await db.delete(db.exerciseFavorites).go();
-        await db.delete(db.workoutPlans).go();
+        await (db.delete(
+          db.workoutPlans,
+        )..where((p) => p.id.isNotIn(retained.plans))).go();
+        await (db.update(
+          db.workoutPlans,
+        )..where((p) => p.deletedAtUtc.isNull())).write(
+          WorkoutPlansCompanion(
+            deletedAtUtc: Value(now),
+            updatedAtUtc: Value(now),
+          ),
+        );
         await db.delete(db.personalRecords).go();
         await db.delete(db.fitnessTestResults).go();
         await db.delete(db.measurements).go();
@@ -404,18 +446,125 @@ class BackupService {
     return json;
   }
 
-  Map<String, dynamic> _withFreshSyncMetadata(dynamic raw) {
+  /// Tombstones in the dependency closure are data, not live copies to revive.
+  /// This key is backup4-only metadata, never part of the sync wire payload.
+  Map<String, dynamic> _archiveReferencedRow(dynamic row) => {
+    ..._withoutSyncMetadata(row),
+    if (row.deletedAtUtc != null)
+      'archiveDeletedAtUtc': (row.deletedAtUtc as DateTime)
+          .toUtc()
+          .toIso8601String(),
+  };
+
+  Map<String, dynamic> _withFreshSyncMetadata(
+    dynamic raw, {
+    bool preserveArchivedDeletion = false,
+  }) {
     final row = Map<String, dynamic>.from(raw as Map);
     final now = DateTime.now().toUtc().toIso8601String();
     row['syncId'] = Uuid().v4();
     row['syncVersion'] = 0;
     row['updatedAtUtc'] = now;
-    row['deletedAtUtc'] = null;
+    final deletion = preserveArchivedDeletion
+        ? row['archiveDeletedAtUtc']
+        : null;
+    if (deletion != null &&
+        (deletion is! String || DateTime.tryParse(deletion)?.isUtc != true)) {
+      throw const FormatException(
+        'Nieprawidłowy tombstone referencji w backupie.',
+      );
+    }
+    row['deletedAtUtc'] = deletion;
     return row;
   }
 
   String _identityKey(String value) =>
       UserCollections.isUuid(value) ? value.toLowerCase() : value;
+
+  ({Set<String> plans, Set<String> sessions, bool retainAll})
+  _programReferences(Iterable<UserProfileData> profiles) {
+    final plans = <String>{}, sessions = <String>{};
+    var retainAll = false;
+    for (final profile in profiles) {
+      if (profile.trainingProgramsJson == null) continue;
+      try {
+        final collection = UserCollections.validate(
+          'trainingPrograms',
+          jsonDecode(profile.trainingProgramsJson!),
+        );
+        for (final e in collection['entries'] as List) {
+          final definition = e['kind'] == 'program' ? e : e['programSnapshot'];
+          plans.addAll(
+            (definition['planSyncIds'] as List).cast<String>().map(
+              _identityKey,
+            ),
+          );
+          if (e['sessionSyncId'] is String) {
+            sessions.add(_identityKey(e['sessionSyncId'] as String));
+          }
+        }
+      } on FormatException {
+        // Future/quarantined collections must still be exportable raw. Without
+        // a readable reference graph, keep the complete dependency superset.
+        retainAll = true;
+      }
+    }
+    return (plans: plans, sessions: sessions, retainAll: retainAll);
+  }
+
+  Future<({Set<int> plans, Set<int> sessions})> _retainedProgramRows(
+    UserProfileData? profile,
+  ) async {
+    final references = _programReferences([if (profile != null) profile]);
+    final plans = (await db.select(db.workoutPlans).get())
+        .where(
+          (p) =>
+              references.retainAll ||
+              references.plans.contains(_identityKey(p.syncId)),
+        )
+        .toList();
+    final sessions = (await db.select(db.workoutSessions).get())
+        .where(
+          (s) =>
+              references.retainAll ||
+              references.sessions.contains(_identityKey(s.syncId)),
+        )
+        .toList();
+    if (!references.plans.every(
+          plans.map((p) => _identityKey(p.syncId)).toSet().contains,
+        ) ||
+        !references.sessions.every(
+          sessions.map((s) => _identityKey(s.syncId)).toSet().contains,
+        )) {
+      throw const FormatException(
+        'Brak lokalnej referencji zachowywanego programu.',
+      );
+    }
+    final ids = sessions.map((s) => s.id).toSet();
+    final sets = ids.isEmpty
+        ? <SetLogData>[]
+        : await (db.select(
+            db.setsLog,
+          )..where((s) => s.sesjaId.isIn(ids))).get();
+    final byUuid = {for (final s in sets) _identityKey(s.syncId): s};
+    for (final session in sessions) {
+      if (session.guidanceJson == null) continue;
+      final guidance = WorkoutGuidance.validateJson(
+        jsonDecode(session.guidanceJson!),
+      );
+      for (final event in guidance.events.where(
+        (e) => e['type'] == 'performed',
+      )) {
+        final set = byUuid[_identityKey(event['setSyncId'] as String)];
+        if (set == null || set.sesjaId != session.id) {
+          throw const FormatException(
+            'Brak lokalnego dowodu powiązanego z zachowywanym programem.',
+          );
+        }
+      }
+    }
+    return (plans: plans.map((p) => p.id).toSet(), sessions: ids);
+  }
 
   List<Map<String, String>> _legacyFavorites(dynamic raw) {
     if (raw == null) return const [];
@@ -503,7 +652,9 @@ class BackupService {
     final list = raw as List;
     final ids = <int, int>{};
     for (final item in list) {
-      final row = WorkoutSessionData.fromJson(_withFreshSyncMetadata(item));
+      final row = WorkoutSessionData.fromJson(
+        _withFreshSyncMetadata(item, preserveArchivedDeletion: true),
+      );
       if (item['archiveSessionSyncId'] is String) {
         final old = _identityKey(item['archiveSessionSyncId'] as String);
         if (uuids.containsKey(old)) {
@@ -528,7 +679,7 @@ class BackupService {
     final linkedIds = <String, String>{};
     final linkedSessions = <String, int>{};
     for (final item in list) {
-      final json = _withFreshSyncMetadata(item);
+      final json = _withFreshSyncMetadata(item, preserveArchivedDeletion: true);
       UserCollections.validateVariantPair(json);
       SetRole.validate(json['setRole']);
       final row = SetLogData.fromJson(json);
@@ -546,8 +697,10 @@ class BackupService {
       linkedSessions[row.syncId] = parent;
       await db
           .into(db.setsLog)
-          .insertOnConflictUpdate(
-            row.toCompanion(true).copyWith(sesjaId: Value(parent)),
+          .insert(
+            row
+                .toCompanion(true)
+                .copyWith(id: const Value.absent(), sesjaId: Value(parent)),
           );
       n++;
     }
@@ -648,7 +801,9 @@ class BackupService {
     final list = raw as List;
     var n = 0;
     for (final item in list) {
-      final row = WorkoutPlanData.fromJson(_withFreshSyncMetadata(item));
+      final row = WorkoutPlanData.fromJson(
+        _withFreshSyncMetadata(item, preserveArchivedDeletion: true),
+      );
       if (item['archivePlanSyncId'] is String) {
         final old = _identityKey(item['archivePlanSyncId'] as String);
         if (uuids.containsKey(old)) {
@@ -658,7 +813,7 @@ class BackupService {
       }
       await db
           .into(db.workoutPlans)
-          .insertOnConflictUpdate(row.toCompanion(true));
+          .insert(row.toCompanion(true).copyWith(id: const Value.absent()));
       n++;
     }
     return n;

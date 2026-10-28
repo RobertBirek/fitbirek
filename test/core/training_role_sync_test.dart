@@ -107,7 +107,9 @@ void main() {
         WorkoutRepeat.execution(rows).toJson()['targets'],
         unorderedMatches([
           for (final role in [null, 'working', 'warmup'])
-            containsPair('setRole', role),
+            role == null
+                ? isNot(contains('setRole'))
+                : containsPair('setRole', role),
         ]),
       );
       final ops = (await db.syncDao.pendingOperations())

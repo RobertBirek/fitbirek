@@ -46,7 +46,7 @@ class RepeatSetTarget {
     'seconds': seconds?.toString() ?? '',
     'weight': weightKg?.toString() ?? '',
     'side': side,
-    'setRole': setRole,
+    if (setRole != null) 'setRole': setRole,
     'variantId': variantId,
     'variantLabel': variantLabel,
   };
@@ -60,7 +60,7 @@ class RepeatSetTarget {
     'variantId': variantId,
     'variantLabel': variantLabel,
     'previousRpe': previousRpe,
-    'setRole': setRole,
+    if (setRole != null) 'setRole': setRole,
   };
   factory RepeatSetTarget.fromJson(Map j) {
     try {

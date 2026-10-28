@@ -138,6 +138,87 @@ void main() {
   }
 
   test(
+    'BASE v1 repeat draft resumes in fresh provider and immediately logs exactly one next target',
+    () async {
+      // Literal shape emitted by 9fed27e, not the current serializer under test.
+      final legacyTargets = {
+        'version': 1,
+        'targets': [
+          for (final reps in [8, 5])
+            {
+              'exerciseId': exercise.id,
+              'name': exercise.nazwaPl,
+              'reps': reps,
+              'seconds': null,
+              'weightKg': 10.0,
+              'side': null,
+              'variantId': null,
+              'variantLabel': null,
+              'previousRpe': 9,
+            },
+        ],
+      };
+      final session = await repo.startSession(accountId: 'a');
+      final uuid = (await db.workoutDao.getSession(session))!.syncId;
+      await repo.saveDraft(
+        sessionId: session,
+        sessionSyncId: uuid,
+        accountId: 'a',
+        guard: () => true,
+        payload: {
+          'schemaVersion': 1,
+          'currentSlot': 0,
+          'selectedIds': [exercise.id],
+          'guidanceSignature': null,
+          'fields': {
+            'repeatTargets': legacyTargets,
+            'repeatCompleted': <String>[],
+          },
+        },
+      );
+      c.dispose();
+      c = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      final notifier = c.read(activeWorkoutProvider.notifier);
+      expect(await notifier.resumeSession(uuid), isTrue);
+      expect(c.read(activeWorkoutProvider).repeatTarget!.reps, 8);
+      expect(await repo.getSetsForSession(session), isEmpty);
+      // No helper edit, draft rewrite, flush or UI action between resume and log.
+      await notifier.logSet(exercise: exercise, reps: 8, weightKg: 10);
+      final sets = await repo.getSetsForSession(session);
+      expect(sets, hasLength(1));
+      expect(sets.single.powtorzenia, 8);
+      expect(sets.single.setRole, isNull);
+      final state = c.read(activeWorkoutProvider);
+      expect(state.sessionSyncId, uuid);
+      expect(state.repeatTarget!.reps, 5);
+      final durable = (await repo.readDraft('a', uuid))!;
+      final fields = durable['fields'] as Map;
+      expect(fields['repeatCompleted'], [sets.single.syncId]);
+      expect(jsonEncode(fields['repeatTargets']), jsonEncode(legacyTargets));
+      final operations = (await db.select(db.syncOutbox).get()).where(
+        (o) => o.entityType == 'workoutSet' && o.entityId == sets.single.syncId,
+      );
+      expect(operations, hasLength(1));
+      expect(
+        jsonDecode(operations.single.payloadJson).containsKey('setRole'),
+        isFalse,
+      );
+      c.dispose();
+      c = ProviderContainer(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
+      );
+      expect(
+        await c.read(activeWorkoutProvider.notifier).resumeSession(uuid),
+        isTrue,
+      );
+      expect(c.read(activeWorkoutProvider).repeatTarget!.reps, 5);
+      expect(await repo.getSetsForSession(session), hasLength(1));
+    },
+  );
+
+  test(
     'actual reps plus seconds survive preview, durable reopen and explicit log',
     () async {
       await measuredHistory(reps: 3, weightKg: 10);

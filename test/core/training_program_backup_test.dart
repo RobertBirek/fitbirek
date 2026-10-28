@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:drift/drift.dart' show Value, Uint8List;
+import 'package:drift/drift.dart' show Value, Uint8List, driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
@@ -13,7 +13,10 @@ import 'profile_collections_sync_test.dart' show saveProfile;
 import 'training_sets_programs_domain_test.dart'
     show collection, programEntry, programId, planA, planB, planJson;
 
-Future<void> seedProgramBackup(AppDatabase db) async {
+Future<void> seedProgramBackup(
+  AppDatabase db, {
+  bool workingEvidence = false,
+}) async {
   await saveProfile(db);
   final repo = WorkoutRepository(db);
   final session = await repo.startSession(
@@ -29,17 +32,31 @@ Future<void> seedProgramBackup(AppDatabase db) async {
   );
   final s = await db.workoutDao.getSession(session);
   final set = (await repo.getSetsForSession(session)).single;
+  if (workingEvidence) {
+    await repo.logSet(
+      sessionId: session,
+      exerciseId: 'cw001',
+      exerciseNamePl: 'X',
+      setNumber: 2,
+      reps: 6,
+      weightKg: 18,
+      setRole: 'working',
+    );
+  }
+  var guidance = WorkoutGuidance.tryRead(
+    s!.guidanceJson,
+  )!.link(0, set.syncId, targetId: 'a');
+  if (workingEvidence) {
+    final working = (await repo.getSetsForSession(
+      session,
+    )).singleWhere((s) => s.setRole == 'working');
+    guidance = guidance.link(0, working.syncId, targetId: 'b');
+  }
   await db.workoutDao.updateSession(
     session,
     WorkoutSessionsCompanion(
       dataKoniec: Value(DateTime.utc(2026, 10, 28)),
-      guidanceJson: Value(
-        jsonEncode(
-          WorkoutGuidance.tryRead(
-            s!.guidanceJson,
-          )!.link(0, set.syncId, targetId: 'a').toJson(),
-        ),
-      ),
+      guidanceJson: Value(jsonEncode(guidance.toJson())),
     ),
   );
   for (final id in [planA, planB]) {
@@ -89,9 +106,217 @@ Future<void> seedProgramBackup(AppDatabase db) async {
 }
 
 void main() {
+  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   late AppDatabase db;
   setUp(() => db = AppDatabase.forTesting(NativeDatabase.memory()));
   tearDown(() => db.close());
+  for (final missing in ['plan', 'linkedSet']) {
+    test(
+      'genuinely missing local $missing refuses before retaining a dangling original',
+      () async {
+        await seedProgramBackup(db);
+        final validArchive = await BackupService(db).exportToBytes();
+        if (missing == 'plan') {
+          await (db.delete(
+            db.workoutPlans,
+          )..where((p) => p.syncId.equals(planA))).go();
+        } else {
+          await db.delete(db.setsLog).go();
+        }
+        final profile = (await db.userProfileDao.watchProfileOnce())!.toJson();
+        final outbox = (await db.select(db.syncOutbox).get())
+            .map((r) => r.toJson())
+            .toList();
+        final result = await BackupService(db).importFromBytes(validArchive);
+        expect(result.success, isFalse);
+        expect((await db.userProfileDao.watchProfileOnce())!.toJson(), profile);
+        expect(
+          (await db.select(db.syncOutbox).get())
+              .map((r) => r.toJson())
+              .toList(),
+          outbox,
+        );
+      },
+    );
+  }
+  for (final completed in [false, true]) {
+    test(
+      'own backup stays restorable through same-db restore then fresh-db restore, completed=$completed',
+      () async {
+        await seedProgramBackup(db, workingEvidence: true);
+        if (!completed) {
+          final json =
+              jsonDecode(
+                    (await db.userProfileDao.watchProfileOnce())!
+                        .trainingProgramsJson!,
+                  )
+                  as Map;
+          (json['entries'] as List).removeWhere(
+            (e) => e['kind'] == 'programOverride',
+          );
+          await db
+              .update(db.userProfiles)
+              .write(
+                UserProfilesCompanion(
+                  trainingProgramsJson: Value(jsonEncode(json)),
+                ),
+              );
+        }
+        final originalEntries =
+            (jsonDecode(
+                      (await db.userProfileDao.watchProfileOnce())!
+                          .trainingProgramsJson!,
+                    )['entries']
+                    as List)
+                .cast<Map>();
+        final sourceSessions = await db.select(db.workoutSessions).get();
+        final sourceSets = await db.select(db.setsLog).get();
+        await db.customStatement('UPDATE sync_outbox SET attempted = 1');
+        final attempted = (await db.select(db.syncOutbox).get())
+            .map((r) => r.toJson())
+            .toList();
+        final firstBytes = await BackupService(db).exportToBytes();
+        final first = await BackupService(db).importFromBytes(firstBytes);
+        expect(first.success, isTrue, reason: first.message);
+        final entriesAfterFirst =
+            (jsonDecode(
+                      (await db.userProfileDao.watchProfileOnce())!
+                          .trainingProgramsJson!,
+                    )['entries']
+                    as List)
+                .cast<Map>();
+        for (final original in originalEntries) {
+          expect(
+            entriesAfterFirst.singleWhere((e) => e['id'] == original['id']),
+            original,
+          );
+        }
+        expect(
+          (await db.select(db.syncOutbox).get())
+              .where((r) => r.attempted)
+              .map((r) => r.toJson())
+              .toList(),
+          attempted,
+        );
+
+        // The file is generated by the successful restore itself, not patched to
+        // add missing records/maps or to drop immutable originals and overrides.
+        final secondBytes = await BackupService(db).exportToBytes();
+        final fresh = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(fresh.close);
+        final second = await BackupService(fresh).importFromBytes(secondBytes);
+        expect(second.success, isTrue, reason: second.message);
+        final entries =
+            (jsonDecode(
+                      (await fresh.userProfileDao.watchProfileOnce())!
+                          .trainingProgramsJson!,
+                    )['entries']
+                    as List)
+                .cast<Map>();
+        expect(entries, hasLength(completed ? 4 : 2));
+        final programs = entries.where((e) => e['kind'] == 'program').toList();
+        final plans = await fresh.select(fresh.workoutPlans).get();
+        final sessions = await fresh.select(fresh.workoutSessions).get();
+        final sets = await fresh.select(fresh.setsLog).get();
+        expect(plans, hasLength(4));
+        expect(plans.where((p) => p.deletedAtUtc != null), hasLength(2));
+        expect(
+          sessions.where((s) => s.deletedAtUtc != null),
+          hasLength(completed ? 1 : 0),
+        );
+        for (final p in programs) {
+          expect(p['endBeforeDate'], '2026-11-01');
+          expect(p['deletedAtUtc'], originalEntries.first['deletedAtUtc']);
+          expect(
+            p['effectiveFromDate'],
+            originalEntries.first['effectiveFromDate'],
+          );
+          expect(p['weekdays'], originalEntries.first['weekdays']);
+          expect(entriesAfterFirst.any((old) => old['id'] == p['id']), isFalse);
+          final ids = p['planSyncIds'] as List;
+          expect(ids, hasLength(2));
+          expect(ids.toSet(), hasLength(2));
+          for (final id in ids) {
+            final plan = plans.singleWhere((row) => row.syncId == id);
+            expect(jsonDecode(plan.structureJson!), planJson());
+          }
+          if (completed) {
+            final override = entries.singleWhere(
+              (e) =>
+                  e['kind'] == 'programOverride' && e['programId'] == p['id'],
+            );
+            expect(
+              override['id'],
+              TrainingPrograms.occurrenceId(
+                p['id'] as String,
+                CalendarDay.parse('2026-10-28'),
+              ),
+            );
+            expect(override['state'], 'completed');
+            expect(override['movedDate'], '2026-10-30');
+            expect((override['programSnapshot'] as Map)['planSyncIds'], ids);
+            expect(
+              (override['programSnapshot'] as Map)['endBeforeDate'],
+              p['endBeforeDate'],
+            );
+            final proof = sessions.singleWhere(
+              (s) => s.syncId == override['sessionSyncId'],
+            );
+            expect(proof.dataKoniec, sourceSessions.single.dataKoniec);
+            expect(
+              proof.deletedAtUtc != null,
+              plans
+                      .singleWhere((row) => row.syncId == ids.first)
+                      .deletedAtUtc !=
+                  null,
+            );
+          }
+        }
+        for (final session in sessions) {
+          final guidance = WorkoutGuidance.tryRead(session.guidanceJson)!;
+          expect(guidance.events.map((e) => e['targetId']), ['a', 'b']);
+          for (final event in guidance.events) {
+            final linked = sets.singleWhere(
+              (s) => s.syncId == event['setSyncId'],
+            );
+            expect(linked.sesjaId, session.id);
+            expect(linked.deletedAtUtc != null, session.deletedAtUtc != null);
+            final original = sourceSets.singleWhere(
+              (s) => s.setRole == linked.setRole,
+            );
+            expect(
+              [
+                linked.setRole,
+                linked.ciezarKg,
+                linked.powtorzenia,
+                linked.czasSekund,
+              ],
+              [
+                original.setRole,
+                original.ciezarKg,
+                original.powtorzenia,
+                original.czasSekund,
+              ],
+            );
+          }
+        }
+        // Archived/deleted proof remains invalid; only the copied live working
+        // evidence participates in preparation, without hiding normal history.
+        expect(
+          await WorkoutRepository(
+            fresh,
+          ).getPreparationHistory('cw001', side: null),
+          hasLength(1),
+        );
+        final third = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(third.close);
+        final again = await BackupService(
+          third,
+        ).importFromBytes(await BackupService(fresh).exportToBytes());
+        expect(again.success, isTrue, reason: again.message);
+      },
+    );
+  }
   test(
     'missing entire sets section still refuses dangling performed guidance refs',
     () async {
@@ -289,7 +514,9 @@ void main() {
           CalendarDay.parse('2026-10-28'),
         ),
       );
-      final plans = await db.select(db.workoutPlans).get();
+      final plans = (await db.select(db.workoutPlans).get()).where(
+        (p) => p.deletedAtUtc == null,
+      );
       expect(fork['planSyncIds'], unorderedEquals(plans.map((p) => p.syncId)));
       expect(
         (override['programSnapshot'] as Map)['planSyncIds'],
@@ -299,7 +526,9 @@ void main() {
           .where((s) => s.deletedAtUtc == null)
           .toList();
       expect(override['sessionSyncId'], sessions.single.syncId);
-      final set = (await db.select(db.setsLog).get()).single;
+      final set = (await db.select(db.setsLog).get()).singleWhere(
+        (s) => s.deletedAtUtc == null,
+      );
       expect(set.setRole, 'warmup');
       final g = WorkoutGuidance.tryRead(sessions.single.guidanceJson)!;
       expect(g.events.single['targetId'], 'a');
