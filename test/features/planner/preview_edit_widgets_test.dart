@@ -26,6 +26,7 @@ Future<ProviderContainer> openPreview(
   CachedAuthWriteAuthority? authority,
   AppDatabase? db,
   Future<ExerciseCatalogMetadata> Function()? metadataLoader,
+  Stream<UserProfile?> Function()? profileLoader,
 }) async {
   final c = ProviderContainer(
     overrides: [
@@ -44,17 +45,19 @@ Future<ProviderContainer> openPreview(
         (ref) => metadataLoader?.call() ?? Future.value(compatibleMetadata),
       ),
       userProfileStreamProvider.overrideWith(
-        (ref) => Stream.value(
-          UserProfile(
-            imie: 'T',
-            wiek: 30,
-            wzrostCm: 180,
-            wagaKg: 80,
-            cel: CelTreningowy.mix,
-            dostepnySprzet: ['Mata'],
-            dataUtworzenia: DateTime(2026),
-          ),
-        ),
+        (ref) =>
+            profileLoader?.call() ??
+            Stream.value(
+              UserProfile(
+                imie: 'T',
+                wiek: 30,
+                wzrostCm: 180,
+                wagaKg: 80,
+                cel: CelTreningowy.mix,
+                dostepnySprzet: ['Mata'],
+                dataUtworzenia: DateTime(2026),
+              ),
+            ),
       ),
       savedPlansProvider.overrideWith(
         (ref) => Stream.value([

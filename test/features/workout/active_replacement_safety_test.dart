@@ -15,6 +15,37 @@ import 'guided_side_checkpoint_review_test.dart' show completedLeftTimer;
 import 'interval_save_test.dart' show PausedRoundRepository;
 import 'package:fitbirek_training/features/workout/domain/interval_timer.dart';
 import 'package:fitbirek_training/features/workout/domain/workout_draft_write.dart';
+import 'package:fitbirek_training/core/models/exercise.dart';
+import 'package:fitbirek_training/features/exercises/data/exercises_repository.dart';
+import 'package:fitbirek_training/features/exercises/providers/exercises_providers.dart';
+
+class ReplacementCatalog extends ExercisesRepository {
+  ReplacementCatalog(super.db);
+  @override
+  Stream<List<Exercise>> watchAll() => Stream.value([
+    exercise.copyWith(id: 'yoga'),
+    exercise.copyWith(id: 'extra'),
+  ]);
+}
+
+/// Pause outside SQLite, immediately before guidedEvent reads its baseline.
+class PausedBaselineRepository extends WorkoutRepository {
+  PausedBaselineRepository(super.db);
+  bool armed = false;
+  final entered = Completer<void>(), release = Completer<void>();
+  @override
+  Future<Map<String, Object?>?> readDraft(
+    String accountId,
+    String sessionSyncId,
+  ) async {
+    if (armed) {
+      armed = false;
+      entered.complete();
+      await release.future;
+    }
+    return super.readDraft(accountId, sessionSyncId);
+  }
+}
 
 class DelayedDraftRepository extends WorkoutRepository {
   DelayedDraftRepository(super.db);
@@ -92,6 +123,133 @@ void main() {
     c.dispose();
     await db.close();
   });
+  for (final foreignChange in ['timer', 'extra']) {
+    test(
+      'foreign $foreignChange before baseline read is not consent and survives later edit/resume',
+      () async {
+        final paused = PausedBaselineRepository(db);
+        final catalog = ReplacementCatalog(db);
+        c.dispose();
+        c = ProviderContainer(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            workoutRepositoryProvider.overrideWithValue(paused),
+            exercisesRepositoryProvider.overrideWithValue(catalog),
+          ],
+        );
+        final other = ProviderContainer(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            exercisesRepositoryProvider.overrideWithValue(catalog),
+          ],
+        );
+        addTearDown(other.dispose);
+        final n = c.read(activeWorkoutProvider.notifier);
+        await n.startSession(guidance: WorkoutGuidance.start(structure));
+        n.addExercise(exercise.copyWith(id: 'yoga'));
+        n.updateDraft({
+          'side': 'left',
+          'seconds': '9',
+          'timer': completedLeftTimer(),
+        });
+        await n.flushDraft();
+        final accepted = c.read(activeWorkoutProvider);
+        final otherNotifier = other.read(activeWorkoutProvider.notifier);
+        expect(
+          await otherNotifier.resumeSession(accepted.sessionSyncId!),
+          isTrue,
+        );
+        final beforeOutbox = await db.select(db.syncOutbox).get();
+        paused.armed = true;
+        final attempt = n.guidedEvent(
+          replacement: 'replacement',
+          discardCurrentDraft: true,
+        );
+        await paused.entered.future;
+        var elapsed = Duration.zero;
+        final timer = IntervalTimer(
+          IntervalConfig(preparation: 0, work: 20, rest: 0, rounds: 1),
+          clock: () => elapsed,
+        )..start();
+        elapsed = const Duration(seconds: 20);
+        timer.update();
+        final newerTimer = timer.checkpoint();
+        if (foreignChange == 'timer') {
+          otherNotifier.updateDraft({'timer': newerTimer});
+        } else {
+          otherNotifier.addExercise(exercise.copyWith(id: 'extra'));
+          otherNotifier.updateExerciseDraft(
+            'extra',
+            {'reps': '17'},
+            extra: true,
+            side: 'right',
+          );
+        }
+        await otherNotifier.flushDraft();
+        final foreignPayload = (await repo.readDraft(
+          'a',
+          accepted.sessionSyncId!,
+        ))!;
+        paused.release.complete();
+        expect(await attempt, isFalse);
+        expect(
+          (await db.workoutDao.getSession(accepted.sessionId!))!.guidanceJson,
+          jsonEncode(accepted.guidance!.toJson()),
+        );
+        expect(await db.select(db.syncOutbox).get(), beforeOutbox);
+        expect(
+          await repo.readDraft('a', accepted.sessionSyncId!),
+          foreignPayload,
+        );
+        // Do not adopt foreign selectedIds as our own deletion baseline. A later
+        // unrelated local patch must keep all foreign data in the latest row.
+        n.updateDraft({'note': 'later own edit'});
+        await n.flushDraft();
+        final latest = (await repo.readDraft('a', accepted.sessionSyncId!))!;
+        expect(latest['selectedIds'], foreignPayload['selectedIds']);
+        expect(
+          (latest['fields'] as Map)['timer'],
+          (foreignPayload['fields'] as Map)['timer'],
+        );
+        expect(
+          (latest['fields'] as Map)['extraForms'],
+          (foreignPayload['fields'] as Map)['extraForms'],
+        );
+        expect(checkpointEpochs(latest), checkpointEpochs(foreignPayload));
+        expect(checkpointVersions(latest), checkpointVersions(foreignPayload));
+        final reload = ProviderContainer(
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            exercisesRepositoryProvider.overrideWithValue(catalog),
+          ],
+        );
+        addTearDown(reload.dispose);
+        expect(
+          await reload
+              .read(activeWorkoutProvider.notifier)
+              .resumeSession(accepted.sessionSyncId!),
+          isTrue,
+        );
+        final restored = reload.read(activeWorkoutProvider);
+        expect(restored.guidance!.toJson(), accepted.guidance!.toJson());
+        expect(
+          restored.draft['timer'],
+          (foreignPayload['fields'] as Map)['timer'],
+        );
+        expect(restored.draft['note'], 'later own edit');
+        if (foreignChange == 'extra') {
+          expect(
+            restored.selectedExercises.map((e) => e.id),
+            contains('extra'),
+          );
+          expect(
+            restored.exerciseDraft('extra', extra: true, side: 'right')['reps'],
+            '17',
+          );
+        }
+      },
+    );
+  }
   test(
     'active weight target refuses ID replacement without rewriting original plan',
     () async {

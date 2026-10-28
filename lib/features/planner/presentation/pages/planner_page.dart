@@ -57,6 +57,14 @@ class _PlannerPageState extends ConsumerState<PlannerPage> {
   }
 
   List<Exercise> _pool(UserProfile profile, ExerciseFilters criteria) {
+    final currentProfile = ref.read(userProfileStreamProvider);
+    if (currentProfile.isLoading ||
+        currentProfile.hasError ||
+        !identical(currentProfile.valueOrNull, profile)) {
+      throw StateError(
+        'Poczekaj na aktualny profil lub ponów ładowanie. Poprzednia wartość nie uprawnia do zmiany planu.',
+      );
+    }
     final source = ref.read(allExercisesProvider);
     final metadata = ref.read(exerciseCatalogMetadataProvider);
     if (source.isLoading ||

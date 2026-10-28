@@ -954,6 +954,19 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
         snapshot.sessionSyncId!,
       );
       if (!guard()) return false;
+      // A fresh revision is not consent to discard a different durable form.
+      // Keep our existing patch baseline on refusal, so subsequent local edits
+      // still merge with (rather than remove) unrelated data from other views.
+      if (current == null ||
+          !draftValueEquals(draftDomain(current), {
+            'schemaVersion': 1,
+            'currentSlot': snapshot.currentSlot,
+            'guidanceSignature': signature,
+            'fields': jsonDecode(fields),
+            'selectedIds': jsonDecode(selectedIds),
+          })) {
+        return false;
+      }
       _pendingGuidanceSignature = jsonEncode(
         (replacement == null
                 ? snapshot.guidance!.skip(snapshot.currentSlot)
