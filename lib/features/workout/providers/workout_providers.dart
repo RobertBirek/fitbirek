@@ -1490,7 +1490,6 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     origin._claimed = true;
     final results = List<IntervalRound>.of(rounds);
     final saveStep = state.currentSlot;
-    final expectedVersion = _checkpointVersions[origin.checkpointKey] ?? 0;
     if ((origin.targetId != null &&
             (results.length != 1 || results.single.round != 1)) ||
         results.isEmpty ||
@@ -1537,6 +1536,17 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
 
     try {
       try {
+        if (origin.targetId != null) {
+          // Selection/checkpoint callbacks enqueue patches, not durable writes.
+          // Drain OUR queue outside SQLite before comparing its exact target key.
+          // The reservation above blocks this origin's late timer callbacks.
+          await flushDraft();
+          requireOwnership();
+        }
+        // Own commits may advance the version while the barrier is pending.
+        // Never refresh the origin's consume epoch from a foreign durable row.
+        final expectedVersion = _checkpointVersions[origin.checkpointKey] ?? 0;
+        final expectedEpoch = origin.checkpointEpoch;
         await db.transaction(() async {
           requireOwnership();
           final binding = await db.syncDao.readState();
@@ -1616,7 +1626,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
               sessionSyncId: origin.sessionSyncId!,
               accountId: binding.accountId,
               key: origin.checkpointKey,
-              expectedEpoch: origin.checkpointEpoch,
+              expectedEpoch: expectedEpoch,
               expectedVersion: expectedVersion,
               extra: origin.extra,
               exerciseId: origin.exercise.id,

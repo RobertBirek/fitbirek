@@ -31,6 +31,10 @@ generatorów, zależności, wydania lub wdrożenia.
   `selectGuidedTarget(id)` zmienia wybrany cel, zachowując jego niezależny szkic.
   Wykonany/pominięty cel pozostaje widoczny i wybrany do jawnego wyboru kolejnego.
 - `logSet(guidanceTargetId:)` może przechwycić expected ID starego widoku.
+  Karta przekazuje tożsamość wyświetlonego formularza (UUID sesji, slot i targetId),
+  nie pobiera nowego celu z RAM przy obsłudze starego callbacku. Callback starego
+  formularza nie może zapisać rozgrzewki jako nowego roboczego celu ani nadpisać
+  jego pól przed przebudową UI.
   V2 bierze rolę z celu, wymaga jego strony i wybranej tożsamości wariantu;
   rzeczywiste odstępstwa kg/reps/sekund pozostają odstępstwami, nie są poprawiane.
   Repo zapisuje performed+serię+outbox, a zewnętrzna transakcja także PR i
@@ -51,6 +55,9 @@ generatorów, zależności, wydania lub wdrożenia.
   revision/epoch/version, kolejka patchy i persistentDatabaseZone pozostają.
   Flush nadal musi być poza transakcją nadrzędną. Fresh provider może od razu
   zapisać/pominąć właściwy cel lub potwierdzić odzyskany timer, bez edycji pól.
+  `saveIntervalRounds` v2 sam czeka na własne queued patche wyboru/checkpointu
+  **przed** otwarciem transakcji. Po barierze ponawia guard origin i bierze wersję
+  checkpointu z własnych zatwierdzonych zapisów; nie przyjmuje tokenu obcego widoku.
 - Obserwowana zgodna zamiana inicjalizuje dokładny target nowej tożsamości,
   zamiast zostawiać szkic bez targetId. Odroczony performed-row ręcznego zapisu
   nie jest odtwarzany podczas późniejszego consume innego celu.

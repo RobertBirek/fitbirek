@@ -233,6 +233,11 @@ class _ActiveSessionPageState extends ConsumerState<ActiveSessionPage> {
             ),
             exercise: exercise,
             guided: true,
+            guidedIdentity: (
+              sessionSyncId: active.sessionSyncId,
+              slot: slot,
+              targetId: active.currentTarget?.targetId,
+            ),
           ),
         ],
         Wrap(
@@ -442,10 +447,14 @@ class _ExerciseLogCard extends ConsumerStatefulWidget {
     required this.exercise,
     this.guided = false,
     this.extra = false,
+    this.guidedIdentity,
   });
   final Exercise exercise;
   final bool guided;
   final bool extra;
+
+  /// Identity of the rendered controls, not a lookup at callback delivery time.
+  final ({String? sessionSyncId, int slot, String? targetId})? guidedIdentity;
 
   @override
   ConsumerState<_ExerciseLogCard> createState() => _ExerciseLogCardState();
@@ -461,6 +470,19 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   bool _intervalBusy = false;
   bool _loadingForm = false;
   bool get _durable => widget.guided || widget.extra;
+  bool get _guidedFormIsCurrent {
+    if (!widget.guided) return true;
+    final active = ref.read(activeWorkoutProvider);
+    return active.isActive &&
+        widget.guidedIdentity ==
+            (
+              sessionSyncId: active.sessionSyncId,
+              slot: active.currentSlot,
+              targetId: active.currentTarget?.targetId,
+            ) &&
+        active.guidance?.exerciseAt(active.currentSlot) == widget.exercise.id;
+  }
+
   Map<String, Object?> get _formDraft => ref
       .read(activeWorkoutProvider)
       .exerciseDraft(
@@ -601,7 +623,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   }
 
   void _saveForm() {
-    if (!_durable || !mounted || _loadingForm) return;
+    if (!_durable || !mounted || _loadingForm || !_guidedFormIsCurrent) return;
     ref
         .read(activeWorkoutProvider.notifier)
         .updateExerciseDraft(
@@ -1066,6 +1088,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   }
 
   Future<void> _startIsometricStopwatch() async {
+    if (!mounted || !_guidedFormIsCurrent) return;
     if (!_validVariant()) return;
     if (!_validWeight) {
       _invalidSet();
@@ -1103,6 +1126,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
   }
 
   Future<void> _startIntervals() async {
+    if (!mounted || !_guidedFormIsCurrent) return;
     if (_intervalBusy) return;
     if (!_validVariant()) return;
     if (!_validWeight) {
@@ -1233,6 +1257,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
     required String? variantId,
     required String? variantLabel,
   }) async {
+    if (!mounted || !_guidedFormIsCurrent) return;
     try {
       final before = ref.read(activeWorkoutProvider).loggedSets.length;
       final isPr = await ref
@@ -1248,9 +1273,7 @@ class _ExerciseLogCardState extends ConsumerState<_ExerciseLogCard> {
             variantLabel: variantLabel,
             extra: widget.extra,
             setRole: _setRole,
-            guidanceTargetId: widget.guided
-                ? ref.read(activeWorkoutProvider).currentTarget?.targetId
-                : null,
+            guidanceTargetId: widget.guidedIdentity?.targetId,
           );
       if (mounted &&
           ref.read(activeWorkoutProvider).loggedSets.length == before) {

@@ -190,3 +190,99 @@ obserwatora i ten raport. Bez push/merge/deploy/backend/backup/version bump.
 - Przygotowanie v2 celowo nie oferuje zamian ani wspólnej historycznej dawki.
   Edycje są jawne per cel w edytorze; timer zachowuje dotychczasowy limit
   pojedynczej pracy3600s (dłuższy cel można zapisać ręcznie, bez przycinania celu).
+
+## Fixround1 po review — BASE `2fcf647`
+
+Zakres: wyłącznie P1/P2 z `task-3-review.md`, dwa pliki produkcyjne workout,
+nowy stały `test/features/workout/per_set_write_authority_test.dart`, working-set
+i ten raport. Bez subagentów, backendu, backupu, programu A/B, zależności,
+migracji/generated, wersji lub deployu. Review P1/P2 pozostaje do ponownego
+odbioru przez sesję nadrzędną; poniżej są dowody implementera, nie jej werdykt.
+
+### Root cause / RED
+
+Przeczytano pełny review i obie dostarczone reprodukcje
+`/tmp/opencode/task3-review/{stale-widget.dart,repro.dart}`. Prześledzono ścieżki:
+
+1. PrimaryButton starej karty A → kontrolery A → `_recordSet` czytający aktualny
+   target B z providera → `logSet(guidanceTargetId:B)` → poprawna technicznie,
+   lecz błędna semantycznie transakcja workingB z pomiarami warmupA. Repo nie
+   mogło odrzucić tak błędnie zadeklarowanego uprawnienia.
+2. `selectGuidedTarget(B)` → RAM B + queued patch → capture B →
+   `saveIntervalRounds` otwierający SQL przed własnym patchem. Consume porównywał
+   poprawny klucz B z trwałym A, a `expectedVersion` był przechwycony jeszcze
+   przed queued checkpointem. Porównano działającą ścieżkę manualnego logSet v2,
+   która już czekała na kolejkę poza transakcją.
+
+Pierwszy przebieg **przed zmianą źródeł produktu**:
+
+```sh
+docker exec fit-catalog-program-tests bash -lc '
+  cp -a /workspace/. /app/ && cd /app && timeout 180s flutter test --no-pub \
+    -r expanded test/features/workout/per_set_write_authority_test.dart'
+```
+
+`/tmp/opencode/task3-fixround1/red.log`: **2PASS/3FAIL**:
+- rzeczywisty stary callback A zapisał `working,12,5.0` zamiast odmówić;
+- natychmiastowy timer B bez helper-flush odrzucony zarówno bez checkpointu,
+  jak i z queued checkpointem;
+- oba kontrolne warianty z jawnym flush przeszły.
+
+### Pojedyncze poprawki przyczyn
+
+- **P1:** parent wiąże niezmienną `guidedIdentity` z wyświetloną kartą:
+  `(sessionSyncId,slot,targetId)`. `_recordSet` porównuje tę tożsamość, a do
+  providera przekazuje ID z formularza, nie nowe ID z RAM. Ten sam guard chroni
+  zapis pól i otwarcie timerów starej karty. Legacy guided ma targetIdNULL,
+  manual/EXTRA nie dostają nowego wire ani klucza szkicu. GREEN pojedynczego
+  callbacku: `p1-green.log`,1PASS; test rozszerzono także na zapis czasowy.
+  Podczas pierwszej próby GREEN poprawiono wyłącznie pomocniczą asercję testu
+  outboxa: `SyncOperation` ma equality tożsamości, więc porównywane są teraz
+  pełne wygenerowane wiersze Drift, a nie dwa osobne obiekty repo.
+- **P2:** po jednokrotnej rezerwacji origin v2 czeka na `flushDraft()` poza
+  `db.transaction`. Następnie ponawia `requireOwnership` i pobiera aktualną
+  wersję z własnych zatwierdzonych checkpointów. Epoka pozostaje epoką origin,
+  zweryfikowaną ponownie po await — nie jest odświeżana z obcego durable row.
+  Guardy exact-key/CAS/epoch/nonce i repo nie zostały osłabione ani zmienione.
+  GREEN z dotychczasowym per-set providerem: `green.log`,19PASS.
+
+Nowy stały plik zawiera **8 testów**: dwa rzeczywiste callbacki UI (reps/time),
+macierz immediate/control-flush × brak/queued checkpoint (4), obcy checkpoint
+tej samej tożsamości (odmowa bez zmiany wersji/draft/outbox), oraz zatrzymany
+własny patch z anulowaniem origin podczas bariery. Ten ostatni odczytuje SQLite
+przy zablokowanej kolejce, dowodząc braku trzymanej transakcji; po zmianie
+generacji zapis jest odrzucony. Macierz potwierdza również zachowanie EXTRA,
+jedną serię working właściwego targetu i odmowę powtórnego użycia origin.
+
+### Końcowa weryfikacja fixround1
+
+```sh
+docker exec fit-catalog-program-tests bash -lc 'cd /app &&
+  flutter test --no-pub -r expanded \
+    test/features/workout/per_set_write_authority_test.dart \
+    test/features/workout/per_set_guidance_provider_test.dart \
+    test/features/workout/per_set_workout_widgets_test.dart \
+    test/features/workout/active_session_recovery_test.dart \
+    test/features/workout/guided_resume_test.dart \
+    test/features/workout/guided_side_checkpoint_review_test.dart \
+    test/features/workout/guided_extras_review_test.dart \
+    test/features/workout/draft_consumption_review_test.dart \
+    test/features/workout/draft_inflight_merge_review_test.dart \
+    test/features/workout/draft_form_transition_review_test.dart \
+    test/features/workout/training_continuity_test.dart \
+    test/features/workout/guided_browser_draft_repro_test.dart \
+    test/features/workout/interval_save_test.dart \
+    test/features/workout/interval_checkpoint_test.dart \
+    test/features/workout/interval_session_test.dart \
+    test/features/workout/interval_timer_screen_test.dart \
+    test/features/workout/active_replacement_safety_test.dart \
+    test/features/workout/active_replacement_widgets_test.dart &&
+  flutter analyze --no-pub && dart tools/generate_app_version.dart --check'
+```
+
+`/tmp/opencode/task3-fixround1/focused.log`: **116PASS/0FAIL**, analyze
+**No issues found**, versioncheck PASS (Flutter3.35.4/Dart3.9.2). Format tylko
+trzech własnych Dart, bez generatora: brak zmian deklaracji generatorów.
+Nie powtarzano896 ani pełnej suity. Znany test backup3→4 pozostaje nietknięty
+do Task5; wcześniejsze ograniczenia PWA/procesu/backendu pozostają bez zmian.
+Końcowe diff/format oraz zgodność lock/WebSQLite kontrolowane przed commitem.
