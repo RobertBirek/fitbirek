@@ -11,6 +11,10 @@ import '../sync/user_collections.dart';
 import '../../features/workout/domain/workout_guidance.dart';
 import '../../features/progress/tests/domain/fitness_protocol.dart';
 import '../models/fitness_test.dart';
+import '../models/set_role.dart';
+import '../../features/planner/domain/structured_plan.dart';
+import '../../features/schedule/domain/training_program.dart';
+import '../../features/schedule/domain/weekly_schedule.dart';
 
 /// Wynik operacji importu - do wyświetlenia użytkownikowi.
 class ImportResult {
@@ -50,7 +54,7 @@ class ImportResult {
 /// nie na dart:io File, więc nie ma rozjazdu platformowego (patrz
 /// ARCHITECTURE.md sekcja o Drift multi-platform dla analogicznego problemu).
 class BackupService {
-  static const int currentSchemaVersion = 3;
+  static const int currentSchemaVersion = 4;
 
   final AppDatabase db;
 
@@ -77,6 +81,8 @@ class BackupService {
       plans,
       favorites,
       healthSamples,
+      deferredRecords,
+      pendingOperations,
     ) = await db.transaction(() async {
       return (
         await db.select(db.userProfiles).get(),
@@ -90,6 +96,8 @@ class BackupService {
         await db.select(db.workoutPlans).get(),
         await db.select(db.exerciseFavorites).get(),
         await db.select(db.healthSamples).get(),
+        await db.select(db.syncDeferredRecords).get(),
+        await db.select(db.syncOutbox).get(),
       );
     });
 
@@ -99,6 +107,12 @@ class BackupService {
       'appVersion': AppConstants.appVersion,
       'exportedAt': DateTime.now().toUtc().toIso8601String(),
       'data': {
+        // Recovery evidence, not portable authority to retry another account's
+        // operation IDs. Keep JSON strings (especially attempted bytes) intact.
+        'syncRecovery': {
+          'deferredRecords': deferredRecords.map((r) => r.toJson()).toList(),
+          'outbox': pendingOperations.map((r) => r.toJson()).toList(),
+        },
         'userProfiles': userProfiles
             .where((r) => r.deletedAtUtc == null)
             .map(_withoutSyncMetadata)
@@ -198,8 +212,8 @@ class BackupService {
       );
     }
 
-    final schemaVersion = payload['schemaVersion'] as int?;
-    if (schemaVersion == null) {
+    final schemaVersion = payload['schemaVersion'];
+    if (schemaVersion is! int || schemaVersion < 1) {
       return const ImportResult(
         success: false,
         message:
@@ -232,6 +246,9 @@ class BackupService {
 
     try {
       await db.transaction(() async {
+        // A replace-style restore cannot safely delete quarantined source data.
+        // Export remains lossless; refusal retains raw rows and pending outcomes.
+        await _requireReadableCurrentExtensions();
         final profileCollectionClears = <String>{};
         final profileBefore = await db.userProfileDao.watchProfileOnce();
         final favoritesBefore = await db.select(db.exerciseFavorites).get();
@@ -260,11 +277,6 @@ class BackupService {
         await db.delete(db.exercises).go();
         await db.delete(db.userProfiles).go();
 
-        counts['profil'] = await _restoreUserProfiles(
-          data['userProfiles'],
-          profileBefore,
-          profileCollectionClears,
-        );
         counts['ćwiczenia'] = await _restoreExercises(data['exercises']);
         final sessionUuids = <String, String>{}, planUuids = <String, String>{};
         final restoredSessionIds = await _restoreSessions(
@@ -285,6 +297,13 @@ class BackupService {
         counts['plany treningowe'] = await _restorePlans(
           data['workoutPlans'],
           planUuids,
+        );
+        counts['profil'] = await _restoreUserProfiles(
+          data['userProfiles'],
+          profileBefore,
+          profileCollectionClears,
+          planUuids,
+          sessionUuids,
         );
         await _remapScheduleReferences(planUuids, sessionUuids);
         counts['ulubione ćwiczenia'] = await _restoreFavorites(
@@ -331,6 +350,27 @@ class BackupService {
         await SyncStore(
           db,
         ).enqueueAll(profileCollectionClears: profileCollectionClears);
+        if (schemaVersion == 4 && data['syncRecovery'] != null) {
+          final recovery = Map<String, dynamic>.from(
+            data['syncRecovery'] as Map,
+          );
+          if ((recovery['deferredRecords'] as List).isNotEmpty ||
+              (recovery['outbox'] as List).isNotEmpty) {
+            await db
+                .into(db.syncDeferredRecords)
+                .insert(
+                  SyncDeferredRecordsCompanion.insert(
+                    entityType: '_backupRecoveryArchive',
+                    entityId: const Uuid().v4(),
+                    version: 1,
+                    recordJson: jsonEncode({
+                      'schemaVersion': 1,
+                      'recovery': recovery,
+                    }),
+                  ),
+                );
+          }
+        }
       });
     } catch (e) {
       return ImportResult(
@@ -387,6 +427,8 @@ class BackupService {
     dynamic raw,
     UserProfileData? previous,
     Set<String> clearedCollections,
+    Map<String, String> plans,
+    Map<String, String> sessions,
   ) async {
     if (raw == null) return 0;
     final list = raw as List;
@@ -400,7 +442,8 @@ class BackupService {
         final incoming = json[column] as String?;
         if (!json.containsKey(column)) {
           json[column] = stored;
-        } else if (incoming == null && key == 'fitnessProtocols') {
+        } else if (incoming == null &&
+            {'fitnessProtocols', 'trainingPrograms'}.contains(key)) {
           // Rules and tombstones are never erased by NULL or an old backup.
           json[column] = stored;
         } else if (incoming == null) {
@@ -411,7 +454,9 @@ class BackupService {
           final merged = UserCollections.merge(
             key,
             stored == null ? null : jsonDecode(stored),
-            jsonDecode(incoming),
+            key == 'trainingPrograms'
+                ? _forkPrograms(jsonDecode(incoming), plans, sessions)
+                : jsonDecode(incoming),
           );
           json[column] = jsonEncode(merged);
         }
@@ -472,9 +517,13 @@ class BackupService {
     for (final item in list) {
       final json = _withFreshSyncMetadata(item);
       UserCollections.validateVariantPair(json);
+      SetRole.validate(json['setRole']);
       final row = SetLogData.fromJson(json);
       if (item['archiveSetSyncId'] is String) {
-        linkedIds[item['archiveSetSyncId'] as String] = row.syncId;
+        final old = item['archiveSetSyncId'] as String;
+        if (linkedIds.containsKey(old))
+          throw const FormatException('Duplicate archived set UUID');
+        linkedIds[old] = row.syncId;
       }
       final parent = sessionIds[row.sesjaId];
       if (parent == null) {
@@ -491,15 +540,13 @@ class BackupService {
       final session = (await db.workoutDao.getSession(id))!;
       if (session.guidanceJson == null) continue;
       final g = WorkoutGuidance.validateJson(jsonDecode(session.guidanceJson!));
-      final events = g.events
-          .map(
-            (event) =>
-                event['type'] == 'performed' &&
-                    linkedIds.containsKey(event['setSyncId'])
-                ? {...event, 'setSyncId': linkedIds[event['setSyncId']]}
-                : event,
-          )
-          .toList();
+      final events = g.events.map((event) {
+        if (event['type'] != 'performed') return event;
+        final mapped = linkedIds[event['setSyncId']];
+        if (mapped == null)
+          throw const FormatException('Missing archived guidance set UUID');
+        return {...event, 'setSyncId': mapped};
+      }).toList();
       final mapped = WorkoutGuidance.validateJson({
         ...g.toJson(),
         'events': events,
@@ -669,5 +716,70 @@ class BackupService {
       n++;
     }
     return n;
+  }
+
+  Map<String, dynamic> _forkPrograms(
+    Object? value,
+    Map<String, String> plans,
+    Map<String, String> sessions,
+  ) {
+    final json = UserCollections.validate('trainingPrograms', value);
+    final entries = (json['entries'] as List).cast<Map<String, dynamic>>();
+    final programs = <String, String>{
+      for (final e in entries.where((e) => e['kind'] == 'program'))
+        (e['id'] as String).toLowerCase(): const Uuid().v4(),
+    };
+    String reference(Map<String, String> map, Object? old) {
+      final mapped =
+          map[old] ?? (old is String ? map[old.toLowerCase()] : null);
+      if (mapped == null)
+        throw const FormatException(
+          'Brak mapowanej referencji programu w backupie.',
+        );
+      return mapped;
+    }
+
+    void definition(Map<String, dynamic> e) {
+      e['planSyncIds'] = [
+        for (final old in e['planSyncIds'] as List) reference(plans, old),
+      ];
+    }
+
+    for (final e in entries) {
+      if (e['kind'] == 'program') {
+        e['id'] = reference(programs, e['id']);
+        definition(e);
+      } else {
+        e['programId'] = reference(programs, e['programId']);
+        e['id'] = TrainingPrograms.occurrenceId(
+          e['programId'] as String,
+          CalendarDay.parse(e['originalDate'] as String),
+        );
+        definition(e['programSnapshot'] as Map<String, dynamic>);
+        if (e['sessionSyncId'] != null)
+          e['sessionSyncId'] = reference(sessions, e['sessionSyncId']);
+      }
+    }
+    return UserCollections.validate('trainingPrograms', json);
+  }
+
+  Future<void> _requireReadableCurrentExtensions() async {
+    for (final p in await db.select(db.workoutPlans).get()) {
+      if (p.structureJson != null)
+        StructuredPlan.validateJson(
+          jsonDecode(p.structureJson!),
+          exerciseIds: jsonDecode(p.cwiczeniaIds),
+        );
+    }
+    for (final s in await db.select(db.workoutSessions).get()) {
+      if (s.guidanceJson != null)
+        WorkoutGuidance.validateJson(jsonDecode(s.guidanceJson!));
+    }
+    for (final p in await db.select(db.userProfiles).get()) {
+      for (final key in UserCollections.keys) {
+        final raw = p.toJson()['${key}Json'] as String?;
+        if (raw != null) UserCollections.validate(key, jsonDecode(raw));
+      }
+    }
   }
 }

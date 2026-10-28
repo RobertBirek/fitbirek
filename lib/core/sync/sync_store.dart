@@ -8,6 +8,8 @@ import '../../features/planner/domain/structured_plan.dart';
 import '../../features/planner/data/plan_sync_payload.dart';
 import '../../features/workout/domain/workout_guidance.dart';
 import '../../features/progress/tests/domain/fitness_protocol.dart';
+import '../models/set_role.dart';
+import '../../features/schedule/domain/training_program.dart';
 
 String _frozenFitnessWrapper(Object? value) {
   if (value is Map && value['snapshot'] is Map) {
@@ -130,7 +132,7 @@ class SyncStore {
           .map((r) => jsonDecode(r.read<String>('payload_json')) as Map)
           .where((p) => p.containsKey(key))
           .firstOrNull;
-      if (key != 'fitnessProtocols' &&
+      if (!{'fitnessProtocols', 'trainingPrograms'}.contains(key) &&
           raw == null &&
           latest != null &&
           latest[key] == null) {
@@ -346,9 +348,37 @@ class SyncStore {
       for (final key in UserCollections.keys) {
         final column = '${key}Json';
         if (!json.containsKey(key)) {
-          json[column] = existing?[column];
+          json[column] =
+              key == 'trainingPrograms' &&
+                  (existing?['deletedAtUtc'] != null ||
+                      record['deletedAt'] != null)
+              ? null
+              : existing?[column];
         } else {
-          final value = json.remove(key);
+          var value = json.remove(key);
+          if (key == 'trainingPrograms' &&
+              record['deletedAt'] == null &&
+              existing?['deletedAtUtc'] == null &&
+              existing?[column] != null) {
+            try {
+              final local = jsonDecode(existing![column] as String);
+              if (value == null) {
+                TrainingPrograms.requirePreserved(local, null);
+              } else {
+                value = UserCollections.merge(key, local, value);
+              }
+            } on FormatException {
+              record = {
+                ...record,
+                profileCollectionHold:
+                    record[profileCollectionHold] ??
+                    {
+                      'rejectedOperationIds': <String>[],
+                      'quarantinedRecord': record,
+                    },
+              };
+            }
+          }
           if (key == 'fitnessProtocols' &&
               record['deletedAt'] == null &&
               existing?[column] != null) {
@@ -444,6 +474,12 @@ class SyncStore {
       throw const InvalidSyncRecord('Unsupported side');
     }
     if (type == SyncEntityType.workoutSet) {
+      _wire(() => SetRole.validate(json['setRole']));
+      if (!json.containsKey('setRole') &&
+          record['deletedAt'] == null &&
+          existing?['deletedAtUtc'] == null) {
+        json['setRole'] = existing?['setRole'];
+      }
       if (json['sessionSyncId'] is! String) {
         throw const InvalidSyncRecord('Missing session UUID');
       }
@@ -793,6 +829,8 @@ class SyncStore {
           // Optional wire field: legacy sets stay unclassified. This only
           // constructs new operations; never rewrites attempted payloads.
           if (json['side'] == null) json.remove('side');
+          SetRole.validate(json['setRole']);
+          if (json['setRole'] == null) json.remove('setRole');
           final session = await db.workoutDao.getSession(
             json.remove('sesjaId') as int,
           );

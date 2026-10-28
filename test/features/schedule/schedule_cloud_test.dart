@@ -116,7 +116,7 @@ void main() {
         (await db.userProfileDao.watchProfileOnce())!.weeklyScheduleJson,
         isNull,
       );
-      expect(db.schemaVersion, 14);
+      expect(db.schemaVersion, 15);
       expect(
         (await db.customSelect('SELECT * FROM sync_outbox').get())
             .map((r) => r.data)

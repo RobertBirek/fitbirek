@@ -155,9 +155,9 @@ void main() {
           (await db.customSelect('SELECT * FROM sync_outbox').getSingle()).data;
       final service = BackupService(db);
       final backup = await service.exportToBytes();
-      await (db.update(db.workoutPlans)..where((p) => p.id.equals(id))).write(
-        const WorkoutPlansCompanion(structureJson: Value('{')),
-      );
+      // Quarantined raw now refuses destructive restore; this regression checks
+      // the independent attempted DELETE/legacy envelope contract on readable data.
+      expect((await db.plansDao.getPlan(id))!.structureJson, isNotNull);
       expect((await service.importFromBytes(backup)).success, isTrue);
       expect(
         (await db

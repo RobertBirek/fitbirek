@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import '../app_database.dart';
 import '../tables/workout_tables.dart';
+import '../working_sets.dart';
 
 part 'workout_dao.g.dart';
 
@@ -62,6 +63,7 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
   }) async {
     final query = select(setsLog)
       ..where((t) => t.cwiczenieId.equals(exerciseId) & t.deletedAtUtc.isNull())
+      ..where(effectiveWorkingSets)
       ..where((t) => side == null ? t.side.isNull() : t.side.equals(side))
       ..where(
         (t) => variantId == null
@@ -82,11 +84,15 @@ class WorkoutDao extends DatabaseAccessor<AppDatabase> with _$WorkoutDaoMixin {
     String exerciseId, {
     String? side,
     String? variantId,
+    bool effectiveWorkingOnly = false,
   }) {
     return (select(setsLog)..where(
           (t) =>
               t.cwiczenieId.equals(exerciseId) &
               t.deletedAtUtc.isNull() &
+              (effectiveWorkingOnly
+                  ? effectiveWorkingSets(t)
+                  : const Constant(true)) &
               (side == null ? t.side.isNull() : t.side.equals(side)) &
               (variantId == null
                   ? t.variantId.isNull()

@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'set_role.dart';
 
 part 'workout_session.freezed.dart';
 part 'workout_session.g.dart';
@@ -25,7 +26,13 @@ class SetLog with _$SetLog {
     required DateTime timestamp,
   }) = _SetLog;
 
-  factory SetLog.fromJson(Map<String, dynamic> json) => _$SetLogFromJson(json);
+  factory SetLog.fromJson(Map<String, dynamic> json) =>
+      _$SetLogFromJson(_validatedSetLogJson(json));
+}
+
+Map<String, dynamic> _validatedSetLogJson(Map<String, dynamic> json) {
+  SetRole.validate(json['setRole']);
+  return json;
 }
 
 /// Sesja treningowa - jeden trening złożony z wielu serii.

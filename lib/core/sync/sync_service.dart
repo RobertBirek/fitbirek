@@ -327,22 +327,24 @@ class SyncService extends ChangeNotifier {
                     record['deletedAt'] == null) {
                   final remote = record['payload'] as Map;
                   final local = await store.row(op.entityType, op.entityId);
-                  final raw = local?['fitnessProtocolsJson'] as String?;
-                  if (raw != null && remote.containsKey('fitnessProtocols')) {
-                    try {
-                      // Preflight before deleting the definitively rejected
-                      // request: valid unpublished forks can defer normally,
-                      // but a real same-UUID collision must keep attempted/raw
-                      // evidence in the existing explicit profile hold.
-                      UserCollections.merge(
-                        'fitnessProtocols',
-                        jsonDecode(raw),
-                        remote['fitnessProtocols'],
-                      );
-                    } on FormatException {
-                      await store.holdProfileConflict(record, op.operationId);
-                      blocked = true;
-                      return;
+                  for (final key in ['fitnessProtocols', 'trainingPrograms']) {
+                    final raw = local?['${key}Json'] as String?;
+                    if (raw != null && remote.containsKey(key)) {
+                      try {
+                        // Preflight before deleting the definitively rejected
+                        // request: valid unpublished forks can defer normally,
+                        // but a real same-UUID collision must keep attempted/raw
+                        // evidence in the existing explicit profile hold.
+                        UserCollections.merge(
+                          key,
+                          jsonDecode(raw),
+                          remote[key],
+                        );
+                      } on FormatException {
+                        await store.holdProfileConflict(record, op.operationId);
+                        blocked = true;
+                        return;
+                      }
                     }
                   }
                 }
@@ -363,7 +365,10 @@ class SyncService extends ChangeNotifier {
                   try {
                     for (final key in UserCollections.keys) {
                       final raw = local?['${key}Json'] as String?;
-                      if (key != 'fitnessProtocols' &&
+                      if (!{
+                            'fitnessProtocols',
+                            'trainingPrograms',
+                          }.contains(key) &&
                           raw == null &&
                           op.payload.containsKey(key) &&
                           op.payload[key] == null) {

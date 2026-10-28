@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../sync/sync_models.dart';
 import '../../sync/user_collections.dart';
+import '../../models/set_role.dart';
 import '../app_database.dart';
 import '../tables/sync_tables.dart';
 import '../../../features/progress/tests/domain/fitness_protocol.dart';
@@ -126,6 +127,8 @@ class SyncDao extends DatabaseAccessor<AppDatabase> with _$SyncDaoMixin {
     // never mutation targets, including when an explicit restore clear survives
     // a later ordinary profile save that omits nullable raw extension columns.
     payload = Map<String, Object?>.from(payload);
+    if (entityType == SyncEntityType.workoutSet)
+      SetRole.validate(payload['setRole']);
     if (entityType == SyncEntityType.profile && !deleted) {
       final seen = <String>{
         for (final key in UserCollections.keys)

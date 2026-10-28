@@ -153,7 +153,9 @@ abstract final class UserCollections {
     final byId = <String, Map<String, dynamic>>{};
     for (final raw in [...a['entries'] as List, ...b['entries'] as List]) {
       final e = Map<String, dynamic>.from(raw as Map);
-      final id = key == 'trainingPrograms' ? (e['id'] as String).toLowerCase() : e['id'] as String;
+      final id = key == 'trainingPrograms'
+          ? (e['id'] as String).toLowerCase()
+          : e['id'] as String;
       final old = byId[id];
       if (old == null) {
         byId[id] = e;
@@ -178,7 +180,10 @@ abstract final class UserCollections {
       }
       if (cmp == 0) cmp = canonical(e).compareTo(canonical(old));
       if (key == 'trainingPrograms') {
-        byId[id] = TrainingPrograms.preserveCutoff(cmp > 0 ? e : old, cmp > 0 ? old : e);
+        byId[id] = TrainingPrograms.preserveCutoff(
+          cmp > 0 ? e : old,
+          cmp > 0 ? old : e,
+        );
       } else if (cmp > 0) {
         byId[id] = e;
       }

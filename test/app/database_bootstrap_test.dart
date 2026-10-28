@@ -76,7 +76,7 @@ void main() {
         find.textContaining('a następnie wybierz „Spróbuj ponownie”'),
         findsNothing,
       );
-      expect(find.text('Schemat bazy: 12; wymagany: 14.'), findsOneWidget);
+      expect(find.text('Schemat bazy: 12; wymagany: 15.'), findsOneWidget);
       expect(childStarts, 0);
       expect(container.exists(authStateProvider), isFalse);
       expect(container.exists(syncServiceProvider), isFalse);
@@ -95,7 +95,7 @@ void main() {
       expect(attempts, 3);
       expect(childStarts, 0);
       expect(raw.userVersion, 12);
-      expect(find.text('Schemat bazy: 12; wymagany: 14.'), findsOneWidget);
+      expect(find.text('Schemat bazy: 12; wymagany: 15.'), findsOneWidget);
       expect(find.textContaining('Jeśli blokada pozostaje'), findsOneWidget);
       expect(container.exists(authStateProvider), isFalse);
       expect(container.exists(syncServiceProvider), isFalse);
@@ -109,7 +109,7 @@ void main() {
       await tester.tap(find.text('Spróbuj ponownie'));
       await tester.pumpAndSettle();
       expect(attempts, 4);
-      expect(raw.userVersion, 14);
+      expect(raw.userVersion, 15);
       expect(find.text('Protected deep route'), findsOneWidget);
       expect(find.text('Spróbuj ponownie'), findsNothing);
       expect(childStarts, 1);

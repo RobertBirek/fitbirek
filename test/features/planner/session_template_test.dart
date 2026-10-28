@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/features/planner/domain/session_template.dart';
 import '../exercises/catalog_filter_test.dart' show metadata;
@@ -32,6 +33,24 @@ SetLogData row(
 
 void main() {
   test(
+    'heterogeneous doses and explicit roles copy to one ordered v2 list',
+    () {
+      final plan = templateFromSets([
+        row(
+          1,
+        ).copyWith(setRole: const Value('warmup'), ciezarKg: const Value(8)),
+        row(2, reps: 6, kg: 15).copyWith(setRole: const Value('working')),
+      ], metadata);
+      expect(plan.schemaVersion, 2);
+      final targets = plan.blocks.single.prescription.setTargets;
+      expect(targets.map((t) => t.setRole), ['warmup', 'working']);
+      expect(targets.map((t) => t.reps), [10, 6]);
+      expect(targets.map((t) => t.weightKg), [8, 15]);
+      expect(targets.map((t) => t.targetId).toSet(), hasLength(2));
+      expect(() => targets.clear(), throwsUnsupportedError);
+    },
+  );
+  test(
     'actual uniform live groups copy exact metric and kg, no fabricated rest',
     () {
       final plan = templateFromSets([
@@ -57,8 +76,6 @@ void main() {
         [],
         [row(1, variant: 'variant')],
         [row(1, side: 'left')],
-        [row(1), row(2, reps: 12)],
-        [row(1), row(2, kg: 15)],
         [row(1, reps: 0)],
         [row(1, reps: null, seconds: 40)],
         [row(1, seconds: 40)],

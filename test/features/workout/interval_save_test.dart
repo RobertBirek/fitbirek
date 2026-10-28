@@ -33,11 +33,13 @@ class PausedRoundRepository extends WorkoutRepository {
     int? seconds,
     int? rpe,
     String? side,
+    String? setRole,
     String? variantId,
     String? variantLabel,
     String? accountId,
     bool Function()? guard,
     int? guidanceSlot,
+    String? guidanceTargetId,
     String? expectedSyncId,
   }) async {
     final id = await super.logSet(
@@ -47,6 +49,9 @@ class PausedRoundRepository extends WorkoutRepository {
       setNumber: setNumber,
       seconds: seconds,
       side: side,
+      setRole: setRole,
+      guidanceTargetId: guidanceTargetId,
+      guidanceSlot: guidanceSlot,
       variantId: variantId,
       variantLabel: variantLabel,
       accountId: accountId,

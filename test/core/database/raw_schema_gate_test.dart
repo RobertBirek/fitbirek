@@ -49,10 +49,10 @@ final _rawOperations = <String, FutureOr<Object?> Function(QueryExecutor)>{
   },
 };
 
-class _Version15Client extends AppDatabase {
-  _Version15Client(super.e) : super.forTesting();
+class _FutureClient extends AppDatabase {
+  _FutureClient(super.e) : super.forTesting();
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 }
 
 class _NestedUser implements QueryExecutorUser {
@@ -69,7 +69,7 @@ class _NestedUser implements QueryExecutorUser {
 }
 
 void main() {
-  for (final version in [12, 15]) {
+  for (final version in [12, 16]) {
     for (final operation in _rawOperations.entries) {
       test(
         'RPC$version rejected but not closed: raw ${operation.key} must refuse',
@@ -81,7 +81,7 @@ void main() {
           final ownerConnection = await connectSchemaClient(server);
           final owner = version == 12
               ? OldSchemaClient(ownerConnection)
-              : _Version15Client(ownerConnection);
+              : _FutureClient(ownerConnection);
           await owner.customSelect('SELECT 1').get();
           final db = AppDatabase.forTesting(await connectSchemaClient(server));
           addTearDown(() async {
@@ -110,9 +110,9 @@ void main() {
 
   for (final remote in [false, true]) {
     test(
-      'unopened future15 refuses all raw APIs without downgrade, remote=$remote',
+      'unopened future16 refuses all raw APIs without downgrade, remote=$remote',
       () async {
-        final raw = sqlite.sqlite3.openInMemory()..userVersion = 15;
+        final raw = sqlite.sqlite3.openInMemory()..userVersion = 16;
         final native = NativeDatabase.opened(
           raw,
           closeUnderlyingOnClose: false,
@@ -140,7 +140,7 @@ void main() {
             reason: operation.key,
           );
         }
-        expect(raw.userVersion, 15);
+        expect(raw.userVersion, 16);
         expect(
           raw.select("SELECT name FROM sqlite_master WHERE type = 'table'"),
           isEmpty,
@@ -176,7 +176,7 @@ void main() {
       }
       release.complete();
       await opening;
-      expect(raw.userVersion, 14);
+      expect(raw.userVersion, 15);
       expect(raw.select('SELECT * FROM scoped_migration_probe'), isEmpty);
       // Legitimate raw access and transactions still work after successful open.
       final transaction = db.executor.beginTransaction();

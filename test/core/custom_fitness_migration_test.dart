@@ -28,7 +28,7 @@ void main() {
       await db.close();
       db = AppDatabase.forTesting(NativeDatabase.opened(raw));
       addTearDown(db.close);
-      expect(db.schemaVersion, 14);
+      expect(db.schemaVersion, 15);
       final after = await db.select(db.fitnessTestResults).get();
       expect(after.single.customProtocolJson, isNull);
       expect(

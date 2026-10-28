@@ -1,9 +1,12 @@
 import '../../../core/database/app_database.dart';
+import '../../../core/models/set_role.dart';
+import 'package:uuid/uuid.dart';
 import '../../exercises/domain/exercise_catalog_metadata.dart';
 import '../../exercises/domain/exercise_filter_engine.dart';
 import 'structured_plan.dart';
+import 'set_prescription.dart';
 
-/// No writes. Refuses any lossy collapse of variants, sides or unequal doses.
+/// No writes. Heterogeneous doses become ordered targets, never an average.
 StructuredPlan templateFromSets(
   List<SetLogData> sets,
   ExerciseCatalogMetadata metadata,
@@ -21,6 +24,15 @@ StructuredPlan templateFromSets(
     throw const FormatException('Brak potwierdzonych serii do skopiowania.');
   }
   final blocks = <PlanBlock>[];
+  final perSet = groups.values.any(
+    (rows) => rows.any(
+      (s) =>
+          s.setRole != null ||
+          s.powtorzenia != rows.first.powtorzenia ||
+          s.czasSekund != rows.first.czasSekund ||
+          s.ciezarKg != rows.first.ciezarKg,
+    ),
+  );
   for (final entry in groups.entries) {
     final m = metadata.entryFor(entry.key);
     if (m == null || !{'reps', 'time'}.contains(m.tracking)) {
@@ -30,40 +42,59 @@ StructuredPlan templateFromSets(
     }
     final first = entry.value.first;
     final reps = m.tracking == 'reps';
-    if (entry.value.any(
-          (s) =>
-              s.powtorzenia != first.powtorzenia ||
-              s.czasSekund != first.czasSekund ||
-              s.ciezarKg != first.ciezarKg,
-        ) ||
-        (reps
-            ? (first.powtorzenia == null ||
-                  first.powtorzenia! <= 0 ||
-                  first.czasSekund != null)
-            : (first.czasSekund == null ||
-                  first.czasSekund! <= 0 ||
-                  first.powtorzenia != null)) ||
-        (first.ciezarKg != null &&
-            (!first.ciezarKg!.isFinite || first.ciezarKg! < 0))) {
-      throw FormatException(
-        '${entry.key}: różne lub nieprawidłowe cele serii nie mieszczą się w jednym celu szablonu. Ułóż szablon ręcznie; niczego nie pominięto.',
-      );
+    for (final s in entry.value) {
+      SetRole.validate(s.setRole);
+      if ((reps
+              ? (s.powtorzenia == null ||
+                    s.powtorzenia! < 1 ||
+                    s.powtorzenia! > 1800 ||
+                    s.czasSekund != null)
+              : (s.czasSekund == null ||
+                    s.czasSekund! < 1 ||
+                    s.czasSekund! > 5400 ||
+                    s.powtorzenia != null)) ||
+          (s.ciezarKg != null && (!s.ciezarKg!.isFinite || s.ciezarKg! < 0)) ||
+          (perSet && m.unilateral)) {
+        throw FormatException(
+          '${entry.key}: nieprawidłowe lub niejednoznaczne cele; niczego nie pominięto.',
+        );
+      }
     }
     blocks.add(
       PlanBlock(
         exerciseId: entry.key,
         section: PlanSection.main,
-        prescription: PlanPrescription(
-          tracking: m.tracking,
-          sets: entry.value.length,
-          reps: reps ? first.powtorzenia : null,
-          workSeconds: reps
-              ? first.powtorzenia! * 3 * (m.unilateral ? 2 : 1)
-              : first.czasSekund!,
-          restSeconds: 0,
-          transitionSeconds: 15,
-          weightKg: first.ciezarKg,
-        ),
+        prescription: perSet
+            ? PlanPrescription.perSet(
+                tracking: m.tracking,
+                transitionSeconds: 15,
+                setTargets: [
+                  for (final s in entry.value)
+                    SetPrescription(
+                      targetId: const Uuid().v5(
+                        Namespace.url.value,
+                        'fitbirek:set-target:${s.syncId}',
+                      ),
+                      setRole: s.setRole ?? SetRole.working,
+                      reps: s.powtorzenia,
+                      seconds: s.czasSekund,
+                      weightKg: s.ciezarKg,
+                      workSeconds: reps ? s.powtorzenia! * 3 : s.czasSekund!,
+                      restSeconds: 0,
+                    ),
+                ],
+              )
+            : PlanPrescription(
+                tracking: m.tracking,
+                sets: entry.value.length,
+                reps: reps ? first.powtorzenia : null,
+                workSeconds: reps
+                    ? first.powtorzenia! * 3 * (m.unilateral ? 2 : 1)
+                    : first.czasSekund!,
+                restSeconds: 0,
+                transitionSeconds: 15,
+                weightKg: first.ciezarKg,
+              ),
       ),
     );
   }
@@ -77,6 +108,7 @@ StructuredPlan templateFromSets(
     );
   }
   return StructuredPlan(
+    schemaVersion: perSet ? 2 : 1,
     criteria: const ExerciseFilters(),
     budgetSeconds: seconds < 300 ? 300 : ((seconds + 59) ~/ 60) * 60,
     blocks: blocks,

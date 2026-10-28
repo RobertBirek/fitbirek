@@ -56,14 +56,14 @@ void main() {
             .data
             .values
             .single,
-        14,
+        15,
       );
     },
   );
   test('Drift12 nullable extensions preserve legacy rows', () async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 14);
+    expect(db.schemaVersion, 15);
     final profiles = await db
         .customSelect('PRAGMA table_info(user_profiles)')
         .get();

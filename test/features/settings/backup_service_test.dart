@@ -60,7 +60,7 @@ void main() {
       final payload = jsonDecode(utf8.decode(await service.exportToBytes()));
       expect(payload['appVersion'], version);
       expect(payload['appVersion'], AppConstants.appVersion);
-      expect(payload['schemaVersion'], 3);
+      expect(payload['schemaVersion'], 4);
     },
   );
 
@@ -187,7 +187,7 @@ void main() {
     final exported = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
     final data = exported['data'] as Map<String, dynamic>;
 
-    expect(exported['schemaVersion'], 3);
+    expect(exported['schemaVersion'], 4);
     expect(data['exerciseFavorites'], [
       {'exerciseId': 'cw001'},
     ]);

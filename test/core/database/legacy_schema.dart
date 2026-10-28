@@ -1,6 +1,14 @@
 import 'package:fitbirek_training/core/database/app_database.dart';
 
+Future<void> removeV15Columns(AppDatabase db) async {
+  await db.customStatement('ALTER TABLE sets_log DROP COLUMN set_role');
+  await db.customStatement(
+    'ALTER TABLE user_profiles DROP COLUMN training_programs_json',
+  );
+}
+
 Future<void> removeV14Columns(AppDatabase db) async {
+  await removeV15Columns(db);
   await db.customStatement(
     'ALTER TABLE user_profiles DROP COLUMN fitness_protocols_json',
   );

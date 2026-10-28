@@ -29,14 +29,22 @@ class PlanPrescription {
     required int restSeconds,
     required this.transitionSeconds,
     double? weightKg,
-  }) : _sets = sets, _reps = reps, _workSeconds = workSeconds,
-       _restSeconds = restSeconds, _weightKg = weightKg, setTargets = const [];
+  }) : _sets = sets,
+       _reps = reps,
+       _workSeconds = workSeconds,
+       _restSeconds = restSeconds,
+       _weightKg = weightKg,
+       setTargets = const [];
   PlanPrescription.perSet({
     required this.tracking,
     required List<SetPrescription> setTargets,
     required this.transitionSeconds,
-  }) : setTargets = List.unmodifiable(setTargets), _sets = null,
-       _reps = null, _workSeconds = null, _restSeconds = null, _weightKg = null;
+  }) : setTargets = List.unmodifiable(setTargets),
+       _sets = null,
+       _reps = null,
+       _workSeconds = null,
+       _restSeconds = null,
+       _weightKg = null;
   final String tracking;
   final int? _sets, _reps, _workSeconds, _restSeconds;
   final double? _weightKg;
@@ -46,16 +54,25 @@ class PlanPrescription {
   int get sets => isPerSet ? setTargets.length : _sets!;
   int? get reps => _reps;
   double? get weightKg => _weightKg;
-  int get workSeconds => _workSeconds ?? (throw StateError('Użyj setTargets — cele są indywidualne.'));
-  int get restSeconds => _restSeconds ?? (throw StateError('Użyj setTargets — przerwy są indywidualne.'));
+  int get workSeconds =>
+      _workSeconds ??
+      (throw StateError('Użyj setTargets — cele są indywidualne.'));
+  int get restSeconds =>
+      _restSeconds ??
+      (throw StateError('Użyj setTargets — przerwy są indywidualne.'));
   void validate() {
     if (isPerSet) {
-      if (setTargets.isEmpty || setTargets.length > 100 ||
-          transitionSeconds < 0 || transitionSeconds > maxSeconds ||
-          setTargets.map((t) => t.targetId).toSet().length != setTargets.length) {
+      if (setTargets.isEmpty ||
+          setTargets.length > 100 ||
+          transitionSeconds < 0 ||
+          transitionSeconds > maxSeconds ||
+          setTargets.map((t) => t.targetId).toSet().length !=
+              setTargets.length) {
         throw const FormatException('Nieprawidłowa lista celów serii.');
       }
-      for (final target in setTargets) { target.validate(tracking); }
+      for (final target in setTargets) {
+        target.validate(tracking);
+      }
       return;
     }
     if (!{'reps', 'time', 'rounds'}.contains(tracking) ||
@@ -80,36 +97,50 @@ class PlanPrescription {
   int get totalSeconds {
     validate();
     if (isPerSet) {
-      return transitionSeconds + setTargets.fold<int>(0, (sum, t) => sum + t.workSeconds) +
-          setTargets.take(setTargets.length - 1).fold<int>(0, (sum, t) => sum + t.restSeconds);
+      return transitionSeconds +
+          setTargets.fold<int>(0, (sum, t) => sum + t.workSeconds) +
+          setTargets
+              .take(setTargets.length - 1)
+              .fold<int>(0, (sum, t) => sum + t.restSeconds);
     }
     return sets * workSeconds + (sets - 1) * restSeconds + transitionSeconds;
   }
 
-  Map<String, Object?> toJson() => isPerSet ? {
-    'tracking': tracking,
-    'transitionSeconds': transitionSeconds,
-    'setTargets': setTargets.map((t) => t.toJson()).toList(),
-  } : {
-    'tracking': tracking,
-    'sets': sets,
-    'reps': reps,
-    'workSeconds': workSeconds,
-    'restSeconds': restSeconds,
-    'transitionSeconds': transitionSeconds,
-    if (weightKg != null) 'weightKg': weightKg,
-  };
+  Map<String, Object?> toJson() => isPerSet
+      ? {
+          'tracking': tracking,
+          'transitionSeconds': transitionSeconds,
+          'setTargets': setTargets.map((t) => t.toJson()).toList(),
+        }
+      : {
+          'tracking': tracking,
+          'sets': sets,
+          'reps': reps,
+          'workSeconds': workSeconds,
+          'restSeconds': restSeconds,
+          'transitionSeconds': transitionSeconds,
+          if (weightKg != null) 'weightKg': weightKg,
+        };
   factory PlanPrescription.fromJson(Map<String, dynamic> j) {
     if (j.containsKey('setTargets')) {
-      if (j.keys.any((k) => !{'tracking', 'transitionSeconds', 'setTargets'}.contains(k))) {
-        throw const FormatException('Indywidualne cele nie mogą mieć równoległej dawki.');
+      if (j.keys.any(
+        (k) => !{'tracking', 'transitionSeconds', 'setTargets'}.contains(k),
+      )) {
+        throw const FormatException(
+          'Indywidualne cele nie mogą mieć równoległej dawki.',
+        );
       }
       final p = PlanPrescription.perSet(
         tracking: j['tracking'] as String,
         transitionSeconds: j['transitionSeconds'] as int,
-        setTargets: (j['setTargets'] as List).map((t) => SetPrescription.fromJson(
-          Map<String, dynamic>.from(t as Map), tracking: j['tracking'] as String,
-        )).toList(),
+        setTargets: (j['setTargets'] as List)
+            .map(
+              (t) => SetPrescription.fromJson(
+                Map<String, dynamic>.from(t as Map),
+                tracking: j['tracking'] as String,
+              ),
+            )
+            .toList(),
       );
       p.validate();
       return p;
@@ -258,10 +289,13 @@ class StructuredPlan {
     );
     if (p.budgetSeconds < 300 ||
         p.budgetSeconds > 5400 ||
+        p.blocks.length > 5400 ||
         p.estimatedSeconds > p.budgetSeconds ||
         p.exerciseIds.toSet().length != p.blocks.length ||
         p.exerciseIds.any((id) => id.isEmpty) ||
-        p.blocks.any((b) => b.prescription.isPerSet != (p.schemaVersion == 2))) {
+        p.blocks.any(
+          (b) => b.prescription.isPerSet != (p.schemaVersion == 2),
+        )) {
       throw const FormatException('Nieprawidłowy budżet lub bloki planu');
     }
     return p;
@@ -525,7 +559,9 @@ class StructuredPlanGenerator {
     required String level,
   }) {
     final old = plan.blocks[index];
-    if (old.prescription.isPerSet && old.prescription.setTargets.any((t) => (t.weightKg ?? 0) > 0)) return [];
+    if (old.prescription.isPerSet &&
+        old.prescription.setTargets.any((t) => (t.weightKg ?? 0) > 0))
+      return [];
     final sources = allExercises.where((e) => e.id == old.exerciseId).toList();
     if (sources.length != 1 ||
         engine.metadata.entryFor(old.exerciseId)?.tracking !=

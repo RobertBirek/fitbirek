@@ -102,7 +102,7 @@ void main() {
         };
         old.dispose();
         var db = AppDatabase.forTesting(NativeDatabase(file));
-        expect(db.schemaVersion, 14);
+        expect(db.schemaVersion, 15);
         for (final t in tables) {
           final after = (await db.customSelect('SELECT * FROM $t').get()).map((
             r,
@@ -113,6 +113,7 @@ void main() {
             }
             if (t == 'sets_log') {
               expect(fields.remove('side'), isNull);
+              expect(fields.remove('set_role'), isNull);
             }
             if (t == 'sets_log' || t == 'personal_records') {
               expect(fields.remove('variant_id'), isNull);
@@ -122,6 +123,7 @@ void main() {
               expect(fields.remove('filter_presets_json'), isNull);
               expect(fields.remove('exercise_variants_json'), isNull);
               expect(fields.remove('weekly_schedule_json'), isNull);
+              expect(fields.remove('training_programs_json'), isNull);
             }
             if (version < 6) fields.remove('health_replay_enabled');
             return fields;

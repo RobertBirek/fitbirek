@@ -3,6 +3,8 @@ import 'package:uuid/uuid.dart';
 import 'dart:convert';
 import '../../../core/database/app_database.dart';
 import '../../../core/models/workout_session.dart';
+import '../../../core/models/set_role.dart';
+import '../../../core/database/working_sets.dart';
 import '../../../core/sync/sync_models.dart';
 import '../domain/fixed_load_progression.dart';
 import '../domain/workout_guidance.dart';
@@ -362,13 +364,18 @@ class WorkoutRepository {
     int? seconds,
     int? rpe,
     String? side,
+    String? setRole,
     String? variantId,
     String? variantLabel,
     String? accountId,
     bool Function()? guard,
     int? guidanceSlot,
+    String? guidanceTargetId,
     String? expectedSyncId,
   }) async {
+    SetRole.validate(setRole);
+    if (guidanceTargetId != null && guidanceSlot == null)
+      throw StateError('Cel wymaga bloku prowadzenia.');
     final now = DateTime.now().toUtc();
     final syncId = Uuid().v4();
     return _db.transaction(() async {
@@ -398,6 +405,7 @@ class WorkoutRepository {
           powtorzenia: Value(reps),
           czasSekund: Value(seconds),
           side: Value(side),
+          setRole: Value(setRole),
           variantId: Value(variantId),
           variantLabel: Value(label),
           rpe: Value(rpe),
@@ -419,6 +427,7 @@ class WorkoutRepository {
           'powtorzenia': reps,
           'czasSekund': seconds,
           if (side != null) 'side': side,
+          if (setRole != null) 'setRole': setRole,
           if (variantId != null) 'variantId': variantId,
           if (variantId != null) 'variantLabel': label,
           'rpe': rpe,
@@ -433,7 +442,27 @@ class WorkoutRepository {
             'Prowadzenie zmieniło się. Otwórz bieżący blok ponownie.',
           );
         }
-        await _writeGuidance(session, guidance.link(guidanceSlot, syncId));
+        if (guidance.schemaVersion == 2) {
+          final targets = guidance
+              .plan
+              .blocks[guidanceSlot]
+              .prescription
+              .setTargets
+              .where((t) => t.targetId == guidanceTargetId);
+          if (targets.length != 1 ||
+              targets.single.setRole != setRole ||
+              targets.single.side != side) {
+            throw StateError('Rola lub strona nie odpowiada wybranemu celowi.');
+          }
+          await _writeGuidance(
+            session,
+            guidance.link(guidanceSlot, syncId, targetId: guidanceTargetId),
+          );
+        } else if (guidanceTargetId != null) {
+          throw StateError('Cel indywidualny wymaga prowadzenia v2.');
+        } else if (SetRole.isEffectiveWorking(setRole)) {
+          await _writeGuidance(session, guidance.link(guidanceSlot, syncId));
+        }
       }
       _requireGuard(guard);
       if (accountId != null) await _requireAccount(accountId, guard);
@@ -587,6 +616,7 @@ class WorkoutRepository {
     required bool Function() guard,
     required int slot,
     String? replacement,
+    String? targetId,
   }) => _db.transaction(() async {
     await _requireAccount(accountId, guard);
     final session = await _db.workoutDao.getSession(sessionId);
@@ -601,7 +631,9 @@ class WorkoutRepository {
     if (g == null) throw const FormatException('Prowadzenie niedostępne');
     await _writeGuidance(
       session,
-      replacement == null ? g.skip(slot) : g.replace(slot, replacement),
+      replacement == null
+          ? (targetId == null ? g.skip(slot) : g.skipTarget(slot, targetId))
+          : g.replace(slot, replacement),
     );
     await _requireAccount(accountId, guard);
   });
@@ -905,6 +937,7 @@ class WorkoutRepository {
                     ? sets.variantId.isNull()
                     : sets.variantId.equals(variantId)) &
                 sets.deletedAtUtc.isNull() &
+                effectiveWorkingSets(sets) &
                 sessions.deletedAtUtc.isNull() &
                 sessions.dataKoniec.isNotNull(),
           )
@@ -950,6 +983,7 @@ class WorkoutRepository {
                   ? sets.variantId.isNull()
                   : sets.variantId.equals(variantId)) &
               sets.deletedAtUtc.isNull() &
+              effectiveWorkingSets(sets) &
               sessions.deletedAtUtc.isNull() &
               sessions.dataKoniec.isNotNull() &
               sessions.id.equals(excludingSessionId).not(),
@@ -989,11 +1023,13 @@ class WorkoutRepository {
     String exerciseId, {
     String? side,
     String? variantId,
+    bool effectiveWorkingOnly = false,
   }) {
     return _db.workoutDao.getAllSetsForExercise(
       exerciseId,
       side: side,
       variantId: variantId,
+      effectiveWorkingOnly: effectiveWorkingOnly,
     );
   }
 
@@ -1024,6 +1060,7 @@ class WorkoutRepository {
               powtorzenia: s.powtorzenia,
               czasSekund: s.czasSekund,
               side: s.side,
+              setRole: s.setRole,
               variantId: s.variantId,
               variantLabel: s.variantLabel,
               rpe: s.rpe,

@@ -5,6 +5,7 @@ import '../../../core/sync/profile_payload.dart';
 import '../../../core/sync/sync_models.dart';
 import '../../../core/sync/user_collections.dart';
 import '../../auth/providers/auth_providers.dart';
+import '../../schedule/domain/training_program.dart';
 
 /// Account ownership is checked against SQLite and passive auth on every await.
 class UserCollectionsRepository {
@@ -82,6 +83,8 @@ class UserCollectionsRepository {
         // collection that the callback could already have changed in memory.
         UserCollections.requireFitnessPreserved(readRow(row, key), value);
       }
+      if (key == 'trainingPrograms')
+        TrainingPrograms.requirePreserved(readRow(row, key), value);
       final raw = jsonEncode(value);
       await (db.update(
         db.userProfiles,
@@ -97,6 +100,9 @@ class UserCollectionsRepository {
               ? Value(raw)
               : const Value.absent(),
           fitnessProtocolsJson: key == 'fitnessProtocols'
+              ? Value(raw)
+              : const Value.absent(),
+          trainingProgramsJson: key == 'trainingPrograms'
               ? Value(raw)
               : const Value.absent(),
           updatedAtUtc: Value(DateTime.now().toUtc()),

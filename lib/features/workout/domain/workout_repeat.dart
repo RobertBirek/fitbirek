@@ -1,4 +1,5 @@
 import '../../../core/database/app_database.dart';
+import '../../../core/models/set_role.dart';
 import '../../planner/domain/structured_plan.dart';
 import 'workout_guidance.dart';
 
@@ -31,6 +32,7 @@ class RepeatSetTarget {
     this.seconds,
     this.weightKg,
     this.side,
+    this.setRole,
     this.variantId,
     this.variantLabel,
     this.previousRpe,
@@ -38,12 +40,13 @@ class RepeatSetTarget {
   final String exerciseId, name;
   final int? reps, seconds, previousRpe;
   final double? weightKg;
-  final String? side, variantId, variantLabel;
+  final String? side, variantId, variantLabel, setRole;
   Map<String, Object?> get prefill => {
     'reps': reps?.toString() ?? '',
     'seconds': seconds?.toString() ?? '',
     'weight': weightKg?.toString() ?? '',
     'side': side,
+    'setRole': setRole,
     'variantId': variantId,
     'variantLabel': variantLabel,
   };
@@ -57,6 +60,7 @@ class RepeatSetTarget {
     'variantId': variantId,
     'variantLabel': variantLabel,
     'previousRpe': previousRpe,
+    'setRole': setRole,
   };
   factory RepeatSetTarget.fromJson(Map j) {
     try {
@@ -67,6 +71,7 @@ class RepeatSetTarget {
         seconds: j['seconds'] as int?,
         weightKg: (j['weightKg'] as num?)?.toDouble(),
         side: j['side'] as String?,
+        setRole: SetRole.validate(j['setRole']),
         variantId: j['variantId'] as String?,
         variantLabel: j['variantLabel'] as String?,
         previousRpe: j['previousRpe'] as int?,
@@ -111,6 +116,7 @@ class WorkoutRepeat {
               'seconds': s.czasSekund,
               'weightKg': s.ciezarKg,
               'side': s.side,
+              'setRole': s.setRole,
               'variantId': s.variantId,
               'variantLabel': s.variantLabel,
               'previousRpe': s.rpe,
@@ -121,15 +127,27 @@ class WorkoutRepeat {
   }
   factory WorkoutRepeat.original(WorkoutGuidance guidance) => WorkoutRepeat._([
     for (final block in guidance.plan.blocks)
-      for (var i = 0; i < block.prescription.sets; i++)
-        RepeatSetTarget(
-          exerciseId: block.exerciseId,
-          name: block.exerciseId,
-          reps: block.prescription.reps,
-          seconds: block.prescription.reps == null
-              ? block.prescription.workSeconds
-              : null,
-        ),
+      if (block.prescription.isPerSet)
+        for (final target in block.prescription.setTargets)
+          RepeatSetTarget(
+            exerciseId: block.exerciseId,
+            name: block.exerciseId,
+            reps: target.reps,
+            seconds: target.seconds,
+            weightKg: target.weightKg,
+            side: target.side,
+            setRole: target.setRole,
+          )
+      else
+        for (var i = 0; i < block.prescription.sets; i++)
+          RepeatSetTarget(
+            exerciseId: block.exerciseId,
+            name: block.exerciseId,
+            reps: block.prescription.reps,
+            seconds: block.prescription.reps == null
+                ? block.prescription.workSeconds
+                : null,
+          ),
   ], plan: guidance.plan);
   factory WorkoutRepeat.fromJson(Object? json) {
     try {

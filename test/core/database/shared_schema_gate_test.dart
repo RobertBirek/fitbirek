@@ -150,7 +150,7 @@ void main() {
         raw.dispose();
       });
       await fresh.customSelect('SELECT 1').get();
-      expect(raw.userVersion, 14);
+      expect(raw.userVersion, 15);
       expect(fresh.upgrades, 1);
       expect(await _rows(fresh, 'sync_outbox'), before);
       expect(await _rows(fresh, 'workout_sessions'), sessions);
@@ -181,7 +181,7 @@ void main() {
   test(
     'future schema fails closed before Drift can downgrade user_version',
     () async {
-      final raw = sqlite.sqlite3.openInMemory()..userVersion = 15;
+      final raw = sqlite.sqlite3.openInMemory()..userVersion = 16;
       final db = AppDatabase.forTesting(
         NativeDatabase.opened(raw, closeUnderlyingOnClose: false),
       );
@@ -190,7 +190,7 @@ void main() {
         raw.dispose();
       });
       await expectLater(db.customSelect('SELECT 1').get(), throwsStateError);
-      expect(raw.userVersion, 15);
+      expect(raw.userVersion, 16);
     },
   );
 
@@ -198,7 +198,7 @@ void main() {
     test(
       'future schema over real RPC fails closed, alreadyOpen=$alreadyOpen',
       () async {
-        final raw = sqlite.sqlite3.openInMemory()..userVersion = 15;
+        final raw = sqlite.sqlite3.openInMemory()..userVersion = 16;
         final executor = NativeDatabase.opened(
           raw,
           closeUnderlyingOnClose: false,
@@ -221,11 +221,11 @@ void main() {
           db.customSelect('SELECT 1').get(),
           throwsA(
             isA<DatabaseSchemaMismatch>()
-                .having((e) => e.actual, 'actual', 15)
-                .having((e) => e.expected, 'expected', 14),
+                .having((e) => e.actual, 'actual', 16)
+                .having((e) => e.expected, 'expected', 15),
           ),
         );
-        expect(raw.userVersion, 15);
+        expect(raw.userVersion, 16);
       },
     );
   }
@@ -234,5 +234,5 @@ void main() {
 class _FutureClient extends AppDatabase {
   _FutureClient(super.e) : super.forTesting();
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 }
