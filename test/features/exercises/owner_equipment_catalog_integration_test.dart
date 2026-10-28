@@ -46,8 +46,8 @@ void main() {
   test(
     'real imported catalog adds twelve IDs and corrects wrist roller without a duplicate',
     () async {
-      expect(catalog, hasLength(424));
-      expect(catalog.map((e) => e.id).toSet(), hasLength(424));
+      expect(catalog, hasLength(431));
+      expect(catalog.map((e) => e.id).toSet(), hasLength(431));
       final roller = (await repository.getById('cw123'))!;
       expect(roller.sprzet, ['Wrist roller']);
       expect(roller.nazwaPl.toLowerCase(), contains('linki'));

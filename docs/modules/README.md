@@ -18,6 +18,7 @@ Ten katalog wskazuje minimalny working set dla zmian w kodzie. Najpierw czytaj d
 | Trening, ćwiczenia, planowanie i rekordy | [training.md](training.md) |
 | Przygotowanie sprzętu i celów przed startem z Dziś | [workout-preparation.md](workout-preparation.md) |
 | Katalog sprzętu, alternatywne wymagania i korekty importu | [owner-equipment-catalog.md](owner-equipment-catalog.md) |
+| Podstawowe ruchy bez obciążenia, katalog431 i oczekujące ilustracje | [bodyweight-catalog.md](bodyweight-catalog.md) |
 | Postępy, pomiary, testy, nastrój i Apple Health | [tracking.md](tracking.md) |
 | Konto, API, Drift i synchronizacja | [sync.md](sync.md) |
 

@@ -4,7 +4,8 @@
 
 - `tools/expand_owner_equipment_catalog.py`, `tools/source_data/`,
   `tools/xlsx_to_json.py`, generatory metadata/warunków i walidator katalogu.
-- `assets/data/exercises.json`: chroniony raw prefiks412 i dodatek12.
+- `assets/data/exercises.json`: historyczny raw prefiks412 i dodatek12;
+  bieżący katalog431 opisuje [bodyweight-catalog.md](bodyweight-catalog.md).
 - `assets/data/exercise_catalog_corrections.json`: jawne wersjonowane korekty.
 - `exercise_catalog_metadata.dart`, `exercise_filter_engine.dart`:
   definicja i wspólny matcher alternatywnych zestawów sprzętu.
@@ -64,6 +65,7 @@ wdrożenia kodu/danych.
 Python pipeline: reprodukowalność, prefiks412,12 nowych ID,6 korekt, źródła,
 metadata i warunki wykonania. Flutter: poprawne OR-of-AND, parser fail-closed,
 profil cancel/save/unknown, upgrade412→424 z favorites/history/outbox,
-przygotowanie/recovery, fallback ilustracji. Stare412 ilustracji pozostają
-bez zmian;12 nowych wpisów ma jawnie oczekujące ilustracje, nie obrazy innych
-ruchów. Pełny odbiór i publikacja nowego katalogu są oddzielne od1.22.0+38.
+przygotowanie/recovery, fallback ilustracji. Obecnie wszystkie424 ilustracje
+tego zakresu są kompletne i chronione; pending dotyczy wyłącznie425–431,
+nie historycznego dodatku12. Test starego zakresu412 obrazów jest przypięty
+do publikacji412; osobny guard424 chroni cały bieżący zestaw obrazów.

@@ -36,9 +36,9 @@ void main() {
   });
 
   test(
-    'real offline index covers all 424 exercises with known classifications',
+    'real offline index covers all 431 exercises with known classifications',
     () {
-      expect(exercises, hasLength(424));
+      expect(exercises, hasLength(431));
       for (final exercise in exercises) {
         final entry = metadata.entryFor(exercise.id);
         expect(entry, isNotNull, reason: exercise.id);

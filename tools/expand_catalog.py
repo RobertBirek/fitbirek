@@ -109,6 +109,13 @@ def ledger():
         'Pasy do zwisu za nogi': 'Inversion leg straps, not TRX or arm slings; no added inversion movements.',
         'Wrist roller': 'Handle, cord and suspended plate; no pulley station and no dumbbell pair.',
     }
+    from bodyweight_additions import SOURCES as BW_SOURCES, VERIFIED as BW_VERIFIED, ADAPTATIONS, source_records as bw_records
+    result['sources'].update({
+        'bodyweight_' + key: {'url': url, 'verifiedSections': BW_VERIFIED[key],
+                             'readOn': '2026-10-28', 'editorialAdaptation': ADAPTATIONS[key]}
+        for key, url in BW_SOURCES.items()
+    })
+    result['exercises'].update(bw_records())
     return result
 
 
@@ -122,6 +129,7 @@ def main():
     original = workbook_snapshot(wb)
     existing = {row[0]: list(row) for row in ws.iter_rows(min_row=2, values_only=True) if row[0]}
     names = json.loads(MAPPING_PATH.read_text())
+    added = 0
     for a in ADDITIONS:
         row = workbook_row(a)
         if a['number'] in existing:
@@ -131,6 +139,7 @@ def main():
             raise ValueError(f'Missing expansion ID: {a["number"]}')
         else:
             ws.append(row)
+            added += 1
             for cell, template in zip(ws[ws.max_row], ws[2]):
                 cell._style = copy(template._style)
         eid = f'cw{a["number"]:03d}'
@@ -144,7 +153,7 @@ def main():
         if SOURCE_PATH.read_text() != text:
             raise ValueError('Source ledger differs from reviewed input')
         print(f'Expansion CHECK OK: {len(ADDITIONS)} rows, names and sources')
-    else:
+    elif added:
         with tempfile.NamedTemporaryFile(dir=converter.XLSX_PATH.parent, suffix='.xlsx', delete=False) as tmp:
             path = Path(tmp.name)
         try:
@@ -170,6 +179,13 @@ def main():
         MAPPING_PATH.write_text(json.dumps(names, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         SOURCE_PATH.write_text(text, encoding='utf-8')
         print(f'Workbook: {len(after)} rows; added {len(after) - len(before)}. Run xlsx_to_json.py.')
+    else:
+        # Do not re-zip an unchanged workbook: ZIP timestamps are not stable.
+        for path, value in [(MAPPING_PATH, json.dumps(names, ensure_ascii=False, indent=2) + '\n'),
+                            (SOURCE_PATH, text)]:
+            if path.read_text() != value:
+                path.write_text(value, encoding='utf-8')
+        print(f'Expansion OK: {len(before)} rows; no workbook changes')
     wb.close()
 
 

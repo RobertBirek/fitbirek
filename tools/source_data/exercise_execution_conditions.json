@@ -5146,6 +5146,92 @@
       "positions": [
         "standing"
       ]
+    },
+    "cw425": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw426": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw427": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw428": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw429": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw430": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw431": {
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     }
   }
 }

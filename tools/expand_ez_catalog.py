@@ -24,8 +24,9 @@ def main():
     args = parser.parse_args()
     before = converter.convert()
     from owner_equipment_additions import EXPECTED_COUNT as OWNER_COUNT
-    if len(before) not in (PREFIX_COUNT, EXPECTED_COUNT, OWNER_COUNT):
-        raise ValueError('Expected unchanged 408 baseline or completed 412/424 expansion')
+    from bodyweight_additions import EXPECTED_COUNT as BODYWEIGHT_COUNT
+    if len(before) not in (PREFIX_COUNT, EXPECTED_COUNT, OWNER_COUNT, BODYWEIGHT_COUNT):
+        raise ValueError('Expected unchanged 408 baseline or completed 412/424/431 expansion')
     labels = {i: label for i, label, _ in MUSCLES}
     names = json.loads(MAPPING_PATH.read_text())
     execution = json.loads(INPUT_PATH.read_text())
@@ -94,7 +95,7 @@ def main():
             if path.read_text() != text:
                 path.write_text(text)
     wb.close()
-    print(f'EZ / cardio expansion OK: {added} rows appended; {EXPECTED_COUNT} total')
+    print(f'EZ / cardio expansion OK: {added} rows appended; {len(before) + added} total')
 
 
 if __name__ == '__main__':

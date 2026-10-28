@@ -1,7 +1,7 @@
 {
   "sources_sha256": {
-    "exercises.json": "6c161e536839c39ccbe8db63590da7c0b5a1ace1ac6b7c4916b218d7965c106f",
-    "exercise_catalog_metadata.json": "6bee7998f386f053c15afcfaf322c8d789e5abeb27317870d208e928513a74b4",
+    "exercises.json": "610cf55d94cfd16cbfc522d059b146ea69ba5a86720a00eb245f82be0f56e4a0",
+    "exercise_catalog_metadata.json": "b1a3af8c4d342701b6cae637a650dccaad28a3f8fce91153335cf5129dc6b7ac",
     "exercise_catalog_corrections.json": "bb45b26d92977c36c8a06dc886df1162dd931fb3cd4c4565de00a0cb36d0c7a5"
   },
   "exercises": [
@@ -4791,6 +4791,83 @@
       ],
       "tracking": "time",
       "unilateral": false
+    },
+    {
+      "id": "cw425",
+      "name": "Pompki od ściany",
+      "type": "Siła",
+      "muscle": "Klatka piersiowa",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw426",
+      "name": "Przysiad bez obciążenia",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": false
+    },
+    {
+      "id": "cw427",
+      "name": "Zakroki bez obciążenia",
+      "type": "Siła",
+      "muscle": "Przód uda, Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw428",
+      "name": "Marsz w miejscu",
+      "type": "Rozgrzewka",
+      "muscle": "Zginacze bioder, Łydki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw429",
+      "name": "Marsz w siadzie",
+      "type": "Rozgrzewka",
+      "muscle": "Zginacze bioder",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "time",
+      "unilateral": false
+    },
+    {
+      "id": "cw430",
+      "name": "Prostowanie kolana w siadzie bez gumy",
+      "type": "Siła",
+      "muscle": "Przód uda",
+      "equipment": [
+        "Krzesło"
+      ],
+      "tracking": "reps",
+      "unilateral": true
+    },
+    {
+      "id": "cw431",
+      "name": "Odwodzenie ugiętej nogi w bok w klęku podpartym bez gumy",
+      "type": "Siła",
+      "muscle": "Pośladki",
+      "equipment": [
+        "Masa własna"
+      ],
+      "tracking": "reps",
+      "unilateral": true
     }
   ]
 }

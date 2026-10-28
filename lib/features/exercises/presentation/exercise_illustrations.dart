@@ -425,6 +425,17 @@ const illustratedExerciseIds = {
   'cw424',
 };
 
+/// Reviewed catalog additions without artwork; never substitute another move.
+const awaitingIllustrationExerciseIds = {
+  'cw425',
+  'cw426',
+  'cw427',
+  'cw428',
+  'cw429',
+  'cw430',
+  'cw431',
+};
+
 String? exerciseIllustrationAsset(String exerciseId) {
   return illustratedExerciseIds.contains(exerciseId)
       ? 'assets/exercises/$exerciseId.webp'

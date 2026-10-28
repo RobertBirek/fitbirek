@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_catalog_metadata
 import validate_catalog
 import build_execution_conditions as execution
-from owner_equipment_additions import EXPECTED_COUNT
+from bodyweight_additions import EXPECTED_COUNT
 from tools.tests.catalog_test_utils import before_owner_equipment
 
 ROOT = Path(__file__).resolve().parents[2]

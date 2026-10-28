@@ -11466,6 +11466,202 @@
       "positions": [
         "standing"
       ]
+    },
+    "cw425": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "chest"
+      ],
+      "secondaryMuscles": [
+        "triceps",
+        "shoulders",
+        "abs"
+      ],
+      "aliases": [
+        "Wall push-up"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw426": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs"
+      ],
+      "aliases": [
+        "Bodyweight squat"
+      ],
+      "tracking": "reps",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw427": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "quadriceps",
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "hamstrings",
+        "abs"
+      ],
+      "aliases": [
+        "Bodyweight reverse lunge"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw428": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "hip_flexors",
+        "calves"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "glutes",
+        "abs"
+      ],
+      "aliases": [
+        "March in place"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "standing"
+      ]
+    },
+    "cw429": {
+      "styles": [
+        "conditioning"
+      ],
+      "primaryMuscles": [
+        "hip_flexors"
+      ],
+      "secondaryMuscles": [
+        "quadriceps",
+        "abs"
+      ],
+      "aliases": [
+        "Seated march"
+      ],
+      "tracking": "time",
+      "unilateral": false,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw430": {
+      "styles": [
+        "strength"
+      ],
+      "primaryMuscles": [
+        "quadriceps"
+      ],
+      "secondaryMuscles": [],
+      "aliases": [
+        "Seated knee extension"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "no_kneeling",
+        "no_hand_support",
+        "no_floor",
+        "small_space"
+      ],
+      "positions": [
+        "seated"
+      ]
+    },
+    "cw431": {
+      "styles": [
+        "strength",
+        "calisthenics"
+      ],
+      "primaryMuscles": [
+        "glutes"
+      ],
+      "secondaryMuscles": [
+        "abs",
+        "shoulders"
+      ],
+      "aliases": [
+        "Bodyweight fire hydrant"
+      ],
+      "tracking": "reps",
+      "unilateral": true,
+      "conditions": [
+        "no_jumps",
+        "quiet",
+        "small_space"
+      ],
+      "positions": [
+        "floor"
+      ]
     }
   },
   "conditions": [

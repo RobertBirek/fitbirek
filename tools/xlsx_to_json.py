@@ -272,6 +272,12 @@ def convert() -> list[dict]:
         if hashlib.sha256(owner_prefix).hexdigest() != OWNER_PREFIX_SHA256:
             raise ValueError("Chronione rekordy cw001–cw412 zostały zmienione")
 
+    from bodyweight_additions import PREFIX_COUNT as BODYWEIGHT_PREFIX_COUNT, PREFIX_SHA256 as BODYWEIGHT_PREFIX_SHA256
+    if len(result) >= BODYWEIGHT_PREFIX_COUNT:
+        bodyweight_prefix = json.dumps(result[:BODYWEIGHT_PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
+        if hashlib.sha256(bodyweight_prefix).hexdigest() != BODYWEIGHT_PREFIX_SHA256:
+            raise ValueError("Chronione rekordy cw001–cw424 zostały zmienione")
+
     return result
 
 

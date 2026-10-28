@@ -66,7 +66,7 @@ class OwnerEquipmentTests(unittest.TestCase):
         self.assertNotIn('Wróć pracą nogi podporowej', cues)
         self.assertNotIn('Odbijanie nogą dotykającą podłoża', row['czesteBledy'])
 
-    def test_refresh_is_explicit_and_only_changes_unreleased_414_reviewed_cells(self):
+    def test_old_unreleased_refresh_cannot_modify_now_frozen_raw424(self):
         with tempfile.TemporaryDirectory(dir='/tmp/opencode') as tmp:
             root = Path(tmp)
             shutil.copytree(ROOT / 'tools', root / 'tools', ignore=shutil.ignore_patterns('__pycache__'))
@@ -84,16 +84,16 @@ class OwnerEquipmentTests(unittest.TestCase):
             command = [sys.executable, str(root / 'tools/expand_owner_equipment_catalog.py')]
             self.assertNotEqual(subprocess.run(command + ['--check'], capture_output=True).returncode, 0)
             self.assertNotEqual(subprocess.run(command, capture_output=True).returncode, 0)
+            previous = path.read_bytes()
             result = subprocess.run(command + ['--refresh-unreleased-cw414'], capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('cw001–cw424', result.stderr)
             wb = openpyxl.load_workbook(path)
             after = workbook_snapshot(wb)
             wb.close()
             changed = {(sheet, cell) for sheet, cells in before.items() for cell, value in cells.items()
                        if after[sheet].get(cell) != value}
-            self.assertEqual(changed, {(converter.SHEET_NAME, c) for c in ('L415', 'M415', 'P415')})
-            previous = path.read_bytes()
-            subprocess.run(command + ['--refresh-unreleased-cw414'], check=True, capture_output=True)
+            self.assertEqual(changed, set())
             self.assertEqual(path.read_bytes(), previous)
 
     def test_startup_corrections_are_exact_core_asset(self):
@@ -104,10 +104,11 @@ class OwnerEquipmentTests(unittest.TestCase):
         self.assertNotIn("path.startsWith('assets/assets/data/')", text)
 
     def test_only_original_412_illustrations_remain_byte_identical(self):
-        tree = subprocess.check_output(['git', 'ls-tree', '-r', 'HEAD', 'assets/exercises'], cwd=ROOT).decode()
+        tree = subprocess.check_output(['git', 'ls-tree', '-r', '8f4ff6a', 'assets/exercises'], cwd=ROOT).decode()
         images = [line.split('\t') for line in tree.splitlines() if line.endswith('.webp')]
         self.assertEqual(len(images), 412)
-        self.assertEqual(set(p.name for p in (ROOT / 'assets/exercises').glob('cw*.webp')),
+        self.assertEqual(set(p.name for p in (ROOT / 'assets/exercises').glob('cw*.webp')
+                             if int(p.stem[2:]) <= 412),
                          {f'cw{n:03d}.webp' for n in range(1, 413)})
         for info, path in images:
             content = (ROOT / path).read_bytes()
@@ -115,15 +116,15 @@ class OwnerEquipmentTests(unittest.TestCase):
             self.assertEqual(hashlib.sha1(blob).hexdigest(), info.split()[2], path)
 
     def test_raw_prefix_and_exact_addition(self):
-        data = json.loads(converter.OUTPUT_PATH.read_text())
+        data = json.loads(converter.OUTPUT_PATH.read_text())[:424]  # Owner publication scope.
         self.assertEqual(len(data), 424)
         self.assertEqual(hashlib.sha256(json.dumps(data[:412], ensure_ascii=False,
                                                   sort_keys=True).encode()).hexdigest(), PREFIX_SHA)
-        self.assertEqual([e['id'] for e in data[412:]], [f'cw{n}' for n in range(413, 425)])
+        self.assertEqual([e['id'] for e in data[412:424]], [f'cw{n}' for n in range(413, 425)])
         gears = [['Step']] * 3 + [['Ławka do brzuszków']] * 2 + [
             ['Ławka ujemna do wyciskania', 'Hantle']] + [['Poduszka równoważna']] * 2 + [
             ['Roller']] * 3 + [['Sandbag']]
-        self.assertEqual([e['sprzet'] for e in data[412:]], gears)
+        self.assertEqual([e['sprzet'] for e in data[412:424]], gears)
         self.assertIn('no_jumps', json.loads((ROOT / PATHS[5]).read_text())['exercises']['cw413']['conditions'])
         self.assertEqual(json.loads((ROOT / PATHS[5]).read_text())['exercises']['cw415']['positions'], ['floor'])
         self.assertNotIn('20 kg', data[-1]['progresja'])
@@ -196,10 +197,10 @@ class OwnerEquipmentTests(unittest.TestCase):
             (root / 'backend/app/mentor').mkdir(parents=True)
             shutil.copy(ROOT / 'backend/tools/generate_mentor_catalog.py', root / 'backend/tools')
             for path in PATHS[:6]:
-                (root / path).write_bytes(subprocess.check_output(['git', 'show', 'HEAD:' + path], cwd=ROOT))
+                (root / path).write_bytes(subprocess.check_output(['git', 'show', '8f4ff6a:' + path], cwd=ROOT))
             def run(tool, *args):
                 subprocess.run([sys.executable, str(root / tool), *args], check=True, capture_output=True)
-            tools = ['tools/expand_owner_equipment_catalog.py', 'tools/xlsx_to_json.py',
+            tools = ['tools/expand_owner_equipment_catalog.py', 'tools/expand_bodyweight_catalog.py', 'tools/xlsx_to_json.py',
                      'tools/build_catalog_metadata.py', 'backend/tools/generate_mentor_catalog.py']
             for tool in tools:
                 run(tool)

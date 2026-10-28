@@ -27,7 +27,7 @@ PATHS = ['tools/source_data/baza_cwiczen_316.xlsx',
 class EzExpansionTests(unittest.TestCase):
     def test_exact_ids_equipment_tracking_and_preserved_prefix(self):
         data = json.loads((ROOT / PATHS[4]).read_text())
-        self.assertEqual(len(data), 424)
+        self.assertEqual(len(data[:412]), 412)  # Historical EZ publication scope.
         self.assertEqual(hashlib.sha256(json.dumps(data[:408], ensure_ascii=False,
                                                   sort_keys=True).encode()).hexdigest(), PREFIX_SHA)
         meta = before_owner_equipment(self, json.loads((ROOT / PATHS[5]).read_text()))
@@ -63,12 +63,12 @@ class EzExpansionTests(unittest.TestCase):
                 (root / path).write_bytes(subprocess.check_output(['git', 'show', '1b67bd5:' + path], cwd=ROOT))
             def run(tool, *args):
                 subprocess.run([sys.executable, str(root / 'tools' / tool), *args], check=True, capture_output=True)
-            for tool in ['expand_ez_catalog.py', 'expand_owner_equipment_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
+            for tool in ['expand_ez_catalog.py', 'expand_owner_equipment_catalog.py', 'expand_bodyweight_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
                 run(tool)
             for path in PATHS[1:]:
                 self.assertEqual((root / path).read_bytes(), (ROOT / path).read_bytes(), path)
             hashes = [hashlib.sha256((root / p).read_bytes()).hexdigest() for p in PATHS]
-            for tool in ['expand_ez_catalog.py', 'expand_owner_equipment_catalog.py', 'expand_partner_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
+            for tool in ['expand_ez_catalog.py', 'expand_owner_equipment_catalog.py', 'expand_bodyweight_catalog.py', 'expand_partner_catalog.py', 'xlsx_to_json.py', 'build_catalog_metadata.py']:
                 run(tool)
             self.assertEqual(hashes, [hashlib.sha256((root / p).read_bytes()).hexdigest() for p in PATHS])
             run('expand_ez_catalog.py', '--check')
@@ -85,7 +85,7 @@ class EzExpansionTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'cw001–cw408'):
                     converter.convert()
 
-    def test_current_validator_requires_exact_424(self):
+    def test_current_validator_rejects_historical_408(self):
         data = json.loads((ROOT / PATHS[4]).read_text())
         with patch.object(converter, 'convert', return_value=data[:408]):
             original = validate_catalog.load

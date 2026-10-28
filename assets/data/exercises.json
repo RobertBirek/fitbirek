@@ -14546,5 +14546,274 @@
     "regresja": "Krótszy odcinek lub lżejszy worek, jeśli dostępny; gdy posiadany worek jest za ciężki, wybierz inny ruch",
     "zrodlo": "https://ultimatesandbagtraining.com/best-secret-great-ultimate-sandbag-workouts/",
     "ulubione": false
+  },
+  {
+    "id": "cw425",
+    "nazwaPl": "Pompki od ściany",
+    "nazwaEn": "Wall push-up",
+    "partiaGlowna": "Klatka piersiowa",
+    "partieWspierajace": [
+      "Triceps",
+      "Barki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "1-2 x 5-8",
+    "tempo": "Około 2 sek ruchu w każdą stronę, bez zamachu",
+    "kluczoweWskazowki": [
+      "Stań twarzą do stabilnej ściany mniej więcej na odległość ramion, na nieśliskiej podłodze",
+      "Oprzyj dłonie na wysokości klatki, palce skieruj w górę",
+      "Utrzymaj tułów i biodra w jednej linii, stopy pozostają na podłodze",
+      "Powoli zegnij łokcie blisko boków i przybliż klatkę do ściany w wygodnym zakresie",
+      "Odepchnij się płynnie do pozycji wyjściowej",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Ślizgające się dłonie lub stopy",
+      "Zapadanie bioder",
+      "Wysuwanie samej głowy",
+      "Gwałtowne odbicie"
+    ],
+    "progresja": "Najpierw dodaj płynne powtórzenia, potem odsuń stopy nieznacznie dalej przy zachowanej stabilności",
+    "regresja": "Stań bliżej ściany i zmniejsz zakres oraz liczbę powtórzeń",
+    "zrodlo": "https://www.nhs.uk/live-well/exercise/strength-and-flexibility-exercises/strength-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw426",
+    "nazwaPl": "Przysiad bez obciążenia",
+    "nazwaEn": "Bodyweight squat",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "1-2 x 5-8",
+    "tempo": "Około 2 sek ruchu w każdą stronę, bez zamachu",
+    "kluczoweWskazowki": [
+      "Stań stabilnie ze stopami nieco szerzej niż biodra, palce lekko na zewnątrz",
+      "Ręce wysuń przed siebie bez opierania ich na sprzęcie",
+      "Cofnij biodra i powoli ugnij biodra oraz kolana, prowadząc kolana zgodnie z kierunkiem stóp",
+      "Zejdź tylko tak nisko, by całe stopy pozostały oparte, a plecy zachowały kontrolowaną pozycję",
+      "Naciśnij stopami podłoże i wyprostuj biodra oraz kolana bez szarpania",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Odrywanie pięt",
+      "Zapadanie kolan",
+      "Wymuszanie głębokości",
+      "Opadanie tułowia bez kontroli"
+    ],
+    "progresja": "Dodaj powtórzenia lub stopniowo większy kontrolowany zakres bez obciążenia",
+    "regresja": "Płytszy przysiad i mniej powtórzeń, bez wymuszania zejścia do równoległości",
+    "zrodlo": "https://www.acefitness.org/resources/everyone/exercise-library/135/bodyweight-squat/",
+    "ulubione": false
+  },
+  {
+    "id": "cw427",
+    "nazwaPl": "Zakroki bez obciążenia",
+    "nazwaEn": "Bodyweight reverse lunge",
+    "partiaGlowna": "Przód uda, Pośladki",
+    "partieWspierajace": [
+      "Tył uda",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "1-2 x 5-8 na stronę",
+    "tempo": "Około 2 sek ruchu w każdą stronę, bez zamachu",
+    "kluczoweWskazowki": [
+      "Stań ze stopami na szerokość bioder i wolnym miejscem za sobą, bez ciężaru w dłoniach",
+      "Cofnij jedną stopę i oprzyj jej przodostopie, zachowując odstęp między stopami na boki",
+      "Powoli ugnij obie nogi, przednie kolano prowadź w kierunku palców",
+      "Tylne kolano pozostaje nad podłogą przez cały ruch, nie klękaj",
+      "Naciśnij całą przednią stopą podłoże i wróć do stania bez odbicia",
+      "Wykonaj krótką serię na jedną stronę, potem zmień nogę",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Stopy na jednej wąskiej linii",
+      "Opadanie kolana na podłogę",
+      "Zapadanie przedniego kolana",
+      "Zamach tułowiem"
+    ],
+    "progresja": "Dodaj kontrolowane powtórzenia na stronę lub nieco zwiększ komfortowy zakres",
+    "regresja": "Krótszy krok i płytsze ugięcie; jeśli nie utrzymujesz równowagi bez podparcia, wybierz inne ćwiczenie",
+    "zrodlo": "https://www.acefitness.org/resources/everyone/exercise-library/319/reverse-lunge/",
+    "ulubione": false
+  },
+  {
+    "id": "cw428",
+    "nazwaPl": "Marsz w miejscu",
+    "nazwaEn": "March in place",
+    "partiaGlowna": "Zginacze bioder, Łydki",
+    "partieWspierajace": [
+      "Przód uda",
+      "Pośladki",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Marsz naprzemienny",
+    "seriexPowtorzenia": "1-2 x 20-30 sek",
+    "tempo": "Spokojny równy rytm, bez podskoków",
+    "kluczoweWskazowki": [
+      "Stań na równym nieśliskim podłożu z wolnym miejscem wokół",
+      "Naprzemiennie unoś stopę niewysoko i odkładaj ją cicho pod biodrem",
+      "Zachowaj wyprostowany tułów, wzrok przed sobą i spokojny oddech",
+      "Poruszaj swobodnie lekko ugiętymi ramionami w rytmie kroków",
+      "Pozostawaj w miejscu, bez podskoków i bez wymuszania wysokiego unoszenia kolan",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Podskakiwanie",
+      "Głośne tupanie",
+      "Odchylanie tułowia",
+      "Zbyt szybki rytm utrudniający swobodną rozmowę"
+    ],
+    "progresja": "Wydłuż krótki odcinek marszu przy rytmie pozwalającym swobodnie rozmawiać",
+    "regresja": "Niższe unoszenie stóp, wolniejszy rytm i krótszy czas z przerwą",
+    "zrodlo": "https://www.nhs.uk/live-well/exercise/how-to-warm-up-before-exercising/",
+    "ulubione": false
+  },
+  {
+    "id": "cw429",
+    "nazwaPl": "Marsz w siadzie",
+    "nazwaEn": "Seated march",
+    "partiaGlowna": "Zginacze bioder",
+    "partieWspierajace": [
+      "Przód uda",
+      "Brzuch"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Rozgrzewka",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Marsz naprzemienny",
+    "seriexPowtorzenia": "1-2 x 20-30 sek",
+    "tempo": "Spokojny równy rytm, bez podskoków",
+    "kluczoweWskazowki": [
+      "Wybierz stabilne krzesło bez kółek na nieśliskim podłożu, ze stopami opartymi płasko na podłodze",
+      "Usiądź prosto bez opierania pleców, chwyć lekko boki siedziska dla stabilności",
+      "Unieś jedną stopę niewysoko z ugiętym kolanem bez odchylania tułowia",
+      "Odstaw stopę łagodnie i powtórz drugą nogą",
+      "Kontynuuj naprzemiennie w spokojnym rytmie, bez szarpania krzesłem",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Odchylanie pleców",
+      "Wymuszanie wysokiego kolana",
+      "Tupanie",
+      "Kołysanie krzesłem"
+    ],
+    "progresja": "Wydłuż czas spokojnej naprzemiennej pracy bez przyspieszania",
+    "regresja": "Unoś stopę minimalnie, skróć czas i odpocznij między próbami",
+    "zrodlo": "https://www.nhs.uk/live-well/exercise/strength-and-flexibility-exercises/sitting-exercises/",
+    "ulubione": false
+  },
+  {
+    "id": "cw430",
+    "nazwaPl": "Prostowanie kolana w siadzie bez gumy",
+    "nazwaEn": "Seated knee extension",
+    "partiaGlowna": "Przód uda",
+    "partieWspierajace": [
+      "-"
+    ],
+    "sprzet": [
+      "Krzesło"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "1-2 x 5-8 na stronę",
+    "tempo": "Około 2 sek ruchu w każdą stronę, bez zamachu",
+    "kluczoweWskazowki": [
+      "Wybierz stabilne krzesło bez kółek na nieśliskim podłożu, ze stopami opartymi płasko na podłodze",
+      "Usiądź prosto, dłonie połóż swobodnie na udach bez podpierania ciężaru ciała",
+      "Trzymaj udo na siedzisku i powoli prostuj jedno kolano, unosząc stopę przed siebie, palce łagodnie przyciągnij ku goleni",
+      "Zatrzymaj ruch w wygodnym zakresie bez gwałtownego blokowania kolana",
+      "Powoli zegnij kolano i odstaw stopę",
+      "Po krótkiej serii zmień nogę, nie używaj gumy ani ciężarka",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Kopnięcie z zamachu",
+      "Odchylanie tułowia",
+      "Odrywanie uda",
+      "Wciskanie kolana na siłę w przeprost"
+    ],
+    "progresja": "Dodaj kontrolowane powtórzenia lub krótką spokojną pauzę przy wyproście bez dodatkowego obciążenia",
+    "regresja": "Mniejszy wygodny zakres i mniej powtórzeń na stronę",
+    "zrodlo": "https://www.opalreturntowork.nhs.uk/exercises/seated-knee-extension/",
+    "ulubione": false
+  },
+  {
+    "id": "cw431",
+    "nazwaPl": "Odwodzenie ugiętej nogi w bok w klęku podpartym bez gumy",
+    "nazwaEn": "Bodyweight fire hydrant",
+    "partiaGlowna": "Pośladki",
+    "partieWspierajace": [
+      "Brzuch",
+      "Barki"
+    ],
+    "sprzet": [
+      "Masa własna"
+    ],
+    "typ": "Siła",
+    "poziom": "Początkujący",
+    "wzorzecRuchu": "Kontrolowany ruch",
+    "seriexPowtorzenia": "1-2 x 5-8 na stronę",
+    "tempo": "Około 2 sek ruchu w każdą stronę, bez zamachu",
+    "kluczoweWskazowki": [
+      "Ustaw dłonie pod barkami i kolana pod biodrami na równym wygodnym podłożu, bez gumy",
+      "Utrzymaj plecy spokojnie, brzuch lekko napięty i wzrok w dół",
+      "Zachowując ugięcie kolana około kąta prostego, unieś jedną nogę w bok małym ruchem w biodrze",
+      "Nie obracaj miednicy ani tułowia i nie unoś kolana wyżej niż około 45 stopni, mniejszy zakres jest wystarczający",
+      "Powoli odstaw kolano pod biodro i po krótkiej serii zmień stronę",
+      "Mata może zwiększyć komfort, ale nie jest wymagana",
+      "Oddychaj swobodnie",
+      "Zakończ serię przed utratą kontroli",
+      "Przerwij przy bólu, drętwieniu lub zawrotach głowy"
+    ],
+    "czesteBledy": [
+      "Obracanie miednicy",
+      "Zapadanie lędźwi",
+      "Prostowanie kolana zamiast odwodzenia biodra",
+      "Wymuszanie wysokości"
+    ],
+    "progresja": "Dodaj płynne powtórzenia lub krótką pauzę przy zachowaniu nieruchomej miednicy",
+    "regresja": "Zmniejsz zakres i liczbę powtórzeń; jeśli podpór lub klęk jest niewygodny, wybierz inne ćwiczenie",
+    "zrodlo": "https://sportsrehab.ucsf.edu/sites/g/files/tkssra10961/files/doc/Core_Strengthening_Basics_Protocol_Nov2025.pdf",
+    "ulubione": false
   }
 ]

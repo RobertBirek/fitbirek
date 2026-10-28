@@ -15,6 +15,7 @@ from catalog_additions import ADDITIONS
 from partner_additions import ADDITIONS as PARTNER_ADDITIONS
 from ez_additions import ADDITIONS as EZ_ADDITIONS
 from owner_equipment_additions import ADDITIONS as OWNER_ADDITIONS, EQUIPMENT_SETS
+from bodyweight_additions import ADDITIONS as BODYWEIGHT_ADDITIONS
 from spine_additions import ADDITIONS as SPINE_ADDITIONS, EXISTING_SPINE, SPINE_STYLE
 from build_execution_conditions import load_classification
 
@@ -417,7 +418,7 @@ def build() -> dict:
             aliases=['taichi siedzące'] if 282 <= n <= 289 else [],
             tracking='rounds' if n in ROUNDS else 'time' if n in TIME else 'reps',
             unilateral=n in UNILATERAL)
-    for a in ADDITIONS + SPINE_ADDITIONS + PARTNER_ADDITIONS + EZ_ADDITIONS + OWNER_ADDITIONS:
+    for a in ADDITIONS + SPINE_ADDITIONS + PARTNER_ADDITIONS + EZ_ADDITIONS + OWNER_ADDITIONS + BODYWEIGHT_ADDITIONS:
         # Crow gets a second style below; never mutate the curated source list.
         exercises[f'cw{a["number"]:03d}'] = dict(
             styles=list(a['style']), primaryMuscles=a['primary'], secondaryMuscles=a['secondary'],

@@ -96,6 +96,12 @@ class ExerciseDetailPage extends ConsumerWidget {
                       ),
                     ),
                   ],
+                  if (awaitingIllustrationExerciseIds.contains(ex.id)) ...[
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Ilustracja w przygotowaniu — skorzystaj z instrukcji poniżej.',
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   if (catalog.isLoading) const LinearProgressIndicator(),
                   if (catalog.hasError)

@@ -16,6 +16,7 @@ Katalog ćwiczeń, planowanie, aktywna sesja, serie, podsumowanie i rekordy osob
 - Zamienniki, domyślne/edytowane przerwy i aktywna zamiana:
   `docs/modules/planner-safe-replacements.md` (zgodność ruchowa, budżet, atomowe recovery).
 - Warunki wykonania i pozycje: `docs/modules/exercise-execution-filters.md` (AND/OR, fasety, brak weryfikacji)
+- Podstawowe ruchy bez obciążenia: `docs/modules/bodyweight-catalog.md` (raw424→431, źródła, pending7).
 - Progresja stałego ciężaru: `docs/modules/fixed-load-progression.md` (read-only, RPE, guard konta i szkic celu)
 - Własne warianty / filtry w chmurze: `docs/modules/user-variants-cloud.md`
   (Drift12, profile collections, exact exercise+side+variant UUID, CAS i restore).

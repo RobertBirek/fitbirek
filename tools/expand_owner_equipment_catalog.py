@@ -2,8 +2,8 @@
 """Append twelve reviewed rows and six explicit corrections; preserve raw 412.
 
 Run xlsx_to_json.py and build_catalog_metadata.py afterwards. --check is read-only.
---refresh-unreleased-cw414 explicitly updates only the reviewed cues/errors/source
-of the unpublished row; it never relaxes the frozen 412-record prefix.
+The historical --refresh-unreleased-cw414 flag cannot bypass the now-frozen
+424-record converter guard (nor the older 412-record prefix).
 """
 import argparse
 from copy import copy
@@ -28,8 +28,9 @@ def main():
     mode.add_argument('--refresh-unreleased-cw414', action='store_true')
     args = parser.parse_args()
     before = converter.convert()
-    if len(before) not in (PREFIX_COUNT, EXPECTED_COUNT):
-        raise ValueError('Expected unchanged 412 baseline or completed 424 expansion')
+    from bodyweight_additions import EXPECTED_COUNT as BODYWEIGHT_COUNT
+    if len(before) not in (PREFIX_COUNT, EXPECTED_COUNT, BODYWEIGHT_COUNT):
+        raise ValueError('Expected unchanged 412 baseline or completed 424/431 expansion')
     labels = {i: label for i, label, _ in MUSCLES}
     names = json.loads(MAPPING_PATH.read_text())
     execution = json.loads(INPUT_PATH.read_text())
@@ -71,7 +72,7 @@ def main():
             if args.check and eid not in mapping:
                 raise ValueError(f'Missing input: {eid}')
             mapping[eid] = value
-    validate_classification(execution, {f'cw{n:03d}' for n in range(1, EXPECTED_COUNT + 1)})
+    validate_classification(execution, {f'cw{n:03d}' for n in range(1, max(len(before), EXPECTED_COUNT) + 1)})
     texts = {p: json.dumps(v, ensure_ascii=False, indent=2) + '\n'
              for p, v in [(MAPPING_PATH, names), (INPUT_PATH, execution),
                           (SOURCE_PATH, ledger()), (CORRECTIONS_PATH, manifest)]}
@@ -112,7 +113,7 @@ def main():
             if not path.exists() or path.read_text() != text:
                 path.write_text(text)
     wb.close()
-    print(f'Owner equipment expansion OK: {added} rows appended; {len(refreshed_cells)} unpublished cw414 cells refreshed; {EXPECTED_COUNT} total; 6 corrections')
+    print(f'Owner equipment expansion OK: {added} rows appended; {len(refreshed_cells)} unpublished cw414 cells refreshed; {len(before) + added} total; 6 corrections')
 
 
 if __name__ == '__main__':

@@ -435,34 +435,46 @@ void main() {
     'cw423',
     'cw424',
   };
-  const awaitingArtworkIds = <String>{};
+  const awaitingArtworkIds = <String>{
+    'cw425',
+    'cw426',
+    'cw427',
+    'cw428',
+    'cw429',
+    'cw430',
+    'cw431',
+  };
 
-  test('all 424 catalog exercises have illustrations; no pending artwork', () {
-    expect(expectedIllustrationIds, hasLength(424));
-    expect(awaitingArtworkIds, isEmpty);
-    expect(illustratedExerciseIds, expectedIllustrationIds);
+  test(
+    '431 catalog exercises: 424 illustrations and seven explicit pending',
+    () {
+      expect(expectedIllustrationIds, hasLength(424));
+      expect(awaitingArtworkIds, hasLength(7));
+      expect(awaitingIllustrationExerciseIds, awaitingArtworkIds);
+      expect(illustratedExerciseIds, expectedIllustrationIds);
 
-    final catalog =
-        jsonDecode(File('assets/data/exercises.json').readAsStringSync())
-            as List;
-    final catalogIds = catalog
-        .map((exercise) => (exercise as Map<String, dynamic>)['id'] as String)
-        .toSet();
-    expect(expectedIllustrationIds.intersection(awaitingArtworkIds), isEmpty);
-    expect(catalog, hasLength(424));
-    expect(catalogIds, {...expectedIllustrationIds, ...awaitingArtworkIds});
-    for (final id in awaitingArtworkIds) {
-      expect(exerciseIllustrationAsset(id), isNull, reason: id);
-    }
+      final catalog =
+          jsonDecode(File('assets/data/exercises.json').readAsStringSync())
+              as List;
+      final catalogIds = catalog
+          .map((exercise) => (exercise as Map<String, dynamic>)['id'] as String)
+          .toSet();
+      expect(expectedIllustrationIds.intersection(awaitingArtworkIds), isEmpty);
+      expect(catalog, hasLength(431));
+      expect(catalogIds, {...expectedIllustrationIds, ...awaitingArtworkIds});
+      for (final id in awaitingArtworkIds) {
+        expect(exerciseIllustrationAsset(id), isNull, reason: id);
+      }
 
-    for (final id in illustratedExerciseIds) {
-      expect(
-        exerciseIllustrationAsset(id),
-        'assets/exercises/$id.webp',
-        reason: id,
-      );
-    }
-  });
+      for (final id in illustratedExerciseIds) {
+        expect(
+          exerciseIllustrationAsset(id),
+          'assets/exercises/$id.webp',
+          reason: id,
+        );
+      }
+    },
+  );
 
   test('every illustration file is registered', () {
     final files = Directory('assets/exercises')

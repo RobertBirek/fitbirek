@@ -8,7 +8,8 @@ import re
 import xlsx_to_json as converter
 from build_execution_conditions import validate_classification
 from spine_additions import validate_preservation
-from owner_equipment_additions import EXPECTED_COUNT, PREFIX_COUNT, PREFIX_SHA256, EQUIPMENT_SETS, correction_manifest
+from owner_equipment_additions import EQUIPMENT_SETS, correction_manifest
+from bodyweight_additions import EXPECTED_COUNT, PREFIX_COUNT, PREFIX_SHA256
 from effective_catalog import CORRECTIONS_PATH, CORRECTION_IDS, validate_corrections
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -107,7 +108,7 @@ def validate():
     require(hashlib.sha256(legacy).hexdigest() == LEGACY_SHA256, 'Legacy cw001–cw316 changed')
     require(len(data) == EXPECTED_COUNT, 'Unexpected reviewed catalog count')
     prefix = json.dumps(data[:PREFIX_COUNT], ensure_ascii=False, sort_keys=True).encode()
-    require(hashlib.sha256(prefix).hexdigest() == PREFIX_SHA256, 'Owner prefix cw001–cw412 changed')
+    require(hashlib.sha256(prefix).hexdigest() == PREFIX_SHA256, 'Bodyweight prefix cw001–cw424 changed')
     corrections = load(CORRECTIONS_PATH)
     validate_corrections(corrections)
     require(corrections == correction_manifest(), 'Corrections differ from reviewed revision 1')

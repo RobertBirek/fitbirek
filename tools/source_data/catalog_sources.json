@@ -385,6 +385,48 @@
     "owner_equipment_thoracic": {
       "url": "https://www.acefitness.org/resources/pros/expert-articles/7960/thoracic-mobility-exercises-to-address-shoulder-pain/",
       "verifiedSections": "2026-10-22 supplied publisher research: Thoracic extension over foam roller; support head, avoid substituting lumbar extension; alternate apparatus for cw267."
+    },
+    "bodyweight_wall": {
+      "url": "https://www.nhs.uk/live-well/exercise/strength-and-flexibility-exercises/strength-exercises/",
+      "verifiedSections": "NHS Strength exercises, Wall press-up: stand at arm length, palms at chest level, bend arms beside torso with straight back, return slowly.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "Smaller comfortable range and 1–2 short sets initially; wall is a required stable surface in instructions, not a new equipment category. Hands bear weight: no no_hand_support tag."
+    },
+    "bodyweight_squat": {
+      "url": "https://www.acefitness.org/resources/everyone/exercise-library/135/bodyweight-squat/",
+      "verifiedSections": "ACE Bodyweight Squat, steps 1–6: no equipment; hip/knee flexion, feet remain planted, knees follow toes, controlled ascent with hips and torso together.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "Self-selected shallow range before heels lift or control is lost; no mandatory parallel depth, chair or external load."
+    },
+    "bodyweight_lunge": {
+      "url": "https://www.acefitness.org/resources/everyone/exercise-library/319/reverse-lunge/",
+      "verifiedSections": "ACE Reverse Lunge: article demonstrates a BARBELL version; step backward, lower rear knee toward floor, press front foot to return. Not a source claiming equipment-free execution.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "Explicit unloaded editorial adaptation of the documented reverse-lunge movement. No barbell, rear knee stays ABOVE floor; no kneeling or travelling lunges. Smaller range, no hand support in the base version."
+    },
+    "bodyweight_march": {
+      "url": "https://www.nhs.uk/live-well/exercise/how-to-warm-up-before-exercising/",
+      "verifiedSections": "NHS March on the spot: rhythmic steps with bent elbows and relaxed fists; publication also adds forward/backward travel. Knee lifts are a separate section.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "Stationary, low-foot-lift, no bouncing or travelling; shorter starting intervals. Time covers alternating steps, not repetitions per side."
+    },
+    "bodyweight_seated_march": {
+      "url": "https://www.nhs.uk/live-well/exercise/strength-and-flexibility-exercises/sitting-exercises/",
+      "verifiedSections": "NHS Sitting exercises, Hip marching: sturdy wheelless chair, upright torso away from backrest, hold sides, lift bent leg and lower with control, alternate legs.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "Retain light hand support on chair sides as published, so no no_hand_support tag. Time covers alternating lifts; lower than a forced high-knee march."
+    },
+    "bodyweight_knee": {
+      "url": "https://www.opalreturntowork.nhs.uk/exercises/seated-knee-extension/",
+      "verifiedSections": "OPAL Seated knee extension: sturdy chair, upright torso, feet initially supported, dorsiflex ankle, straighten knee using front thigh and return with control. Band/ankle weight only in the optional harder version; page has postoperative context.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "General unloaded movement description only, not postoperative rehabilitation guidance; no band or ankle weight. Hands rest on thighs without bearing weight. Shorter comfortable sets; no forced knee lock."
+    },
+    "bodyweight_hydrant": {
+      "url": "https://sportsrehab.ucsf.edu/sites/g/files/tkssra10961/files/doc/Core_Strengthening_Basics_Protocol_Nov2025.pdf",
+      "verifiedSections": "UCSF Core Strengthening Basics Protocol, Fire Hydrant (Quadruped with Hip Abduction): hands and knees on flat surface, engage core, lift knee to side no farther than 45 degrees, pressure through stationary limbs, repeat both sides. No band in this exercise.",
+      "readOn": "2026-10-28",
+      "editorialAdaptation": "Small comfortable abduction, never force 45 degrees; bent knee, pelvis still, no resistance band. Flat comfortable floor required; mat optional, not equipment requirement. No no_floor/no_kneeling/no_hand_support tags."
     }
   },
   "exercises": {
@@ -819,6 +861,34 @@
     "cw424": {
       "source": "owner_equipment_carry",
       "movement": "Bear-hug sandbag carry"
+    },
+    "cw425": {
+      "source": "bodyweight_wall",
+      "movement": "Wall push-up"
+    },
+    "cw426": {
+      "source": "bodyweight_squat",
+      "movement": "Bodyweight squat"
+    },
+    "cw427": {
+      "source": "bodyweight_lunge",
+      "movement": "Bodyweight reverse lunge"
+    },
+    "cw428": {
+      "source": "bodyweight_march",
+      "movement": "March in place"
+    },
+    "cw429": {
+      "source": "bodyweight_seated_march",
+      "movement": "Seated march"
+    },
+    "cw430": {
+      "source": "bodyweight_knee",
+      "movement": "Seated knee extension"
+    },
+    "cw431": {
+      "source": "bodyweight_hydrant",
+      "movement": "Bodyweight fire hydrant"
     }
   },
   "excluded": [
