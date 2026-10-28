@@ -6,6 +6,27 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.24.0+41] — 2026-10-28
+
+### Added
+- Wspólne reguły zamienników w generatorze, przygotowaniu i aktywnym treningu:
+  zgodna funkcja ruchu, główne mięśnie, metryka i jednostronność, z zachowaniem
+  filtrów oraz kompletnych wymagań sprzętowych. Niejednoznaczne zamiany są odmawiane.
+- Domyślne przerwy zależne od rodzaju pracy oraz ich edycja przed startem
+  w zakresie 0–600 s. Podgląd pokazuje zmianę czasu; zwiększenie budżetu wymaga
+  osobnej zgody i nie przekracza 90 minut.
+
+### Fixed
+- Aktywna zamiana zachowuje oryginalne cele i wykonane serie; odrzucenie
+  formularza, wariantu, strony i niezapisanych wyników timera wymaga zgody.
+  Indywidualny ciężar nie jest przenoszony na inne ćwiczenie.
+- Zdarzenie treningu, outbox i szkic recovery zapisują się atomowo. Ochrona
+  nieaktualnego profilu i obcego szkicu nie blokuje własnej sesji po wznowieniu.
+
+### Deployment Notes
+- Wyłącznie web; bez zmian API, katalogu, schematów danych, zależności i Web SQLite.
+  Istniejące plany, historia, dane offline i oczekujące operacje są zachowane.
+
 ## [1.23.1+40] — 2026-10-22
 
 ### Fixed
