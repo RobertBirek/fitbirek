@@ -3,7 +3,22 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.23.1+40 deployed 2026-10-22 13:03:57 UTC**, final public audit
+Current web **1.24.0+41 deployed 2026-10-28 16:54:46 UTC**, final public audit
+**16:55:32 UTC**, independently rechecked **16:58:08 UTC**. Clean pushed artifact
+source **6a0e259**. Safer shared replacements, editable rest and explicit time
+budget consent; atomic guided transition/recovery without changing original
+targets or logged sets. New Docker verification: **1667 Flutter PASS / one UTC
+DST skip**, separate Warsaw DST **1 PASS**, analysis and final Nginx runtime PASS.
+Fresh backup and isolated restore using the existing migrator PASS;
+**501/501 public hashes and lengths** match (48,381,348 bytes, CORE31).
+Only web recreated. API/sender remain1.23.0+39; no production migration/DDL,
+API/sender/PG/Caddy restart or configuration/dependency/catalog changes.
+Domain/schema/ingress/trust and28 shared hosts unchanged. Alembic0010,
+Drift14 and backupformat3 remain unchanged. Physical phone/VoiceOver and
+existing-PWA lifecycle acceptance pending. Exact images, backup and rollback:
+[web release1.24.0+41](docs/releases/2026-10-28-planner-1.24.0-41.md).
+
+Previous web **1.23.1+40 deployed 2026-10-22 13:03:57 UTC**, final public audit
 **13:04:48 UTC**. Clean pushed artifact source **d409438**. Complete424
 illustrations,12 added and412 previous images unchanged. Docker verification:
 **1561 Flutter PASS / one UTC DST skip**, isolated Warsaw DST **1 PASS**,
