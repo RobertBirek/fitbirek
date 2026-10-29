@@ -29,8 +29,108 @@ def test_flutter_export_schema_has_no_server_credential_source():
         "userProfiles", "exercises", "workoutSessions", "setsLog", "moodEntries",
         "measurements", "fitnessTestResults", "personalRecords", "workoutPlans",
         "exerciseFavorites", "healthSamples",
+        # Backup4 preserves raw sync evidence, not Mentor state or auth storage.
+        # These two row codecs have their own field/source boundary guard below.
+        "syncDeferredRecords", "syncOutbox",
     }
     assert not re.search(r"mentor|credential|encrypted_key|master_key|SharedPreferences", export, re.I)
+    imports = "\n".join(re.findall(r"^import .+;", source, re.M))
+    assert not re.search(r"mentor|credential|SharedPreferences", imports, re.I)
+
+
+@pytest.mark.parametrize("table,row_class,fields", [
+    ("SyncOutbox", "SyncOutboxData", {
+        "operationId": "String", "entityType": "String", "entityId": "String",
+        "baseVersion": "int", "payloadJson": "String", "attempted": "bool",
+        "preserveLocal": "bool", "deleted": "bool", "createdAtUtc": "DateTime",
+    }),
+    ("SyncDeferredRecords", "SyncDeferredRecordData", {
+        "entityType": "String", "entityId": "String", "version": "int",
+        "recordJson": "String",
+    }),
+])
+def test_flutter_recovery_row_codecs_have_no_server_credential_sources(table, row_class, fields):
+    """Guard the newly exported row sources, not the contents of opaque JSON.
+
+    A credential column/lookup in either codec must fail this guard. Raw strings
+    stay direct String fields: filtering their keys would lose recovery evidence.
+    Flutter runtime tests remain responsible for archive/restore byte fidelity.
+    """
+    root = Path(__file__).resolve().parents[2]
+    tables = (root / "lib/core/database/tables/sync_tables.dart").read_text()
+    declaration = tables.split(f"class {table} extends Table {{", 1)[1].split("\n}", 1)[0]
+    assert set(re.findall(r"\w+Column get (\w+)\s*=>", declaration)) == set(fields)
+
+    generated = (root / "lib/core/database/app_database.g.dart").read_text()
+    row = generated.split(f"class {row_class} extends DataClass", 1)[1].split("\nclass ", 1)[0]
+    codec = row.split("Map<String, dynamic> toJson(", 1)[1].split("\n  }", 1)[0]
+    assert set(re.findall(r"^\s*'(\w+)':", codec, re.M)) == set(fields)
+    assert set(re.findall(r"'(\w+)': serializer\.toJson<(\w+)>\((\w+)\)", codec)) == {
+        (name, kind, name) for name, kind in fields.items()
+    }
+    assert not re.search(
+        r"mentor|credential|encrypted_?key|master_?key|SharedPreferences|ApiClient|Dio",
+        declaration + row, re.I,
+    )
+
+
+@pytest.mark.asyncio
+async def test_sync_recovery_sources_exclude_server_mentor_state_without_filtering_raw(session):
+    """Pull/CAS feed deferred recovery; neither may join server-only Mentor data."""
+    from app.identity.models import User
+    from app.mentor.models import MentorCredential, MentorMessage, MentorSession, MentorSettings
+    from app.sync.schemas import PushOperation
+    from app.sync.service import pull_changes, push_operations
+
+    owner = User(email=f"{uuid4()}@example.com", password_hash="test-only")
+    session.add(owner)
+    await session.flush()
+    now = datetime.now(timezone.utc)
+    mentor_id = uuid4()
+    # Synthetic sentinels only; no runtime key files, providers or real data.
+    cipher_marker = "test-only-server-ciphertext"
+    memory_marker = "test-only-server-memory"
+    persona_marker = "test-only-server-persona"
+    message_marker = "test-only-server-conversation"
+    session.add_all([
+        MentorCredential(user_id=owner.id, provider="openai", encrypted_key=cipher_marker.encode()),
+        MentorSettings(user_id=owner.id, memory=memory_marker, persona=persona_marker, consent_text=True),
+        MentorSession(id=mentor_id, user_id=owner.id, created_at=now, deleted_at=None),
+    ])
+    await session.flush()
+    session.add(MentorMessage(session_id=mentor_id, role="user", text=message_marker, created_at=now))
+    await session.commit()
+    assert (await pull_changes(session, owner.id, 0, include_health=True)).changes == []
+
+    # Unknown future JSON must remain lossless, even with security-related words
+    # supplied by the user. Key-free means no credential SOURCE, not redaction.
+    payload = {"trainingPrograms": {"version": 999, "raw": [
+        {"label": "mentor credential encrypted_key master_key SharedPreferences", "value": None},
+        "  attempted raw evidence  ",
+    ]}}
+    operation = PushOperation(
+        operationId=uuid4(), entityType="profile", entityId=uuid4(),
+        baseVersion=0, payload=payload, deleted=False,
+    )
+    accepted = await push_operations(session, owner.id, [operation])
+    assert len(accepted.accepted) == 1
+    assert not accepted.conflicts
+    pulled = (await pull_changes(session, owner.id, 0, include_health=True)).model_dump(mode="json", by_alias=True)
+    change, = pulled["changes"]
+    assert change["entityType"] == "profile"
+    assert change["entityId"] == str(operation.entity_id)
+    assert change["payload"] == payload
+    assert set(change) == {"cursor", "entityType", "entityId", "version", "payload", "deletedAt", "updatedAt"}
+
+    stale = operation.model_copy(update={"operation_id": uuid4(), "payload": {"trainingPrograms": None}})
+    conflict = await push_operations(session, owner.id, [stale])
+    assert not conflict.accepted
+    conflict_record = conflict.model_dump(mode="json", by_alias=True)["conflicts"][0]["record"]
+    assert conflict_record == {key: value for key, value in change.items() if key != "cursor"}
+    serialized = json.dumps({"pull": pulled, "cas": conflict_record})
+    assert all(marker not in serialized for marker in (
+        cipher_marker, memory_marker, persona_marker, message_marker, str(mentor_id),
+    ))
 
 
 @pytest.mark.asyncio

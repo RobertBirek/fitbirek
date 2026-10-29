@@ -373,3 +373,45 @@ PostgreSQL16 z przypiętym obrazem z `tests/conftest.py`, bez SQLite/produkcji.
 - Logi: `/tmp/opencode/training-programs-backend-{red,green,full}.log`.
   Baseline hash-locked health: `training-programs-backend-baseline-health.log`
   w tym samym katalogu. Niezależny review przed Task2 pozostaje osobną bramą.
+
+### Backup4 a granica poświadczeń Mentora — 2026-10-29
+
+`data.syncRecovery` eksportuje dwa dodatkowe źródła Drift:
+`syncOutbox` i `syncDeferredRecords`. Nie jest to eksport serwerowych tabel
+Mentora. Outbox zawiera tożsamość operacji/encji, wersję CAS, surowy
+`payloadJson`, flagi attempted/preserveLocal/deleted i czas. Deferred zawiera
+tożsamość encji, wersję oraz `recordJson`: snapshot pull/CAS, kopertę kwarantanny
+albo bierne `_backupRecoveryArchive`. Wygenerowane `toJson()` serializuje
+bezpośrednio pola tych wierszy; nie odczytuje API ani magazynu poświadczeń.
+
+Źródła zapisu to `SyncDao`, `SyncStore`, `SyncQuarantine` i import backup4.
+`SyncEntityType` oraz `UserCollections.keys` obejmują dane domenowe, nie stan
+Mentora. Klucz providera przechodzi oddzielnym HTTPS API `/api/mentor/keys/…`,
+bez outboxa. Rozmowy, pamięć, persona, zgody i szyfrogramy pozostają na serwerze;
+rejestr operacji Mentora w SharedPreferences również nie jest źródłem eksportu.
+Granica opisana w [prywatności Mentora](../docs/mentor.md#retencja-backup-i-odtworzenie)
+pozostaje bez zmian: aplikacyjny JSON nie jest pełnym chronionym DR PostgreSQL.
+
+„Bez kluczy” oznacza tutaj **brak źródła serwerowych poświadczeń**, nie filtr
+treści wpisanej przez użytkownika ani sanitizację nieznanego JSON. Archiwum
+zawiera prywatne dane domenowe i raw, także nieznane pola oraz niezmienne
+attempted payloads; należy chronić je jak wrażliwy backup. Nie usuwać raw,
+nie dekodować/normalizować jego stringów ani nie wycinać kluczy według nazw.
+Import zachowuje dowody jako bierne archiwum, nie uprawnienie do retry na innym
+koncie. Świadomie zaimportowana obca treść może zawierać dowolne dane; ta granica
+nie stanowi gwarancji braku sekretu wpisanego ręcznie w tekst użytkownika.
+
+`tests/test_mentor_dr.py` utrzymuje dokładną allowlistę 13 źródeł eksportu oraz
+zakazy Mentor/credential/encrypted_key/master_key/SharedPreferences. Dodatkowe
+strażniki sprawdzają pola i bezpośrednią serializację obu nowych typów wierszy.
+Test na PostgreSQL potwierdza, że pull i snapshot CAS nie pobierają istniejących
+serwerowych szyfrogramów, pamięci, persony ani rozmów, zachowując future raw
+payload bez redakcji. Statyczne strażniki nie zastępują wykonania eksportu
+Fluttera; jego testy archiwum/restore znajdują się w
+`test/core/training_program_backup_test.dart`.
+
+Weryfikacja tej korekty (Python 3.12.3, hash-locked `.venv`, PostgreSQL16 przez
+Testcontainers): focused RED strażnika **1 failed**, po zmianie
+`.venv/bin/python -m pytest -q tests/test_mentor_dr.py` **5 passed**;
+pełne `.venv/bin/python -m pytest -q` **694 passed**, bez wykluczeń. Runtime
+backendu, zależności i migracje pozostają bez zmian.
