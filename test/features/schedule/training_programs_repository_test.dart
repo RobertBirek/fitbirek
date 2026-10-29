@@ -5,6 +5,8 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbirek_training/core/database/app_database.dart';
 import 'package:fitbirek_training/core/sync/sync_service.dart';
+import 'package:fitbirek_training/core/sync/sync_quarantine.dart';
+import 'package:fitbirek_training/core/sync/sync_store.dart';
 import 'package:fitbirek_training/features/exercises/data/user_collections_repository.dart';
 import 'package:fitbirek_training/features/exercises/domain/exercise_catalog_metadata.dart';
 import 'package:fitbirek_training/features/schedule/data/training_programs_repository.dart';
@@ -354,6 +356,18 @@ void main() {
     },
   );
   test(
+    'available legacy saved templates are not mistaken for unsupported future plans',
+    () async {
+      await db
+          .update(db.workoutPlans)
+          .write(const WorkoutPlansCompanion(structureJson: Value(null)));
+      final id = await create();
+      expect(id, isNot(program));
+      expect((await repo.load('account')).entries, hasLength(2));
+      expect(await db.select(db.workoutSessions).get(), isEmpty);
+    },
+  );
+  test(
     'pending profile and unknown collection refuse rather than create empty fallback',
     () async {
       final lease = await repo.open('account');
@@ -406,6 +420,76 @@ void main() {
       );
     },
   );
+  for (final kind in ['push', 'pull']) {
+    test(
+      'generic $kind profile quarantine blocks program and weekly writes without changing raw or attempted',
+      () async {
+        await repo.rename(
+          await repo.open('account', programId: program),
+          'Oczekująca edycja',
+        );
+        final lease = await repo.open('account', programId: program);
+        final pending = (await db.syncDao.pendingOperations()).single;
+        final profile = (await db.userProfileDao.watchProfileOnce())!;
+        final quarantine = SyncQuarantine(db, SyncStore(db));
+        if (kind == 'push') {
+          await db
+              .update(db.syncOutbox)
+              .write(const SyncOutboxCompanion(attempted: Value(true)));
+          await quarantine.hold('account', pending, {
+            'opaque': 'unknown response',
+          });
+        } else {
+          await quarantine.apply(
+            <String, dynamic>{
+              'entityType': 'profile',
+              'entityId': profile.syncId,
+              'version': 3,
+              'updatedAt': '2026-10-28T00:00:00Z',
+              'payload': [],
+            },
+            'account',
+            3,
+            0,
+          );
+        }
+        final raw = (await db.select(db.syncDeferredRecords).get())
+            .map((r) => r.toJson())
+            .toList();
+        final outbox = (await db.select(db.syncOutbox).get())
+            .map((r) => r.toJson())
+            .toList();
+        await expectLater(repo.rename(lease, 'Nie zapisuj'), throwsStateError);
+        await expectLater(repo.open('account'), throwsStateError);
+        await expectLater(
+          ScheduleRepository(db).addRule(
+            'account',
+            planSyncId: planA,
+            name: 'Nie zapisuj',
+            weekday: 1,
+            effectiveFrom: day,
+          ),
+          throwsStateError,
+        );
+        expect(
+          (await repo.load('account')).entries.single['name'],
+          'Oczekująca edycja',
+        );
+        expect(
+          (await db.select(db.syncOutbox).get())
+              .map((r) => r.toJson())
+              .toList(),
+          outbox,
+        );
+        expect(
+          (await db.select(db.syncDeferredRecords).get())
+              .map((r) => r.toJson())
+              .toList(),
+          raw,
+        );
+      },
+    );
+  }
   test(
     'queued A-B-A and pre-dialog lease epoch refuse; no other-account writes',
     () async {

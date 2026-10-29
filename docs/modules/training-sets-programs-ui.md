@@ -1,8 +1,8 @@
 # Serie i indywidualne cele — Flutter Task3
 
 Kontrakt storage: [training-sets-programs-data.md](training-sets-programs-data.md).
-Klient główny; bez programu A/B (repo/UI to Task4), migracji i deklaracji
-generatorów, zależności, wydania lub wdrożenia.
+Klient główny; programy A/B opisano w sekcji Task4 poniżej. Bez migracji
+i deklaracji generatorów, zależności, wydania lub wdrożenia w zmianach UI.
 
 ## Edytor i start
 
@@ -79,3 +79,48 @@ filtrowane zgodnie z Task2. Czas sesji i estymacja nadal nie udają czasu pracy.
 
 Nie jest to gwarancja flush po zabiciu procesu, chmurowy sync szkiców ani odbiór
 fizycznego telefonu/PWA. Pełna suita i runtime acceptance należą do Task5.
+
+## Programy A/B — Task4
+
+- Wejścia z Moich szablonów i Rytmu tygodnia prowadzą do chronionego `/programs`.
+  Tworzenie wybiera dwa różne dostępne zapisane szablony, nazwę, dni i lokalną
+  datę. Starszy dostępny plan bez struktury pozostaje legacy, nie staje się v2.
+  Brak planu/ćwiczenia, nieobsługiwany JSON, deferred lub quarantine blokuje start
+  bez generatora zastępczego. Katalog i metadane v2 są walidowane ponownie.
+- `TrainingProgramSchedule(TrainingPrograms).between(first,last)` rozwija do366
+  dni **włącznie**. Ordinal liczy zaplanowane dni od effectiveFromDate, a nie
+  wykonane sesje: pon/śr/pt ABA → BAB. Arytmetyka używa CalendarDay/UTC jako
+  kalkulatora gregoriańskiego, nie24h od lokalnej północy. UUIDv5 programu
+  i pierwotnej daty, plan A/B i snapshot pozostają po przesunięciu.
+- `TrainingProgramsRepository` zapisuje wyłącznie istniejącą kolekcję profilu.
+  `open` jest read-only lease konta/epoch/binding/profilu i pełnej rewizji
+  programu; create dodatkowo przechwytuje baseline szablonów. `rename/end`
+  nie zmieniają core; end ustawia raz wyłączną granicę nie wcześniejszą niż dziś.
+  Zaległe daty wcześniejsze niż cutoff pozostają. Strukturalną zmianę wykonuje
+  się przez zakończenie i nowy program z nowym UUID. Wyjątek korzysta wyłącznie
+  z własnego snapshotu i nazwy, także po rename/end.
+- Stream tygodnia obserwuje profil, konto, plany, sesje, serie i deferred,
+  bez auth HTTP i bez zapisów podczas wejścia. Czytelny profil w hold pokazuje
+  definicje, ale blokuje zmiany. Nieczytelny raw nie staje się pustą kolekcją.
+- `WorkoutPreparationWorkflow.open(programOccurrence:...)` dodaje kontrolę
+  programu do istniejącego read-only przygotowania i startu przez
+  `PlannerWorkflow.startPrepared`. A→B→A, move-away-back, zmiana nazwy/granicy,
+  edycja szablonu i hold unieważniają stare potwierdzenie. Aktywny snapshot v2
+  jest niezależny od późniejszej edycji szablonu.
+- `SessionCompletionProof` jest wspólnym namespace weekly/program. Jawne complete
+  wymaga wybranej zakończonej live sesji i co najmniej jednej live serii
+  effective-working (working lub historyczny NULL). Sam start/finish/upływ daty,
+  empty/warmup-only nie zaliczają. Częściowy trening tylko przez jawny wybór
+  i potwierdzenie użytkownika. Zapis odmawia ponownego użycia sesji w obu repo;
+  offline merge zachowuje oba powiązania jako conflict. Usunięty dowód daje
+  invalidated bez zmiany rotacji. Nie powstają kopie sesji/serii/PR.
+- Ręczne operacje są serializowane w SQLite z optimistic/account guards;
+  deferred profilu oraz generyczne `_syncPushHold`/`_syncPullQuarantine` profilu
+  blokują zapisy i start bez naruszania raw lub attempted bytes. UI używa tych
+  samych kontroli, blokuje doubletap i ma układ przewijalny320px/text200%.
+
+Task4 nie zmienia storage/backup/sync serializerów z Task2, backendu, schematu,
+lock/deps/Web SQLite, katalogu ani wersji. Nie dodaje przypomnień programowych.
+Raport i dokładne komendy/wyniki: lokalny
+`.superpowers/sdd/2026-10-28-training-sets-programs/task-4-report.md`.
+Pełny Flutter i runtime/browser oraz niezależny odbiór pozostają w Task5.

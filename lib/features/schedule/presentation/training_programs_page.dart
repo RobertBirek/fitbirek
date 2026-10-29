@@ -63,7 +63,6 @@ class _TrainingProgramsPageState extends ConsumerState<TrainingProgramsPage> {
             .where(
               (p) =>
                   p.syncId != null &&
-                  p.structure != null &&
                   !p.isUnavailable &&
                   !week.unavailable.containsKey(p.syncId),
             )
@@ -268,7 +267,6 @@ class _TrainingProgramsPageState extends ConsumerState<TrainingProgramsPage> {
                 final choices = data.plans.where(
                   (p) =>
                       p.syncId != null &&
-                      p.structure != null &&
                       !p.isUnavailable &&
                       !data.unavailable.containsKey(p.syncId),
                 );

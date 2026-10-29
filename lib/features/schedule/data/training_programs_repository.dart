@@ -168,14 +168,15 @@ class TrainingProgramsRepository {
         saved == null ||
         saved.isUnavailable ||
         saved.cwiczeniaIds.isEmpty ||
-        saved.structure == null ||
         saved.cwiczeniaIds.any((id) => !catalog.any((e) => e.id == id))) {
       throw StateError(
         'Szablon lub ćwiczenie jest niedostępne. Nie generujemy zamiennika.',
       );
     }
     await planner.checkTemplate(row);
-    validatePerSetCatalog(saved.structure!, catalog, metadata);
+    if (saved.structure != null) {
+      validatePerSetCatalog(saved.structure!, catalog, metadata);
+    }
   }
 
   Future<String> create(

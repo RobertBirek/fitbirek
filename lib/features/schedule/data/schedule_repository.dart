@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/database/app_database.dart';
+import '../../../core/sync/sync_quarantine.dart';
+import '../../../core/sync/sync_store.dart';
 import '../../auth/providers/auth_providers.dart';
 import '../../exercises/data/user_collections_repository.dart';
 import '../domain/weekly_schedule.dart';
@@ -20,7 +22,9 @@ Future<void> assertScheduleWritable(
                 r.entityId.equals(profileSyncId),
           ))
           .getSingleOrNull();
-  if (deferred != null) {
+  final account = (await db.syncDao.readState())?.accountId;
+  final held = await SyncQuarantine(db, SyncStore(db)).heldKeys(account ?? '');
+  if (deferred != null || held.contains('profile:$profileSyncId')) {
     throw StateError(
       'Harmonogram oczekuje na rozwiązanie konfliktu synchronizacji.',
     );
