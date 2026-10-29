@@ -1,9 +1,12 @@
 # Niezawodność PWA i timerów — 2026-10-29
 
 Gałąź `feat/pwa-reliability-and-timers`, baza `d567c2f`.
-**Zmiany lokalne, bez merge/push/wydania/wdrożenia.** Produkcja pozostaje
-1.25.1+43; wersja, katalog431, ilustracje431, Drift15, backup4, Alembic0010,
+**Ten etap zakończono lokalnie, bez merge/push/wydania/wdrożenia.** Produkcja
+wtedy pozostawała1.25.1+43; wersja, katalog431, ilustracje431, Drift15, backup4, Alembic0010,
 lockfile i para Web SQLite nie zostały zmienione. Nie generowano ilustracji.
+Po osobnej zgodzie użytkownika scalono i opublikowano poprawki jako
+[Web1.25.2+44](../releases/2026-10-29-pwa-reliability-1.25.2-44.md).
+Poniższe liczby opisują etap funkcjonalny, nie zastępują dowodów tego wydania.
 
 ## Zakres
 

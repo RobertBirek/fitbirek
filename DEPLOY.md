@@ -3,7 +3,25 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.25.1+43 deployed 2026-10-29**, web start **10:00:33 UTC**,
+Current web **1.25.2+44 deployed 2026-10-29**, web start **15:46:56 UTC**,
+public audit **15:47:47 UTC**, completed **15:47:59 UTC**; separate controller
+read-only full audit **15:48:26 UTC**. Clean pushed source **e1f64ee**. PWA
+reloadRequired instructions without automatic reload/data changes, and exact
+guided time targets up to5400s with durable recovery. Standard Docker verification:
+**1841 Flutter PASS / one UTC DST skip**, separate Warsaw DST **1 PASS**, clean
+analysis/codegen,21 generated/locked artifacts identical, final Nginx runtime PASS.
+Public **508/508 hashes and lengths**,48,611,881 bytes, CORE31,431 unchanged images
+outside CORE. Fresh protected backup and isolated restore with the unchanged
+current migrator PASS. Only web recreated; API/sender remain1.25.0+42, no production
+migration/DDL or API/sender/PG/Caddy restart. Domain/schema/config/trust/ingress,
+50 other containers and29 shared hosts unchanged. Alembic0010, Drift15, backup4
+and Web SQLite unchanged. Physical phone/VoiceOver acceptance pending; do not clear
+IndexedDB/outbox/pending to update. Release was completed inline after subagent
+usage limits; controller audit is not represented as independent review.
+Exact artifacts, backup, rollback and limits:
+[web reliability1.25.2+44](docs/releases/2026-10-29-pwa-reliability-1.25.2-44.md).
+
+Previous web **1.25.1+43 deployed 2026-10-29**, web start **10:00:33 UTC**,
 public audit **10:01:22 UTC**, completed **10:01:34 UTC**; independent full
 public audit **10:03:34 UTC**. Clean pushed source **073e11d**. All431 exercises
 now have WebP512 illustrations, including seven new cw425–cw431; previous424
