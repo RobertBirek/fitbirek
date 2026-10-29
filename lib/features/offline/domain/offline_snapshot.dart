@@ -27,6 +27,9 @@ class OfflineSnapshot {
 
   /// A mismatch is not consent to the returned package, even with valid totals.
   bool get requiresFreshStatus => errorCode == 'packageChanged';
+
+  /// Totals may describe another package, not this document's readiness.
+  bool get requiresReload => errorCode == 'reloadRequired';
   bool get inFlight =>
       phase == OfflinePhase.checking || phase == OfflinePhase.downloading;
   bool get hasSize => packageId != null && totalFiles > 0 && totalBytes > 0;
@@ -65,7 +68,8 @@ class OfflineSnapshot {
       cachedBytes: count('cachedBytes'),
       errorCode: value['errorCode'] as String?,
     );
-    if ((result.requiresFreshStatus && phase != OfflinePhase.error) ||
+    if (((result.requiresFreshStatus || result.requiresReload) &&
+            phase != OfflinePhase.error) ||
         result.cachedFiles > result.totalFiles ||
         result.cachedBytes > result.totalBytes ||
         (result.packageId != null && result.packageId!.trim().isEmpty) ||

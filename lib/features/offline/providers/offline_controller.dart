@@ -65,6 +65,7 @@ class OfflineController extends StateNotifier<OfflineViewState> {
         !identical(consent, state.snapshot) ||
         !consent.hasSize ||
         consent.requiresFreshStatus ||
+        consent.requiresReload ||
         consent.inFlight ||
         consent.phase == OfflinePhase.ready ||
         consent.phase == OfflinePhase.unsupported) {

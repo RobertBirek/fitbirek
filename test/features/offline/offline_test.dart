@@ -19,6 +19,15 @@ Map<String, Object?> packet(String state, {int cached = 0}) => {
   'message': null,
 };
 
+Map<String, Object?> reloadPacket({required bool withSize}) => {
+  ...packet('error'),
+  'packageId': withSize ? 'pack-b' : null,
+  'totalFiles': withSize ? 3 : 0,
+  'totalBytes': withSize ? 4194304 : 0,
+  'errorCode': 'reloadRequired',
+  'message': 'https://private.invalid/?secret=do-not-display',
+};
+
 class FakeBridge implements OfflineBridge {
   int statuses = 0, prepares = 0, cancels = 0;
   final preparedPackageIds = <String>[];
@@ -46,6 +55,103 @@ class FakeBridge implements OfflineBridge {
 }
 
 void main() {
+  for (final withSize in [false, true]) {
+    test(
+      'accepts terminal reloadRequired withSize=$withSize without ready',
+      () {
+        final snapshot = OfflineSnapshot.parse(
+          reloadPacket(withSize: withSize),
+        );
+        expect(snapshot.phase, OfflinePhase.error);
+        expect(snapshot.errorCode, 'reloadRequired');
+        expect(snapshot.requiresReload, true);
+        expect(snapshot.hasSize, withSize);
+        expect(snapshot.inFlight, false);
+        expect(snapshot.requiresFreshStatus, false);
+      },
+    );
+
+    testWidgets(
+      'reloadRequired withSize=$withSize blocks prepare and stays passive until fresh consent',
+      (tester) async {
+        final bridge = FakeBridge()..value = reloadPacket(withSize: withSize);
+        final controller = OfflineController(bridge);
+        addTearDown(controller.dispose);
+        await controller.refresh();
+        final oldConsent = controller.state.snapshot;
+        await controller.prepare(oldConsent);
+        expect(controller.state.snapshot.phase, OfflinePhase.error);
+        expect(controller.state.snapshot.errorCode, 'reloadRequired');
+        await tester.pump(const Duration(seconds: 30));
+        expect(bridge.prepares, 0);
+        expect(bridge.cancels, 0);
+        expect(bridge.statuses, 1);
+
+        await controller.refresh();
+        await controller.prepare(controller.state.snapshot);
+        expect(bridge.statuses, 2);
+        expect(bridge.prepares, 0);
+        expect(bridge.cancels, 0);
+
+        await controller.setActive(false);
+        await tester.pump(const Duration(seconds: 30));
+        expect(bridge.statuses, 2);
+        await controller.setActive(true);
+        expect(bridge.statuses, 3);
+        expect(controller.state.snapshot.errorCode, 'reloadRequired');
+        expect(bridge.prepares, 0);
+
+        bridge.value = {
+          ...packet('notReady'),
+          'packageId': 'pack-b',
+          'totalFiles': 3,
+          'totalBytes': 4194304,
+        };
+        await controller.refresh();
+        await controller.prepare(oldConsent);
+        expect(bridge.prepares, 0);
+        expect(controller.state.snapshot.phase, OfflinePhase.notReady);
+        await controller.prepare(controller.state.snapshot);
+        expect(bridge.preparedPackageIds, ['pack-b']);
+        expect(bridge.cancels, 0);
+        await controller.setActive(false);
+      },
+    );
+  }
+  for (final phase in OfflinePhase.values.where(
+    (p) => p != OfflinePhase.error,
+  )) {
+    test(
+      'rejects reloadRequired in ${phase.name}, not a polling or ready state',
+      () {
+        expect(
+          () => OfflineSnapshot.parse({
+            ...packet(phase.name, cached: phase == OfflinePhase.ready ? 2 : 0),
+            'errorCode': 'reloadRequired',
+          }),
+          throwsFormatException,
+        );
+      },
+    );
+  }
+  for (final phase in ['checking', 'downloading', 'notReady']) {
+    testWidgets(
+      'invalid $phase/reloadRequired becomes terminal protocol error',
+      (tester) async {
+        final bridge = FakeBridge()
+          ..value = {...packet(phase), 'errorCode': 'reloadRequired'};
+        final controller = OfflineController(bridge);
+        addTearDown(controller.dispose);
+        await controller.refresh();
+        expect(controller.state.snapshot.phase, OfflinePhase.error);
+        expect(controller.state.snapshot.errorCode, 'protocol');
+        await tester.pump(const Duration(seconds: 30));
+        expect(bridge.statuses, 1);
+        expect(bridge.prepares, 0);
+        expect(bridge.cancels, 0);
+      },
+    );
+  }
   test('prepare sends exactly the ID of the confirmed snapshot', () async {
     final bridge = FakeBridge();
     final controller = OfflineController(bridge);
@@ -110,6 +216,7 @@ void main() {
     });
     expect(error.phase, OfflinePhase.error);
     expect(error.errorCode, 'packageChanged');
+    expect(error.requiresReload, false);
   });
   test(
     'unsupported or old protocol prepare never falls back to an unbound request',
@@ -202,6 +309,7 @@ void main() {
         packet(state.name, cached: state == OfflinePhase.ready ? 2 : 0),
       );
       expect(snapshot.phase, state);
+      expect(snapshot.requiresReload, false);
       expect(snapshot.sizeLabel, '2.00 MiB');
     }
   });

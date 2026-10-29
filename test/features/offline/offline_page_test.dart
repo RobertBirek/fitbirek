@@ -6,7 +6,7 @@ import 'package:fitbirek_training/features/offline/presentation/offline_page.dar
 import 'package:fitbirek_training/features/offline/providers/offline_controller.dart';
 import 'package:fitbirek_training/features/offline/providers/offline_sync_provider.dart';
 
-import 'offline_test.dart' show FakeBridge, packet;
+import 'offline_test.dart' show FakeBridge, packet, reloadPacket;
 
 void main() {
   Future<void> open(
@@ -35,6 +35,109 @@ void main() {
     await tester.pump();
     await tester.pump();
   }
+
+  for (final withSize in [false, true]) {
+    testWidgets(
+      'reloadRequired panel withSize=$withSize separates update from resources and data',
+      (tester) async {
+        final bridge = FakeBridge()..value = reloadPacket(withSize: withSize);
+        await open(tester, bridge, pending: 3, conflicts: 1);
+        expect(
+          find.text('Aktualizacja aplikacji — wymagane odświeżenie'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('Może trwać aktualizacja'), findsOneWidget);
+        expect(
+          find.textContaining('nie udało się potwierdzić wersji tej karty'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('Zapisz bieżącą pracę'), findsOneWidget);
+        expect(find.textContaining('zamknij wszystkie karty'), findsOneWidget);
+        expect(find.textContaining('tym samym profilu'), findsOneWidget);
+        expect(find.textContaining('Nie usuwaj danych'), findsOneWidget);
+        expect(find.text('Ponów pobieranie'), findsNothing);
+        expect(find.text('Przygotuj do pracy offline'), findsNothing);
+        expect(find.text('Zasoby gotowe offline'), findsNothing);
+        expect(find.text('Anuluj pobieranie'), findsNothing);
+        expect(find.textContaining('Zweryfikowano:'), findsNothing);
+        expect(
+          find.textContaining('Rozmiar pakietu nie jest jeszcze znany'),
+          findsNothing,
+        );
+        expect(find.textContaining('do-not-display'), findsNothing);
+        expect(find.textContaining('3 zmian.'), findsOneWidget);
+        expect(find.textContaining('sprawdzenia: 1.'), findsOneWidget);
+        if (withSize) {
+          expect(find.textContaining('4194304'), findsOneWidget);
+          expect(
+            find.textContaining('nie potwierdza gotowości tej karty'),
+            findsOneWidget,
+          );
+        }
+        await tester.pump(const Duration(seconds: 30));
+        expect(bridge.statuses, 1);
+        await tester.ensureVisible(find.text('Sprawdź ponownie'));
+        await tester.tap(find.text('Sprawdź ponownie'));
+        await tester.pumpAndSettle();
+        expect(bridge.statuses, 2);
+        expect(bridge.prepares, 0);
+        expect(bridge.cancels, 0);
+        expect(find.byType(AlertDialog), findsNothing);
+      },
+    );
+  }
+
+  testWidgets('reloadRequired remains readable at 320px and 200 percent text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final bridge = FakeBridge()..value = reloadPacket(withSize: true);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          offlineBridgeProvider.overrideWithValue(bridge),
+          offlineSyncProvider.overrideWith(
+            (ref) => Stream.value(const OfflineSyncSummary()),
+          ),
+        ],
+        child: MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: const OfflinePage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Aktualizacja aplikacji — wymagane odświeżenie'),
+      findsOneWidget,
+    );
+    await tester.scrollUntilVisible(find.text('Sprawdź ponownie'), 180);
+    await Scrollable.ensureVisible(
+      tester.element(find.text('Sprawdź ponownie')),
+      alignment: 0.5,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sprawdź ponownie'));
+    await tester.pumpAndSettle();
+    expect(bridge.statuses, 2);
+    await tester.scrollUntilVisible(
+      find.textContaining('Stan danych konta nie jest dostępny'),
+      180,
+    );
+    expect(find.textContaining('Lokalna kolejka jest pusta'), findsNothing);
+    expect(find.textContaining('0 zmian'), findsNothing);
+    expect(tester.takeException(), isNull);
+    expect(bridge.prepares, 0);
+    expect(bridge.cancels, 0);
+  });
 
   testWidgets(
     'A confirmation rejected for B shows new size but requires status and new consent',
@@ -219,6 +322,10 @@ void main() {
         FakeBridge()..value = {...packet('error'), 'errorCode': code},
       );
       expect(find.text('Nie udało się przygotować zasobów'), findsOneWidget);
+      expect(
+        find.text('Aktualizacja aplikacji — wymagane odświeżenie'),
+        findsNothing,
+      );
       expect(find.text('Sprawdź ponownie'), findsOneWidget);
       expect(find.text('Ponów pobieranie'), findsOneWidget);
     });

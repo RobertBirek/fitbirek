@@ -34,6 +34,44 @@ nie może uruchomić pollingu ani oznaczać `ready`.
 Tekst bridge jest walidowany, ale nie wyświetlany: UI ma własne komunikaty bez
 ryzyka pokazania URL-i, sekretów czy surowych wyjątków JS.
 
+### `reloadRequired` — informacja w istniejącym ekranie
+
+`OfflineSnapshot.requiresReload` rozpoznaje `reloadRequired`; parser dopuszcza
+ten kod **wyłącznie** w terminalnym `error`, niezależnie od obecności ID/sum.
+Sumy mogą opisywać pakiet innego workera, nie gotowość załadowanego dokumentu.
+Kontroler odmawia `prepare(consent)` również przy poprawnym ID i rozmiarze,
+niezależnie od UI. Nie zmienia kodu na `packageChanged` ani nie uruchamia retry,
+pollingu lub anulowania. Niepoprawna para faza/kod daje terminalne `error/protocol`.
+
+`OfflinePage` pokazuje osobny panel „Aktualizacja aplikacji — wymagane
+odświeżenie”. Opis pozostaje neutralny: może trwać aktualizacja lub wersja karty
+nie została potwierdzona. Panel nie deklaruje nowej wersji gotowej do użycia ani
+gotowości offline, nie pokazuje surowego `message`, postępu innego pakietu ani
+przycisku pobierania. Ewentualny rozmiar jest wyraźnie opisany jako dostępny
+pakiet, nie potwierdzenie gotowości tej karty.
+
+„Sprawdź ponownie” wywołuje tylko pasywny `status()`. Nie odświeża dokumentu,
+nie wyraża zgody, nie inicjalizuje auth/sync ani nie dotyka danych treningowych.
+Instrukcja zaleca normalny zapis pracy, zakończenie używania timera, zamknięcie
+wszystkich kart/PWA i otwarcie tego samego profilu online, bez kasowania danych
+i bez obietnicy flush po awarii. Pending/konflikty oraz niedostępny stan konta
+pozostają oddzielną informacją; niedostępność nie oznacza pustej kolejki.
+
+Nie dodano globalnego bannera, updatera, reloadbutton, pollera wersji ani nowego
+właściciela lifecycle. Świeży poprawny status oraz nowa zgoda nadal pozwalają
+na zwykłe pobieranie; odrębny kontrakt `packageChanged` nie zmienia się.
+
+Weryfikacja Task 2 (2026-10-29): **53/53** testy offline (19 nowych),
+**32/32** skupione regresje recovery/persistence/SQLite, analiza sześciu zmienionych
+plików i format PASS. Test z prawdziwą natywną SQLite utrzymuje aktywny szkic,
+trzy pending (w tym attempted) i jeden deferred; porównuje wszystkie wartości
+wierszy jako bajty UTF-8 przed panelem, po nim i po ręcznym sprawdzeniu.
+Obserwuje rzeczywisty provider agregatów, także dla braku authority/innego konta,
+bez auth/HTTP. Widget przy 320 px i skali tekstu 200% jest przewijalny, bez overflow.
+Niezmienione testy Node worker/client: **32/32** (faktyczna liczba w tym repo).
+Sonda JS conditional import kompiluje się; to nie test przeglądarkowy nowego buildu.
+Pełna suite/compiled Web po wszystkich zmianach należy do integracyjnego Task 5.
+
 ## Zgoda, gotowość i lifecycle
 
 - Otwarcie ekranu wywołuje wyłącznie `status()`. Bez SharedPreferences i flag gotowości.

@@ -79,6 +79,7 @@ class _OfflinePageState extends ConsumerState<OfflinePage>
         !view.busy &&
         snapshot.hasSize &&
         !snapshot.requiresFreshStatus &&
+        !snapshot.requiresReload &&
         !snapshot.inFlight &&
         phase != OfflinePhase.ready &&
         phase != OfflinePhase.unsupported;
@@ -106,35 +107,74 @@ class _OfflinePageState extends ConsumerState<OfflinePage>
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
-          Text(title, semanticsLabel: title),
-          if (snapshot.hasSize) ...[
-            const SizedBox(height: 8),
-            Text(
-              'Cały pakiet: ${snapshot.sizeLabel} (${snapshot.totalBytes} bajtów) · ${snapshot.totalFiles} plików',
-            ),
-            Text(
-              'Zweryfikowano: ${snapshot.cachedFiles}/${snapshot.totalFiles} plików · '
-              '${(snapshot.cachedBytes / 1048576).toStringAsFixed(2)} MiB',
-            ),
-          ] else if (phase != OfflinePhase.unsupported)
-            const Text(
-              'Rozmiar pakietu nie jest jeszcze znany. Sprawdź ponownie przed pobraniem.',
-            ),
-          if (view.busy || snapshot.inFlight)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: LinearProgressIndicator(
-                value:
-                    !view.busy &&
-                        phase == OfflinePhase.downloading &&
-                        snapshot.hasSize
-                    ? snapshot.cachedBytes / snapshot.totalBytes
-                    : null,
-                semanticsLabel: 'Postęp weryfikacji pakietu',
+          if (snapshot.requiresReload)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        'Aktualizacja aplikacji — wymagane odświeżenie',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Może trwać aktualizacja lub nie udało się potwierdzić wersji tej karty. '
+                      'Nie oznacza to gotowości zasobów offline ani wysłania danych treningowych.',
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Zapisz bieżącą pracę w zwykły sposób. Po zakończeniu używania timera '
+                      'zamknij wszystkie karty FitBirek i okno PWA, a następnie otwórz aplikację online '
+                      'w tym samym profilu przeglądarki. Nie usuwaj danych witryny. '
+                      'Aplikacja nie odświeży się sama. Nie gwarantujemy zapisu po awarii ani pracy w tle.',
+                    ),
+                    if (snapshot.hasSize) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Dostępny pakiet zasobów: ${snapshot.sizeLabel} (${snapshot.totalBytes} bajtów) · '
+                        '${snapshot.totalFiles} plików. Ten rozmiar nie potwierdza gotowości tej karty do pracy offline.',
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
-          if (snapshot.errorCode != null)
-            Text(_errorExplanation(snapshot.errorCode!)),
+            )
+          else ...[
+            Text(title, semanticsLabel: title),
+            if (snapshot.hasSize) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Cały pakiet: ${snapshot.sizeLabel} (${snapshot.totalBytes} bajtów) · ${snapshot.totalFiles} plików',
+              ),
+              Text(
+                'Zweryfikowano: ${snapshot.cachedFiles}/${snapshot.totalFiles} plików · '
+                '${(snapshot.cachedBytes / 1048576).toStringAsFixed(2)} MiB',
+              ),
+            ] else if (phase != OfflinePhase.unsupported)
+              const Text(
+                'Rozmiar pakietu nie jest jeszcze znany. Sprawdź ponownie przed pobraniem.',
+              ),
+            if (view.busy || snapshot.inFlight)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: LinearProgressIndicator(
+                  value:
+                      !view.busy &&
+                          phase == OfflinePhase.downloading &&
+                          snapshot.hasSize
+                      ? snapshot.cachedBytes / snapshot.totalBytes
+                      : null,
+                  semanticsLabel: 'Postęp weryfikacji pakietu',
+                ),
+              ),
+            if (snapshot.errorCode != null)
+              Text(_errorExplanation(snapshot.errorCode!)),
+          ],
           if (canPrepare)
             Padding(
               padding: const EdgeInsets.only(top: 12),
