@@ -43,9 +43,9 @@ class TrainingProgramSchedule {
   TrainingProgramSchedule(this.programs);
   final TrainingPrograms programs;
 
-  static int _days(CalendarDay a, CalendarDay b) =>
-      DateTime.parse('${b.value}T12:00:00Z')
-          .difference(DateTime.parse('${a.value}T12:00:00Z')).inDays;
+  static int _days(CalendarDay a, CalendarDay b) => DateTime.parse(
+    '${b.value}T12:00:00Z',
+  ).difference(DateTime.parse('${a.value}T12:00:00Z')).inDays;
 
   /// Count the eligible dates strictly BEFORE this date in O(7), including
   /// partial first weeks. No session count, mutable index or local-midnight math.
@@ -93,24 +93,34 @@ class TrainingProgramSchedule {
         name: override?['name'] as String? ?? definition['name'] as String,
         programSnapshot: definition,
         sourceRevision: UserCollections.canonical({
-          'program': definitions[programId], 'override': override,
+          'program': definitions[programId],
+          'override': override,
         }),
         sessionSyncId: override?['state'] == 'completed'
-            ? override!['sessionSyncId'] as String : null,
+            ? override!['sessionSyncId'] as String
+            : null,
       );
     }
 
-    for (final p in definitions.values.where((p) => p['deletedAtUtc'] == null)) {
+    for (final p in definitions.values.where(
+      (p) => p['deletedAtUtc'] == null,
+    )) {
       final start = CalendarDay.parse(p['effectiveFromDate'] as String);
       final end = p['endBeforeDate'] == null
-          ? null : CalendarDay.parse(p['endBeforeDate'] as String);
-      for (var d = first; d.compareTo(last) <= 0; d = d.plus(1)) {
+          ? null
+          : CalendarDay.parse(p['endBeforeDate'] as String);
+      for (var offset = 0; offset <= _days(first, last); offset++) {
+        final d = first.plus(offset);
         if (d.compareTo(start) < 0 ||
             (end != null && d.compareTo(end) >= 0) ||
-            !(p['weekdays'] as List).contains(d.weekday)) continue;
+            !(p['weekdays'] as List).contains(d.weekday)) {
+          continue;
+        }
         final id = TrainingPrograms.occurrenceId(p['id'] as String, d);
         if (!overrides.containsKey(id)) {
-          result.add(occurrence(p['id'] as String, TrainingPrograms.snapshot(p), d));
+          result.add(
+            occurrence(p['id'] as String, TrainingPrograms.snapshot(p), d),
+          );
         }
       }
     }
@@ -118,12 +128,14 @@ class TrainingProgramSchedule {
     for (final e in overrides.values.where((e) => e['deletedAtUtc'] == null)) {
       final moved = CalendarDay.parse(e['movedDate'] as String);
       if (moved.compareTo(first) < 0 || moved.compareTo(last) > 0) continue;
-      result.add(occurrence(
-        e['programId'] as String,
-        Map<String, dynamic>.from(e['programSnapshot'] as Map),
-        CalendarDay.parse(e['originalDate'] as String),
-        override: e,
-      ));
+      result.add(
+        occurrence(
+          e['programId'] as String,
+          Map<String, dynamic>.from(e['programSnapshot'] as Map),
+          CalendarDay.parse(e['originalDate'] as String),
+          override: e,
+        ),
+      );
     }
     return result..sort((a, b) {
       final date = a.date.compareTo(b.date);

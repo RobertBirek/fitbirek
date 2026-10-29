@@ -9,6 +9,8 @@ import '../../../schedule/data/schedule_repository.dart';
 import '../../../schedule/domain/activity_schedule.dart';
 import '../../../schedule/domain/weekly_schedule.dart';
 import '../../../schedule/providers/schedule_providers.dart';
+import '../../../schedule/domain/training_program_schedule.dart';
+import '../../../schedule/providers/training_programs_providers.dart';
 import '../../domain/fixed_load_progression.dart';
 import '../../providers/workout_providers.dart';
 import '../domain/equipment_inventory.dart';
@@ -74,9 +76,14 @@ class WorkoutPreparationWorkflow {
   Future<PreparationSnapshot> open({
     String? planSyncId,
     ScheduleOccurrence? occurrence,
+    ProgramOccurrence? programOccurrence,
   }) async {
     final authority = ref.read(cachedAuthWriteAuthorityProvider);
     final epoch = authority.epoch;
+    if (programOccurrence != null &&
+        (occurrence != null || programOccurrence.planSyncId != planSyncId)) {
+      throw StateError('To nie jest termin tego programu A/B.');
+    }
     if (occurrence != null &&
         (occurrence.activityType != ActivityType.fitbirek ||
             occurrence.planSyncId != planSyncId)) {
@@ -111,6 +118,7 @@ class WorkoutPreparationWorkflow {
       availableEquipment: rawEquipment.cast<String>(),
       engine: ExerciseFilterEngine(metadata),
       occurrence: occurrence,
+      programOccurrence: programOccurrence,
     );
     for (final id in snapshot.exerciseIds) {
       snapshot.exercise(id);
@@ -151,6 +159,19 @@ class WorkoutPreparationWorkflow {
       );
     }
     final chosen = snapshot.occurrence;
+    final program = snapshot.programOccurrence;
+    if (program != null) {
+      await ref
+          .read(trainingProgramsRepositoryProvider)
+          .validateOccurrence(
+            snapshot.lease.accountId!,
+            program,
+            isCurrent: () =>
+                _alive &&
+                ref.read(cachedAuthWriteAuthorityProvider).epoch ==
+                    snapshot.lease.epoch,
+          );
+    }
     if (chosen != null) {
       final schedule = await ref
           .read(scheduleRepositoryProvider)

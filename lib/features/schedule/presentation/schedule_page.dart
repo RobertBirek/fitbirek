@@ -37,6 +37,10 @@ class _SchedulePageState extends ConsumerState<SchedulePage> {
                 'Europe/Warsaw • Terminy zaliczasz ręcznie. Start, upływ daty i pusta sesja nie zaliczają. Aktywność zewnętrzna nie tworzy sesji ani serii.',
               ),
               TextButton(
+                onPressed: () => context.push('/programs'),
+                child: const Text('Programy A/B — dwa szablony na zmianę'),
+              ),
+              TextButton(
                 onPressed: () => context.go('/settings/activities'),
                 child: const Text('Zarządzaj aktywnościami'),
               ),

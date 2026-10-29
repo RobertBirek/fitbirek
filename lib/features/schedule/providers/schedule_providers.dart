@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/providers/database_provider.dart';
 import '../../auth/providers/auth_providers.dart';
@@ -9,6 +8,8 @@ import '../../planner/providers/planner_providers.dart';
 import '../data/schedule_repository.dart';
 import '../data/activity_repository.dart';
 import '../domain/weekly_schedule.dart';
+import '../data/session_completion_proof.dart';
+import '../../exercises/data/user_collections_repository.dart';
 
 final scheduleRepositoryProvider = Provider<ScheduleRepository>(
   (ref) => ScheduleRepository(
@@ -73,16 +74,10 @@ final scheduleWeekProvider = StreamProvider.autoDispose
               final schedule = await repo.load(account, isCurrent: guard);
               final occurrences = schedule.between(monday, monday.plus(6));
               final plans = await planner.readAll();
-              final ended =
-                  await (db.select(db.workoutSessions)..where(
-                        (s) =>
-                            s.deletedAtUtc.isNull() & s.dataKoniec.isNotNull(),
-                      ))
-                      .get();
-              final sets = await (db.select(
-                db.setsLog,
-              )..where((s) => s.deletedAtUtc.isNull())).get();
-              final actual = sets.map((s) => s.sesjaId).toSet();
+              final sessions = await SessionCompletionProof(
+                db,
+                UserCollectionsRepository(db, authority: authority),
+              ).eligibleSessions();
               final status = <String, ScheduleCompletion>{};
               for (final o in occurrences) {
                 status[o.id] = await repo.completionStatus(account, o);
@@ -92,8 +87,7 @@ final scheduleWeekProvider = StreamProvider.autoDispose
                 schedule,
                 occurrences,
                 plans,
-                ended.where((s) => actual.contains(s.id)).toList()
-                  ..sort((a, b) => b.dataStart.compareTo(a.dataStart)),
+                sessions,
                 status,
               );
             }),

@@ -97,6 +97,11 @@ class _TemplatesPageState extends ConsumerState<TemplatesPage> {
                   label: const Text('Nowy szablon'),
                 ),
                 OutlinedButton.icon(
+                  onPressed: busy ? null : () => context.push('/programs'),
+                  icon: const Icon(Icons.event_repeat),
+                  label: const Text('Programy A/B'),
+                ),
+                OutlinedButton.icon(
                   onPressed: busy
                       ? null
                       : () => context.go('/today', extra: 'template'),

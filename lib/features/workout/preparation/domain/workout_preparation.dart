@@ -5,6 +5,7 @@ import '../../../planner/domain/structured_plan.dart';
 import '../../../planner/domain/exercise_training_policy.dart';
 import '../../../planner/providers/planner_providers.dart' show TemplateLease;
 import '../../../schedule/domain/weekly_schedule.dart';
+import '../../../schedule/domain/training_program_schedule.dart';
 import 'equipment_inventory.dart';
 
 enum ReplacementScope { sessionOnly, templateAndSession }
@@ -53,6 +54,7 @@ class PreparationSnapshot {
     required List<String> availableEquipment,
     required this.engine,
     this.occurrence,
+    this.programOccurrence,
   }) : savedPlan = savedPlan == null
            ? null
            : SavedPlan(
@@ -77,6 +79,7 @@ class PreparationSnapshot {
   final List<String> availableEquipment;
   final ExerciseFilterEngine engine;
   final ScheduleOccurrence? occurrence;
+  final ProgramOccurrence? programOccurrence;
   final String? occurrenceBaseline;
   String get name => savedPlan?.nazwa ?? occurrence?.name ?? 'Trening swobodny';
   StructuredPlan? get plan => savedPlan?.structure;

@@ -29,6 +29,7 @@ import '../features/planner/presentation/pages/planner_page.dart';
 import '../features/planner/presentation/pages/templates_page.dart';
 import '../features/planner/presentation/pages/template_editor_page.dart';
 import '../features/schedule/presentation/schedule_page.dart';
+import '../features/schedule/presentation/training_programs_page.dart';
 import '../features/schedule/presentation/activity_list_page.dart';
 import '../features/schedule/presentation/activity_editor_page.dart';
 import '../features/schedule/domain/activity_schedule.dart';
@@ -70,6 +71,10 @@ GoRouter createRouter({
       pendingLocation: pendingLocation,
     ),
     routes: [
+      GoRoute(
+        path: '/programs',
+        builder: (context, state) => const TrainingProgramsPage(),
+      ),
       GoRoute(
         path: '/schedule',
         builder: (context, state) => const SchedulePage(),
