@@ -3,7 +3,23 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current API/sender + web **1.25.0+42 deployed 2026-10-29**; API-first gate
+Current web **1.25.1+43 deployed 2026-10-29**, web start **10:00:33 UTC**,
+public audit **10:01:22 UTC**, completed **10:01:34 UTC**; independent full
+public audit **10:03:34 UTC**. Clean pushed source **073e11d**. All431 exercises
+now have WebP512 illustrations, including seven new cw425–cw431; previous424
+images unchanged. New standard Docker verification: **1812 Flutter PASS / one
+UTC DST skip**, separate Warsaw DST **1 PASS**, clean analysis/codegen and final
+Nginx runtime PASS. Public **508/508 hashes and lengths**,48,608,913 bytes,
+CORE31; all431 images remain outside CORE and full-package preparation needs
+explicit consent. Fresh backup and isolated restore using the unchanged current
+migrator PASS. Only web recreated; API/sender remain1.25.0+42, no production
+migration/DDL or API/sender/PG/Caddy restart. Data/schema/config/trust/ingress,
+50 other containers and29 shared hosts unchanged. Alembic0010, Drift15,
+backup4 and Web SQLite unchanged. Physical phone/VoiceOver/existing-PWA acceptance
+pending; do not clear IndexedDB/outbox/pending to update. Exact artifacts/rollback:
+[web illustrations1.25.1+43](docs/releases/2026-10-29-illustrations-1.25.1-43.md).
+
+Previous API/sender + web **1.25.0+42 deployed 2026-10-29**; API-first gate
 **07:22:41 UTC**, web start **07:22:43 UTC**, public audit **07:23:30 UTC**,
 independent full public audit **07:27:10 UTC**. Clean pushed source **e30707d**.
 Catalog431, warmup/working roles, individual set targets and A/B programs with
