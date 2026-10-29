@@ -6,6 +6,20 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.25.2+44] — 2026-10-29
+
+### Fixed
+- Czytelna informacja o wymaganym odświeżeniu PWA bez automatycznego reloadu,
+  ponownego pobierania i naruszania szkiców lub oczekującej synchronizacji.
+- Timer pojedynczego czasowego celu planu obsługuje do5400 s, także po
+  wznowieniu i restarcie odcinka. Ręczne interwały i EXTRA zachowują limit3600 s.
+
+### Deployment Notes
+- Wyłącznie web, bez zmian API, schematów, zależności, katalogu431 i ilustracji.
+- Dodano obowiązkową kontrolę rzeczywistych obrazów API/migratora pod UID
+  API i sendera przed ich przyszłą promocją. To wydanie nie przebudowuje backendu.
+- Nie usuwaj danych witryny, IndexedDB ani pending przy aktualizacji PWA.
+
 ## [1.25.1+43] — 2026-10-29
 
 ### Fixed
