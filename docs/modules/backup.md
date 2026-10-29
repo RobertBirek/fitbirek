@@ -24,6 +24,10 @@ z nowymi UUID programu i przeliczonymi UUIDv5 wyjątków. Ich plany, sesje
 i snapshoty używają tych samych map. Oryginalne lokalne programy nie zmieniają
 immutable core; domknięcie ich referencji pozostaje jako archiwalne tombstone'y,
 nie nowy dowód ukończenia. `archiveDeletedAtUtc` zachowuje stan usunięcia kopii.
+Domknięcie obejmuje też usunięte serie wskazane przez `performed` zwykłych sesji
+guided v1/v2, bez programu. Link zostaje w historii, ale seria nie jest ożywiana
+i nadal nie stanowi żywego dowodu wykonania celu. Niepowiązane tombstone'y
+zwykłych sesji nie są z tego powodu dołączane do archiwum.
 Brak wymaganej mapy lub przekroczenie łącznego limitu500 wpisów wraz
 z tombstone'ami odmawia całego restore transakcyjnie. Lokalne nieczytelne raw
 blokuje destrukcyjny import, zamiast zostać pominięte; eksport zachowuje raw.

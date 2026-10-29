@@ -113,6 +113,22 @@ class BackupService {
         )
         .map((s) => s.id)
         .toSet();
+    final exportedSessions = sessions
+        .where(
+          (s) => s.deletedAtUtc == null || referencedSessions.contains(s.id),
+        )
+        .toList();
+    // Performed links remain history after their set is deleted, including in
+    // ordinary guided v1/v2 sessions with no program. Retain only their own
+    // referenced tombstones, not unrelated deleted sets or sessions.
+    final performedSets = <(int, String)>{
+      for (final session in exportedSessions)
+        for (final event
+            in WorkoutGuidance.tryRead(session.guidanceJson)?.events ??
+                const <Map<String, Object?>>[])
+          if (event['type'] == 'performed')
+            (session.id, _identityKey(event['setSyncId'] as String)),
+    };
     final payload = {
       'schemaVersion': currentSchemaVersion,
       'appVersion': AppConstants.appVersion,
@@ -129,11 +145,7 @@ class BackupService {
             .map(_withoutSyncMetadata)
             .toList(),
         'exercises': exercises.map((e) => e.toJson()).toList(),
-        'workoutSessions': sessions
-            .where(
-              (r) =>
-                  r.deletedAtUtc == null || referencedSessions.contains(r.id),
-            )
+        'workoutSessions': exportedSessions
             .map(
               (r) => {
                 ..._archiveReferencedRow(r),
@@ -145,6 +157,7 @@ class BackupService {
             .where(
               (r) =>
                   referencedSessions.contains(r.sesjaId) ||
+                  performedSets.contains((r.sesjaId, _identityKey(r.syncId))) ||
                   (r.deletedAtUtc == null &&
                       sessions.any(
                         (s) => s.id == r.sesjaId && s.deletedAtUtc == null,
