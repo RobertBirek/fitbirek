@@ -463,6 +463,14 @@ docker build --target verification -f deploy/docker/web.Dockerfile -t fit-web:ve
 systemctl start fit-backup.service
 # Confirm Result=success, ExecMainStatus=0, dump SHA-256 and old image IDs.
 # Build candidates under unique tags; web MUST use --target runtime.
+# Mandatory actual-image gate for API/sender + migration, before any promotion:
+python3 deploy/ops/check-backend-images.py \
+  --runtime-image fit-api:candidate-<release>-<sha> \
+  --migration-image fit-migration:candidate-<release>-<sha>
+# Require exit0 and four PASS proofs (both images, app100 and sender65532).
+# Store returned immutable IDs with the release and promote ONLY those IDs;
+# a rebuild/new ID invalidates this proof. No credentials/DB/network are used.
+# This does not replace source manifests, isolated restore or sender heartbeat.
 # Verify candidate contents; promote migration only after the backup, then
 # run the isolated restore drill with the new migrator before production.
 # Promote approved API/web only after successful migration below.
