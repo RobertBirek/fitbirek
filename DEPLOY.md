@@ -3,7 +3,29 @@
 Production: **https://fit.birek.online**, base deployed 2026-09-10;
 Web Push deployed **2026-09-11 10:00:59 UTC** (12:00:59 Europe/Warsaw).
 Source: `/opt/fit`; runtime: `/docker/fit`; versioned templates: `deploy/`.
-Current web **1.24.0+41 deployed 2026-10-28 16:54:46 UTC**, final public audit
+Current API/sender + web **1.25.0+42 deployed 2026-10-29**; API-first gate
+**07:22:41 UTC**, web start **07:22:43 UTC**, public audit **07:23:30 UTC**,
+independent full public audit **07:27:10 UTC**. Clean pushed source **e30707d**.
+Catalog431, warmup/working roles, individual set targets and A/B programs with
+explicit completion. **1812 Flutter PASS / one UTC DST skip**, separate Warsaw
+**36 PASS**, **694 backend PASS**, analysis/codegen and final Nginx runtime PASS.
+Fresh protected backups, isolated restore with the new migrator and serialized
+production no-op0010 PASS; no PostgreSQL DDL. Public **501/501 hashes and lengths**
+match (48,501,382 bytes, CORE31). API/sender and web recreated only; PG/Caddy,
+config/trust/ingress/schema/domain unchanged. **29 current shared hosts** unchanged
+(original28 plus independently added sober); legacy baseline28 not overwritten.
+Local Drift **15**, backup **4**, Alembic **0010**. Initial sender permissions
+failure halted web promotion; rebuilt same-source API/migrator with correct
+archive modes, verified both UID100/65532, then completed API-first rollout.
+Update **all** old Fit tabs/PWA/device profiles before using new functions: close
+all windows, fully exit/reopen the same browser profile online, check1.25.0+42.
+Do not clear IndexedDB/site data/outbox/pending. Old clients do not understand
+roles/schema2/programs/backup4; API rollback after new writes is not automatically
+safe, and web rollback does not undo Drift15. Physical phone/VoiceOver and
+existing-PWA lifecycle remain pending. Exact images, backup and rollback limits:
+[API/web1.25.0+42](docs/releases/2026-10-29-catalog-programs-1.25.0-42.md).
+
+Previous web **1.24.0+41 deployed 2026-10-28 16:54:46 UTC**, final public audit
 **16:55:32 UTC**, independently rechecked **16:58:08 UTC**. Clean pushed artifact
 source **6a0e259**. Safer shared replacements, editable rest and explicit time
 budget consent; atomic guided transition/recovery without changing original
