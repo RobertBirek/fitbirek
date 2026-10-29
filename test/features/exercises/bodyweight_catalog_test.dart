@@ -178,26 +178,19 @@ void main() {
     },
   );
 
-  test(
-    '431 catalog movements partition into 424 illustrated and seven explicit pending',
-    () {
-      expect(illustratedExerciseIds, hasLength(424));
-      // Pending must be an explicit registry, never a guessed image of another move.
-      expect(awaitingIllustrationExerciseIds, newIds);
-      expect(illustratedExerciseIds.intersection(newIds), isEmpty);
-      expect(
-        illustratedExerciseIds.union(newIds),
-        catalog.map((e) => e.id).toSet(),
-      );
-      for (final id in newIds) {
-        expect(exerciseIllustrationAsset(id), isNull);
-      }
-    },
-  );
+  test('431 catalog movements have illustrations with no pending', () {
+    expect(illustratedExerciseIds, hasLength(431));
+    expect(awaitingIllustrationExerciseIds, isEmpty);
+    expect(illustratedExerciseIds.intersection(newIds), newIds);
+    expect(illustratedExerciseIds, catalog.map((e) => e.id).toSet());
+    for (final id in newIds) {
+      expect(exerciseIllustrationAsset(id), 'assets/exercises/$id.webp');
+    }
+  });
 
   for (final id in newIds) {
     testWidgets(
-      '$id detail shows pending text offline, not a substitute image',
+      '$id detail shows its own illustration offline without pending text',
       (tester) async {
         await tester.pumpWidget(
           ProviderScope(
@@ -215,9 +208,13 @@ void main() {
           find.text(
             'Ilustracja w przygotowaniu — skorzystaj z instrukcji poniżej.',
           ),
-          findsOneWidget,
+          findsNothing,
         );
-        expect(find.byType(Image), findsNothing);
+        final image = tester.widget<Image>(find.byType(Image));
+        expect(
+          (image.image as AssetImage).assetName,
+          'assets/exercises/$id.webp',
+        );
         expect(tester.takeException(), isNull);
       },
     );

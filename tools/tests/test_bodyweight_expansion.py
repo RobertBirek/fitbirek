@@ -141,8 +141,10 @@ class BodyweightTests(unittest.TestCase):
         tree = subprocess.check_output(['git', 'ls-tree', '-r', BASE, 'assets/exercises'], cwd=ROOT).decode()
         images = [line.split('\t') for line in tree.splitlines() if line.endswith('.webp')]
         self.assertEqual(len(images), 424)
-        self.assertEqual({p.name for p in (ROOT / 'assets/exercises').glob('cw*.webp')},
-                         {f'cw{n:03d}.webp' for n in range(1, 425)})
+        self.assertEqual({path for _, path in images},
+                         {f'assets/exercises/cw{n:03d}.webp' for n in range(1, 425)})
+        self.assertEqual({p.name for p in (ROOT / 'assets/exercises').glob('*.webp')},
+                         {f'cw{n:03d}.webp' for n in range(1, 432)})
         for info, path in images:
             content = (ROOT / path).read_bytes()
             self.assertEqual(hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest(),

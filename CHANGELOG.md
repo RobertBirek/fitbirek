@@ -6,6 +6,17 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.25.1+43] — 2026-10-29
+
+### Fixed
+- Uzupełniono siedem ilustracji `cw425–cw431`: komplet431 obrazów512×512,
+  wcześniejsze424 ilustracje bez zmian. Własne obrazy zastępują komunikat
+  oczekiwania i są dostępne w pełnym pakiecie offline bez zmiany zgody.
+
+### Deployment Notes
+- Wyłącznie web; bez zmian katalogu danych, API, schematów, migracji,
+  zależności i artefaktów Web SQLite. Ilustracje nie zastępują instrukcji.
+
 ## [1.25.0+42] — 2026-10-29
 
 ### Added

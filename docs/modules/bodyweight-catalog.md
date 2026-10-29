@@ -16,9 +16,11 @@
   brak lub nieaktualny plik bez zapisu. To wersjonowany materiał redakcyjny,
   nie asset runtime: aplikacja nadal pokazuje instrukcje PL. Nie dodawaj pól
   do `Exercise`, wire, UI ani migracji, by przechować ten materiał EN.
-- `exercise_illustrations.dart`, `exercise_detail_page.dart`:424 obrazów,
-  jawny zbiór `awaitingIllustrationExerciseIds` dla siedmiu nowych ruchów,
-  tekst „Ilustracja w przygotowaniu” zamiast obrazu innego ćwiczenia.
+- `exercise_illustrations.dart`, `exercise_detail_page.dart`: rejestr431 obrazów,
+  w tym własne ilustracje cw425–cw431; pusty publiczny zbiór
+  `awaitingIllustrationExerciseIds` pozostaje zgodny z ekranem szczegółów.
+  Integracja2026-10-29: siedem assetów dostarczono i niezależnie oceniono
+  wizualnie; testy wymagają dokładnych zbiorów i dekodowania431 obrazów512×512.
 - Testy: `tools/tests/test_bodyweight_expansion.py`,
   `test/features/exercises/bodyweight_catalog_test.dart`, aktualne testy
   katalogu, ilustracji, preskrypcji i planera.

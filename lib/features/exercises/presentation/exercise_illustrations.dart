@@ -423,10 +423,6 @@ const illustratedExerciseIds = {
   'cw422',
   'cw423',
   'cw424',
-};
-
-/// Reviewed catalog additions without artwork; never substitute another move.
-const awaitingIllustrationExerciseIds = {
   'cw425',
   'cw426',
   'cw427',
@@ -435,6 +431,8 @@ const awaitingIllustrationExerciseIds = {
   'cw430',
   'cw431',
 };
+
+const awaitingIllustrationExerciseIds = <String>{};
 
 String? exerciseIllustrationAsset(String exerciseId) {
   return illustratedExerciseIds.contains(exerciseId)

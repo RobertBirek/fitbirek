@@ -1,6 +1,30 @@
 # Status ilustracji ćwiczeń
 
-## Stan bieżący — 2026-10-22 (424 ilustracje, wydano1.23.1+40)
+## Integracja lokalna — 2026-10-29 (431 ilustracji, niewydane)
+
+Katalog i rejestr obejmują **431 ID (`cw001–cw431`)**. cw425–cw431 mają
+własne ścieżki WebP; publiczny `awaitingIllustrationExerciseIds` jest pusty.
+Nie zmieniono renderera ani zachowania bezpiecznego braku obrazu dla
+nieznanych ID (w tym cw432). Nie zmieniano wcześniejszych424 assetów.
+
+TDD RED przed zmianą rejestru potwierdził brak nowych plików i wpisów
+w manifeście oraz błąd ładowania cw425.webp przez rzeczywisty codec Fluttera.
+Test wymaga dokładnie431 ID katalogu/rejestru/plików/manifestu i dekodowania
+każdego obrazu jako512×512; testy szczegółów wymagają własnego obrazu każdego
+nowego ruchu i braku tekstu oczekiwania. Końcowe focused testy: **25 PASS**,
+w tym dekodowanie wszystkich431 WebP512 i siedem kart szczegółów bez pending.
+Niezależny przegląd wizualny: **7 PASS /0 FAIL**, bez wymaganych korekt.
+Wcześniejsze424 obrazy porównane bajtowo z bazą f0c849c: bez zmian.
+[Źródła, próby i koszt](bodyweight-illustrations-2026-10-29-results.md).
+Pełna analiza czysta; build web i generator offline PASS. Prywatny pakiet:
+**508 plików /48 608 913B**, wszystkie hashe/długości i431 obrazy zgodne.
+PackageId `b0d92848cb7b5017dc6412eabb7b73087a68447471e64cecfb1c032775ad3e1c`.
+Ilustracje poza CORE, zgoda na pełny pakiet bez zmian. Pierwszy izolowany
+przebieg miał starsze testy z obrazu narzędziowego; ponowiono z aktualnym
+katalogiem testów bez zmiany kodu. Pełnego suite Flutter/backend nie ponawiano.
+To stan niewydany, nie deklaracja publikacji.
+
+## Historyczne wydanie — 2026-10-22 (424 ilustracje, wydano1.23.1+40)
 
 Katalog obejmuje **424 ćwiczenia i 424 ilustracje (`cw001–cw424`), bez
 oczekujących ID**. Nowe **12 (`cw413–cw424`)** opublikowano, a wszystkie

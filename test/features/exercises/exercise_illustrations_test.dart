@@ -434,8 +434,6 @@ void main() {
     'cw422',
     'cw423',
     'cw424',
-  };
-  const awaitingArtworkIds = <String>{
     'cw425',
     'cw426',
     'cw427',
@@ -446,11 +444,10 @@ void main() {
   };
 
   test(
-    '431 catalog exercises: 424 illustrations and seven explicit pending',
+    '431 catalog exercises have exactly 431 illustrations and no pending',
     () {
-      expect(expectedIllustrationIds, hasLength(424));
-      expect(awaitingArtworkIds, hasLength(7));
-      expect(awaitingIllustrationExerciseIds, awaitingArtworkIds);
+      expect(expectedIllustrationIds, hasLength(431));
+      expect(awaitingIllustrationExerciseIds, isEmpty);
       expect(illustratedExerciseIds, expectedIllustrationIds);
 
       final catalog =
@@ -459,12 +456,8 @@ void main() {
       final catalogIds = catalog
           .map((exercise) => (exercise as Map<String, dynamic>)['id'] as String)
           .toSet();
-      expect(expectedIllustrationIds.intersection(awaitingArtworkIds), isEmpty);
       expect(catalog, hasLength(431));
-      expect(catalogIds, {...expectedIllustrationIds, ...awaitingArtworkIds});
-      for (final id in awaitingArtworkIds) {
-        expect(exerciseIllustrationAsset(id), isNull, reason: id);
-      }
+      expect(catalogIds, expectedIllustrationIds);
 
       for (final id in illustratedExerciseIds) {
         expect(
@@ -518,7 +511,7 @@ void main() {
   });
 
   test('returns no illustration for unknown exercise IDs', () {
-    for (final id in ['cw425', 'cw000', '', 'custom-exercise']) {
+    for (final id in ['cw432', 'cw000', '', 'custom-exercise']) {
       expect(exerciseIllustrationAsset(id), isNull, reason: id);
     }
   });
