@@ -45,7 +45,8 @@ zachowują dotychczasowy format. `WorkoutRepository.logSet(guidanceSlot:,
 guidanceTargetId:, setRole:, side:)` sprawdza dokładną rolę/stronę celu i zapisuje
 set/link/outbox atomowo; doubletap wycofuje całą drugą transakcję. Warmup pod v1
 jest dodatkowy i nie dostaje linku working. `guidanceEvent(targetId:)` obsługuje
-jawny skip; recovery transition/form/timer pozostaje do podłączenia przez UI.
+jawny skip; recovery transition/form/timer opisuje bieżący
+[guide UI](training-sets-programs-ui.md).
 
 Repeat rzeczywistego wykonania zachowuje nullable role. Kopia jednorodnych
 legacyNULL pozostaje v1. Różne dawki lub jawne role dają v2 bez uśredniania,
@@ -78,8 +79,9 @@ obsługiwane; NULL nie może wymazać istniejącej historii programu/granicy.
 Wszystkie kolekcje mają wspólną ścieżkę walidacji/merge/CAS/hold, bez fallbacku
 do exerciseVariants. Błędna/nowsza kolekcja zostaje raw; nowe zapisy odmawiają,
 CAS zachowuje attempted i remote raw w trwałym profile hold. Programowe repo
-ma jeszcze sprawdzić dostępność dwóch planów, dzisiejszą granicę zakończenia,
+sprawdza dostępność dwóch planów, dzisiejszą granicę zakończenia,
 kalendarz i jawny dowód ukończonej sesji — kodek nie wykonuje zapytań katalogu.
+Repo/UI/kalendarz: [Task4](training-sets-programs-ui.md#programy-ab--task4).
 
 ## Backup4 i raw quarantine
 
@@ -113,9 +115,12 @@ Nie są to przenośne uprawnienia do retry starego konta ani normalne operacje;
 istniejący deferred/outbox nie jest resetowany. Reeksport obejmuje też te
 archiwa. Rozstrzygnięcie nieznanych outcomes nadal wymaga jawnego recovery.
 
-Bez UI/providera prowadzenia lub repo/UI programów, bez zmiany zależności,
-katalogu, artefaktów Web SQLite, wersji, backendu i wdrożenia. API-first oraz
-plan aktualizacji starych klientów są konieczne przed przyszłą publikacją.
+Ten kontrakt danych jest uzupełniony przez UI/providera prowadzenia i repo/UI
+programów z Task3–4. Nie zmieniono zależności, katalogu, artefaktów Web SQLite
+ani wersji i wdrożenia. Backendowy kontrakt opisuje
+[`SYNC_EXTENSIONS.md`](../../backend/SYNC_EXTENSIONS.md#role-serii-i-programy-ab--2026-10-28).
+API-first oraz plan aktualizacji starych klientów są konieczne przed przyszłą
+publikacją. Praktyczne ograniczenia restore: [backup.md](backup.md).
 
 ## Weryfikacja Task2
 

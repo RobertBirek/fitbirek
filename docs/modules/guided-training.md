@@ -1,5 +1,17 @@
 # Prowadzenie, lokalne wznowienie i plan a wykonanie
 
+## Bieżący kontrakt — serie i cele schema2
+
+Aktualny klient używa Drift15. Poniższe sekcje opisują rozwój ścieżki v1
+i historyczne weryfikacje, nie aktualny numer schematu lub formatu eksportu.
+Obowiązujące rozszerzenia: [kontrakt danych](training-sets-programs-data.md),
+[prowadzenie per targetId](training-sets-programs-ui.md) i [backup4](backup.md).
+Guidance v1 zachowuje JSON/podpis; v2 zużywa konkretny targetId jeden raz,
+z oddzielnym szkicem/timerem i jawnym skippedTarget. EXTRA nie zużywa celu.
+Rola/strona celu są sprawdzane atomowo z serią, linkiem, outboxem i PR.
+Warmup pod v1 jest dodatkowy; rozgrzewka nie tworzy PR ani dowodu progresji.
+Legacy NULL pozostaje historycznie uwzględniane, bez przypisywania dawnej roli.
+
 ## Zakres i źródła
 
 Klient w katalogu głównym; Flutter 3.35.4 / Dart 3.9.2. Bez wydania, zmiany

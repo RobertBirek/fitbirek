@@ -1,5 +1,12 @@
 # Przygotowanie treningu
 
+Aktualizacja schema2/programy A/B: [training-sets-programs-ui.md](training-sets-programs-ui.md).
+Przygotowanie per-set jest informacyjne: pokazuje wszystkie dawki i role,
+nie stosuje jednego historycznego kg/reps do całej rampy i nie oferuje zamiany
+przed startem. Program korzysta z istniejącego startPrepared, z dodatkowym
+lease rewizji programu/terminu; zmiana planu, przesunięcia, nazwy lub granicy
+unieważnia stare potwierdzenie. Start nie zalicza terminu.
+
 ## Working set
 
 - `lib/features/workout/preparation/domain/`: potwierdzony zapas sprzętu,

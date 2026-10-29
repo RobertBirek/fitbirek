@@ -1,6 +1,7 @@
 # Serie i indywidualne cele — Flutter Task3
 
 Kontrakt storage: [training-sets-programs-data.md](training-sets-programs-data.md).
+Import/eksport i ograniczenia zgodności: [backup.md](backup.md).
 Klient główny; programy A/B opisano w sekcji Task4 poniżej. Bez migracji
 i deklaracji generatorów, zależności, wydania lub wdrożenia w zmianach UI.
 
@@ -124,3 +125,20 @@ lock/deps/Web SQLite, katalogu ani wersji. Nie dodaje przypomnień programowych.
 Raport i dokładne komendy/wyniki: lokalny
 `.superpowers/sdd/2026-10-28-training-sets-programs/task-4-report.md`.
 Pełny Flutter i runtime/browser oraz niezależny odbiór pozostają w Task5.
+
+## Integracja Task5 — Flutter
+
+Pełny klient po Task1–4: **1806 PASS / 0 FAIL / 1 warunkowy skip** w UTC;
+`flutter analyze --no-pub`: **No issues found**. Pomijany test
+`Warsaw spring DST gap is rejected instead of normalized` przeszedł osobno
+z `TZ=Europe/Warsaw`, wraz z kalendarzem programów: **27 PASS / 0 skip**.
+Ponowny build_runner:17/17 śledzonych generatedDart identycznych bajtowo,
+bez kopiowania artefaktów. Dwa stare oczekiwania eksportu3 zaktualizowano do4
+po RED; pozostałe asercje UUID/snapshot/atomic rollback/attempted/history
+zostały zachowane. Nie dodano funkcji ani zmian API.
+
+Format zmienionych Dart jest poprawny; read-only kontrola całego repo wykazuje
+9 niezmienionych plików baseline wymagających formatowania. Nie formatowano
+ich masowo. Wersja/lock/Web SQLite, raw424, EN i424 obrazy pozostały nietknięte.
+Backend, standardowy build Web/offline i browser runtime oraz whole-branch
+review mają osobny odbiór; wyników Fluttera nie przedstawiamy jako ich PASS.

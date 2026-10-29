@@ -17,6 +17,17 @@ Kod: `/opt/fit`, runtime: `/docker/fit`, szablony: `deploy/`. Caddy obsługuje
 HTTPS. Codzienne dumpy są objęte Restic i miesięcznym testem odtworzenia.
 Procedury aktualizacji, konta i backupu: [DEPLOY.md](DEPLOY.md).
 
+### Bieżąca gałąź — serie i programy (bez publikacji)
+
+Jawne role serii, indywidualne cele schema2 oraz programy A/B opisują
+[kontrakt danych](docs/modules/training-sets-programs-data.md),
+[prowadzenie i programy](docs/modules/training-sets-programs-ui.md) oraz
+[backup4 i zgodność](docs/modules/backup.md). Starsze plany schema1 pozostają
+bez konwersji; historyczne serie bez roli nie są uzupełniane. Przed przyszłym
+wydaniem wymagane są API-first i plan aktualizacji klientów — ochrona omission
+nie zapewnia staremu klientowi semantyki rozgrzewek, schema2 ani backup4.
+Nie jest to informacja o zmianie działającej produkcji.
+
 ### MVP (zrealizowane)
 - **Onboarding** (3 ekrany) — profil użytkownika, cel, dostępny sprzęt
 - **5-tab bottom navigation**: Dziś / Baza / Trening / Postępy / Ustawienia

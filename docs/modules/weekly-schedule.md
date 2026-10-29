@@ -1,5 +1,20 @@
 # Rytm tygodnia — harmonogram zapisanych planów
 
+## Bieżące rozszerzenie: programy A/B i dowód wykonania
+
+Programy używają oddzielnej kolekcji `trainingPrograms` v1; nie dodajemy kind
+do `weeklySchedule` v1. Wejście „Programy A/B” prowadzi do `/programs`.
+[Kontrakt danych](training-sets-programs-data.md) i
+[repo/UI/kalendarz](training-sets-programs-ui.md#programy-ab--task4) opisują
+rotację według zaplanowanych lokalnych dat, immutable core i cutoff.
+Wspólny `SessionCompletionProof` dla weekly/program wymaga zakończonej live
+sesji z live serią effective-working (working albo legacy NULL).
+Warmup-only nie zalicza. Jedna sesja nie zalicza dwóch terminów między obiema
+kolekcjami; lokalnie odmowa, po offline merge jawny konflikt obu powiązań.
+Bieżący eksport to [backup4](backup.md), nie historyczne formaty opisane niżej.
+Backup4 zawiera także bierne raw dowody recovery, ale nie uprawnienie do retry.
+Poniższe wyniki i numery migracji dokumentują wcześniejsze etapy.
+
 ## Aktywności i migracja przypomnień (2026-10-19)
 
 Ta sama kolekcja v1 obsługuje `activityRule` / `activityOverride` obok starych

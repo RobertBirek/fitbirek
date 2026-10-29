@@ -204,12 +204,12 @@ void main() {
       expect(externalHistory.externalCompleted, isTrue);
       expect(await a.select(a.workoutSessions).get(), isEmpty);
       expect(await a.select(a.setsLog).get(), isEmpty);
-      // Still the normal archive (format3), not a second collection store.
+      // Still the normal archive (format4), not a second collection store.
       expect(
         jsonDecode(
           utf8.decode(await BackupService(a).exportToBytes()),
         )['schemaVersion'],
-        3,
+        4,
       );
     },
   );

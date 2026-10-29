@@ -16,6 +16,8 @@ Ten katalog wskazuje minimalny working set dla zmian w kodzie. Najpierw czytaj d
 | --- | --- |
 | Mentor i dostawcy AI | [mentor.md](mentor.md) |
 | Trening, ćwiczenia, planowanie i rekordy | [training.md](training.md) |
+| Role serii, cele schema2, programy A/B | [dane](training-sets-programs-data.md), [UI i programy](training-sets-programs-ui.md) |
+| Backup4, starsze archiwa i recovery | [backup.md](backup.md) |
 | Przygotowanie sprzętu i celów przed startem z Dziś | [workout-preparation.md](workout-preparation.md) |
 | Katalog sprzętu, alternatywne wymagania i korekty importu | [owner-equipment-catalog.md](owner-equipment-catalog.md) |
 | Podstawowe ruchy bez obciążenia, katalog431 i oczekujące ilustracje | [bodyweight-catalog.md](bodyweight-catalog.md) |

@@ -11,6 +11,9 @@ Katalog ćwiczeń, planowanie, aktywna sesja, serie, podsumowanie i rekordy osob
 - `lib/features/progress/prs/**`
 - `lib/core/utils/partia_kategoria.dart`
 - testy ćwiczeń, workoutu, planera i rekordów
+- Role serii, cele schema2 i programy A/B: `training-sets-programs-data.md`
+  oraz `training-sets-programs-ui.md` (bieżący Drift15; bez backfillu).
+- Backup4 i ograniczenia starych klientów: `backup.md`.
 - Interwały: `docs/modules/workout-intervals.md` (silnik, ekran, atomowy zapis rund)
 - Generator z filtrów: `docs/modules/structured-planner.md` (struktura, czas, sync i testy)
 - Zamienniki, domyślne/edytowane przerwy i aktywna zamiana:

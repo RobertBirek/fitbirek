@@ -307,6 +307,10 @@ oznacza wdrożenia ani zgody na zmianę produkcji.
 
 Kontrakt: `docs/superpowers/specs/2026-10-28-training-sets-programs-design.md`,
 sekcje 1/5/6. Bez nowych typów encji, DDL, migracji Alembic ani backfillu.
+Bieżący klient: [dane i restore](../docs/modules/training-sets-programs-data.md),
+[prowadzenie i programy](../docs/modules/training-sets-programs-ui.md),
+[backup4 i zgodność](../docs/modules/backup.md). Backend nie implementuje
+klientowego merge immutable core, rotacji ani oceny dowodu ukończenia.
 
 - `workoutSet.payload.setRole` jest opcjonalne: jawne `null` albo dokładnie
   string `working` / `warmup`. Pydantic waliduje typowany literal w trybie

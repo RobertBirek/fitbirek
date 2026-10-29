@@ -1,5 +1,13 @@
 # Working set: Generator z filtrów (etap 4)
 
+> Bieżące rozszerzenie: [cele serii schema2 — dane](training-sets-programs-data.md)
+> i [edytor/start/guardy](training-sets-programs-ui.md). Generator nadal tworzy
+> schema1; ręczny edytor obsługuje uporządkowane cele o stabilnym targetId.
+> Schema1 nie jest konwertowane w tle. Rounds pozostaje v1; scalar przerwa
+> i generacyjna zamiana v2 odmawiają zamiast spłaszczać cele. Nieobsługiwany
+> plan jest raw/niedostępny, nie legacy. Bieżący eksport: [backup4](backup.md).
+> Historyczne numery migracji i wyniki poniżej dotyczą wcześniejszych etapów.
+>
 > Aktualizacja zamienników, przerw i edycji czasu: obowiązuje
 > [planner-safe-replacements.md](planner-safe-replacements.md).
 > Zastępuje opisane niżej historyczne stałe 30 s i wymóg identycznego czasu zamiany.

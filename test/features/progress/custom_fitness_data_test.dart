@@ -310,7 +310,7 @@ void main() {
       },
     );
     test(
-      'backup3 keeps protocol UUID and embedded snapshot; unknown marker fails atomically',
+      'backup4 keeps protocol UUID and embedded snapshot; unknown marker fails atomically',
       () async {
         final p = await repo.createProtocol(
           await repo.captureLease(),
@@ -327,7 +327,7 @@ void main() {
         );
         final bytes = await BackupService(db).exportToBytes();
         final archive = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
-        expect(archive['schemaVersion'], 3);
+        expect(archive['schemaVersion'], 4);
         expect(
           (await BackupService(db).importFromBytes(bytes)).success,
           isTrue,
