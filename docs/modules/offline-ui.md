@@ -72,6 +72,13 @@ Niezmienione testy Node worker/client: **32/32** (faktyczna liczba w tym repo).
 Sonda JS conditional import kompiluje się; to nie test przeglądarkowy nowego buildu.
 Pełna suite/compiled Web po wszystkich zmianach należy do integracyjnego Task 5.
 
+Integracja Task5 ukończona: pełny Flutter1841PASS (1 UTC/DST skip, osobny
+Warsaw18PASS), analiza bez uwag i nowy prywatny releaseWeb. Skompilowany
+OfflinePage z kontrolowaną odpowiedzią bridge pokazał panel,3pending i pasywny
+refresh bez prepare/cancel. Nie jest to realny test wdrożenia A→B ani sync/ACK.
+Wyniki, poprawki niezależnego review i jawne ograniczenia formatowania:
+[raport niezawodności](../reports/2026-10-29-pwa-reliability.md).
+
 ## Zgoda, gotowość i lifecycle
 
 - Otwarcie ekranu wywołuje wyłącznie `status()`. Bez SharedPreferences i flag gotowości.

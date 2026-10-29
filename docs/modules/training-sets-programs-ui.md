@@ -51,6 +51,11 @@ i deklaracji generatorów, zależności, wydania lub wdrożenia w zmianach UI.
   celem. Jeden target dopuszcza jedną rundę. Obcy wariant, cel, stary token,
   nonce po consume albo multiround checkpoint nie otrzymują nowego uprawnienia.
   EXTRA zachowuje wielorundowy timer i nie dopisuje performed.
+  Czasowy target v2 obsługuje 1–5400 s, od `seconds`, nie od estymacji
+  `workSeconds`; manual/EXTRA/v1 pozostają przy 3600 s. Kontekst nie jest
+  serializowany. Aktywne i archiwalne checkpointy zachowują dokładną tożsamość
+  także po wznowieniu/restartSegment i zamianie ćwiczenia. Sam podsunięty
+  targetId w EXTRA nie rozszerza zakresu. Szczegóły: [interwały](workout-intervals.md).
 - Consume v2 porównuje dokładny klucz z aktualnie wybranym trwałym formularzem:
   stary widok A nie może wyczyścić nowszego timera B. Niezwiązane EXTRA, CAS
   revision/epoch/version, kolejka patchy i persistentDatabaseZone pozostają.

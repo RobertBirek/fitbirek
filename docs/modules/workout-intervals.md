@@ -1,5 +1,28 @@
 # Interwały w aktywnej sesji
 
+## Aktualne granice indywidualnych celów (2026-10-29)
+
+`IntervalConfig.workLimit(guidedTarget:)` jest wspólną granicą silnika, UI
+i zapisu: ręczny/EXTRA/guidancev1 nadal **3600 s**, dokładny czasowy cel
+guidancev2 **5400 s i dokładnie jedna runda**. Przygotowanie 0–60 s i przerwa
+0–600 s bez zmian. `guidedTarget` w konfiguracji i `IntervalTimer.restore`
+jest jawnym kontekstem wywołania, domyślnie false, nigdy polem checkpointu.
+`singleRound` ekranu jest przekazywane wyłącznie z opaque `origin.targetId`.
+
+Walidator szkicu wyprowadza kontekst z poprawnego guidance i zgodności
+target/metryki/slotu/bindingu/strony/wariantu. Archiwum wymaga dokładnego
+7-elementowego klucza oraz bieżącej lub historycznej tożsamości ćwiczenia
+tego slotu; aktywny formularz nadal wymaga bieżącej. EXTRA nie dostaje
+rozszerzenia po samym podsunięciu targetId. Recovery, także restart odcinka,
+zachowuje zakres i kontekst. JSON checkpoint1/draft1 pozostaje bez zmian.
+
+Timer zaczyna od rzeczywistego `target.seconds`, nie `workSeconds` estymacji.
+Wynik może świadomie odbiegać od celu (np. 4100 przy celu 4000), do 5400 s.
+Zakończenie odliczania nie zapisuje serii; nadal wymagane jawne potwierdzenie.
+CAS, epoch/version, nonce i atomowość serii/performed/outbox pozostają.
+Regresje: `test/features/workout/long_guided_timer_test.dart`; końcowy odbiór:
+[raport niezawodności](../reports/2026-10-29-pwa-reliability.md).
+
 Etap 3 zatwierdzonej roadmapy z 2026-10-16. Dotyczy wyłącznie klienta
 w katalogu głównym. Nie zmienia deklaracji Drift/Freezed/JSON, wire ani backendu.
 
