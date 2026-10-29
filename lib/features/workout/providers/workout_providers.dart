@@ -1176,6 +1176,7 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
           fields['timer'] = IntervalTimer.restore(
             Map<String, dynamic>.from(fields['timer'] as Map),
             restartSegment: true,
+            guidedTarget: isGuidedTimeTargetForm(guidance, slot, fields),
           ).checkpoint();
         }
         final ids = {
@@ -1434,13 +1435,15 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
     Map<String, Object?>? checkpoint,
   ) {
     if (!isIntervalCheckpointCurrent(origin)) return false;
-    if (origin.targetId != null &&
-        checkpoint != null &&
+    if (origin.targetId != null && checkpoint != null) {
+      try {
         IntervalTimer.restore(
-              Map<String, dynamic>.from(checkpoint),
-            ).config.rounds !=
-            1) {
-      return false;
+          Map<String, dynamic>.from(checkpoint),
+          guidedTarget: true,
+        );
+      } on FormatException {
+        return false;
+      }
     }
     updateExerciseDraft(
       origin.exercise.id,
@@ -1494,7 +1497,14 @@ class ActiveWorkoutNotifier extends StateNotifier<ActiveWorkoutState> {
             (results.length != 1 || results.single.round != 1)) ||
         results.isEmpty ||
         results.length > 100 ||
-        results.any((r) => r.seconds < 1 || r.seconds > 3600) ||
+        results.any(
+          (r) =>
+              r.seconds < 1 ||
+              r.seconds >
+                  IntervalConfig.workLimit(
+                    guidedTarget: origin.targetId != null,
+                  ),
+        ) ||
         results.any((r) => r.round < 1 || r.round > 100) ||
         results.map((r) => r.round).toSet().length != results.length) {
       return false;

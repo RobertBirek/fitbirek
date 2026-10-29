@@ -2,22 +2,29 @@
 enum IntervalPhase { preparation, work, rest, complete, cancelled }
 
 class IntervalConfig {
+  static const manualWorkLimit = 3600;
+  static const guidedWorkLimit = 5400;
+  static int workLimit({bool guidedTarget = false}) =>
+      guidedTarget ? guidedWorkLimit : manualWorkLimit;
+
   IntervalConfig({
     required this.preparation,
     required this.work,
     required this.rest,
     required this.rounds,
+    bool guidedTarget = false,
   }) {
     if (preparation < 0 ||
         preparation > 60 ||
         work < 1 ||
-        work > 3600 ||
+        work > workLimit(guidedTarget: guidedTarget) ||
         rest < 0 ||
         rest > 600 ||
         rounds < 1 ||
-        rounds > 100) {
+        rounds > 100 ||
+        (guidedTarget && rounds != 1)) {
       throw ArgumentError(
-        'Przygotowanie: 0–60 s, praca: 1–3600 s, '
+        'Przygotowanie: 0–60 s, praca: 1–${workLimit(guidedTarget: guidedTarget)} s, '
         'przerwa: 0–600 s, rundy: 1–100.',
       );
     }
@@ -98,6 +105,7 @@ class IntervalTimer {
     Map<String, dynamic> json, {
     Duration Function()? clock,
     bool restartSegment = false,
+    bool guidedTarget = false,
   }) {
     try {
       if (json['schemaVersion'] != 1) {
@@ -110,6 +118,7 @@ class IntervalTimer {
           work: c['work'] as int,
           rest: c['rest'] as int,
           rounds: c['rounds'] as int,
+          guidedTarget: guidedTarget,
         ),
         clock: clock,
       );

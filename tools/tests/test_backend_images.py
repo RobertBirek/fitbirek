@@ -168,6 +168,11 @@ class ProbePermissionsTests(unittest.TestCase):
         other.write_text('value = 4\n')
         self.assertTrue(self.probe(65532, 65532)['ok'])
 
+    def test_caught_import_time_io_still_fails_closed(self):
+        other = self.root / 'app/extra/other.py'
+        other.write_text('import socket\ntry:\n socket.create_connection(("127.0.0.1", 1))\nexcept RuntimeError:\n pass\n')
+        self.assertFalse(self.probe(100, 101)['ok'])
+
     def test_symlink_and_directory_without_search_permission_fail(self):
         (self.root / 'app/extra/link.py').symlink_to(self.root / 'app/main.py')
         self.assertFalse(self.probe(65532, 65532)['ok'])

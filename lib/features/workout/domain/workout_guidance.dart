@@ -47,7 +47,15 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
             ))) {
       throw const FormatException('Nieprawidłowe wersje checkpointów');
     }
-    _validateWorkoutForm(fields);
+    final guidance = WorkoutGuidance.tryRead(j['guidanceSignature'] as String?);
+    _validateWorkoutForm(
+      fields,
+      guidedTarget: isGuidedTimeTargetForm(
+        guidance,
+        j['currentSlot'] as int,
+        fields,
+      ),
+    );
     if (fields['guidedForms'] != null) {
       for (final entry in (fields['guidedForms'] as Map).entries) {
         final key = jsonDecode(entry.key as String) as List;
@@ -64,7 +72,24 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
                 (key[6] is! String || form['targetId'] != key[6]))) {
           throw const FormatException('Nieprawidłowy klucz szkicu bloku');
         }
-        _validateWorkoutForm(form);
+        final binding = form['timerBinding'];
+        final matchesKey =
+            key.length == 7 &&
+            binding is Map &&
+            binding['sessionSyncId'] == key[1] &&
+            binding['slotIndex'] == key[2] &&
+            binding['exerciseId'] == key[3];
+        _validateWorkoutForm(
+          form,
+          guidedTarget:
+              matchesKey &&
+              isGuidedTimeTargetForm(
+                guidance,
+                key[2] as int,
+                form,
+                archived: true,
+              ),
+        );
       }
     }
     if (fields['guidedSelections'] != null) {
@@ -112,7 +137,51 @@ Map<String, dynamic> validateWorkoutDraft(Object? value) {
   }
 }
 
-void _validateWorkoutForm(Map<String, dynamic> fields) {
+/// Derived from validated guidance and the exact form/binding, never from a
+/// serialized flag or a targetId in an EXTRA namespace.
+bool isGuidedTimeTargetForm(
+  WorkoutGuidance? guidance,
+  int slot,
+  Map fields, {
+  bool archived = false,
+}) {
+  if (guidance?.schemaVersion != 2 ||
+      slot < 0 ||
+      slot >= guidance!.plan.blocks.length) {
+    return false;
+  }
+  final prescription = guidance.plan.blocks[slot].prescription;
+  if (prescription.tracking != 'time') return false;
+  final target = prescription.setTargets
+      .where((t) => t.targetId == fields['targetId'])
+      .firstOrNull;
+  final binding = fields['timerBinding'];
+  // An archive belongs to its historical identity, not a replacement's active
+  // form. Keeping it readable does not permit capture/save under that identity.
+  final exerciseIds = {
+    guidance.exerciseAt(slot),
+    if (archived) guidance.plan.blocks[slot].exerciseId,
+    if (archived)
+      ...guidance.events
+          .where((e) => e['type'] == 'replaced' && e['slotIndex'] == slot)
+          .map((e) => e['exerciseId']),
+  };
+  return target?.seconds != null &&
+      target!.side == fields['side'] &&
+      binding is Map &&
+      binding['extra'] == false &&
+      binding['sessionSyncId'] is String &&
+      binding['slotIndex'] == slot &&
+      exerciseIds.contains(binding['exerciseId']) &&
+      binding['targetId'] == target.targetId &&
+      binding['side'] == fields['side'] &&
+      binding['variantId'] == fields['variantId'];
+}
+
+void _validateWorkoutForm(
+  Map<String, dynamic> fields, {
+  bool guidedTarget = false,
+}) {
   SetRole.validate(fields['setRole']);
   if (fields['targetId'] != null &&
       (fields['targetId'] is! String ||
@@ -137,6 +206,7 @@ void _validateWorkoutForm(Map<String, dynamic> fields) {
   if (fields['timer'] != null) {
     final timer = IntervalTimer.restore(
       Map<String, dynamic>.from(fields['timer'] as Map),
+      guidedTarget: guidedTarget,
     );
     if (fields['targetId'] != null &&
         (timer.config.rounds != 1 ||

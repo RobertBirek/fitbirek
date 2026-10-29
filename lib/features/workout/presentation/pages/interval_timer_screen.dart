@@ -53,6 +53,7 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
       try {
         _engine = IntervalTimer.restore(
           widget.checkpoint!,
+          guidedTarget: widget.singleRound,
           clock: widget.clock,
         );
         if (widget.singleRound && _engine!.config.rounds != 1) {
@@ -185,6 +186,7 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
         work: int.parse(_work.text),
         rest: int.parse(_rest.text),
         rounds: int.parse(_rounds.text),
+        guidedTarget: widget.singleRound,
       ),
       clock: widget.clock,
     )..start();
@@ -303,7 +305,15 @@ class _IntervalTimerScreenState extends State<IntervalTimerScreen>
                         0,
                         60,
                       ),
-                      _field('work', 'Praca', _work, 1, 3600),
+                      _field(
+                        'work',
+                        'Praca',
+                        _work,
+                        1,
+                        IntervalConfig.workLimit(
+                          guidedTarget: widget.singleRound,
+                        ),
+                      ),
                       _field('rest', 'Przerwa (s)', _rest, 0, 600),
                       _field(
                         'rounds',

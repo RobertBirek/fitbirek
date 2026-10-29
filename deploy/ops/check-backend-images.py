@@ -14,7 +14,10 @@ import asyncio, contextlib, importlib, io, json, os, pathlib, socket, stat, sys
 sys.dont_write_bytecode = True
 stage = 'identity'
 location = ''
+activity_attempted = False
 def forbidden(*args, **kwargs):
+    global activity_attempted
+    activity_attempted = True
     raise RuntimeError('image import attempted external activity')
 def probe(role, expected_uid, expected_gid):
     global stage, location
@@ -76,6 +79,8 @@ def probe(role, expected_uid, expected_gid):
         source = getattr(module, '__file__', None)
         if source is not None and not pathlib.Path(source).resolve().is_relative_to(app):
             raise ValueError('module from outside image application')
+    if activity_attempted:
+        raise RuntimeError('image import attempted external activity')
     return {'ok': True, 'uid': os.getuid(), 'gid': os.getgid(), 'files': len(files), 'modules': len(modules)}
 try:
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
