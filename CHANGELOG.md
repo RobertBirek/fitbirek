@@ -6,6 +6,32 @@ Format oparty na [Keep a Changelog](https://keepachangelog.com/), wersjonowanie 
 
 ---
 
+## [1.25.0+42] — 2026-10-29
+
+### Added
+- Siedem podstawowych ćwiczeń bez obciążenia `cw425–cw431`; katalog431,
+  z zachowaniem424 dawnych wpisów i ilustracji. Nowe pozycje mają instrukcje
+  tekstowe oraz jawny komunikat o oczekującej ilustracji.
+- Role serii rozgrzewkowa/robocza, indywidualne cele powtórzeń, czasu, ciężaru,
+  strony i przerw oraz prowadzenie i wznowienie według konkretnego celu.
+- Programy dwóch własnych szablonów A/B: rotacja kolejnych zaplanowanych
+  terminów ABA/BAB, przesunięcia i wyłącznie jawne zaliczanie zakończoną sesją.
+
+### Fixed
+- Rozgrzewki nie tworzą nowych PR ani dowodu progresji i roboczego trendu;
+  stare nieoznaczone serie i rekordy pozostają bez przeliczania.
+- Ochrona starego formularza, szkicu i timera przed zapisaniem obcego celu.
+- Backup zachowuje nieważne powiązania wykonania i usunięte serie referencyjne,
+  bez ich ożywiania i bez utraty odtwarzalności własnego eksportu.
+
+### Deployment Notes
+- API przed klientem: ochrona omission ról i kolekcji programów; bez nowej
+  migracji PostgreSQL/Alembic. Lokalny Drift14→15, nowy eksport backup4,
+  import starszych formatów1–3 zachowany. Bez zmian zależności i Web SQLite.
+- Starsze klienty nie rozumieją nowych ról, planów i backup4: przed użyciem
+  nowych funkcji zamknij wszystkie stare karty/PWA i uruchom aktualną wersję.
+  Nie czyść IndexedDB, danych witryny ani oczekujących operacji synchronizacji.
+
 ## [1.24.0+41] — 2026-10-28
 
 ### Added
