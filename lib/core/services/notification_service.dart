@@ -37,7 +37,8 @@ class NotificationService {
 
   static const _channelId = 'fitbirek_reminders';
   static const _channelName = 'Przypomnienia FitBirek';
-  static const _channelDescription = 'Aktywności, treningi i dziennik samopoczucia';
+  static const _channelDescription =
+      'Aktywności, treningi i dziennik samopoczucia';
 
   Future<void> init() async {
     if (_initialized) return;

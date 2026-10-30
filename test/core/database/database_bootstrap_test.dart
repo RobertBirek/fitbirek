@@ -22,22 +22,26 @@ void main() {
   test('permits only SyncState singleton id 1', () async {
     final db = AppDatabase.forTesting(NativeDatabase.memory());
 
-    await db.into(db.syncState).insert(
-      SyncStateCompanion.insert(
-        id: const Value(1),
-        accountId: 'account-1',
-        deviceId: 'device-1',
-      ),
-    );
+    await db
+        .into(db.syncState)
+        .insert(
+          SyncStateCompanion.insert(
+            id: const Value(1),
+            accountId: 'account-1',
+            deviceId: 'device-1',
+          ),
+        );
 
     await expectLater(
-      db.into(db.syncState).insert(
-        SyncStateCompanion.insert(
-          id: const Value(2),
-          accountId: 'account-2',
-          deviceId: 'device-2',
-        ),
-      ),
+      db
+          .into(db.syncState)
+          .insert(
+            SyncStateCompanion.insert(
+              id: const Value(2),
+              accountId: 'account-2',
+              deviceId: 'device-2',
+            ),
+          ),
       throwsA(isA<SqliteException>()),
     );
 

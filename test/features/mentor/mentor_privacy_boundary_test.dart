@@ -32,39 +32,48 @@ class _OperationsApi implements MentorApi {
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  test('context changes the one-way idempotency fingerprint without persistence', () async {
-    final api = _OperationsApi();
-    final registry = MentorOperationRegistry('account-a');
-    const selectedWeight = 'opaque-weight-selector-that-must-never-persist';
+  test(
+    'context changes the one-way idempotency fingerprint without persistence',
+    () async {
+      final api = _OperationsApi();
+      final registry = MentorOperationRegistry('account-a');
+      const selectedWeight = 'opaque-weight-selector-that-must-never-persist';
 
-    final first = await (registry as dynamic).resolve(
-      api,
-      'chat',
-      sessionId: 'session',
-      text: 'Jak trenować?',
-      selection: const {'training': true, 'weight': selectedWeight},
-    ) as MentorOperation;
-    final same = await (registry as dynamic).resolve(
-      api,
-      'chat',
-      sessionId: 'session',
-      text: 'Jak trenować?',
-      selection: const {'weight': selectedWeight, 'training': true},
-    ) as MentorOperation;
-    final changed = await (registry as dynamic).resolve(
-      api,
-      'chat',
-      sessionId: 'session',
-      text: 'Jak trenować?',
-      selection: const {'training': false, 'weight': selectedWeight},
-    ) as MentorOperation;
+      final first =
+          await (registry as dynamic).resolve(
+                api,
+                'chat',
+                sessionId: 'session',
+                text: 'Jak trenować?',
+                selection: const {'training': true, 'weight': selectedWeight},
+              )
+              as MentorOperation;
+      final same =
+          await (registry as dynamic).resolve(
+                api,
+                'chat',
+                sessionId: 'session',
+                text: 'Jak trenować?',
+                selection: const {'weight': selectedWeight, 'training': true},
+              )
+              as MentorOperation;
+      final changed =
+          await (registry as dynamic).resolve(
+                api,
+                'chat',
+                sessionId: 'session',
+                text: 'Jak trenować?',
+                selection: const {'training': false, 'weight': selectedWeight},
+              )
+              as MentorOperation;
 
-    expect(same.requestId, first.requestId);
-    expect(changed.requestId, isNot(first.requestId));
-    final stored = (await SharedPreferences.getInstance()).getString(
-      registry.storageKey,
-    )!;
-    expect(stored, isNot(contains(selectedWeight)));
-    expect(jsonDecode(stored), everyElement(isA<Map>()));
-  });
+      expect(same.requestId, first.requestId);
+      expect(changed.requestId, isNot(first.requestId));
+      final stored = (await SharedPreferences.getInstance()).getString(
+        registry.storageKey,
+      )!;
+      expect(stored, isNot(contains(selectedWeight)));
+      expect(jsonDecode(stored), everyElement(isA<Map>()));
+    },
+  );
 }

@@ -101,67 +101,70 @@ void main() {
     );
     expect(requests, 0);
   });
-  test('message context sends only opaque selectors and settings revision', () async {
-    final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
-    Map<String, dynamic>? body;
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (request, handler) {
-          body = Map<String, dynamic>.from(request.data as Map);
-          handler.resolve(
-            Response(
-              requestOptions: request,
-              data: {
-                'id': 'answer',
-                'role': 'assistant',
-                'text': 'OK',
-                'created_at': '2026-10-08T00:00:00Z',
-              },
-            ),
-          );
-        },
-      ),
-    );
-    final context = MentorContextSelection(
-      training: true,
-      weight: const MentorContextWeightOption(
-        selectionId: 'opaque-weight-selector-that-is-long-enough',
-        source: 'measurement',
-        summary: '73 kg · 2026-10-08',
-      ),
-      note: const MentorContextNoteOption(
-        selectionId: 'opaque-note-selector-that-is-long-enough',
-        summary: '2026-10-07',
-        preview: 'Prywatna notatka',
-      ),
-    );
+  test(
+    'message context sends only opaque selectors and settings revision',
+    () async {
+      final dio = Dio(BaseOptions(baseUrl: 'https://example.invalid'));
+      Map<String, dynamic>? body;
+      dio.interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (request, handler) {
+            body = Map<String, dynamic>.from(request.data as Map);
+            handler.resolve(
+              Response(
+                requestOptions: request,
+                data: {
+                  'id': 'answer',
+                  'role': 'assistant',
+                  'text': 'OK',
+                  'created_at': '2026-10-08T00:00:00Z',
+                },
+              ),
+            );
+          },
+        ),
+      );
+      final context = MentorContextSelection(
+        training: true,
+        weight: const MentorContextWeightOption(
+          selectionId: 'opaque-weight-selector-that-is-long-enough',
+          source: 'measurement',
+          summary: '73 kg · 2026-10-08',
+        ),
+        note: const MentorContextNoteOption(
+          selectionId: 'opaque-note-selector-that-is-long-enough',
+          summary: '2026-10-07',
+          preview: 'Prywatna notatka',
+        ),
+      );
 
-    await HttpMentorApi(ApiClient(dio)).send(
-      'session',
-      'Jak trenować?',
-      requestId: 'request',
-      settingsRevision: 4,
-      context: context,
-    );
+      await HttpMentorApi(ApiClient(dio)).send(
+        'session',
+        'Jak trenować?',
+        requestId: 'request',
+        settingsRevision: 4,
+        context: context,
+      );
 
-    expect(body, {
-      'request_id': 'request',
-      'text': 'Jak trenować?',
-      'settings_revision': 4,
-      'context': {
-        'training': true,
-        'profile': false,
-        'apple_health': false,
-        'weight': {
-          'source': 'measurement',
-          'selection_id': 'opaque-weight-selector-that-is-long-enough',
+      expect(body, {
+        'request_id': 'request',
+        'text': 'Jak trenować?',
+        'settings_revision': 4,
+        'context': {
+          'training': true,
+          'profile': false,
+          'apple_health': false,
+          'weight': {
+            'source': 'measurement',
+            'selection_id': 'opaque-weight-selector-that-is-long-enough',
+          },
+          'note': {'selection_id': 'opaque-note-selector-that-is-long-enough'},
         },
-        'note': {'selection_id': 'opaque-note-selector-that-is-long-enough'},
-      },
-    });
-    expect(jsonEncode(body), isNot(contains('73 kg')));
-    expect(jsonEncode(body), isNot(contains('Prywatna notatka')));
-  });
+      });
+      expect(jsonEncode(body), isNot(contains('73 kg')));
+      expect(jsonEncode(body), isNot(contains('Prywatna notatka')));
+    },
+  );
   test(
     'every endpoint carries revocable token and errors never expose secrets',
     () async {
